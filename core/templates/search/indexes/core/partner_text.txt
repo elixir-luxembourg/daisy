@@ -1,0 +1,6 @@
+{{ object.acronym }}
+{{ object.name }}
+{{ object.address }}
+{{ object.is_clinical }}
+{{ object.geo_category_display}}
+{{ object.sector_category_display}}

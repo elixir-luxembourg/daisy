@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+
+{% block title %}Publications{% endblock %}
+
+{% block content %}
+    <div class="jumbotron mt-4">
+        <h1 class="display-4">Publications</h1>
+    </div>
+
+    {%  if publication_list %}
+        <div class="table table-responsive-lg">
+            <table>
+                <caption>List of publications</caption>
+                <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Citation string</th>
+                      <th scope="col">DOI</th>
+                      <th scope="col">Edit</th>
+                    </tr>
+                  </thead>
+                <tbody>
+                    {% for publication in publication_list %}
+                        <tr>
+                            <th scope="row">{{  forloop.counter }}</th>
+                            <td>{{ publication.citation }}</td>
+                            <td>{% if publication.doi %}{{ publication.doi }}{% else %}-{% endif %}</td>
+                            <td><a class="btn btn-raised btn-secondary btn-sm" href="{%  url 'publication_edit' publication.id %}">Edit</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No publications yet</p>
+    {%  endif %}
+
+{% endblock %}
+
+
+{% block floating-buttons %}
+    <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'publication_add' %}"><i
+            class="material-icons">add</i>
+    </a>
+{% endblock %}

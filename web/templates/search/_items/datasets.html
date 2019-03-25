@@ -1,0 +1,30 @@
+{% for dataset in data.datasets %}
+    <div class="row">
+        <div class="col-md-9 mb-4 card-item card">
+            <div class="card-body">
+                <h2 class="card-title">{{ dataset.title }}</h2>
+                <ul class="card-text">
+                    <li>Published: {{ dataset.is_published | yesno }}</li>
+                    <li>Datatypes:
+                        {% for datatype in dataset.data_types %}
+                            <span class="badge badge-pill badge-secondary">{{ datatype }}</span>
+                        {% endfor %}
+                    </li>
+                    {% if dataset.local_custodians %}
+                        <li>Local custodians:
+                            {% for local_custodian in dataset.local_custodians %}
+                                <span class="badge badge-pill badge-primary">{{ local_custodian }}</span>
+                            {% endfor %}
+                        </li>
+                    {% endif %}
+                </ul>
+                <a href="{% url 'dataset' pk=dataset.pk %}" class="btn btn-primary">Details</a>
+            </div>
+        </div>
+    </div>
+{% empty %}
+    <p>No results</p>
+{% endfor %}
+
+
+

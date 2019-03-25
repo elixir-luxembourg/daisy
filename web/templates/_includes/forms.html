@@ -1,0 +1,42 @@
+{% load widget_tweaks %}
+
+{% for error in form.non_field_errors %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ error }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+{% endfor %}
+<form {% if form_id %}id="{{ form_id }}"{% endif %}class="form {% if half %}col-md-6{% else %}col-md-12{% endif %} nice-selects {{ form_class }}"
+      {% if enctype %}enctype="{{ enctype }}"{% endif %} method="post"
+      {% if submit_url %}action="{{ submit_url }}"{% endif %}novalidate>
+    {% csrf_token %}
+    {% for hidden_field in form.hidden_fields %}
+        {{ hidden_field }}
+    {% endfor %}
+    {% for field in form.visible_fields %}
+        {% include '_includes/field.html' with field=field %}
+    {% endfor %}
+    {% if not hide_submit %}
+        {% if wizard and wizard_url_name %}
+            <div class="row">
+                <div class="col">
+                    {% if wizard.steps.prev %}
+                        <a href="{% url wizard_url_name wizard.steps.prev %}"
+                           class="btn  btn-outline-secondary btn-raised float-left">previous step</a>
+                    {% endif %}
+                    <button {% if submit_disabled %}disabled="disabled"{% endif %} type="submit"
+                            class="btn btn-primary btn-raised float-right">{{ submit_label | default:"Submit" }}</button>
+                </div>
+            </div>
+        {% else %}
+            <button type="submit"
+                    {% if submit_disabled %}disabled="disabled"{% endif %}
+                    class="btn btn-primary btn-raised">{{ submit_label | default:"Submit" }}</button>
+        {% endif %}
+    {% endif %}
+    {% if cancel_button %}
+        <a href="{{ cancel_button }}" class="btn btn-secondary btn-raised float-right">Cancel</a>
+    {% endif %}
+</form>

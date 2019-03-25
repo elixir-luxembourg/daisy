@@ -1,0 +1,10 @@
+{% if entity.comments %}
+    <div class="row">
+        <div class="border-left border-3 border-default card col mt-4">
+            <div class="card-body">
+                <h2 class="card-title">Other Comments</h2>
+                <blockquote>{{ entity.comments }}</blockquote>
+            </div>
+        </div>
+    </div>
+{% endif %}

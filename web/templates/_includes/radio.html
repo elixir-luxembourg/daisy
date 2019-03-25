@@ -1,0 +1,9 @@
+<legend>{{ field.label }}:</legend>
+{% for choice in field %}
+    <div class="radio">
+        <label>
+            {{ choice.tag }}
+            {{ choice.choice_label }}
+        </label>
+    </div>
+{% endfor %}

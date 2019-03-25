@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+
+{% block title %}Logged out{% endblock %}
+
+{% block content %}
+    <div class="jumbotron">
+        <h1 class="display-4">Logged out</h1>
+        <p>You have been successfully disconnected.</p>
+
+        <p><a href="{% url 'dashboard' %}">Go to the homepage</a></p>
+    </div>
+{% endblock %}

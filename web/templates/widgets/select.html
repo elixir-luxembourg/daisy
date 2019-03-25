@@ -1,0 +1,4 @@
+{% include 'django/forms/widgets/select.html' %}
+<a data-toggle="modal" data-post-mode="ajax" data-target="#modal" data-modal-title="Add a new {{ widget.entity_name }}"
+   data-ajax-url="{% url widget.url_name %}"
+   href="#">or add new</a>

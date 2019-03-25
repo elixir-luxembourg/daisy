@@ -1,0 +1,31 @@
+<div class="fallback">
+	<input name="data" type="file" multiple />
+</div>
+
+<script id="dropzone-template" type='text/template'>
+	<li class="list-group-item dz-preview dz-file-preview deletable">
+		<a class="dlink" href="" data-dz-name></a>
+		<div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>
+		<div class="dz-error-message"><span data-dz-errormessage></span></div>
+		<div class="dz-size" data-dz-size></div>
+        <div class="bmd-btn-fab dz-clickable">
+            <a data-toggle="modal" id="btnupdate" class="jsBtn"
+                                    data-target="#modal"
+                                    data-modal-title="Add a existing contact"
+                                    data-ajax-url=""
+                                    class="dropdown-item" type="button" title="Edit Documents">
+                <i class="material-icons">edit</i>
+            </a>
+        </div>
+	</li>
+</script>
+<script type="text/javascript">
+	loadDropzone({
+		files: {{files|safe}},                    // list of files to display
+		config: {{config|safe}},                  // dropzone configuration: http://www.dropzonejs.com/#configuration-options
+		selector: "{{selector}}",	                  // dropzone container selector
+        document_edit: "{{document_edit}}",      // dropzone document edit
+		download_url: "{{download_url}}",           // download url to attach to the element
+		delete_url: "{{delete_url}}"               // onclick deletable event
+	})
+</script>

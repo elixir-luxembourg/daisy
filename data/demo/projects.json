@@ -1,0 +1,40 @@
+[
+    {
+        "acronym": "DAISY-Dev",
+        "title": "Data Information System DAISY Development.",
+        "description": "Development of software to record GDPR-relevant metadata of human data and biosamples used in research.",
+        "start_date": "2018-03-01",
+        "end_date": "2019-09-01",
+        "contacts": [
+            {
+                "first_name": "Alice",
+                "last_name": "White",
+                "role": "Principal_Investigator",
+                "institution": "ELU_I_77"
+            },
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "role": "Principal_Investigator",
+                "institution": "ELU_I_77"
+            },
+            {
+                "first_name": "Jane",
+                "last_name": "Doe",
+                "role": "Researcher",
+                "institution": "ELU_I_77"
+            }
+        ],
+        "has_institutional_ethics_approval": false,
+        "has_national_ethics_approval": false,
+        "national_ethics_approval_notes": "Not needed as it is a software development project. No data collection.",
+        "publications": [
+            {
+                "citation_string": "Provenance-enabled stewardship of human data in the GDPR era. Pinar Alper, Regina Becker, Venkata Satagopam, Christophe Trefois, Valentin Groues, Jacek Lebioda, Yohan Jarosz.  ProvenanceWeek 2018 IPAW Proceedings, London, July 9-10 2018."
+            },
+            {
+                "citation_string": "ELIXIR-Luxembourg: providing sustainability to clinical and translational medicine data for research. Venkata Satagopam, Pinar Alper, Regina Becker, Dietlind Gerloff, Wei Gu, Roland Krause, Jacek Lebioda, Noua Toukourou, Christophe Trefois, Reinhard Schneider. Poster presentations at Intelligent Systems for Molecular Biology 2018, ISMB, Chicago, July 6-10 2018."
+            }
+        ]
+    }
+]

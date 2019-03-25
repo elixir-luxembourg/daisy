@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1 class="display-4">Notifications</h1>
+        </div>
+    </div>
+
+
+    {% if form %}
+    <div class="row mt-4">
+        <div class="card col">
+            <h2 class="card-title">For user</h2>
+            <div class="card-body">
+                {% include '_includes/forms.html' with method='get' %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row mt-4">
+        <div class="card col">
+            <div class="card-body">
+                <h2 class="card-title">Notifications</h2>
+                <div id="form-container" class="card-text">
+                    <table class="table table-borderless table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Action</th>
+                                <th scope="col">Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for n in notifications %}
+                                <tr>
+                                    <td>{{n.verb}}</td>
+                                    <td><a href="{{n.get_absolute_url}}">{{n.content_object}}</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-2"></div>
+        <div class="card pt-4 mt-4 col">
+            {% include '_includes/pagination.html' with page_object=notifications url=submit_url %}
+        </div>
+        <div class="col-2"></div>
+    </div>
+
+{% endblock content %}
+
+

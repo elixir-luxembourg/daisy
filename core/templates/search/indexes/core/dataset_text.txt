@@ -1,0 +1,7 @@
+{{ object.title }}
+{{ object.unique_id }}
+{% for o in object.data_types %}{{o}} {% endfor %}
+{% for o in object.local_custodians.all %}{{o}} {{o}} {% endfor %}
+{{ object.is_published }}
+{{ object.other_external_id }}
+{{ object.project }}

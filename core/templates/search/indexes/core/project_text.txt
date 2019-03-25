@@ -1,0 +1,12 @@
+{{object.acronym}}
+{{object.description}}
+{{object.title}}
+{% for o in object.local_custodians.all %}{{o}} {% endfor %}
+{% for o in object.publications.all %}{{o}} {% endfor %}
+{% for o in object.funding_sources.all %}{{o}} {% endfor %}
+{% for o in object.study_terms.all %}{{o}} {% endfor %}
+{% for o in object.disease_terms.all %}{{o}} {% endfor %}
+{% for o in object.phenotype_terms.all %}{{o}} {% endfor %}
+{% for o in object.gene_terms.all %}{{o}} {% endfor %}
+{% for o in object.contacts.all %}{{o}} {% endfor %}
+{% for o in object.company_personnel.all %}{{o}} {% endfor %}

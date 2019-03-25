@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+
+{% block content_title %}{{ cohort }}{% endblock %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1>{{ cohort }}</h1>
+            <dl>
+                <dt>Cohort Owner:</dt>
+                <dl>{% for contact in cohort.owners.all %}
+                    <span class="badge badge-pill badge-secondary">{{ contact }}</span>
+                {% empty %}
+                    "unknown"
+                {% endfor %}</dl>
+                <dt>Institutes:</dt>
+                <dl>
+                    {% for institute in cohort.institutes.all %}
+                        <span class="badge badge-pill badge-secondary">{{ institute }}</span>
+                    {% empty %}
+                        "unknown"
+                    {% endfor %}
+                </dl>
+        </div>
+    </div>
+
+    {% include '_includes/other_comments.html' with entity=cohort %}
+
+    <div class="row card-deck mt-4">
+        {#    Datasets    #}
+        <div class="card ml-0 mr-0 col-md-12">
+            <div class="card-body">
+                <h2 class="card-title">Data declarations</h2>
+                {% include '_includes/data_declarations_list.html' with entity=cohort %}
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block floating-buttons %}
+    {% if can_edit %}
+        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'cohort_edit' pk=cohort.id %}"><i
+                class="material-icons">edit</i>
+        </a>{% endif %}
+{% endblock %}
+

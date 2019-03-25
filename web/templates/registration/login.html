@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <div class="jumbotron mt-4">
+        <h1 class="display-4">Login</h1>
+        {% include '_includes/forms.html' with submit_label="Login" %}
+    </div>
+{% endblock %}
+

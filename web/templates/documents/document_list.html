@@ -1,0 +1,49 @@
+{% extends 'layout.html' %}
+
+{% block title %}Documents{% endblock %}
+
+{% block content %}
+    <div class="jumbotron mt-4">
+        <h1 class="display-4">Documents</h1>
+    </div>
+
+    {%  if document_list %}
+    <div>
+        <div class="table table-responsive-lg">
+            <table>
+                <caption>List of documents</caption>
+                <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Type</th>
+                      <th scope="col">Location</th>
+                      <th scope="col">Edit</th>
+                    </tr>
+                  </thead>
+                <tbody>
+                    {% for document in document_list %}
+                        <tr>
+                            <th scope="row">{{  forloop.counter }}</th>
+                            <td>{{ document.name }}</td>
+                            <td>{% if document.type %}{{ document.type }}{% else %}-{% endif %}</td>
+                            <td>{% if document.location %}{{ document.location }}{% else %}-{% endif %}</td>
+                            <td><a class="btn btn-raised btn-secondary btn-sm" href="{%  url 'document_edit' document.id %}">Edit</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No documents yet</p>
+    {%  endif %}
+    </div>
+
+{% endblock %}
+
+
+{% block floating-buttons %}
+    <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'document_add' %}"><i
+            class="material-icons">add</i>
+    </a>
+{% endblock %}

@@ -1,0 +1,102 @@
+[
+  {
+    "code": "NRES",
+    "name": "No restrictions",
+    "description": "No restrictions on data use."
+  },
+  {
+    "code": "GRU(CC)",
+    "name": "General Research use and Clinical Care",
+    "description": "For health/medical/biomedical purposes and other biological research, including the study of population origins or ancestry."
+  },
+  {
+    "code": "HMB(CC)",
+    "name": "Health/medical/biomedical Research and Clinical Care",
+    "description": "Use of the data is limited to health/medical/biomedical purposes, does not include the study of population origins or ancestry."
+  },
+  {
+    "code": "DS-[XX](CC)",
+    "name": "Disease-specific Research and Clinical Care.",
+    "description": "Use of the data must be related to [disease]."
+  },
+  {
+    "code": "POA",
+    "name": "Population Origins/Ancestry research",
+    "description": "Use of the data is limited to the study of population origins or ancestry."
+  },
+  {
+    "code": "RS-[XX]",
+    "name": "Other Research-specific restrictions",
+    "description": "Use of the data is limited to studies of [research type] (e.g., pediatric research)."
+  },
+  {
+    "code": "RUO",
+    "name": "Research Use Only",
+    "description": "Use of data is limited to research purposes (e.g., does not include its use in clinical care)."
+  },
+  {
+    "code": "NMDS",
+    "name": "No \"General Methods\" Research",
+    "description": "Use of the data includes methods development research (e.g., development of software or algorithms) ONLY within the bounds of other data use limitations."
+  },
+  {
+    "code": "GSO",
+    "name": "Genetic Studies Only",
+    "description": "Use of the data is limited to genetic studies only (i.e., no research using only the phenotype data)."
+  },
+  {
+    "code": "NPU",
+    "name": "Not-for-profit Use Only",
+    "description": "Use of the data is limited to not-for-profit organizations."
+  },
+  {
+    "code": "PUB",
+    "name": "Publication Required",
+    "description": "Requestor agrees to make results of studies using the data available to the larger scientific community."
+  },
+  {
+    "code": "COL-[XX]",
+    "name": "Collaboration Required",
+    "description": "Requestor must agree to collaboration with the primary study investigator(s)."
+  },
+  {
+    "code": "RTN",
+    "name": "Return data to database/resource",
+    "description": "Requestor must return derived/enriched data to the database/resource."
+  },
+  {
+    "code": "IRB",
+    "name": "Ethics Approval Required",
+    "description": "Requestor must provide documentation of local IRB/REC approval."
+  },
+  {
+    "code": "GS-[XX]",
+    "name": "Geographical Restrictions",
+    "description": "Use of the data is limited to within [geographic region]."
+  },
+  {
+    "code": "MOR-[XX]",
+    "name": "Publication Moratorium/Embargo",
+    "description": "Requestor agrees not to publish results of studies until [date]."
+  },
+  {
+    "code": "TS-[XX]",
+    "name": "Time Limits on use",
+    "description": "Use of data is approved for [x months]."
+  },
+  {
+    "code": "US",
+    "name": "User-Specific restrictions",
+    "description": "Use of data is limited to use by approved users."
+  },
+  {
+    "code": "PS",
+    "name": "Project-Specific restrictions",
+    "description": "Use of data is limited to use within an approved project."
+  },
+  {
+    "code": "IS",
+    "name": "Institution-Specific restrictions",
+    "description": "Use of data is limited to use within an approved institution."
+  }
+]

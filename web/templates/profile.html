@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+{% load staticfiles %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1 class="display-4">User profile</h1>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title">{% block card_title %}Change your notification settings{% endblock %}</h2>
+            <div id="form-container" class="card-text">
+                {% include '_includes/forms.html' %}
+            </div>
+        </div>
+    </div>
+
+
+{% endblock content %}

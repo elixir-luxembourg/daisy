@@ -1,0 +1,101 @@
+{% extends 'layout.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Data Declaration - Edit - {{ data_declaration.title }}{% endblock %}
+
+{% block content %}
+    <div class="jumbotron mt-4">
+        <h1 class="display-4">{% block content_title %}{{ data_declaration.title }}{% endblock %}</h1>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title">{% block card_title %}Edit Data Declaration{% endblock %}</h2>
+            <div class="card-text">
+                <form id="data-declaration-edit-form" class="form col-md-12 nice-selects" method="post" action="{{ submit_url }}"
+                      novalidate>
+                    {% csrf_token %}
+                    {% include '_includes/field.html' with field=form.title %}
+                    <fieldset>
+                        <legend>Data Source</legend>
+                        {% if data_declaration.data_declarations_parents.all %}
+                            {% for dd_parent in data_declaration.data_declarations_parents.all %}
+                                <strong>Derived from:</strong> <a href="{% url 'data_declaration' pk=dd_parent.id %}">{{ dd_parent }}</a>
+                            {% endfor %}
+                        {% endif %}
+                        {% if data_declaration.contract %}
+                            <strong>Covered by contract:</strong>  <a href="{% url 'contract' pk=data_declaration.contract.id %}">{{ data_declaration.contract }}</a>
+                        {% endif %}
+                        <div class="row">
+                            <div class="col">{% include '_includes/field.html' with field=form.cohorts %}</div>
+                            <div class="col">{% include '_includes/field.html' with field=form.comments %}</div>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Characteristics</legend>
+                        <div class="row">
+                            <div class="col">
+                                {% include '_includes/field.html' with field=form.deidentification_method %}
+                                {% include '_includes/field.html' with field=form.data_types_received %}
+                                {% include '_includes/field.html' with field=form.data_types_generated %}
+                            </div>
+                            <div class="col">
+                                {% include '_includes/field.html' with field=form.data_types_notes %}
+
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Subjects</legend>
+                        <div class="row">
+                            <div class="col">
+                                {% include '_includes/field.html' with field=form.has_special_subjects %}
+                                {% include '_includes/field.html' with field=form.subjects_category %}
+                                {% include '_includes/field.html' with field=form.consent_status %}
+                            </div>
+                            <div class="col">
+                                {% include '_includes/field.html' with field=form.special_subjects_description %}
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Use Restrictions</legend>
+                        <div class="row">
+                            <div class="col">
+                                {% include '_includes/field.html' with field=form.end_of_storage_duration %}
+                            </div>
+                            <div class="col">
+                                {% include '_includes/field.html' with field=form.embargo_date %}
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            {{ restriction_formset.management_form }}
+                            <div class="col">
+                                <table class="table  table-condensed">
+                                    <tr>
+                                        <th colspan="3">Other Restrictions</th>
+                                    </tr>
+                                    <tbody>
+                                    {% for restriction_form in restriction_formset.forms %}
+                                    <tr class="formset-row">
+                                            <td>
+                                                {% include '_includes/field.html' with field=restriction_form.restriction_class %}
+                                            </td>
+                                            <td> {% include '_includes/field.html' with field=restriction_form.notes %}</td>
+                                            <td></td>
+                                        <!-- Needed an empty column to prevent jquery formset from placing the remove below the row   -->
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <button type="submit" class="mt-4 btn btn-primary btn-raised">SUBMIT</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

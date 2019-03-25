@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1 class="display-4">DAta Information SYstem</h1>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col">
+            {% include '_includes/card_list.html' with list=last_datasets list_title='Last datasets' url_name='dataset' %}
+        </div>
+        <div class="col">
+            {% include '_includes/card_list.html' with list=last_projects list_title='Last projects' url_name='project' %}
+        </div>
+        <div class="col">
+            {% include '_includes/card_list.html' with list=recently_published_datasets list_title='Recently published datasets' url_name='dataset' %}
+        </div>
+        <div class="col">
+            {% include '_includes/card_list.html' with list=last_granted_accesses list_title='Last granted accesses' url_name='access' %}
+        </div>
+    </div>
+{% endblock content %}

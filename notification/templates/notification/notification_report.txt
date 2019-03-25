@@ -1,0 +1,12 @@
+{% extends 'notification/email.txt' %}
+
+{% block title %}Recent activity since {{ time|date:"SHORT_DATE_FORMAT" }}.{% endblock %}
+
+{% block content %}
+    {% for verb, notifs in notifications.items %}
+* {{verb}}:
+        {% for notif in notifs %}
+        - {{notif.content_object}}: {{ notif.get_full_url }}.
+        {% endfor %}
+    {% endfor %}
+{% endblock %}

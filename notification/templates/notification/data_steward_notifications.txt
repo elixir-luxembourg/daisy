@@ -1,0 +1,12 @@
+{% extends 'notification/email.txt' %}
+
+{% block title %}Dataset that will expire  the {{ time|date:"SHORT_DATE_FORMAT" }}.{% endblock %}
+
+{% block content %}
+{% for dataset, custodians in dataset.items %}
+* {{dataset}} - {{dataset.get_full_url}}:
+{% for custodian in custodians %}
+    - {{custodian}}
+{% endfor %}
+{% endfor %}
+{% endblock %}

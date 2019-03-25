@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+
+
+{% block title %}Dataset - choose type{% endblock %}
+
+{% block content %}
+    <div class="jumbotron mt-4">
+        <h1 class="display-4">{% block content_title %}Choose a dataset type{% endblock %}</h1>
+    </div>
+    <div class="row">
+        {% for type in types %}
+            <a class="card col-md-5 btn-secondary btn btn-raised mb-4 ml-4"
+               href="{% url 'project_dataset_create' pk=project.pk flag=type.value %}">
+                <div class="card-body">
+                    <h2 class="card-title">{% block card_title %}{{ type }}{% endblock %}</h2>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+
+{% endblock %}

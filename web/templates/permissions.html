@@ -1,0 +1,112 @@
+{% extends 'layout.html' %}
+{% load staticfiles %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1 class="display-4">Change permissions on {{ selection }} {{ object.title }}</h1>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="card col">
+            <div class="card-body">
+                <h2 class="card-title">Local custodians</h2>
+                <div id="form-container" class="card-text">
+                    <ul>
+                        {% for user in local_custodians %}
+                            <li>{{user}} {% if user in local_vips %}<span class="badge badge-success">VIP</span>{% endif %}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="card-footer">
+                You can change the local custodians on the <a href="{% url edit_url object.id %}">{{selection}} edit page</a>.
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="card col">
+            <div class="card-body">
+                <h2 class="card-title">{% block card_title %}Add or remove additionnal users{% endblock %}</h2>
+                <div id="form-container" class="card-text">
+                    {% include '_includes/permission_form.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+            <div class="card col">
+                <div class="card-body">
+                    <h2 class="card-title">Permissions</h2>
+                    <div id="form-container" class="card-text">
+                        <dl>
+                            <dt>Admin</dt>
+                            <dd>Grant the right to change permissions on this {{selection}} and grant all other permissions.</dd>
+                            <dt>Delete</dt>
+                            <dd>Grant the right to delete this {{selection}}.</dd>
+                            <dt>Edit</dt>
+                            <dd>Grant the right to edit this {{selection}}.</dd>
+                            <dt>Protected</dt>
+                            <dd>Grant the right to access protected information on this {{selection}}.</dd>
+                            <dt>View</dt>
+                            <dd>Grant the right to view this {{selection}}.</dd>
+                        </dl>
+                    </div>
+                    <h2 class="card-title">Additionnal notes</h2>
+                    <p>
+                        <b>Admin</b> permission is automatically granted for <span class="badge badge-success">VIP</span>.
+                    </p>
+                    <p>
+                        <b>Delete</b>, <b>Edit</b> and <b>View</b> permissions are automatically granted for local custodians.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+
+{% endblock content %}
+
+{% block floating-buttons %}
+    {% if selection == 'project' %}
+        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'project' pk=object.id %}"><i
+                class="material-icons">arrow_back</i>
+        </a>
+    {% elif selection == 'dataset' %}
+        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'dataset' pk=object.id %}"><i
+                class="material-icons">arrow_back</i>
+        </a>
+    {% endif %}
+{% endblock %}
+
+{% block js %}
+
+    <script src="{% static 'js/jquery.formset.js' %}"></script>
+
+    <script type='text/javascript'>
+        $(document).ready(function () {
+            // initialize dynamic formset
+            $('#formset tbody tr').formset({
+                prefix: 'form',                  // The form prefix for your django formset
+                formTemplate: null,              // The jQuery selection cloned to generate new form instances
+                addText: 'add another',          // Text for the add link
+                deleteText: 'remove',            // Text for the delete link
+                addCssClass: 'add-row',          // CSS class applied to the add link
+                deleteCssClass: 'fas fa-trash',    // CSS class applied to the delete link
+                formCssClass: 'dynamic-form',    // CSS class applied to each form in a formset
+                extraClasses: [],                // Additional CSS classes, which will be applied to each form in turn
+                keepFieldValues: '',             // jQuery selector for fields whose values should be kept when the form is cloned
+                added: function (dom) {
+                    $(dom).find('select').select2({width: '100%',});
+                },                     // Function called each time a new form is added
+                removed: null                    // Function called each time a form is deleted
+            });
+            // make select nicer
+            var select2 = $('#form-container select').select2({
+                width: '100%',
+            });
+        });
+
+    </script>
+
+{% endblock js %}

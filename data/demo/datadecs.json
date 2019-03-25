@@ -1,0 +1,44 @@
+[
+    {
+        "dataset": "LCSB Human Data Survey v-1",
+        "title": "Survey Responses",
+        "data_type_notes": "XLS survey files filled in by PIs",
+        "data_types": [
+            "Other"],
+        "has_special_subjects": false,
+        "source_collaboration": {
+            "collab_inst": "ELU_I_77",
+            "collab_pi": "John Doe",
+            "collab_project": "DAISY-Dev",
+            "collab_role": "controller"
+        },
+        "source_notes": "Data is collected from all LCSB PIs working with Human Data.",
+        "use_restrictions": [
+            {
+                "ga4gh_code": "PS",
+                "note": "Use is restricted to projects: DAISY-Dev"
+            }
+        ]
+    },
+	{
+        "dataset": "DAISY LCSB Deployment",
+        "title": "Survey Responses Imported",
+        "data_type_notes": "XLS survey files filled in by PIs are imported in DAISY",
+        "data_types": [
+            "Other"],
+        "has_special_subjects": false,
+        "source_collaboration": {
+            "collab_inst": "ELU_I_77",
+            "collab_pi": "John Doe",
+            "collab_project": "DAISY-Dev",
+            "collab_role": "controller"
+        },
+        "source_notes": "Data is collected from all LCSB PIs working with Human Data.",
+        "use_restrictions": [
+            {
+                "ga4gh_code": "PS",
+                "note": "Use is restricted to projects: DAISY-Dev"
+            }
+        ]
+    }
+]

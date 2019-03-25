@@ -1,0 +1,104 @@
+version: '3'
+
+services:
+    # dummy node image @install time to compile assets
+    node:
+        build:
+            context: ./
+            dockerfile: ./docker/node/Dockerfile
+        volumes:
+            - statics:/static
+    # web app
+    web:
+        build: .
+        expose:
+            - '5000'
+        environment:
+            - DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
+        volumes:
+            - statics:/static
+            - solrdata:/solr
+            - .:/code
+        ports:
+            - "5000:5000"
+        depends_on:
+            - db
+            - node
+            - solr
+            - mq
+        command: gunicorn -w 2 -b :5000 --pid /run/gunicorn.pid elixir_daisy.wsgi
+    # database
+    db:
+        image: postgres:10.1
+        restart: always
+        environment:
+            POSTGRES_PASSWORD: daisy
+            POSTGRES_USER: daisy
+            POSTGRES_DB: daisy
+        ports:
+            - "5433:5432"
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+    # web werver frontend
+    nginx:
+        build: ./docker/nginx
+        restart: always
+        volumes:
+            - statics:/public/static:ro
+        ports:
+            - '80:80'
+            - '443:443'
+        depends_on:
+            - web
+            - node
+    # FTS db
+    solr:
+        build: ./docker/solr
+        ports:
+            - "8983:8983"
+        volumes:
+            - solrdata:/opt/solr/server/solr
+     # rabbit mq
+    mq:
+        image: rabbitmq:3-management
+        restart: "always"
+        ports:
+            - "15672:15672"
+            - "5672:5672"
+
+    # task monitoring
+    flower:
+        image: mher/flower
+        command: --broker=amqp://guest:guest@mq:5672// --broker_api=http://guest:guest@mq:15672/api/
+        ports:
+            - "5555:5555"
+        depends_on:
+            - mq
+    # task runner
+    worker:
+        build: .
+        environment:
+            - DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
+        volumes:
+            - .:/code
+        depends_on:
+            - db
+            - mq
+        command: "celery worker -A elixir_daisy.celery_app --loglevel=DEBUG"
+    # celery beat
+    beat:
+        build: .
+        environment:
+            - DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
+        volumes:
+            - .:/code
+        depends_on:
+            - db
+            - mq
+        command: " celery -A elixir_daisy beat -l debug --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+
+
+volumes:
+    pgdata:
+    statics:
+    solrdata:

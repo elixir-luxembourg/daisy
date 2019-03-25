@@ -1,0 +1,21 @@
+{% if entity.data_declarations.all %}
+    <table class="card-text table table-striped">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Dataset</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for data_declaration in entity.data_declarations.all %}
+            <tr>
+                <td>{{ data_declaration.title }}</td>
+                <td>
+                    <a href="{% url 'dataset' pk=data_declaration.dataset.id %}">
+                        {{ data_declaration.dataset }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

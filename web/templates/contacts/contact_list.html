@@ -1,0 +1,57 @@
+{% extends 'layout.html' %}
+
+{% block title %}Contacts{% endblock %}
+
+{% block content %}
+    <div class="jumbotron mt-4">
+        <h1 class="display-4">Contacts</h1>
+    </div>
+    <div class="card-columns">
+        {% for contact in contact_list %}
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">{{ contact.first_name }} {{ contact.last_name }}</h2>
+                    <ul class="card-text">
+                        <li>
+                            <strong>Type: </strong>
+                            {{ contact.type }}
+                        </li>
+                        {% if contact.email %}
+                            <li>
+                                <strong>E-mail: </strong>
+                                {{ contact.email }}
+                            </li>{% endif %}
+                        {% if contact.address %}
+                            <li>
+                                <strong>Address: </strong>
+                                {{ contact.address }}
+                            </li>{% endif %}
+                        {% if contact.partners %}
+                            <li>
+                                <strong>Affiliations: </strong>
+                                {% for partner in contact.partners.all %}
+                                    <span class="badge badge-pill badge-primary">{{ partner.name }}</span>
+                                {% endfor %}
+                            </li>
+                        {% endif %}
+                        {% if contact.phone %}
+                            <li>
+                                <strong>Phone: </strong>
+                                {{ contact.phone }}
+                            </li>{% endif %}
+                    </ul>
+                    <a href="{% url 'contact' pk=contact.id %}" class="btn btn-primary">Details</a>
+                </div>
+            </div>
+        {% empty %}
+            <p>No partners yet</p>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+
+{% block floating-buttons %}
+    <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'contact_add' %}"><i
+            class="material-icons">add</i>
+    </a>
+{% endblock %}

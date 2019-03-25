@@ -1,0 +1,95 @@
+{% extends 'layout.html' %}
+
+{% block content_title %}{{ partner }}{% endblock %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            {%  if partner.is_published %}
+                <div class="ribbon ribbon-green"><span>Published</span></div>
+            {% else %}
+                <div class="ribbon ribbon-orange"><span>Not Published</span></div>
+            {% endif %}
+            <h1>{{ partner }}</h1>
+            <dl>
+                <dt>Name</dt>
+                <dd>{{ partner.name | default:'unknown' }}</dd>
+                <dt>Acronym</dt>
+                <dd>{{ partner.acronym | default:'-' }}</dd>
+                <dt>Address</dt>
+                <dd>{{ partner.address | default:'unknown' }}</dd>
+                <dt>Is clinical?</dt>
+                {% if  partner.is_clinical %}
+                    <dd>YES</dd>
+                {% else %}
+                    <dd>NO</dd>
+                {% endif %}
+                <dt>Geographic Category</dt>
+                <dd>{{ partner.geo_category | default:'unknown' }}</dd>
+                <dt>Sector Category</dt>
+                <dd>{{ partner.sector_category | default:'unknown' }}</dd>
+                <dt>ELU Accession</dt>
+                <dd>{{ partner.elu_accession | default:'-'  }}</dd>
+            </dl>
+            {% if request.user.is_superuser %}
+                <p class="text-center mt-5">
+                    {% if not partner.is_published %}
+                   <a id="publish" class="btn btn-primary btn-raised"
+                           href="{% url 'publish_partner' pk=partner.id %}">Publish</a>
+                    {% endif %}
+                </p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row card-deck mt-4">
+        {#    Contacts    #}
+        <div class="card ml-0 col-md-6">
+            <div class="card-body">
+                <h2 class="card-title">Contacts at this partner</h2>
+                <ul class="card-text list-group">
+                    {% for contact in partner.contacts.all %}
+                        <li class="list-group-item">
+                            <i class="material-icons">perm_contact_calendar</i><strong>{{ contact.full_name }}</strong>
+                        </li>
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
+        {#    Contracts    #}
+        <div class="card ml-0 col-md-6">
+            <div class="card-body">
+                <h2 class="card-title">Contracts involving this partner</h2>
+                <ul class="card-text list-group">
+                    {% for collab in partner.contracts.all %}
+                        <li class="list-group-item">
+                            <ul style="border:2px solid #a1a1a1;">
+                                <li class="list-group-item">
+                                    <i class="material-icons">link</i><a
+                                        href="{% url 'contract' pk=collab.id %}"><strong>{{ collab.project|truncatechars:100 }}</strong></a>
+                                </li>
+                                <li class="list-group-item">
+                                    {% for custodian in collab.local_custodians.all %}
+                                        {{ custodian|truncatechars:100 }}
+                                    {% endfor %}
+                                </li>
+                            </ul>
+                        </li>
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row card-deck mt-4">
+
+    </div>
+{% endblock %}
+
+
+{% block floating-buttons %}
+    {% if can_edit %}
+        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'partner_edit' pk=partner.id %}"><i
+                class="material-icons">edit</i>
+        </a>{% endif %}
+{% endblock %}

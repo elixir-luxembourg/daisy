@@ -1,0 +1,262 @@
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
+from django.db import transaction, IntegrityError
+from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse_lazy
+from django.views.generic import ListView, CreateView, DetailView, UpdateView
+
+from core import constants
+from core.forms.contract import ContractForm
+from core.forms.dataset import DatasetForm
+from core.forms.document import DocumentForm
+from core.forms.project import ProjectForm, DatasetSelection
+from core.models import Project, Contract
+from core.permissions import permission_required
+from core.permissions.checker import CheckerMixin
+from . import facet_view_utils
+
+FACET_FIELDS = settings.FACET_FIELDS['project']
+from core.models.utils import COMPANY
+
+
+class ProjectListView(ListView):
+    model = Project
+    # template_name = 'projects/project_list.html'
+
+
+def project_list(request):
+    query = request.GET.get('query')
+    order_by = request.GET.get('order_by')
+    projects = facet_view_utils.search_objects(
+        request,
+        filters=request.GET.getlist('filters'),
+        query=query,
+        object_model=Project,
+        facets=FACET_FIELDS,
+        order_by=order_by
+    )
+    return render(request, 'search/search_page.html', {
+        'reset': True,
+        'facets': facet_view_utils.filter_empty_facets(projects.facet_counts()),
+        'query': query or '',
+        'title': 'Projects',
+        'help_text': Project.AppMeta.help_text,
+        'search_url': 'projects',
+        'add_url': 'project_add',
+        'data': {'projects': projects},
+        'results_template_name': 'search/_items/projects.html',
+        'company_name': COMPANY,
+        'order_by_fields': [
+            ('Acronym', 'acronym_l'),
+            ('Start date', 'start_date'),
+            ('Title', 'title_l')
+        ]
+    })
+
+
+class ProjectCreateView(CreateView):
+    model = Project
+    form_class = ProjectForm
+    template_name = 'projects/project_form.html'
+
+    def get_form_kwargs(self):
+        # get user from kwargs and check if user is pi or not
+        # automatically add him to the responsible people if pi
+        kwargs = super().get_form_kwargs()
+        if self.request.user.is_part_of(constants.Groups.VIP) and 'data' in kwargs:
+            data = kwargs['data'].copy()
+            if 'local_custodians' not in data or str(self.request.user.pk) not in data['local_custodians']:
+                data.update({'local_custodians': str(self.request.user.pk)})
+            kwargs.update({'data': data})
+        return kwargs
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        messages.add_message(self.request, messages.SUCCESS, "Project created")
+        if form.instance.legal_documents.all().count() == 0:
+            messages.add_message(self.request, messages.INFO,
+                                 "Project has no document attachments, please upload documents.")
+
+        # assign perm to user
+        self.request.user.assign_permissions_to_project(form.instance)
+
+        # assign perm to responsible peoples
+        for local_custodian in form.instance.local_custodians.all():
+            local_custodian.assign_permissions_to_project(form.instance)
+
+        return response
+
+    def get_success_url(self):
+        return reverse_lazy('project', kwargs={'pk': self.object.id})
+
+
+class ProjectDetailView(DetailView):
+    model = Project
+    form_class = ProjectForm
+    template_name = 'projects/project.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_admin'] = self.request.user.is_admin_of_project(self.object)
+        context['can_edit'] = self.request.user.can_edit_project(self.object)
+        context['company_name'] = COMPANY
+        pk = ContentType.objects.get(model='project').pk
+        context['content_type'] = pk
+        context['object_id'] = self.object.pk
+        # context['document_form'] = DocumentForm(
+        #     dropzone={
+        #         #'selector': '#document_dropzone',
+        #         'datafiles': [d for d in self.object.legal_documents.all()],
+        #         "download_url": reverse_lazy('document_download', args=(0,)),
+        #         "document_edit": reverse_lazy('document_edit', args=(0,)),
+        #         "delete_url": reverse_lazy('document_delete', args=(0,)),
+        #         'config': {
+        #             # "url": reverse_lazy('document_add', content_type=pk, object_id=self.object.pk),
+        #             "maxFilesize": 5 * 1024,  # 10GB
+        #             "paramName": "content",
+        #             "dictDefaultMessage": "Drop files here to upload or click to choose the files you want to upload.",
+        #         }})
+
+        context['datafiles'] = [d for d in self.object.legal_documents.all()]
+
+
+        return context
+
+
+class ProjectEditView(CheckerMixin, UpdateView):
+    model = Project
+    form_class = ProjectForm
+    template_name = 'projects/project_form_edit.html'
+
+    permission_required = constants.Permissions.EDIT
+
+    def get_success_url(self):
+        return reverse_lazy('project', kwargs={'pk': self.object.id})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.add_message(self.request, messages.SUCCESS, "Project updated")
+        if form.instance.legal_documents.all().count() == 0:
+            messages.add_message(self.request, messages.INFO,
+                                 "Project has no document attachments, please upload documents.")
+        return response
+
+
+## DATASET METHODS ##
+
+@permission_required('EDIT', (Project, 'pk', 'pk'))
+def project_dataset_create(request, pk, flag):
+    project = get_object_or_404(Project, pk=pk)
+
+    # render the form
+    if request.method == 'GET':
+        form = DatasetForm()
+        return render(request, 'projects/create_dataset.html', {
+            'project': project,
+            'form': form,
+        })
+    # try to attach the dataset to the project
+    if request.method == 'POST':
+        form = DatasetForm(request.POST)
+        if form.is_valid():
+            with transaction.atomic():
+                try:
+                    dataset = form.save()
+                except IntegrityError as e:
+                    messages.add_message(request, messages.ERROR, e)
+                    return redirect('project', pk=project.pk)
+
+            messages.add_message(request, messages.SUCCESS, 'Dataset created')
+            return redirect('project', pk=project.pk)
+        return render(request, 'projects/create_dataset.html', {
+            'project': project,
+            'form': form,
+        })
+
+
+@permission_required('EDIT', (Project, 'pk', 'pk'))
+def project_dataset_add(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    if request.method == 'GET':
+        form = DatasetSelection()
+        return render(request, 'projects/add_dataset.html', {
+            'project': project,
+            'form': form,
+        })
+    if request.method == 'POST':
+        form = DatasetSelection(request.POST)
+        if form.is_valid():
+            try:
+                dataset = form.cleaned_data['dataset']
+            except IntegrityError as e:
+                messages.add_message(request, messages.ERROR, e)
+                return redirect('project', pk=project.pk)
+
+            messages.add_message(request, messages.SUCCESS, 'Dataset added')
+            return redirect('project', pk=project.pk)
+        return render(request, 'projects/add_dataset.html', {
+            'project': project,
+            'form': form,
+        })
+
+
+@permission_required('EDIT', (Project, 'pk', 'pk'))
+def project_dataset_choose_type(request, pk):
+    """
+    View to choose dataset type to create
+    """
+    project = get_object_or_404(Project, pk=pk)
+    return render(request, 'projects/choose_dataset_type.html', {
+        'project': project,
+    })
+
+
+# CONTRACTS METHODS
+
+
+@permission_required('EDIT', (Project, 'pk', 'pk'))
+def project_contract_create(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    # get the correct form from the flag selected
+    # render the form
+    if request.method == 'GET':
+        form = ContractForm(show_project=False)
+        return render(request, 'projects/create_contract.html', {
+            'project': project,
+            'form': form,
+        })
+    # try to attach the dataset to the project
+    if request.method == 'POST':
+        form = ContractForm(request.POST, show_project=False)
+        if form.is_valid():
+            with transaction.atomic():
+                try:
+                    contract = form.save(commit=False)
+                    contract.project = project
+                    contract.save()
+                    form.save_m2m()
+                except IntegrityError as e:
+                    messages.add_message(request, messages.ERROR, e)
+                    return redirect('project', pk=project.pk)
+
+            messages.add_message(request, messages.SUCCESS, 'Contract created')
+            return redirect('project', pk=project.pk)
+        return render(request, 'projects/create_contract.html', {
+            'project': project,
+            'form': form,
+        })
+
+
+@permission_required('EDIT', (Project, 'pk', 'pk'))
+@permission_required('DELETE', (Contract, 'pk', 'cid'))
+def project_contract_remove(request, pk, cid):
+    contract = get_object_or_404(Contract, pk=cid)
+    contract.delete()
+    return HttpResponse("Contract deleted")

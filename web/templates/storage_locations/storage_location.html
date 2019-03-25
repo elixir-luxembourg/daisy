@@ -1,0 +1,41 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ storagelocation }}{% endblock %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1>{{ storagelocation }}</h1>
+
+            <div class="row">
+                <div class="col">
+                    <dl>
+                        <dt>Backend</dt>
+                        <dd>{{ storagelocation.backend.name }}</dd>
+                        <dt>Location</dt>
+                        <dd>{{ storagelocation.location }}</dd>
+                        <dt>Category</dt>
+                        <dd>{{ storagelocation.category }}</dd>
+                        <dt>Datatype</dt>
+                        <dd>{{ storagelocation.datatype }} </dd>
+                        <dt>Users having access</dt>
+                        <dd>
+                            {% for user in storagelocation.users_with_access.all %}
+                                <span class="badge badge-pill badge-primary">{{ user }}</span>
+                            {% endfor %}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block floating-buttons %}
+    <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'storage_location_edit' pk=storagelocation.id %}"><i
+            class="material-icons">edit</i>
+
+    </a>
+{% endblock %}

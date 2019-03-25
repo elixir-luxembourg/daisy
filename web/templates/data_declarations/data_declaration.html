@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ object }}{% endblock %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1>{{ object.title }}</h1>
+            <div class="row">
+                <div class="col">
+                    <dl>
+                        <dt>Parent Dataset</dt>
+                        <dd><a href="{% url 'dataset' pk=object.dataset.id %}">{{ object.dataset.title }}</a></dd>
+                        {% if object.dataset.project %}
+                            <dt>Project</dt>
+                            <dd>
+                                <a href="{% url 'project' pk=object.dataset.project.pk %}">{{ object.dataset.project }}</a>
+                            </dd>
+                        {% endif %}
+                        <dt>Data Types</dt>
+                        <dd>
+                            {% for data_type in object.data_types %}
+                                <span class="badge badge-pill badge-primary">{{ data_type }}</span>
+                            {% endfor %}
+                        </dd>
+                        <dt>Subject Categories</dt>
+                        <dd>{{ object.subjects_category  | default:"" }}</dd>
+                        <dt>Special Subjects</dt>
+                        <dd>{{ subjects_category.special_subjects | yesno:"yes,no,unknown" }}</dd>
+
+                    </dl>
+                </div>
+                <div class="col">
+                    <dl>
+                        {% if object.contract %}
+                            <dt>Source Contract</dt>
+                            <dd><a href="{% url 'contract' pk=object.contract.id %}">{{ object.contract }}</a></dd>
+                        {% endif %}
+                        {% if object.comments %}
+                            <dt>Source Notes</dt>
+                            <dd>{{ object.comments | default:"" }}</dd>
+                        {% endif %}
+                        <dt>Source Cohort(s)</dt>
+                        <dd>{{ data_declaration.cohorts.all | join:', ' }}</dd>
+
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+{% block floating-buttons %}
+    {% if can_edit %}
+        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'data_declaration_edit' pk=object.id %}"><i
+                class="material-icons">edit</i>
+        </a>{% endif %}
+{% endblock %}

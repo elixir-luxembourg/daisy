@@ -1,0 +1,232 @@
+$.fn.select2.defaults.set("theme", "bootstrap");
+
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+var csrftoken;
+
+$.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+function initDatepickers(elements) {
+    elements.bootstrapMaterialDatePicker(
+        {
+            "time": false
+        }
+    );
+}
+
+function initDatetimepickers(elements) {
+
+    elements.bootstrapMaterialDatePicker({
+        "format": "YYYY-MM-DD H:mm:ss"
+    });
+
+
+}
+
+function initFormsets(elements) {
+
+    elements.formset({
+        addText: 'add new',
+        deleteText: 'remove'
+    });
+}
+
+
+
+$(document).ready(function () {
+
+    csrftoken = Cookies.get("csrftoken");
+    $('.nice-selects select').not('.dummy-select').select2({'width': '100%'});
+
+    $('.ontocomplete').select2({
+        ajax: {
+            url: function (params) {
+                return $(this).attr('data-url');
+                },
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                var query = {
+                    search: params.term,
+                    page: params.page || 1
+                }
+                return query;
+            },
+            cache: true
+        },
+        placeholder: 'Search a term',
+        minimumInputLength: 2
+    });
+
+    initDatepickers($('.datepicker'));
+    initDatetimepickers($('.datetimepicker'));
+    initFormsets($('.formset-row'));
+
+    function _insertParamInURL(key, value) {
+        // https://stackoverflow.com/a/487049
+        key = encodeURI(key);
+        value = encodeURI(value);
+
+        var kvp = document.location.search.substr(1).split('&');
+
+        var i = kvp.length;
+        var x;
+        while (i--) {
+            x = kvp[i].split('=');
+            if (x[0] == key) {
+                x[1] = value;
+                kvp[i] = x.join('=');
+                break;
+            }
+        }
+        if (i < 0) {
+            kvp[kvp.length] = [key, value].join('=');
+        }
+        return kvp.join('&');
+    }
+
+    function _loadModal(modal, url, button, postMode, ajaxRefreshSelector, ajaxRefreshParam, redirectURI, data) {
+        if (data !== undefined) {
+            url = url.split('?')[0];
+            url += '?' + _insertParamInURL(ajaxRefreshParam, data);
+        }
+        modal.find('.modal-body').load(url, function () {
+
+            modal.bootstrapMaterialDesign();
+            initDatepickers(modal.find('.datepicker'));
+            initDatetimepickers(modal.find('.datetimepicker'));
+            initFormsets(modal.find('.formset-row'));
+            modal.find('select').not('.dummy-select').select2({dropdownParent: $('#modal')});
+
+            // if postMode we will submit the form with ajax
+            if (postMode) {
+                var modalForm = modal.find('form');
+                modalForm.submit(function (e) {
+                    // remove is-invalid classes and feedback
+                    modalForm.find(".invalid-feedback").remove();
+                    modalForm.find(".form-control").removeClass('is-invalid');
+                    e.preventDefault();
+                    $.ajax({
+                        url: url,
+                        type: 'post',
+                        dataType: 'json',
+                        data: modalForm.serialize(),
+                        success: function (results) {
+                            if (redirectURI !== undefined) {
+                                window.location.replace(redirectURI);
+                            } else {
+                                var select = button.siblings('select');
+                                modal.modal('toggle');
+                                var pk = results.pk;
+                                var label = results.label;
+                                var newOption = new Option(label, pk, true, true);
+                                select.append(newOption).trigger('change');
+                            }
+                        },
+                        error: function (response) {
+                            var errors = response.responseJSON;
+                            for (var i in errors) {
+                                var input = modalForm.find('[name=' + i + ']');
+                                input.addClass('is-invalid');
+                                input.after($('<div class="invalid-feedback">' + errors[i] + '</div>'));
+                            }
+                        }
+                    });
+
+                });
+            }
+
+            // an action can be trigered via a field on change
+            if (ajaxRefreshSelector !== undefined) {
+                modal.find(ajaxRefreshSelector).on('change', function (evt) {
+                    var data = $(ajaxRefreshSelector).val();
+                    _loadModal(modal, url, button, postMode, ajaxRefreshSelector, ajaxRefreshParam, redirectURI, data);
+                })
+            }
+        });
+    }
+
+
+    // MODAL WINDOWS
+    $('#modal').on('show.bs.modal', function (event) {
+        console.log('REFRESHED')
+
+        var modal = $(this);
+        modal.find('.modal-body').empty();
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var title = button.data('modal-title');
+        var content = button.data('modal-content');
+        var ajaxUrl = button.data('ajax-url');
+        var postMode = button.data('post-mode');
+        var ajaxRefreshSelector = button.data('ajax-refresh-selector');
+        var ajaxRefreshParam = button.data('ajax-refresh-param');
+        var redirectURI = button.data('ajax-redirect-uri');
+        if (ajaxUrl !== undefined) {
+            _loadModal(modal, ajaxUrl, button, postMode, ajaxRefreshSelector, ajaxRefreshParam, redirectURI);
+        } else {
+            modal.find('.modal-body').text(content);
+        }
+
+
+    });
+    // TOOLTIPS
+    $('[data-toggle="tooltip"]').tooltip();
+    // DELETABLE
+    $('.deletable').hover(function () {
+        var url_delete = $(this).data('url');
+        var delete_link = $("<i class='red delete-button material-icons'>delete_forever</i>").data('url', url_delete);
+        delete_link.click(function () {
+            var url_delete = $(this).data('url');
+            var that = $(this);
+            $.ajax({
+                url: url_delete,
+                type: 'DELETE',
+                success: function (result) {
+                    that.parents('.deletable').remove();
+                }
+            });
+        });
+        $(this).append(delete_link)
+    }, function () {
+        $(this).find('.delete-button').remove();
+    });
+    $('.clickable').css('cursor', 'pointer').click(function () {
+        var urlClick = $(this).data('url');
+        var method = $(this).data('method');
+        var appendElement = $(this).data('append-to');
+        var parentElementToRemove = $(this).data('parent-to-remove');
+        var that = $(this);
+        $.ajax({
+            url: urlClick,
+            type: method,
+            success: function (result) {
+                if (parentElementToRemove) {
+                    parentElementToRemove = that.closest(parentElementToRemove);
+                    parentElementToRemove.remove();
+                    return;
+                }
+                if (appendElement) {
+                    appendElement = $(appendElement);
+                    appendElement.empty();
+                    appendElement.append(result);
+                    appendElement.bootstrapMaterialDesign();
+                    initDatepickers(appendElement.find('.datepicker'));
+                    initDatetimepickers(appendElement.find('.datetimepicker'));
+                    initFormsets(appendElement.find('.formset-row'));
+                    appendElement.find("select").not('.dummy-select').select2();
+                }
+            }
+        });
+    });
+});
+

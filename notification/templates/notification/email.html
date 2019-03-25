@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>DAISY</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <style type="text/css">
+        /* CLIENT-SPECIFIC STYLES */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;}
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        h1 {padding: 7px;}
+        /* RESET STYLES */
+        table { border-collapse: collapse !important; }
+        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
+    </style>
+  </head>
+  <body style="background-color: #fafafa; margin: 0 !important; padding: 60px 0 60px 0 !important;">
+    <table border="0" cellspacing="0" cellpadding="0" role="presentation" width="100%">
+      <tr>
+          <td bgcolor="#fafafa" style="font-size: 0;">&​nbsp;</td>
+          <td bgcolor="#fafafa" width="600" style="border-radius: 4px; color: grey; font-family: sans-serif; font-size: 18px; line-height: 28px; padding: 40px 40px;">
+            <article>
+              <h1 style="background-color: #009688; color: #fff; font-size: 32px; font-weight: bold; line-height: 36px; padding: 10px 30px 10px 30px">
+                DAISY - {% block title %}{% endblock %}
+              </h1>
+              <p style="margin: 30px 0 30px 0;">{% block content %}{% endblock %}</p>
+              <p style="background-color: #009688; color: #fff; font-weight: bold; line-height: 36px; padding: 10px 20px 10px 20px;">
+                {% block footer %}
+                This email has been generated from <a href="{{server_url}}">DAISY</a>.
+                You can change your notifications settings in your <a href="{{profile_url}}">profile</a>.
+                {% endblock %}
+              </p>
+            </article>
+          </td>
+          <td bgcolor="#fafafa" style="font-size: 0;">&​nbsp;</td>
+      </tr>
+    </table>
+  </body>
+</html>

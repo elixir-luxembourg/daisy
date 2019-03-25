@@ -1,0 +1,16 @@
+{% extends 'notification/email.html' %}
+
+{% block title %}Recent activity since {{ time|date:"SHORT_DATE_FORMAT" }}.{% endblock %}
+
+{% block content %}
+    {% for verb, notifs in notifications.items %}
+    <ul>
+        <h2>{{verb}}</h2>
+        {% for notif in notifs %}
+            <li><a href="{{ notif.get_full_url }}">{{notif.content_object}}</a></li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+
+
+{% endblock %}

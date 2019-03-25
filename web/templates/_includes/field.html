@@ -1,0 +1,31 @@
+{% load widget_tweaks %}
+
+<div class="form-group {% if field.field.required %}required{% endif %}">
+
+    {% if field.field.widget.input_type == 'checkbox' %}
+        {% include '_includes/checkbox.html' %}
+    {% elif field.field.widget.input_type == 'radio' %}
+        {% include '_includes/radio.html' %}
+    {% else %}
+        <strong>{{ field.label_tag }}</strong>
+        {% if form.is_bound %}
+            {% if field.errors %}
+                {% render_field field class+="form-control is-invalid" %}
+                {% for error in field.errors %}
+                    <div class="invalid-feedback">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            {% else %}
+                {% render_field field class+="form-control is-valid" %}
+            {% endif %}
+        {% else %}
+
+            {% render_field field class+="form-control" %}
+        {% endif %}
+    {% endif %}
+
+    {% if field.help_text %}
+        <div class="text-muted small">{{ field.help_text }}</div>
+    {% endif %}
+</div>

@@ -1,0 +1,18 @@
+{% extends 'notification/email.html' %}
+
+{% block title %}Dataset that will expire  the {{ time|date:"SHORT_DATE_FORMAT" }}.{% endblock %}
+
+{% block content %}
+    <ul>
+        {% for dataset, custodians in dataset.items %}
+        <li>
+            <h2><a href="{{ datasetnotification/templates/notification/data_steward_notifications.html.get_full_url }}">{{dataset}}</a></h2>
+            <ul>
+                {% for custodian in custodians %}
+                    <li>{{custodian}}</a></li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

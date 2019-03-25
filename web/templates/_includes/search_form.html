@@ -1,0 +1,25 @@
+<div class="row">
+    <h1 class="display-4">Search {{title}}</h1>
+</div>
+<div class="row">
+    <div class="col">
+        <form class="form-inline" method="get" action="{% url url %}">
+            <div class="form-group">
+                <label for="query" class="bmd-label-floating">Query</label>
+                <input type='text' class="form-control" name='query' value='{{ query }}'/>
+            </div>
+            <span class="form-group bmd-form-group"> <!-- needed to match padding for floating labels -->
+            <button type="submit" class="btn btn-primary">Search</button>
+        </span>
+        </form>
+    </div>
+    {% if order_by_fields %}
+    <div class="col mr-auto">
+        <div class="btn-group" role="group">
+            {% for field in order_by_fields %}
+                {% orderbylink search_url field %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>

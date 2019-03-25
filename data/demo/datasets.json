@@ -1,0 +1,62 @@
+[
+    {
+        "title": "LCSB Human Data Survey v-1",
+        "local_custodian": [
+            "Alice White",
+            "Jane Doe"
+        ],
+        "project": "DAISY-Dev",
+        "shares": [
+            {
+                "share_inst": "ELU_I_96",
+                "share_notes": "Joe Bloggs"
+            }
+        ],
+        "storage_locations": [
+            {
+                "storage_resource": "atlas_project",
+                "locations": [
+                    "smb://atlas.uni.lux/Data_Protection/Survey/XLS"
+                ],
+                "category": "master",
+                "storage_acl_info": "Alice White and Jane Doe has access to folder."
+            }
+        ]
+    },
+    {
+        "title": "DAISY LCSB Deployment",
+        "local_custodian": [
+            "Alice White",
+            "Jane Doe"
+        ],
+        "project": "DAISY-Dev",
+        "storage_locations": [
+            {
+                "storage_resource": "application",
+                "locations": [
+                    "https://daisy.lcsb.uni.lu"
+                ],
+                "category": "master",
+                "storage_acl_info": "All LCSB staff with an active LDAP account can access."
+            }
+        ]
+    },
+        {
+        "title": "DAISY Demo Deployment",
+        "local_custodian": [
+            "Alice White",
+            "Jane Doe"
+        ],
+        "project": "DAISY-Dev",
+        "storage_locations": [
+            {
+                "storage_resource": "application",
+                "locations": [
+                    "https://daisy-demo.lcsb.uni.lu"
+                ],
+                "category": "master",
+                "storage_acl_info": "This is a demo deployment for external parties. IP Restricted access."
+            }
+        ]
+    }
+]

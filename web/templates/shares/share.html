@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ share }}{% endblock %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1>{{ share }}</h1>
+
+            <div class="row">
+                <div class="col">
+                    <dl>
+                        <dt>Dataset</dt>
+                        <dd><a href="{% url 'dataset' pk=share.dataset.id %}">{{ share.dataset }}</a></dd>
+                        <dt>Partner</dt>
+                        <dd><a href="{% url 'partner' pk=share.partner.id %}">{{ share.partner.name }}</a></dd>
+                        <dt>Access notes</dt>
+                        <dd>{{ share.share_notes | default:'-' }}</dd>
+                        <dt>Granted on</dt>
+                        <dd>{{ share.granted_on | default:'-' }}</dd>
+                        <dt>Grant expires on</dt>
+                        <dd>{{ share.grant_expires_on | default:'-' }}</dd>
+
+                        <dt>Basis of Share (Contract)</dt>
+                        {% if share.contract %}
+                            <dd>
+                            <a href="{% url 'contract' pk=share.contract.id %}">{{ share.contract }}</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block floating-buttons %}
+    {% if can_edit %}
+        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'share_edit' pk=share.id %}"><i
+                class="material-icons">edit</i>
+
+        </a>
+    {% endif %}
+{% endblock %}

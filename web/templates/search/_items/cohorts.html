@@ -1,0 +1,37 @@
+{% for cohort in data.cohorts %}
+    <div class="row">
+        <div class="col-md-9 mb-4 card-item card">
+            <div class="card-body">
+                <h2 class="card-title">
+                    {{ cohort.title }}
+                </h2>
+                <ul class="card-text">
+                        <li>Owners:  {% for contact in cohort.owners %}
+                            <span class="badge badge-pill badge-secondary">{{ contact }}</span>
+                        {% empty %}
+                            "unknown"
+                        {% endfor %}</li>
+                        <li>Institutes: {% for institute in cohort.institutes %}
+                            <span class="badge badge-pill badge-secondary">{{ institute }}</span>
+                        {% empty %}
+                            "unknown"
+                        {% endfor %}</li>
+                        <li>Ethics Confirmation: {% if cohort.ethics_confirmation %}
+                            <i class="material-icons">
+                                check
+                            </i>
+                        {% else %}
+                            "missing"
+                        {% endif %}
+                        </li>
+                </ul>
+                <a href="{% url 'cohort' pk=cohort.pk %}" class="btn btn-primary">Details</a>
+            </div>
+        </div>
+    </div>
+{% empty %}
+    <p>No results</p>
+{% endfor %}
+
+
+

@@ -1,0 +1,67 @@
+{% load widget_tweaks %}
+
+{% for error in form.non_field_errors %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ error }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+{% endfor %}
+<form id="formset" class="form col-md-6" method="post" novalidate>
+    {% csrf_token %}
+
+    {{ formset.non_form_errors.as_ul }}
+
+    {{ formset.management_form }}
+
+
+    <table id="users" class="table table-condensed">
+        <thead>
+            <tr>
+                {% for field in formset.empty_form.visible_fields %}
+                    <th scope="col" class="{% if forloop.first %}col-sm-11{% else %}col-sm-1{% endif %}">{{ field.label|capfirst }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+
+        <tbody>
+            <!-- no permissions already, must put an empty form -->
+            {% if formset.total_form_count == 0 %}
+                <!-- hidden fields -->
+                {% for hidden_field in formset.empty_form.hidden_fields %}
+                    {{ hidden_field }}
+                {% endfor %}
+                <!-- body -->
+                <tr>
+                    {% for field in formset.empty_form.visible_fields %}
+                        <td>
+                            {{ field.errors.as_ul }}
+                            {{ field }}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endif %}
+
+            {% for form in formset %}
+                <!-- hidden fields -->
+                {% for hidden_field in form.hidden_fields %}
+                    {{ hidden_field }}
+                {% endfor %}
+                <!-- body -->
+                <tr>
+                    {% for field in form.visible_fields %}
+                        <td>
+                            {{ field.errors.as_ul }}
+                            {{ field }}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="">
+        <button type="submit" class="btn btn-primary btn-raised">{{ submit_label | default:"Submit" }}</button>
+    </div>
+</form>

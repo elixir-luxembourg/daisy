@@ -1,0 +1,191 @@
+{% extends 'layout.html' %}
+
+{% block content_title %}{{ contract }}{% endblock %}
+{% block head_end %}{{ document_form.media }}{% endblock %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1>{{ contract }}</h1>
+            <div class="row">
+                <div class="col">
+                    <dl>
+                        {% if contract.project %}
+                            <dt>Project:</dt>
+                            <dl><a href="{% url 'project' pk=contract.project.id %}">{{ contract.project }}</a></dl>
+                        {% endif %}
+                        <dt>Local custodians</dt>
+                        <dd>
+                            {% for local_custodian in contract.local_custodians.all %}
+                                <span class="badge badge-pill badge-primary">{{ local_custodian }}</span>
+                            {% endfor %}
+                        </dd>
+                        <dt>{{ company_name }} Roles:</dt>
+                        <dl>{{ contract.company_roles.all | join:", " | default:'-' }}</dl>
+                    </dl>
+                 </div>
+
+                <div class="floating-buttons-absolute">
+                    {% if can_edit %}
+                        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'contract_edit' pk=contract.id %}"><i
+                                class="material-icons">edit</i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {#    PARTNERS   #}
+    <div class="row card-deck mt-4">
+        <div class="card ml-0 mr-0 col-md-12">
+            <div class="card-body">
+                {% if can_edit %}
+                    <div class="ml-1 float-right btn-group">
+                        <a href="{% url 'add_partner_role_to_contract' pk=contract.pk %}"
+                        >
+                            <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button" title="add partner"><i
+                                    class="material-icons">add</i></button>
+                        </a>
+                    </div>
+                {% endif %}
+                <h2 class="card-title">Partners (Signatories)</h2>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Partner</th>
+                        <th>Roles</th>
+                        <th>Contacts</th>
+                        {% if can_edit %}
+                            <th style="width:7em">Actions</th>{% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for partner_role in contract.partners_roles.all %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'partner' pk=partner_role.partner_id %}">{{ partner_role.partner.name }}</a>
+                            </td>
+                            <td>{{ partner_role.roles.all |join:", " }}</td>
+                            <td>
+                                {% for contact in partner_role.contacts.all %}
+                                    <a
+                                            href="{% url 'contact' pk=contact.id %}"><span
+                                            class="badge badge-pill badge-primary">{{ contact.full_name }}</span></a>
+
+                                {% endfor %}
+                            </td>
+                            {% if can_edit %}
+                                <td>
+                                <i title="delete" class="material-icons red clickable" data-method="delete"
+                                   data-parent-to-remove="tr"
+                                   data-url="{% url 'delete_partner_role' pk=partner_role.id %}">delete_forever</i>
+                                </td>
+                            {% endif %}
+                        </tr>
+
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {#    DOCUMENTS    #}
+
+    <div class="row mt-4">
+    <div class="card col-md-12">
+        <div class="card-body">
+            <div class="ml-1 float-right btn-group">
+                <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button" id="adddataset"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="add a dataset">
+                            <i class="material-icons">add</i>
+                        </button>
+                         <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="adddataset">
+
+                            <button data-toggle="modal"
+                                    data-target="#modal"
+                                    data-modal-title="Add a new contact"
+                                    data-ajax-url="{% url 'document_add' object_id=object_id content_type=content_type %}"
+                                    class="dropdown-item" type="button" title="add a new contact">
+                                Create a new Document
+                            </button>
+                        </div>
+            </div>
+            <h2 class="card-title"><span><i class="material-icons">link</i></span> Documents</h2>
+            <table class="table table-striped">
+                <thead></thead>
+                <tbody>
+                    {% for file in datafiles %}
+                        <tr>
+                            <td><a href="{% url 'document_download' pk=file.id %}">{{ file.shortname}}</a></td>
+                            <td><span class="col-xs-4 text-center">size:  {{ file.size | filesizeformat  }}</span></td>
+                              <td>
+                                <a data-toggle="modal" id="btnupdate" class="jsBtn clickable"
+                                        data-target="#modal"
+                                        data-modal-title="Add a existing contact"
+                                        data-ajax-url="{% url "document_edit" pk=file.id %}"
+                                         title="Edit Documents">
+                                <i class="material-icons">edit</i>
+                             </a>
+                              <i title="delete" class="material-icons red clickable" data-method="delete"
+                                           data-parent-to-remove="tr"
+                                           data-url="{% url 'document_delete' pk=file.id  %}">delete_forever</i>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+                </table>
+        </div>
+    </div>
+    </div>
+
+
+    <div class="row card-deck mt-4">
+        <div class="card ml-0 col-md-6">
+            <div class="card-body">
+                <h2 class="card-title">Data declarations covered</h2>
+                {% include '_includes/data_declarations_list.html' with entity=contract %}
+            </div>
+        </div>
+        <div class="card col-md-6 mr-0">
+            <div class="card-body">
+                <h2 class="card-title">Shares</h2>
+                <ul class="card-text list-group">
+                    {% for share in contract.shares.all %}
+                        <li class="list-group-item">
+                            <p class="col-md-5"><a
+                                    href="{% url 'dataset' pk=share.dataset.pk %}">{{ share.dataset }}</a>
+                            </p>
+                            <p class="col-md-6">{{ share.share_notes }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {% include '_includes/other_comments.html' with entity=contract %}
+
+
+{% endblock %}
+
+
+
+
+
+{% block js %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.urlisable').each(function (idx, node) {
+                var text = $(node).text();
+                if (text.indexOf("www.") === 0 || text.indexOf("http://") === 0 || text.indexOf("https://") === 0) {
+                    var data = "<a href='" + text + "' >" + text + "</a>";
+                    $(node).html(data);
+                }
+            });
+        });
+    </script>
+{% endblock js %}

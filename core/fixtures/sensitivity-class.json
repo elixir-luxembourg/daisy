@@ -1,0 +1,18 @@
+[
+  {
+    "code": "Pr-S",
+    "name": "Re-Identifiable, Sensitive"
+  },
+  {
+    "code": "Pnr-S",
+    "name": "Non-Re-Identifiable, Sensitive"
+  },
+  {
+    "code": "Pr-NS",
+    "name": "Re-Identifiable, Non-Sensitive"
+  },
+  {
+    "code": "Pnr-NS",
+    "name": "Non-Re-Identifiable , Non-Sensitive"
+  }
+]

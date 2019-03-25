@@ -1,0 +1,79 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ contact.full_name }}{% endblock %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1>{{ contact.full_name }}</h1>
+
+            <div class="row">
+                <div class="col">
+                    <dl>
+                        <dt>First name</dt>
+                        <dd>{{ contact.first_name }}</dd>
+                        <dt>Last name</dt>
+                        <dd>{{ contact.last_name }}</dd>
+                        <dt>Affiliations</dt>
+                        {% if contact.partners %}
+                            <dd>{% for partner in contact.partners.all %}
+                                <span class="badge badge-pill badge-primary">{{ partner.name }}</span>
+                            {% endfor %}
+                            </dd>
+                        {% endif %}
+                        <dt>Type</dt>
+                        <dd>{{ contact.type }} </dd>
+                    </dl>
+                </div>
+
+                <div class="col">
+                    <dl>
+                        <dt>Email</dt>
+                        <dd><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></dd>
+                        <dt>Address</dt>
+                        <dd>{{ contact.address }}</dd>
+                        <dt>Phone</dt>
+                        <dd>{{ contact.phone }}</dd>
+                    </dl>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        {#    Contracts    #}
+        {% if contact.partners_roles.all %}
+            <div class="card ml-0 col-md-6">
+                <div class="card-body">
+                    <h2 class="card-title">Contracts involving this contact</h2>
+                    <ul class="card-text list-group">
+                        {% for partner_role in contact.partners_roles.all %}
+                            <li class="list-group-item">
+                                <ul style="border:2px solid #a1a1a1;">
+                                    <li class="list-group-item">
+                                        <i class="material-icons">link</i><a
+                                            href="{% url 'contract' pk=partner_role.contract.id %}"><strong>{{ partner_role.contract|truncatechars:200 }}</strong></a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        {% for custodian in partner_role.contract.local_custodians.all %}
+                                            {{ custodian|truncatechars:100 }}
+                                        {% endfor %}
+                                    </li>
+                                </ul>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}
+
+
+{% block floating-buttons %}
+    <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'contact_edit' pk=contact.id %}"><i
+            class="material-icons">edit</i>
+
+    </a>
+{% endblock %}

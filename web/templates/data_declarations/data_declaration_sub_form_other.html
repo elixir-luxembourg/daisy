@@ -1,0 +1,43 @@
+{% load widget_tweaks %}
+
+{% with field=form.comment %}
+    <div class="col-md-12 form-group required" style="width: 100%">
+        {{ field.label_tag }}
+        {% if form.is_bound %}
+            {% if field.errors %}
+                {% render_field field class+="col-md-12 form-control is-invalid" %}
+                {% for error in field.errors %}
+                    <div class="invalid-feedback">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            {% else %}
+                {% render_field field class+="col-md-12 form-control is-valid" %}
+            {% endif %}
+        {% else %}
+            {% render_field field class+="col-md-12 form-control" %}
+        {% endif %}
+        {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+    </div>
+{% endwith %}
+
+<script type="text/javascript">
+    function content_check() {
+        setTimeout(function () {
+            var content = $("textarea[name='comment']").val();
+            if (content !== "") {
+                $("button[type='submit']").removeAttr('disabled');
+            } else {
+                $("button[type='submit']").attr("disabled", "disabled");
+            }
+        }, 100);
+
+    }
+
+    $(document).ready(function () {
+        var textarea = $("textarea[name='comment']");
+        textarea.on('input', content_check)
+    });
+</script>

@@ -1,0 +1,33 @@
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title">{{ list_title }}</h2>
+
+        <ul class="card-text list-group">
+            {% for object in list %}
+                <li class="list-group-item"><a href="{% url url_name pk=object.id %}">{{ object }}</a>
+                </li>
+            {% empty %}
+                <li class="list-group-item">No entry yet</li>
+            {% endfor %}
+        </ul>
+        {% if paginate %}
+            <div class="pagination">
+                <span class="step-links">
+                    {% if list.has_previous %}
+                        <a href="?{{ page_param|default:'page' }}=1">&laquo; first</a>
+                        <a href="?{{ page_param|default:'page' }}={{ list.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ list.number }} of {{ list.paginator.num_pages }}.
+                    </span>
+
+                    {% if list.has_next %}
+                        <a href="?{{ page_param|default:'page' }}={{ list.next_page_number }}">next</a>
+                        <a href="?{{ page_param|default:'page' }}={{ list.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        {% endif %}
+    </div>
+</div>

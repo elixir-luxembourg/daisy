@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+{%  load staticfiles %}
+
+{% block title %}Project - Add{% endblock %}
+
+{% block content %}
+    <div class="jumbotron mt-4">
+        <h1 class="display-4">{% block content_title %}Projects{% endblock %}</h1>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title">{% block card_title %}Add project{% endblock %}</h2>
+            <div class="card-text">
+                {% include '_includes/forms.html' %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{%  block js %}
+    <script src="{% static "js/dropzone.js" %}"></script>
+
+    <script src="{% static "js/form_persist.js" %}"></script>
+    <script src="{% static "js/form_adder.js" %}"></script>
+    <script>
+        restore_form_contents();
+        create_links_to_add_new_items();
+    </script>
+    <script>
+        window.onload = function(){
+            console.log("******");
+        };
+    </script>
+{%  endblock js %}

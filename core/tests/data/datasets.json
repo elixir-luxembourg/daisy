@@ -1,0 +1,175 @@
+[
+    {
+        "local_custodian": [
+            "Igor Teal"
+        ],
+        "title": "ABCD data",
+        "project":  "ABCD",
+        "shares": [
+            {
+                "share_inst": "ELU_I_44",
+                "share_notes": "Melanie Silver"
+            }
+        ],
+        "storage_locations": [
+            {
+                "storage_acl_users": "Igor Teal",
+                "storage_acl_notes":"Test description......",
+                "storage_resource": "Other",
+                "locations": [ "https://someserver.edu/Studies/Gambia", "https://someserver.edu/Studies/Gambia_additional"],
+                "category": "master"
+            }
+        ]
+    },
+    {
+        "local_custodian": [
+            "Joanne Swift"
+        ],
+        "title": "Hypertension data",
+        "project": "Hypertension",
+        "storage_locations": [
+            {
+                "storage_acl_users": "Elgin Gray, Paul Mauve",
+                "storage_resource": "application",
+                "locations": ["RedCap sevrver at http://address"],
+                "category": "master"
+            }
+        ]
+    },
+    {
+        "local_custodian": [
+            "Rob Blue"
+        ],
+        "title": "MDPDP data",
+        "project": "MDPDP",
+        "shares": [
+            {
+                "share_inst": "ELU_I_79",
+                "share_notes": "Feng Xiao"
+            },
+            {
+                "share_inst": "ELU_I_80",
+                "share_notes": "Max Ginger"
+            }
+        ],
+        "storage_locations": [
+            {
+                "storage_acl_users": "Paul Antony",
+                "storage_resource": "Other",
+                "locations": [ "\\\\someserver.edu\\LCSB_HCS\\OperaQEHS", "\\\\someserver.edu\\users\\PA\\PrecisionMedicine","\\\\someserver.edu\\Images\\groups"],
+                "category": "master"
+            },
+            {
+                "storage_resource": "sample-storage",
+                "locations": ["Hospital ABCDFE"],
+                "category": "master"
+            }
+        ]
+    },
+    {
+        "title": "REPO data",
+        "local_custodian": [
+            "Paul Mauve",
+            "Rene Sahoo"
+        ],
+        "storage_acl_info": "Paul Mauve, John Doe",
+        "storage_locations": [
+            {
+                "storage_resource": "lcsb_group_server",
+                "locations": [
+                    "some_server_directory:/work/projects/wgs/cohort"
+                ],
+                "category": "master"
+            }
+        ]
+    },
+    {
+        "title": "PD data",
+        "local_custodian": [
+            "Ali Gator"
+        ],
+        "project": "PD_Project",
+        "shares": [],
+        "storage_acl_info": "All group members have access",
+        "storage_locations": [
+            {
+                "storage_resource": "lcsb_group_server",
+                "locations": [
+                    "\\\\some_server\\GROUP\\Projects\\SUB_FOLDER",
+                    "\\\\some_server\\GROUP\\General"
+                ],
+                "category": "master"
+            },
+            {
+                "storage_resource": "Other",
+                "locations": [
+                    "this server is backed-up by IT"
+                ],
+                "category": "backup"
+            },
+            {
+                "storage_resource": "atlas_personal",
+                "locations": [
+                    "\\\\some_server\\users\\first.user",
+                    "\\\\some_server\\users\\second.user ",
+                    "\\\\some_server\\users\\third.user",
+                    "\\\\some_server\\users\\fourth.user",
+                    "\\\\some_server\\users\\fifth.user",
+                    "\\\\some_server\\users\\sixth.user",
+                    "\\\\some_server\\users\\seventh.user",
+                    "\\\\some_server\\users\\eighth.user"
+                ],
+                "category": "copy"
+            },
+            {
+                "storage_resource": "lcsb_laptop",
+                "locations": [
+                    "first.user",
+                    "second.user",
+                    "third.user",
+                    "fourth.user",
+                    "fifth.user",
+                    "sixth.user",
+                    "seventh.user",
+                    "eighth.user"
+                ],
+                "category": "copy"
+            },
+            {
+                "storage_resource": "External Storage  (e.g. Hard disk, DVD)",
+                "locations": [
+                    "first.user",
+                    "second.user",
+                    "third.user",
+                    "fourth.user",
+                    "fifth.user",
+                    "sixth.user",
+                    "seventh.user",
+                    "eighth.user"
+                ],
+                "category": "copy"
+            },
+            {
+                "storage_resource": "Owncloud",
+                "locations": [
+                    "first.user",
+                    "second.user",
+                    "third.user",
+                    "fourth.user",
+                    "fifth.user",
+                    "sixth.user",
+                    "seventh.user",
+                    "eighth.user"
+                ],
+                "category": "copy"
+            },
+            {
+                "storage_resource": "sample-storage",
+                "locations": [
+                    "Hospital/Institute Floor X Cabinet Y"
+                ],
+                "category": "master"
+            }
+        ]
+    }
+]

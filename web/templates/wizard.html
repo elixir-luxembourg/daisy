@@ -1,0 +1,49 @@
+{% extends 'layout.html' %}
+{% load i18n %}
+
+{% block head_end %}
+    {{ wizard.form.media }}
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="card col-3">
+        <div class="card-body">
+            <ul class="timeline">
+                <h2 class="card-title">Wizard steps</h2>
+                {% for step in wizard.steps.all %}
+                    <li class="card-text timeline-step {% if wizard.steps.current == step %}timeline-current{% endif %}"><a href="{% url wizard.url_name step %}">{{step}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-9">
+        <form action="" method="post" class="form col-md-12 nice-selects">{% csrf_token %}
+            <table>
+                {{ wizard.management_form }}
+                    {% if wizard.form.forms %}
+                        {{ wizard.form.management_form }}
+                        {% for form in wizard.form.forms %}
+                            <div class="jumbotron mt-4">
+                                <h1 class="display-4">{{form.Meta.heading}}</h1>
+                                <p class="text-muted">{{form.Meta.heading_help}}</p>
+                            </div>
+                            {% include '_includes/forms.html' with form=form %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="jumbotron mt-4">
+                            <h1 class="display-4">{{form.Meta.heading}}</h1>
+                            <p class="text-muted">{{form.Meta.heading_help}}</p>
+                        </div>
+                        {% include '_includes/forms.html' with form=wizard.form wizard_url_name=wizard.url_name %}
+                    {% endif %}
+            </table>
+        </form>
+        <hr/>
+        <a href="{% url wizard.url_name|slice:':-5' %}?reset=true{% if querystring %}&{{querystring}}{% endif %}" class="btn btn-danger btn-raised float-right">reset wizard</a>
+    </div>
+</div>
+{% endblock %}
+
+

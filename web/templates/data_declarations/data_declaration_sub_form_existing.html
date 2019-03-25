@@ -1,0 +1,65 @@
+{% load widget_tweaks %}
+
+<div class="mb-5">
+    {% with field=form.query %}
+        <div class="col-md-12 form-group required" style="width: 100%">
+            {{ field.label_tag }}
+            {% if form.is_bound %}
+                {% if field.errors %}
+                    {% render_field field class+="col-md-12 form-control is-invalid" %}
+                    {% for error in field.errors %}
+                        <div class="invalid-feedback">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    {% render_field field class+="col-md-12 form-control is-valid" %}
+                {% endif %}
+            {% else %}
+                {% render_field field class+="col-md-12 form-control" %}
+            {% endif %}
+            {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+            {% endif %}
+        </div>
+    {% endwith %}
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var emptyOption = $('<option></option');
+        var selectQuery = $("select[name='query']");
+        selectQuery.prepend(emptyOption).select2({
+            placeholder: "try searching by cohort, project, PI name.",
+            ajax: {
+                url: '{% url 'data_declarations_autocomplete' %}',
+                dataType: 'json',
+                processResults: function (response) {
+                    return {
+                        "results": $.map(response.results, function (data) {
+                            var parts = [];
+                            parts.push('Project: ' + data.project);
+                            parts.push('title: ' + data.title);
+                            if (data.cohorts !== null) {
+                                parts.push('cohort(s): ' + data.cohorts.join(", "));
+                            }
+                            parts.push('responsible: ' + data.local_custodians.join(", "));
+                            if (data.data_types !== null) {
+                                parts.push('datatype(s): ' + data.data_types.join(", "));
+                            }
+                            var text = parts.join(", ");
+
+                            return {
+                                id: data.id,
+                                text: text
+                            };
+                        })
+                    };
+                }
+            }
+        }).change(function () {
+            $("button[type='submit']").removeAttr('disabled');
+        });
+    });
+</script>

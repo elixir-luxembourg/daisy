@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ access }}{% endblock %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1>{{ share }}</h1>
+
+            <div class="row">
+                <div class="col">
+                    <dl>
+                        <dt>Defined on Dataset</dt>
+                        <dd><a href="{% url 'dataset' pk=access.dataset.pk %}">{{ access.dataset }}</a></dd>
+                        <dt>Defined on locations</dt>
+                        <dd>
+                            {% for loc in access.defined_on_locations.all %}
+                                <span class="badge badge-pill badge-secondary">{{ loc.cast.display }}</span>
+                            {% empty %}
+                                "unknown"
+                            {% endfor %}
+                        </dd>
+                        <dt>Remarks</dt>
+                        <dd>{{ access.access_notes }}</dd>
+                        <dt>Accessing Project</dt>
+                        <dd>{{ access.project | default:'unknown' }}</dd>
+                        <dt>Access Granted On</dt>
+                        <dd>{{ access.granted_on | default:'unknown' }}</dd>
+                        <dt>Access Expires On</dt>
+                        <dd>{{ access.grant_expires_on | default:'unknown' }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

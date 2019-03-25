@@ -1,0 +1,6 @@
+{{ object.title }}
+{{ object.comments }}
+{{ object.ethics_confirmation }}
+{% for o in object.owners.all %}{{o}} {% endfor %}
+{% for o in object.institutes.all %}{{o}} {% endfor %}
+

@@ -1,0 +1,88 @@
+[
+  {
+    "elu_accession": "ELU_C_1",
+    "title": "LuxPARK",
+    "owners": [
+      "Rejko Kr\u00fcger"
+    ],
+    "comments": "HELP-PD will establish a state-of-the-art cohort project of patients with parkinsonism in Luxembourg to identify predictive and progression markers of the disease.  Thereby this project provides a unique infrastructure and resource for innovative clinical research in Luxembourg. The cohort program integrates an informative design (patient cohorts as well as risk cohorts in Phase II), a detailed neurological examination and structured assessment of epidemiological, neuropsychological and other clinical features, a comprehensive collection of biosamples and an integrated, anonymized data repository with web-based access. Initially, a cross-sectional assessment aimed at all diagnosed PD cases in Luxembourg will be performed, establishing a foundation for the PD registry. Subsequently, patients with PD will be followed up longitudinally.",
+    "institutes": [
+      "ELU_I_77",
+      "ELU_I_9",
+      "ELU_I_1",
+      "ELU_I_79"
+    ]
+  },
+  {
+    "elu_accession": "ELU_C_2",
+    "title": "MUST (Diabetes MUltiplex family STudy)",
+    "owners": [
+      "Carine de Beaufort"
+    ],
+    "comments": "The MUST study (Diabetes MUltiplex family STudy) is initiated by the Personalised Medicine Consortium of Luxembourg in an effort to bring together clinicians and researchers to drive clinical innovation that ultimately benefits diabetes patients.",
+    "institutes": [
+      "ELU_I_9",
+      "ELU_I_77",
+      "ELU_I_1"
+    ]
+  },
+  {
+    "elu_accession": "ELU_C_3",
+    "title": "COSMIC (Colonisation, Succession and Evolution of Human Gastrointestinal Microbiome from Birth to Infancy)",
+    "owners": [
+      "Carine de Beaufort"
+    ],
+    "comments": "COSMIC will look more precisely at how the gut microflora develops immediately after birth and how this may influence the development of diabetes later in life.  For this study, the genetics and bacterial populations of healthy neonates and neonates at high risk to develop adult metabolic disease (e.g. diabetes) due to family history or low birth weight will be compared to those of their mothers. Information gained from these studies could provide the basis for later interventional studies looking at the modification of nutrition and the use of bacterial supplements in at-risk groups.",
+    "institutes": [
+      "ELU_I_9",
+      "ELU_I_77",
+      "ELU_I_1"
+    ]
+  },
+  {
+    "elu_accession": "ELU_C_4",
+    "title": "DeNoPa (De Novo Parkinson Longitudinal Study)",
+    "owners": [
+      "Brit Mollenhauer"
+    ],
+    "comments": "DeNoPa study is led by Prof. Britt Mollenhauer at Paracelsus Elena Hospital in Kassel. ...",
+    "institutes": [
+      "ELU_I_51"
+    ]
+  },
+  {
+    "elu_accession": "ELU_C_5",
+    "title": "TREND (T\u00fbbinger evaluation of Risk factors for Early detection of NeuroDegeneration.)",
+    "owners": [
+      "Daniela Berg"
+    ],
+    "comments": "The occurrence of specific symptoms that allow the clinical diagnosis of Parkinson's and Alzheimer's disease is preceded by a long prodromal phase in which the neurodegenerative process leads to substantial neuronal loss. To enable earlier intervention or even neuroprotective therapy it is essential to identify, characterize and validate risk and prodromal markers for Parkinson’s and Alzheimer’s disease. Approx. 1200 individuals with a specific risk profile aged over 50 years at baseline are biannually assessed by a comprehensive, quantitative assessment battery to meet these aims.",
+    "institutes": [
+      "ELU_I_61"
+    ]
+  },
+  {
+    "elu_accession": "ELU_C_6",
+    "title": "ADNI (Alzheimer's Disease Neuroimaging Initiative.)",
+    "comments": "...TBD...",
+    "institutes": [
+      "ELU_I_84"
+    ]
+  },
+  {
+    "elu_accession": "ELU_C_7",
+    "title": "PPMI (Partkinsons Progressive Markers Inititative Study Cohort.)",
+    "comments": "...TBD...",
+    "institutes": [
+      "ELU_I_85"
+    ]
+  },
+  {
+    "elu_accession": "ELU_C_8",
+    "title": "Supercentenarians (Betterhumans Inc. Supercentenarians Research Study)",
+    "comments": "...TBD...",
+    "institutes": [
+      "ELU_I_54"
+    ]
+  }
+]

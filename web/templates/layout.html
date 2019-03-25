@@ -1,0 +1,88 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Material Design for Bootstrap fonts and icons -->
+    <link rel="stylesheet" href="{% static "css/gfonts.css" %}">
+
+    <!-- Material Design for Bootstrap CSS -->
+    <link href="{% static "vendor/node_modules/select2/dist/css/select2.min.css" %}" rel="stylesheet"/>
+    <link href="{% static "vendor/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css" %}"
+          rel="stylesheet"/>
+    <link href="{% static "vendor/node_modules/select2-bootstrap-theme/dist/select2-bootstrap.min.css" %}"
+          rel="stylesheet"/>
+    <link href="{% static 'css/daisy.css' %}" rel="stylesheet" type="text/css"/>
+    {% block head_end %}{% endblock %}
+    <title>DAISY</title>
+</head>
+<body>
+
+{% block navbar %}
+    {% include 'navbar.html' %}
+{% endblock %}
+{% block messages %}
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <h4>{{ message.tags | title }}</h4>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
+{% block container %}
+    <div class="{% block containerclass %}container{% endblock containerclass %}">
+        {% block content %}{% endblock %}
+    </div>
+    <div class="floating-buttons">
+        {% block floating-buttons %}
+        {% endblock %}
+    </div>
+{% endblock %}
+<!-- Modal -->
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="{% static "vendor/node_modules/jquery/dist/jquery.min.js" %}"></script>
+<script src="{% static "vendor/node_modules/jsrender/jsrender.min.js" %}"></script>
+<script src="{% static "vendor/node_modules/popper.js/dist/umd/popper.min.js" %}"></script>
+<script src="{% static "vendor/node_modules/bootstrap-material-design/dist/js/bootstrap-material-design.min.js" %}"></script>
+<script src="{% static "vendor/node_modules/select2/dist/js/select2.full.min.js" %}"></script>
+<script src="{% static "vendor/node_modules/moment/min/moment-with-locales.min.js" %}"></script>
+<script src="{% static "vendor/node_modules/js-cookie/src/js.cookie.js" %}"></script>
+<script src="{% static "vendor/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js" %}"></script>
+
+<script src="{% static "js/daisy.js" %}"></script>
+<script src="{% static "js/jquery.formset.js" %}"></script>
+<script>$(document).ready(function () {
+    $('body').bootstrapMaterialDesign();
+});</script>
+{% block js %}
+{% endblock js %}
+</html>

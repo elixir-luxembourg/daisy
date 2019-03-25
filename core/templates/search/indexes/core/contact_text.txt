@@ -1,0 +1,4 @@
+{{object.first_name}}
+{{object.last_name}}
+{{object.type}}
+{% for p in object.partners.all %}{{p}} {% endfor %}

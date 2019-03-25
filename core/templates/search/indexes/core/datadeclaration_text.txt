@@ -1,0 +1,20 @@
+{% for o in object.dataset.local_custodians.all %}{{o}} {{o}} {% endfor %}
+{{ object.title }}
+{{ object.unique_id }}
+{{ object.comments }}
+{{ object.consent_status }}
+{% for o in object.data_types_generated.all %}{{o}} {% endfor %}
+{% for o in object.data_types_received.all %}{{o}} {% endfor %}
+{{ object.deidentification_method }}
+{{ object.embargo_date }}
+{% for o in object.cohorts.all %}{{o}} {% endfor %}
+{{ object.dataset.project }}
+{{ object.dataset.local_custodians.all | join:" " }}
+{{ object.end_of_storage_duration }}
+{{ object.has_special_subjects }}
+{{ object.other_external_id }}
+{{ object.share_category }}
+{{ object.special_subjects_description }}
+{{ object.subjects_category }}
+{{ object.data_types_notes }}
+{% for o in object.use_restrictions.all %}{{o}} {% endfor %}

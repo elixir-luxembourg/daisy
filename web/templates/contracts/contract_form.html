@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+
+{% block title %}Contract - Add{% endblock %}
+
+{% block content %}
+    <div class="jumbotron mt-4">
+        <h1 class="display-4">{% block content_title %}Contracts{% endblock %}</h1>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title">{% block card_title %}Add contract{% endblock %}</h2>
+            <div class="card-text">
+                {% include '_includes/forms.html' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+
+{% block title %}Contracts{% endblock %}
+
+{% block content %}
+    <div class="jumbotron mt-4">
+        <h1 class="display-4">Contracts</h1>
+    </div>
+    <div class="d-flex flex-wrap w-100">
+        {% for contract  in  contract_list %}
+            <div class="card card-item m-2">
+                <div class="card-body">
+                    <h2 class="card-title">
+                        <strong>{{ contract }}</strong>
+                    </h2>
+                    <ul class="card-text">
+                        {% if contract.contact %}
+                            <li><strong>PI:</strong> {{ contract.contact.full_name }}</li>
+                        {% endif %}
+                        <li><strong>Partner:</strong> {{ contract.partner.name }}</li>
+                    </ul>
+                    <a href="{% url 'contract' pk=contract.id %}" class="btn btn-primary">Details</a>
+                </div>
+            </div>
+        {% empty %}
+            <p>No contracts yet</p>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+
+{% block floating-buttons %}
+    <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'contract_add' %}"><i
+            class="material-icons">add</i>
+    </a>
+{% endblock %}

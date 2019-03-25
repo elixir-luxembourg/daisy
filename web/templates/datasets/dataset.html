@@ -1,0 +1,292 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ dataset.title }}{% endblock %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col" style="position:relative;">
+            {% if dataset.is_published %}
+                <div class="ribbon ribbon-green"><span>Published</span></div>
+            {% else %}
+                <div class="ribbon ribbon-orange"><span>Not Published</span></div>
+            {% endif %}
+            <h1>{{ dataset.title }}</h1>
+            <div class="row">
+                <div class="col">
+                    <dl>
+                        <dt>Local custodians</dt>
+                        <dd>
+                            {% for local_custodian in dataset.local_custodians.all %}
+                                <span class="badge badge-pill badge-primary">{{ local_custodian }}</span>
+                            {% endfor %}
+                        </dd>
+
+                        {% if dataset.project %}
+                            <dt>Project</dt>
+                            <dd>
+                                <a href="{% url 'project' pk=dataset.project.pk %}">{{ dataset.project }}</a>
+                            </dd>
+                        {% endif %}
+                    </dl>
+                </div>
+
+                <div class="col">
+                    <dl>
+                        <dt>Added on</dt>
+                        <dd>{{ dataset.added }}</dd>
+                        <dt>Last edit</dt>
+                        <dd>{{ dataset.updated }}</dd>
+                    </dl>
+
+                </div>
+                <div class="floating-buttons-absolute">
+                    {% if is_admin %}
+                        <a class="btn btn-default bmd-btn-fab float-right"
+                           href="{% url 'permission_dataset' pk=dataset.id %}"><i
+                                class="material-icons">visibility</i>
+
+                        </a>
+                    {% endif %}
+                    {% if can_edit %}
+                        <a class="btn btn-primary bmd-btn-fab float-right"
+                           href="{% url 'dataset_edit' pk=dataset.id %}"><i
+                                class="material-icons">edit</i>
+
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if request.user.is_superuser %}
+                <p class="text-center mt-5">
+                    {% if dataset.is_published %}
+                        <button id="unpublish" class="btn btn-danger btn-raised">Unpublish</button>
+                    {% else %}
+                        <button id="publish" class="btn btn-primary btn-raised">Publish</button>
+                    {% endif %}
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% include '_includes/other_comments.html' with entity=dataset %}
+
+
+    <div class="row mt-4">
+        {#    DECLARATIONS      #}
+        <div class="card col ml-0 mr-0">
+            <div class="card-body">
+                {% if can_edit %}
+                    <div class="ml-1 float-right btn-group">
+                        <a href="{% url 'data_declarations_add' pk=dataset.id %}"
+                           class="btn btn-default bmd-btn-fab bmd-btn-fab-sm" title="add a data declaration">
+                            <i class="material-icons">add</i>
+                        </a>
+                    </div>
+                {% endif %}
+                <h2 class="card-title">Data declarations </h2>
+
+                {% if dataset.data_declarations.all %}
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Cohort</th>
+                            <th>Obtained from</th>
+                            <th>Datatypes</th>
+                            <th>Special subjects</th>
+                            <th>Storage end</th>
+                            {% if can_edit %}
+                                <th style="width:7em">Actions</th>{% endif %}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for data_declaration in dataset.data_declarations.all %}
+                            <tr>
+                                <td> <a href="{% url 'data_declaration' pk=data_declaration.id %}"> <strong>{{ data_declaration.title }}</strong></a></td>
+                                <td>{{ data_declaration.cohorts.all | join:', ' }}</td>
+                                <td>{{ data_declaration.partner }}</td>
+                                <td>{%if data_declaration.data_types  %}{{ data_declaration.data_types | join:', ' }} {% else %}<p class="alert-error"> missing </p>{% endif %}</td>
+                                <td>{{ data_declaration.special_subjects | yesno:"yes,no,unknown" }}</td>
+                                <td>{{ data_declaration.end_of_storage_duration  | default:"" }}</td>
+                                {% if can_edit %}
+                                    <td>
+                                        <a href="{% url 'data_declaration_edit' pk=data_declaration.id %}"
+                                           title="edit"><i class="material-icons">edit</i></a>
+
+                                        <a href="{% url 'data_declarations_duplicate' pk=data_declaration.id %}"
+                                           title="duplicate"><i
+                                                class="orange material-icons">library_add</i></a>
+                                        <i title="delete" class="material-icons red clickable" data-method="delete"
+                                           data-parent-to-remove="tr"
+                                           data-url="{% url 'data_declarations_delete' pk=data_declaration.id %}">delete_forever</i>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div id="edit-declaration-form"></div>
+                {% else %}
+                    <p class="text-center text-danger"><br/><em>Dataset is empty!</em></p>
+                    <div class="arrow-click"><p>Click here to declare data</p>
+                        <p class="arrow-right"><i class="material-icons">
+                            arrow_right_alt
+                        </i></p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row card-deck mt-4">
+
+
+        {#    DATA FILES    #}
+
+        <div class="card with-max-height col-md-6 ml-0">
+            <div class="card-body">
+                {% if can_edit %}
+                    <div class="ml-1 float-right btn-group">
+                        <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button"
+                                id="adddatafile"
+                                title="add a data file"
+                                data-toggle="modal"
+                                data-target="#modal"
+                                data-modal-title="Add a new data file"
+                                data-ajax-url="{% url 'datalocation_add' pk=dataset.id %}"
+                                data-ajax-refresh-selector="#storage-backend"
+                                data-ajax-refresh-param='backend'
+                                data-post-mode="true"
+                                data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
+                        >
+                            <i class="material-icons">add</i>
+                        </button>
+                    </div>
+                {% endif %}
+                <h2 class="card-title">Storage Locations</h2>
+                <ul class="card-text list-group">
+                    {% for file in dataset.data_locations.select_subclasses %}
+                        {% if can_edit %}
+                            <li class="list-group-item deletable"
+                                data-url="{% url 'datalocation_remove' dataset_pk=dataset.id data_pk=file.id %}">
+                                <a href="{% url 'datalocation' pk=file.id %}"><strong>{{ file.category |truncatechars:80 }}</strong> {{ file.cast.display |truncatechars:80 }}
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="list-group-item">
+                                <a href="{% url 'datalocation' pk=file.id %}"><strong>{{ file.category |truncatechars:80 }}</strong> {{ file.cast.display |truncatechars:80 }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
+
+        {#    (INTERNAL) ACCESS GIVEN TO DATA FILES     #}
+
+        <div class="card with-max-height col-md-6 mr-0">
+            <div class="card-body">
+                {% if can_edit %}
+                    <div class="ml-1 float-right btn-group">
+                        <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button"
+                                id="addaccessspec"
+                                title="add access specification"
+                                data-toggle="modal"
+                                data-target="#modal"
+                                data-modal-title="Add new access specification"
+                                data-ajax-url="{% url 'access_add' dataset_pk=dataset.id %}"
+                                data-post-mode="true"
+                                data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
+                        >
+                            <i class="material-icons">add</i>
+                        </button>
+                    </div>
+                {% endif %}
+                <h2 class="card-title">Accesses</h2>
+                <ul class="card-text list-group">
+                    {% for access in dataset.accesses.all %}
+                        <li {% if can_edit %} class="list-group-item deletable"
+                                              data-url="{% url 'access_remove' dataset_pk=dataset.id access_pk=access.id %}" {% else %}
+                                              class="list-group-item"  {% endif %}>
+                            <ul>
+                                <li class="list-group-item">
+                                    <a href="{% url 'access' pk=access.id %}"><strong>{{ access.access_notes|truncatechars:100 }}</strong></a>
+                                </li>
+                                <li class="list-group-item" style="border:2px solid #a1a1a1;">
+                                    {{ access.display_locations |truncatechars:100 }}
+                                </li>
+                            </ul>
+                        </li>
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row  mt-4">
+        {#    EXTERNAL SHARES OF DATASET     #}
+        <div class="card col-md-12 mr-0">
+            <div class="card-body">
+                {% if can_edit %}
+                    <div class="ml-1 float-right btn-group">
+                        <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button"
+                                id="addshare"
+                                title="add a share"
+                                data-toggle="modal"
+                                data-target="#modal"
+                                data-modal-title="Add a share"
+                                data-ajax-url="{% url 'dataset_share_add' dataset_pk=dataset.id %}"
+                                data-ajax-refresh-selector="#partner-select"
+                                data-ajax-refresh-param='partner'
+                                data-post-mode="true"
+                                data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
+                        >
+                            <i class="material-icons">add</i>
+                        </button>
+                    </div>
+                {% endif %}
+                <h2 class="card-title">Shares</h2>
+
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Partner</th>
+                        <th>Granted On</th>
+                        <th>Notes</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for share in dataset.shares.all %}
+                        <tr>
+                            <td> <a href="{% url  'share' pk=share.pk %}"> <strong>{{ share.partner.name }}</strong></a></td>
+                            <td>{{ share.granted_on | default:"-" }}</td>
+                            <td>{{ share.share_notes  | default:"-" }}</td>
+                            <td>
+                                {% if can_edit %}
+                                    <a href="{% url 'share_edit' pk=share.id %}"
+                                       title="edit"><i class="material-icons">edit</i></a>
+                                    <i class="red material-icons clickable" data-method="delete"
+                                       data-parent-to-remove="tr"
+                                       data-url="{% url 'dataset_share_remove' dataset_pk=dataset.id share_pk=share.id %}">delete_forever</i>
+                                {% endif %}
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+
+{% endblock %}
+
+

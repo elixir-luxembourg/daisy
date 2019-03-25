@@ -1,0 +1,20 @@
+{% for contract in contracts %}
+    <tr>
+        <td>
+            <div class="radio"><label><input type="radio" name="contract" value="{{ contract.id }}"></label>
+            </div>
+        </td>
+        <td>{{ contract.local_custodians.all | join:', ' }}</td>
+        <td>{{ contract.project }}</td>
+        <td>{{ contract.partners.all | join:', ' }}</td>
+        <td>{{ contract.contacts.all | join:', ' |default:"" }}</td>
+    </tr>
+{% endfor %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("input[name='contract']").change(function () {
+            $("button[type='submit']").removeAttr('disabled');
+        });
+    });
+</script>

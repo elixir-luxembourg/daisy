@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+
+{% block title %}Data declaration - Add{% endblock %}
+
+{% block content %}
+    <div class="jumbotron mt-4">
+        <h1 class="display-4">{% block content_title %}Data declaration{% endblock %}</h1>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title">{% block card_title %}Add data declaration{% endblock %}</h2>
+            <div class="card-text">
+                {% include '_includes/forms.html' with submit_disabled=True half=False %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>$(document).ready(function () {
+        $('input[type=radio][name="type"]').change(function () {
+            var value = this.value;
+            var form = $(".card-text form");
+            var submit_button = form.find("button[type='submit']");
+            $("#sub-form").remove();
+            var sub_form = $("<div id='sub-form'>");
+            submit_button.before(sub_form);
+            sub_form.load('{% url 'data_declarations_add_sub_form' %}?declaration_type=' + value + '&dataset_id={{ dataset.id }}', function () {
+                sub_form.find('select').select2();
+                sub_form.bootstrapMaterialDesign();
+
+            });
+
+        });
+    });</script>
+{% endblock %}

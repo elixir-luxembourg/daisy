@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+
+{% block title %}Partners{% endblock %}
+
+{% block content %}
+    <div class="jumbotron mt-4">
+        <h1 class="display-4">Partners</h1>
+    </div>
+    <div class="card-columns">
+        {% for partner in partner_list %}
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">{{ partner.acronym }}</h2>
+                    <ul class="card-text">
+                        <li>
+                            <strong>Name: </strong>
+                            {{  partner.name }}
+                        </li>
+                        <li>
+                            <strong>Address: </strong>
+                            {{  partner.address }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        {% empty %}
+            <p>No partners yet</p>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+
+{% block floating-buttons %}
+    <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'partners_add' %}"><i
+            class="material-icons">add</i>
+    </a>
+{% endblock %}

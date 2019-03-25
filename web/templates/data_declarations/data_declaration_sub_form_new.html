@@ -1,0 +1,60 @@
+{% load widget_tweaks %}
+
+{# partner field#}
+<div class="form-group required">
+    {{ form.partner.label_tag }}
+    {% if form.is_bound %}
+        {% if form.partner.errors %}
+            {% render_field form.partner class+="form-control is-invalid" %}
+            {% for error in form.partner.errors %}
+                <div class="invalid-feedback">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        {% else %}
+            {% render_field form.partner class+="form-control is-valid" %}
+        {% endif %}
+    {% else %}
+        {% render_field form.partner class+="form-control" %}
+    {% endif %}
+    {% if form.partner.help_text %}
+        <small class="form-text text-muted">{{ form.partner.help_text }}</small>
+    {% endif %}
+</div>
+
+{# contract #}
+<div class="form-group required">
+    {{ form.contract.label_tag }}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Select</th>
+            <th>Source PI(s)</th>
+            <th>Project</th>
+            <th>Partners</th>
+            <th>Contacts</th>
+        </tr>
+        </thead>
+        <tbody id="contractTbody">
+        {% include 'data_declarations/data_declaration_sub_form_new_contract.html' with contracts=contracts %}
+        </tbody>
+    </table>
+    <hr/>
+    <div class="radio">
+        <label><input type="radio" name="contract" value="0"> Create new contract</label>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("select[name='partner']").change(function () {
+            var partnerId = this.value;
+            var contractTbody = $("#contractTbody");
+            contractTbody.load('{% url 'data_declarations_get_contracts' %}?partner_id=' + partnerId + '&dataset_id={{ dataset.id }}', function () {
+                contractTbody.find("input").bootstrapMaterialDesign();
+            });
+        });
+        $("input[name='contract']").change(function () {
+            $("button[type='submit']").removeAttr('disabled');
+        });
+    });
+</script>

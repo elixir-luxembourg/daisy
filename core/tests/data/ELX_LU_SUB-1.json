@@ -1,0 +1,93 @@
+{
+  "elu_accession": "ELX_LU_SUB-1",
+  "title": "Test Submission to be exported.",
+  "submitting_institution": "ELU_I_5",
+  "created_on": "2018-10-15",
+  "scope": "e",
+  "local_custodian": [
+    "Elgin Gray",
+    "Rob Blue"
+  ],
+  "local_project": "Submitting to NCER PD Diagnosis project",
+  "data_providers": [
+    {
+      "institution": "ELU_I_2",
+      "email": "data.manager@uni.lu",
+      "first_name": "Data",
+      "last_name": "Manager",
+      "phone_no": "+352123456789",
+      "address": "Meyerhofstra\u00dfe 1, 69117 Heidelberg, Germany",
+      "role": "Data_Manager"
+    }
+  ],
+  "studies": [
+    {
+      "title": "Test Study ABC",
+      "description": "This study does blah blah...",
+      "ethics_approval_exists": true,
+      "study_types": [
+        "Interventional",
+        "Observational"
+      ],
+      "contacts": [
+        {
+          "first_name": "John",
+          "last_name": "Doe",
+          "role": "Principal_Investigator",
+          "email": "john.doe@acme.edu",
+          "address": "Some Address",
+          "institution": "ELU_I_5"
+        }
+      ]
+    }
+  ],
+  "datadecs": [
+    {
+      "title": "Test datadec 1",
+      "source_study": "Test Study ABC",
+      "legal_basis_data_collection": "Consent",
+      "legal_basis_data_sharing": "Consent",
+      "data_types": [
+        "Genomics_variant_array",
+        "RNASeq"
+      ],
+      "data_size_category": "m",
+      "metadata_exists": true,
+      "has_special_subjects": true,
+      "special_subject_notes": "Subjects minors. mothers and babies",
+      "consent_status": "homogeneous",
+      "consent_notes": "Consent is consistent among all subjects",
+      "de_identification": "pseudonymized",
+      "subject_categories": "pseudonymized",
+      "use_restrictions": [
+        {
+          "ga4gh_code": "NRES",
+          "note": "No known restrictions"
+        }
+      ]
+    },
+    {
+      "title": "Test datadec 2",
+      "source_study": "Test Study ABC",
+      "legal_basis_data_collection": "Consent",
+      "legal_basis_data_sharing": "Consent",
+      "data_types": [
+        "Transcriptome_array",
+        "RNASeq"
+      ],
+      "data_size_category": "l",
+      "metadata_exists": true,
+      "has_special_subjects": false,
+      "consent_status": "heterogeneous",
+      "consent_notes": "There are three primary consent groups",
+      "de_identification": "pseudonymized",
+      "subject_categories": "pseudonymized",
+      "use_restrictions": [
+        {
+          "ga4gh_code": "TS-[XX]",
+          "note": "Annual renewal of collaboration agreement is necessary"
+        }
+      ]
+    }
+  ]
+}

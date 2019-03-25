@@ -1,0 +1,12 @@
+{% extends 'notification/email.txt' %}
+
+{% block title %}New activity.{% endblock %}
+
+{% block content %}
+    {% for verb, notifs in notifications.items %}
+* {{verb}}:
+        {% for notif in notifs %}
+        - {{notif.content_object}}: {{ notif.get_full_url }}.
+        {% endfor %}
+    {% endfor %}
+{% endblock %}
