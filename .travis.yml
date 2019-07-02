@@ -9,7 +9,8 @@ services:
   - docker
   
 install:
-  - docker-compose up --build
+  - docker-compose build
+  - docker-compose up -d
   
 script:
   - docker-compose exec web python setup.py pytest
