@@ -7,9 +7,15 @@ python:
 services:
   - docker
   
-install:
+before_install:
   - docker-compose build
   - docker-compose up -d
   
+install:
+  - docker-compose exec web python manage.py migrate
+  - docker-compose exec web python manage.py build_solr_schema -c /solr/daisy/conf -r daisy -u default
+  - docker-compose exec web python manage.py collectstatic
+  - docker-compose exec web python manage.py load_initial_data
+
 script:
   - docker-compose exec web python setup.py pytest
