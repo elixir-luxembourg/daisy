@@ -1,0 +1,15 @@
+language: python
+
+python:
+  - "3.6"
+  - "3.7"
+  - "3.5"
+  
+services:
+  - docker
+  
+install:
+  - docker-compose up --build
+  
+script:
+  - docker-compose exec web python setup.py pytest
