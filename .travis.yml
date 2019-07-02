@@ -13,7 +13,7 @@ before_install:
 install:
   - docker-compose build
   - docker-compose up -d
-  - docker-compose exec db psql -U postgres -c "CREATE DATABASE daisy_test;"
+  - sleep 120
 
 script:
   - docker-compose exec web python setup.py pytest 
