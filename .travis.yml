@@ -3,6 +3,9 @@ language: python
 python:
   - "3.6"
   - "3.5"
+
+env:
+  - TEST=true
   
 services:
   - docker
@@ -13,7 +16,7 @@ before_install:
 install:
   - docker-compose build
   - docker-compose up -d
-  - sleep 120
+  - sleep 60
 
 script:
   - docker-compose exec web python setup.py pytest 
