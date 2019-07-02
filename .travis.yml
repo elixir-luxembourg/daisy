@@ -3,15 +3,12 @@ language: python
 python:
   - "3.6"
   - "3.5"
-
-env:
-  - TEST=true
   
 services:
   - docker
   
 before_install:
-  - cp elixir_daisy/settings_compose.py elixir_daisy/settings_tests.py
+  - cp elixir_daisy/settings_compose_ci.py elixir_daisy/settings_tests.py
   
 install:
   - docker-compose build
