@@ -1,4 +1,5 @@
 # Elixir Daisy
+[![Build Status](https://travis-ci.com/elixir-luxembourg/daisy.svg?branch=develop)](https://travis-ci.com/elixir-luxembourg/daisy)
 
 Data Information System (DAISY) is a data bookkeeping application designed to help Biomedical Research  institutions with their GDPR compliance.
 

@@ -1,0 +1,19 @@
+language: python
+
+python:
+  - "3.6"
+  - "3.5"
+  
+services:
+  - docker
+  
+before_install:
+  - cp elixir_daisy/settings_compose_ci.py elixir_daisy/settings_compose.py
+  
+install:
+  - docker-compose build
+  - docker-compose up -d
+  - sleep 60
+
+script:
+  - docker-compose exec web python setup.py pytest 
