@@ -8,7 +8,7 @@ services:
   - docker
   
 before_install:
-  - cp elixir_daisy/settings_compose_ci.py elixir_daisy/settings_tests.py
+  - cp elixir_daisy/settings_compose_ci.py elixir_daisy/settings_compose.py
   
 install:
   - docker-compose build
