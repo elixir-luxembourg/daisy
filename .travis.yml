@@ -14,7 +14,7 @@ before_install:
 install:
   - docker-compose exec web python manage.py migrate
   - docker-compose exec web python manage.py build_solr_schema -c /solr/daisy/conf -r daisy -u default
-  - docker-compose exec web python manage.py collectstatic
+  - docker-compose exec web python manage.py collectstatic --no-input
   - docker-compose exec web python manage.py load_initial_data
 
 script:
