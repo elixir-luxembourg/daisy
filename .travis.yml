@@ -8,14 +8,11 @@ services:
   - docker
   
 before_install:
-  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-  - sudo apt-get update
-  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
-
+  - cp elixir_daisy/settings_compose.py elixir_daisy/settings_tests.py
+  
 install:
   - docker-compose build
   - docker-compose up -d
 
 script:
-  - docker-compose exec -e DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose web python setup.py pytest
+  - docker-compose exec web python setup.py pytest 
