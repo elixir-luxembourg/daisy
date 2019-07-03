@@ -1,0 +1,81 @@
+[
+  {
+    "name": "Samples"
+  },
+  {
+    "name": "Genotype_data"
+  },
+  {
+    "name": "Whole_genome_sequencing"
+  },
+  {
+    "name": "Exome_sequencing"
+  },
+  {
+    "name": "Genomics_variant_array"
+  },
+  {
+    "name": "RNASeq"
+  },
+  {
+    "name":  "Genetic_and_derived_genetic_data"
+  },
+  {
+    "name": "Transcriptome_array"
+  },
+  {
+    "name": "Methylation_array"
+  },
+  {
+    "name": "MicroRNA_array"
+  },
+  {
+    "name": "Metabolomics"
+  },
+  {
+    "name": "Proteomics"
+  },
+  {
+    "name": "Other_omics_data"
+  },
+  {
+    "name": "Imaging"
+  },
+  {
+    "name": "Clinical_Imaging"
+  },
+  {
+    "name": "Cell_Imaging"
+  },
+  {
+    "name": "Other_Imaging"
+  },
+  {
+    "name": "Human_subject_data"
+  },
+  {
+    "name":  "Clinical_data"
+  },
+  {
+     "name": "Lifestyle_data"
+  },
+  {
+     "name": "Socio_Economic_Data"
+  },
+  {
+     "name": "Ethnic_origin"
+  },
+  {
+     "name": "Biometric_data"
+  },
+  {
+     "name": "Disease_status"
+  },
+  {
+     "name": "Other_Phenotype_data"
+  },
+  {
+     "name": "Other"
+  }
+]
+
