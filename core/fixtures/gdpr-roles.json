@@ -1,0 +1,14 @@
+[
+  {
+    "name": "processor",
+    "display_name": "Processor"
+  },
+  {
+    "name": "joint_controller",
+    "display_name": "Joint Controller"
+  },
+  {
+    "name": "controller",
+    "display_name": "Controller"
+  }
+]

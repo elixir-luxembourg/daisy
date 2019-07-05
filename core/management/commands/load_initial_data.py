@@ -27,7 +27,6 @@ def get_classes(ontology):
             if ontology.node_type(n_id) == 'CLASS':
                 label = ontology.label(n_id)
                 if label:
-                    # print('{}  ***** {} '.format(n_id, label))
                     result.append((n_id, label))
     return result
 
@@ -38,107 +37,62 @@ class Command(BaseCommand):
     @staticmethod
     def create_gdpr_roles():
         print('Creating GDPR roles')
-        roles = [
-            ("processor", "Processor"),
-            ("joint_controller", "Joint Controller"),
-            ("controller", "Controller")
-        ]
         GDPRRole.objects.all().delete()
-        gdpr_roles = []
-        for (name, display_name) in roles:
-            gdpr_roles.append(GDPRRole(name=name, display_name=display_name))
-        GDPRRole.objects.bulk_create(gdpr_roles)
+        with open(os.path.join(FIXTURE_DIR, 'gdpr-roles.json'), 'r') as handler:
+            data = json.load(handler)
+            for gdpr_role in data:
+                GDPRRole.objects.get_or_create(
+                    **gdpr_role)
+
 
     @staticmethod
     def create_contact_types():
         print('Creating contact types')
-        contact_types_names = [
-            'Principal_Investigator',
-            'Data_Protection_Officer',
-            'Data_Manager',
-            'Legal_Representative',
-            'Other'
-        ]
-
         ContactType.objects.all().delete()
-        contact_types = []
-        for name in contact_types_names:
-            contact_types.append(ContactType(name=name))
-        ContactType.objects.bulk_create(contact_types)
+        with open(os.path.join(FIXTURE_DIR, 'contact-types.json'), 'r') as handler:
+            data = json.load(handler)
+            for contact_type in data:
+                ContactType.objects.get_or_create(
+                    **contact_type
+                )
 
     @staticmethod
     def create_datatypes():
         print('Creating datatypes')
         DataType.objects.all().delete()
-        datatypes_class_names = [
-            'Samples',
-            'Genotype_data',
-            'Whole_genome_sequencing',
-            'Exome_sequencing',
-            'Genomics_variant_array',
-            'RNASeq',
-            'Genetic_and_derived_genetic_data',
-            'Transcriptome_array',
-            'Methylation_array',
-            'MicroRNA_array',
-            'Metabolomics',
-            'Proteomics',
-            'Other_omics_data',
-            'Imaging',
-            'Clinical_Imaging',
-            'Cell_Imaging',
-            'Other_Imaging',
-            'Human_subject_data',
-            'Clinical_data',
-            'Lifestyle_data',
-            'Socio_Economic_Data',
-            'Ethnic_origin',
-            'Biometric_data',
-            'Disease_status',
-            'Other_Phenotype_data',
-            'Other',
-        ]
 
-        datatypes = []
-        for name in datatypes_class_names:
-            datatypes.append(DataType(name=name))
-        DataType.objects.bulk_create(datatypes)
+        with open(os.path.join(FIXTURE_DIR, 'datatypes.json'), 'r') as handler:
+            data = json.load(handler)
+            for data_type in data:
+                DataType.objects.get_or_create(
+                    **data_type
+                )
+
 
     @staticmethod
     def create_document_types():
         print('Creating document types')
-        document_types_names = [
-            'Other',
-            'Contract/Agreement',
-            'Consent Form Template',
-            'CNER Approval',
-            'CNPD Authorisation',
-            'CNPD Notification',
-            'ERP Approval',
-            'Subject Information Sheet Template'
-        ]
+
         DocumentType.objects.all().delete()
-        document_types = []
-        for name in document_types_names:
-            document_types.append(DocumentType(name=name))
-        DocumentType.objects.bulk_create(document_types)
+        with open(os.path.join(FIXTURE_DIR, 'document-types.json'), 'r') as handler:
+            data = json.load(handler)
+            for document_types in data:
+                DocumentType.objects.get_or_create(
+                    **document_types
+                )
 
     @staticmethod
     def create_funding_sources():
         print('Creating funding sources')
-        funding_sources_name = [
-            'Other',
-            'IMI',
-            'H2020',
-            'FP7',
-            'FNR',
-            'NIH'
-        ]
+
         FundingSource.objects.all().delete()
-        funding_sources = []
-        for name in funding_sources_name:
-            funding_sources.append(FundingSource(name=name))
-        FundingSource.objects.bulk_create(funding_sources)
+        with open(os.path.join(FIXTURE_DIR, 'funding-sources.json'), 'r') as handler:
+            data = json.load(handler)
+            for funding_source in data:
+                FundingSource.objects.get_or_create(
+                    **funding_source
+                )
+
 
     @staticmethod
     def create_sensitivity_classes():
