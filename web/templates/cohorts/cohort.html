@@ -6,21 +6,35 @@
     <div class="row mt-4">
         <div class="jumbotron col">
             <h1>{{ cohort }}</h1>
-            <dl>
-                <dt>Cohort Owner:</dt>
-                <dl>{% for contact in cohort.owners.all %}
-                    <span class="badge badge-pill badge-secondary">{{ contact }}</span>
-                {% empty %}
-                    "unknown"
-                {% endfor %}</dl>
-                <dt>Institutes:</dt>
-                <dl>
-                    {% for institute in cohort.institutes.all %}
-                        <span class="badge badge-pill badge-secondary">{{ institute }}</span>
-                    {% empty %}
-                        "unknown"
-                    {% endfor %}
-                </dl>
+            <div class="row">
+                <div class="col">
+                    <dl>
+                        <dt>Cohort Owner:</dt>
+                        <dl>
+                            {% for contact in cohort.owners.all %}
+                            <span class="badge badge-pill badge-secondary">{{ contact }}</span>
+                        {% empty %}
+                            "unknown"
+                        {% endfor %}
+                        </dl>
+                        <dt>Institutes:</dt>
+                        <dl>
+                            {% for institute in cohort.institutes.all %}
+                                <span class="badge badge-pill badge-secondary">{{ institute }}</span>
+                            {% empty %}
+                                "unknown"
+                            {% endfor %}
+                        </dl>
+                    </dl>
+                </div>
+                <div class="floating-buttons-absolute">
+                    {% if can_edit %}
+                        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'cohort_edit' pk=cohort.id %}"><i
+                                class="material-icons">edit</i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 
@@ -38,11 +52,4 @@
     </div>
 {% endblock %}
 
-
-{% block floating-buttons %}
-    {% if can_edit %}
-        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'cohort_edit' pk=cohort.id %}"><i
-                class="material-icons">edit</i>
-        </a>{% endif %}
-{% endblock %}
 

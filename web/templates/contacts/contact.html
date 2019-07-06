@@ -6,7 +6,6 @@
     <div class="row mt-4">
         <div class="jumbotron col">
             <h1>{{ contact.full_name }}</h1>
-
             <div class="row">
                 <div class="col">
                     <dl>
@@ -37,6 +36,15 @@
                     </dl>
 
                 </div>
+
+                <div class="floating-buttons-absolute">
+                    <a class="btn btn-primary bmd-btn-fab float-right"
+                       title="Edit"
+                       href="{% url 'contact_edit' pk=contact.id %}"><i
+                            class="material-icons">edit</i>
+                    </a>
+
+                 </div>
             </div>
         </div>
     </div>
@@ -66,14 +74,5 @@
                 </div>
             </div>
         {% endif %}
-
     </div>
-{% endblock %}
-
-
-{% block floating-buttons %}
-    <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'contact_edit' pk=contact.id %}"><i
-            class="material-icons">edit</i>
-
-    </a>
 {% endblock %}

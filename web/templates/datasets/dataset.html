@@ -42,6 +42,7 @@
                 <div class="floating-buttons-absolute">
                     {% if is_admin %}
                         <a class="btn btn-default bmd-btn-fab float-right"
+                           title="Permissions"
                            href="{% url 'permission_dataset' pk=dataset.id %}"><i
                                 class="material-icons">visibility</i>
 
@@ -49,6 +50,7 @@
                     {% endif %}
                     {% if can_edit %}
                         <a class="btn btn-primary bmd-btn-fab float-right"
+                           title="Edit"
                            href="{% url 'dataset_edit' pk=dataset.id %}"><i
                                 class="material-icons">edit</i>
 
