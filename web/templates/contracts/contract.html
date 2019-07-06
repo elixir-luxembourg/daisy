@@ -27,7 +27,9 @@
 
                 <div class="floating-buttons-absolute">
                     {% if can_edit %}
-                        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'contract_edit' pk=contract.id %}"><i
+                        <a class="btn btn-primary bmd-btn-fab float-right"
+                           title="Edit"
+                           href="{% url 'contract_edit' pk=contract.id %}"><i
                                 class="material-icons">edit</i>
                         </a>
                     {% endif %}
@@ -43,8 +45,7 @@
             <div class="card-body">
                 {% if can_edit %}
                     <div class="ml-1 float-right btn-group">
-                        <a href="{% url 'add_partner_role_to_contract' pk=contract.pk %}"
-                        >
+                        <a href="{% url 'add_partner_role_to_contract' pk=contract.pk %}">
                             <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button" title="add partner"><i
                                     class="material-icons">add</i></button>
                         </a>

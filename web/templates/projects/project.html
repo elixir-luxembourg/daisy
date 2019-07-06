@@ -40,12 +40,14 @@
                 <div class="floating-buttons-absolute">
                     {% if is_admin %}
                         <a class="btn btn-default bmd-btn-fab float-right"
+                           title="Permissions"
                            href="{% url 'permission_project' pk=project.id %}"><i
                                 class="material-icons">visibility</i>
                         </a>
                     {% endif %}
                     {% if can_edit %}
                         <a class="btn btn-primary bmd-btn-fab float-right"
+                           title="Edit"
                            href="{% url 'project_edit' pk=project.id %}"><i
                                 class="material-icons">edit</i>
 
