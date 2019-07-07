@@ -94,6 +94,28 @@ $(document).ready(function () {
         }
         return kvp.join('&');
     }
+    function confirmDialog(msg) {
+        var def = $.Deferred();
+        $("<div></div>").html("Proceed with "+ msg +" ?").dialog({
+            modal: true,
+            title: 'Confirmation',
+            buttons: {
+                'Proceed': function() {
+                    def.resolve();
+                    $(this).dialog( "close" );
+                },
+                'Cancel': function() {
+                    def.reject();
+                    $(this).dialog( "close" );
+                }
+            },
+            close: function() {
+                //$(this).dialog('destroy').remove();
+                $(this).remove();
+            }
+        });
+        return def.promise();
+    }
 
     function _loadModal(modal, url, button, postMode, ajaxRefreshSelector, ajaxRefreshParam, redirectURI, data) {
         if (data !== undefined) {
@@ -188,15 +210,19 @@ $(document).ready(function () {
         delete_link.click(function () {
             var url_delete = $(this).data('url');
             var that = $(this);
-            $.ajax({
-                url: url_delete,
-                type: 'DELETE',
-                success: function (result) {
-                    that.parents('.deletable').remove();
-                }
+            confirmDialog("delete").done(function() {
+                console.log("accepted");
+                $.ajax({
+                    url: url_delete,
+                    type: 'DELETE',
+                    success: function (result) {
+                        location.reload();
+                    }
+                });
             });
+
         });
-        $(this).append(delete_link)
+        $(this).append(delete_link);
     }, function () {
         $(this).find('.delete-button').remove();
     });

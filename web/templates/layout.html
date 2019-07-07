@@ -16,6 +16,8 @@
           rel="stylesheet"/>
     <link href="{% static "vendor/node_modules/select2-bootstrap-theme/dist/select2-bootstrap.min.css" %}"
           rel="stylesheet"/>
+    <link href="{% static "vendor/node_modules/jquery-ui-dist/jquery-ui.css" %}"
+          rel="stylesheet"/>
     <link href="{% static 'css/daisy.css' %}" rel="stylesheet" type="text/css"/>
     {% block head_end %}{% endblock %}
     <title>DAISY</title>
@@ -66,13 +68,14 @@
     </div>
 </div>
 </body>
-
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <script src="{% static "vendor/node_modules/jquery/dist/jquery.min.js" %}"></script>
 <script src="{% static "vendor/node_modules/jsrender/jsrender.min.js" %}"></script>
 <script src="{% static "vendor/node_modules/popper.js/dist/umd/popper.min.js" %}"></script>
 <script src="{% static "vendor/node_modules/bootstrap-material-design/dist/js/bootstrap-material-design.min.js" %}"></script>
+<!-- Jquery ui after bootstrap to allow dialog close button to display -->
+<script src="{% static "vendor/node_modules/jquery-ui-dist/jquery-ui.js" %}"></script>
 <script src="{% static "vendor/node_modules/select2/dist/js/select2.full.min.js" %}"></script>
 <script src="{% static "vendor/node_modules/moment/min/moment-with-locales.min.js" %}"></script>
 <script src="{% static "vendor/node_modules/js-cookie/src/js.cookie.js" %}"></script>
