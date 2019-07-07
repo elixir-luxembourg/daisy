@@ -18,9 +18,10 @@
   "author": "LCSB",
   "license": "Apache-2.0",
   "dependencies": {
-    "bootstrap-material-design": "4.1.1",
     "bootstrap": "4.1.1",
+    "bootstrap-material-design": "4.1.1",
     "jquery": "^3.3.1",
+    "jquery-ui-dist": "^1.12.1",
     "js-cookie": "^2.2.0",
     "jsrender": "^0.9.90",
     "moment": "^2.22.1",
