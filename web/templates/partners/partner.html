@@ -12,45 +12,36 @@
             {% endif %}
             <span style="color: #8D8F8F;">Partner</span>
             <h1>{{ partner }}</h1>
-            <div class="row">
-                <div class="col">
-                    <dl>
-                        <dt>Name</dt>
-                        <dd>{{ partner.name | default:'unknown' }}</dd>
-                        <dt>Acronym</dt>
-                        <dd>{{ partner.acronym | default:'-' }}</dd>
-                        <dt>Address</dt>
-                        <dd>{{ partner.address | default:'unknown' }}</dd>
-                        <dt>Is clinical?</dt>
-                        {% if  partner.is_clinical %}
-                            <dd>YES</dd>
-                        {% else %}
-                            <dd>NO</dd>
-                        {% endif %}
-                        <dt>Geographic category</dt>
-                        <dd>{{ partner.geo_category | default:'unknown' }}</dd>
-                        <dt>Sector category</dt>
-                        <dd>{{ partner.sector_category | default:'unknown' }}</dd>
-                        <dt>ELU acccession</dt>
-                        <dd>{{ partner.elu_accession | default:'-'  }}</dd>
-                    </dl>
-                </div>
-                <div class="floating-buttons-absolute">
-                    {% if can_edit %}
-                        <a class="btn btn-primary bmd-btn-fab float-right" title="Edit" href="{% url 'partner_edit' pk=partner.id %}"><i
-                                class="material-icons">edit</i>
-                        </a>
+            <dl>
+                <dt>Name</dt>
+                <dd>{{ partner.name | default:'unknown' }}</dd>
+                <dt>Acronym</dt>
+                <dd>{{ partner.acronym | default:'-' }}</dd>
+                <dt>Address</dt>
+                <dd>{{ partner.address | default:'unknown' }}</dd>
+                <dt>Country</dt>
+                <dd>{{ partner.country.name | default:'-' }}</dd>
+                <dt>Is clinical?</dt>
+                {% if  partner.is_clinical %}
+                    <dd>YES</dd>
+                {% else %}
+                    <dd>NO</dd>
+                {% endif %}
+                <dt>Geographic Category</dt>
+                <dd>{{ partner.geo_category | default:'unknown' }}</dd>
+                <dt>Sector Category</dt>
+                <dd>{{ partner.sector_category | default:'unknown' }}</dd>
+                <dt>ELU Accession</dt>
+                <dd>{{ partner.elu_accession | default:'-'  }}</dd>
+            </dl>
+            {% if request.user.is_superuser %}
+                <p class="text-center mt-5">
+                    {% if not partner.is_published %}
+                   <a id="publish" class="btn btn-primary btn-raised"
+                           href="{% url 'publish_partner' pk=partner.id %}">Publish</a>
                     {% endif %}
-
-                    {% if request.user.is_superuser  and not  partner.is_published%}
-                        <a class="btn btn-primary bmd-btn-fab float-right" title="Publish" href="{% url 'publish_partner' pk=partner.id %}"><i
-                                class="material-icons">publish</i>
-                        </a>
-                    {% endif %}
-                </div>
-
-
-            </div>
+                </p>
+            {% endif %}
         </div>
     </div>
     <div class="row card-deck mt-4">

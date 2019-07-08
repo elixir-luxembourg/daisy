@@ -20,6 +20,7 @@ class PartnerForm(ModelForm):
         'acronym',
         'name',
         'address',
+        'country',
         'geo_category',
         'sector_category',
         'is_clinical',
