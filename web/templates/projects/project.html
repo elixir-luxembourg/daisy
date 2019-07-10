@@ -23,6 +23,14 @@
                         <dd>{{ project.start_date | default:'-' }}</dd>
                         <dt>End date</dt>
                         <dd>{{ project.end_date | default:'-' }}</dd>
+                        <dt>Disease terms</dt>
+                        <dd>{{ project.disease_terms.all | join:", "  | default:'-'  }}</dd>
+                        <dt>Gene terms</dt>
+                        <dd>{{ project.gene_terms.all | join:", "  | default:'-'  }}</dd>
+                        <dt>Funding resources</dt>
+                        <dd>{{ project.funding_sources.all | join:", "  | default:'-'  }}</dd>
+                        <dt>DPIA link</dt>
+                        <dd>{{ project.dpia | default:'-' }}</dd>
                     </dl>
                 </div>
                 <div class="col">
@@ -31,10 +39,25 @@
                         <dd>{{ project.study_terms.all | join:", " | default:'-' }}</dd>
                         <dt>Includes automated profiling</dt>
                         <dd>{{ project.includes_automated_profiling | yesno }}</dd>
-                        <dt>Sub-projects</dt>
+                        <dt>Sub projects</dt>
                         <dd>{{ project.project.child_projects.all | join:", " | default:'-' }}</dd>
                         <dt>Last update</dt>
                         <dd>{{ project.updated }}</dd>
+                        <dt>Umbrella project</dt>
+                        <dd>{{ project.umbrella_project | default:'-'  }}</dd>
+                        <dt>Comments</dt>
+                         <dd> {% if project.comments %}
+                        <a href="#" data-toggle="modal" data-target="#modal"
+                           data-modal-content="{{ project.comments }}"
+                           data-modal-title="Comments">view comments
+                        </a>
+                         {% else %}
+                            -
+                         {% endif %}
+                         </dd>
+                        <dt>Project web page</dt>
+                        <dd>{{ project.project_web_page }}</dd>
+
                     </dl>
                 </div>
                 <div class="floating-buttons-absolute">
