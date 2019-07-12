@@ -11,7 +11,7 @@ from ontobio import obograph_util, Ontology
 
 from core.exceptions import FixtureImportError
 from core.models import ContactType, DataType, DocumentType, StorageResource, FundingSource, RestrictionClass, \
-    SensitivityClass, Cohort, Contact, GDPRRole
+    SensitivityClass, Cohort, Contact, GDPRRole, LegalBasisType, PersonalDataType
 from core.models.partner import Partner
 from core.models.term_model import GeneTerm, StudyTerm, DiseaseTerm, PhenotypeTerm
 from core.permissions import PERMISSION_MAPPING
@@ -255,6 +255,27 @@ class Command(BaseCommand):
                                     break
             GeneTerm.objects.bulk_create(gene_terms)
 
+
+    @staticmethod
+    def create_legal_basis_types():
+        print('Creating GDPR-defined categories of legal basis.')
+        with open(os.path.join(FIXTURE_DIR, 'legal-basis-types.json'), 'r', encoding='utf-8') as handler:
+            data = json.load(handler)
+            for lbt in data:
+                LegalBasisType.objects.get_or_create(
+                    **lbt
+                )
+
+    @staticmethod
+    def create_personal_data_types():
+        print('Creating GDPR-defined categories personal data.')
+        with open(os.path.join(FIXTURE_DIR, 'personal-data-types.json'), 'r', encoding='utf-8') as handler:
+            data = json.load(handler)
+            for lbt in data:
+                PersonalDataType.objects.get_or_create(
+                    **lbt
+                )
+
     def handle(self, *args, **options):
         self.create_study_terms()
         self.create_disease_terms()
@@ -263,7 +284,8 @@ class Command(BaseCommand):
         self.create_contact_types()
         self.create_datatypes()
         self.create_sensitivity_classes()
-        self.create_restriction_classes()
+        self.create_legal_basis_types()
+        self.create_personal_data_types()
         self.create_document_types()
         self.create_funding_sources()
         self.create_storage_resources()

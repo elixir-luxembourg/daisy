@@ -53,9 +53,7 @@ class Contact(CoreModel):
     def __str__(self):
         return "{} {} ({})".format(self.first_name, self.last_name, self.type.name)
 
-    @property
-    def partners_display(self):
-        return "zozo"
+
 
     def full_name(self):
         return "{} {}".format(self.first_name, self.last_name)

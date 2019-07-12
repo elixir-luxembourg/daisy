@@ -79,14 +79,3 @@ def remove_share(request, dataset_pk, share_pk):
     return HttpResponse("Share deleted")
 
 
-# There should be no share management on Collaboration page.
-# Share management should only be on Dataset page
-# @require_http_methods(["DELETE"])
-# @permission_required('EDIT', (Collaboration, 'pk', 'collaboration_pk'))
-# def remove_share_from_collaboration(request, collaboration_pk, share_pk):
-#     share = get_object_or_404(Share, pk=share_pk)
-#     contract = get_object_or_404(Dataset, pk=collaboration_pk)
-#     if share.contract == contract:
-#         share.delete()
-#     return HttpResponse("Share unlinked")
-
