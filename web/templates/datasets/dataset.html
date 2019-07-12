@@ -152,7 +152,8 @@
                                 data-target="#modal"
                                 data-modal-title="Add a legal basis definition"
                                 data-ajax-url="{% url 'dataset_legalbasis_add' dataset_pk=dataset.id %}"
-                        >
+                                data-post-mode="true"
+                                data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}">
                             <i class="material-icons">add</i>
                         </button>
                     </div>
