@@ -7,6 +7,7 @@ from .dataset import DatasetForm
 from .document import DocumentForm
 from .partner import PartnerForm
 from .permission import UserPermFormSet
+from .legal_basis import LegalBasisForm
 from .publication import PublicationForm, PickPublicationForm
 from .share import ShareForm
 from .storage_location import StorageLocationForm, PickStorageLocationForm
@@ -27,6 +28,7 @@ __all__ = [
     "DataDeclarationSubFormFromExisting",
     "DocumentForm",
     "PartnerForm",
+    "LegalBasisForm",
     "PartnerRoleForm",
     "UserPermFormSet",
     "PublicationForm",
