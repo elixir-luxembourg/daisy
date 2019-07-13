@@ -110,8 +110,8 @@ $(document).ready(function () {
                 }
             },
             close: function() {
-                //$(this).dialog('destroy').remove();
-                $(this).remove();
+                $(this).dialog('destroy').remove();
+                //$(this).remove();
             }
         });
         return def.promise();
@@ -178,7 +178,6 @@ $(document).ready(function () {
         });
     }
 
-
     // MODAL WINDOWS
     $('#modal').on('show.bs.modal', function (event) {
         console.log('REFRESHED')
@@ -198,33 +197,30 @@ $(document).ready(function () {
         } else {
             modal.find('.modal-body').text(content);
         }
-
-
     });
     // TOOLTIPS
     $('[data-toggle="tooltip"]').tooltip();
     // DELETABLE
     $('.deletable').hover(function () {
         var url_delete = $(this).data('url');
-        var delete_link = $("<i class='red delete-button material-icons'>delete_forever</i>").data('url', url_delete);
-        delete_link.click(function () {
-            var url_delete = $(this).data('url');
-            var that = $(this);
-            confirmDialog("delete").done(function() {
-                console.log("accepted");
-                $.ajax({
-                    url: url_delete,
-                    type: 'DELETE',
-                    success: function (result) {
-                        location.reload();
-                    }
-                });
-            });
-
-        });
+        var delete_link = $("<i  id='dynamic_delete_button' class='red delete-button material-icons'>delete_forever</i>").data('url', url_delete);
         $(this).append(delete_link);
     }, function () {
         $(this).find('.delete-button').remove();
+    });
+    $('.deletable').on('click', '#dynamic_delete_button', function () {
+        var url_delete = $(this).data('url');
+        var that_parent = $(this).parent();
+        confirmDialog("delete").done(function() {
+            console.log("accepted");
+            $.ajax({
+                url: url_delete,
+                type: 'DELETE',
+                success: function (result) {
+                    that_parent.remove();
+                }
+            });
+        });
     });
     $('.clickable').css('cursor', 'pointer').click(function () {
         var urlClick = $(this).data('url');
