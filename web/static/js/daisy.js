@@ -41,8 +41,6 @@ function initFormsets(elements) {
     });
 }
 
-
-
 $(document).ready(function () {
 
     csrftoken = Cookies.get("csrftoken");
@@ -180,8 +178,6 @@ $(document).ready(function () {
 
     // MODAL WINDOWS
     $('#modal').on('show.bs.modal', function (event) {
-        console.log('REFRESHED')
-
         var modal = $(this);
         modal.find('.modal-body').empty();
         var button = $(event.relatedTarget); // Button that triggered the modal
@@ -208,11 +204,10 @@ $(document).ready(function () {
     }, function () {
         $(this).find('.delete-button').remove();
     });
-    $('.deletable').on('click', '#dynamic_delete_button', function () {
+    $('.deletable').on('click', '.delete-button', function () {
         var url_delete = $(this).data('url');
         var that_parent = $(this).parent();
         confirmDialog("delete").done(function() {
-            console.log("accepted");
             $.ajax({
                 url: url_delete,
                 type: 'DELETE',
@@ -225,30 +220,34 @@ $(document).ready(function () {
     $('.clickable').css('cursor', 'pointer').click(function () {
         var urlClick = $(this).data('url');
         var method = $(this).data('method');
-        var appendElement = $(this).data('append-to');
-        var parentElementToRemove = $(this).data('parent-to-remove');
-        var that = $(this);
-        $.ajax({
-            url: urlClick,
-            type: method,
-            success: function (result) {
-                if (parentElementToRemove) {
-                    parentElementToRemove = that.closest(parentElementToRemove);
-                    parentElementToRemove.remove();
-                    return;
+        var parentElementClassToRemove = $(this).data('parent-to-remove');
+        var parentElementToRemove = $(this).closest(parentElementClassToRemove);
+        var confirmation = $(this).data('confirmation');
+        if (confirmation) {
+            confirmDialog(confirmation).done(function() {
+                $.ajax({
+                    url: urlClick,
+                    type: method,
+                    success: function (result) {
+                        if (parentElementClassToRemove) {
+                            parentElementToRemove.remove();
+                            return;
+                        }
+                    }
+                });
+            });
+        } else{
+            $.ajax({
+                url: urlClick,
+                type: method,
+                success: function (result) {
+                    if (parentElementClassToRemove) {
+                        parentElementToRemove.remove();
+                        return;
+                    }
                 }
-                if (appendElement) {
-                    appendElement = $(appendElement);
-                    appendElement.empty();
-                    appendElement.append(result);
-                    appendElement.bootstrapMaterialDesign();
-                    initDatepickers(appendElement.find('.datepicker'));
-                    initDatetimepickers(appendElement.find('.datetimepicker'));
-                    initFormsets(appendElement.find('.formset-row'));
-                    appendElement.find("select").not('.dummy-select').select2();
-                }
-            }
-        });
+            });
+    }
     });
 });
 
