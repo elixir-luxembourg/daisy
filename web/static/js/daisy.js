@@ -41,8 +41,6 @@ function initFormsets(elements) {
     });
 }
 
-
-
 $(document).ready(function () {
 
     csrftoken = Cookies.get("csrftoken");
@@ -93,6 +91,28 @@ $(document).ready(function () {
             kvp[kvp.length] = [key, value].join('=');
         }
         return kvp.join('&');
+    }
+    function confirmDialog(msg) {
+        var def = $.Deferred();
+        $("<div></div>").html("Proceed with "+ msg +" ?").dialog({
+            modal: true,
+            title: 'Confirmation',
+            buttons: {
+                'Proceed': function() {
+                    def.resolve();
+                    $(this).dialog( "close" );
+                },
+                'Cancel': function() {
+                    def.reject();
+                    $(this).dialog( "close" );
+                }
+            },
+            close: function() {
+                $(this).dialog('destroy').remove();
+                //$(this).remove();
+            }
+        });
+        return def.promise();
     }
 
     function _loadModal(modal, url, button, postMode, ajaxRefreshSelector, ajaxRefreshParam, redirectURI, data) {
@@ -156,11 +176,8 @@ $(document).ready(function () {
         });
     }
 
-
     // MODAL WINDOWS
     $('#modal').on('show.bs.modal', function (event) {
-        console.log('REFRESHED')
-
         var modal = $(this);
         modal.find('.modal-body').empty();
         var button = $(event.relatedTarget); // Button that triggered the modal
@@ -176,57 +193,61 @@ $(document).ready(function () {
         } else {
             modal.find('.modal-body').text(content);
         }
-
-
     });
     // TOOLTIPS
     $('[data-toggle="tooltip"]').tooltip();
     // DELETABLE
     $('.deletable').hover(function () {
         var url_delete = $(this).data('url');
-        var delete_link = $("<i class='red delete-button material-icons'>delete_forever</i>").data('url', url_delete);
-        delete_link.click(function () {
-            var url_delete = $(this).data('url');
-            var that = $(this);
+        var delete_link = $("<i  id='dynamic_delete_button' class='red delete-button material-icons'>delete_forever</i>").data('url', url_delete);
+        $(this).append(delete_link);
+    }, function () {
+        $(this).find('.delete-button').remove();
+    });
+    $('.deletable').on('click', '.delete-button', function () {
+        var url_delete = $(this).data('url');
+        var that_parent = $(this).parent();
+        confirmDialog("delete").done(function() {
             $.ajax({
                 url: url_delete,
                 type: 'DELETE',
                 success: function (result) {
-                    that.parents('.deletable').remove();
+                    that_parent.remove();
                 }
             });
         });
-        $(this).append(delete_link)
-    }, function () {
-        $(this).find('.delete-button').remove();
     });
     $('.clickable').css('cursor', 'pointer').click(function () {
         var urlClick = $(this).data('url');
         var method = $(this).data('method');
-        var appendElement = $(this).data('append-to');
-        var parentElementToRemove = $(this).data('parent-to-remove');
-        var that = $(this);
-        $.ajax({
-            url: urlClick,
-            type: method,
-            success: function (result) {
-                if (parentElementToRemove) {
-                    parentElementToRemove = that.closest(parentElementToRemove);
-                    parentElementToRemove.remove();
-                    return;
+        var parentElementClassToRemove = $(this).data('parent-to-remove');
+        var parentElementToRemove = $(this).closest(parentElementClassToRemove);
+        var confirmation = $(this).data('confirmation');
+        if (confirmation) {
+            confirmDialog(confirmation).done(function() {
+                $.ajax({
+                    url: urlClick,
+                    type: method,
+                    success: function (result) {
+                        if (parentElementClassToRemove) {
+                            parentElementToRemove.remove();
+                            return;
+                        }
+                    }
+                });
+            });
+        } else{
+            $.ajax({
+                url: urlClick,
+                type: method,
+                success: function (result) {
+                    if (parentElementClassToRemove) {
+                        parentElementToRemove.remove();
+                        return;
+                    }
                 }
-                if (appendElement) {
-                    appendElement = $(appendElement);
-                    appendElement.empty();
-                    appendElement.append(result);
-                    appendElement.bootstrapMaterialDesign();
-                    initDatepickers(appendElement.find('.datepicker'));
-                    initDatetimepickers(appendElement.find('.datetimepicker'));
-                    initFormsets(appendElement.find('.formset-row'));
-                    appendElement.find("select").not('.dummy-select').select2();
-                }
-            }
-        });
+            });
+    }
     });
 });
 

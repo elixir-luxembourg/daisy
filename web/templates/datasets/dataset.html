@@ -121,6 +121,7 @@
                                            title="duplicate"><i
                                                 class="orange material-icons">library_add</i></a>
                                         <i title="delete" class="material-icons red clickable" data-method="delete"
+                                           data-confirmation = "delete"
                                            data-parent-to-remove="tr"
                                            data-url="{% url 'data_declarations_delete' pk=data_declaration.id %}">delete_forever</i>
                                     </td>
@@ -328,7 +329,8 @@
                                 {% if can_edit %}
                                     <a href="{% url 'share_edit' pk=share.id %}"
                                        title="edit"><i class="material-icons">edit</i></a>
-                                    <i class="red material-icons clickable" data-method="delete"
+                                    <i class="red material-icons clickable"
+                                       data-method="delete"
                                        data-parent-to-remove="tr"
                                        data-url="{% url 'dataset_share_remove' dataset_pk=dataset.id share_pk=share.id %}">delete_forever</i>
                                 {% endif %}
