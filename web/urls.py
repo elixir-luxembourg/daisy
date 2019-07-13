@@ -1,7 +1,7 @@
 from django.urls import path
 
 from web.views import contracts, datasets, permissions, api, profile, documents, projects, storage_locations, \
-    share, notifications, data_declarations, access
+    share, notifications, data_declarations, access, legalbasis
 from web.views.access import AccessCreateView, AccessDetailView
 from web.views.cohorts import CohortCreateView, CohortEditView, \
     CohortDetailView, cohort_list
@@ -42,11 +42,10 @@ web_urls = [
     path('contracts/add/', ContractCreateView.as_view(), name='contract_add'),
     path('contracts/<int:pk>/edit', ContractEditView.as_view(), name="contract_edit"),
     path('contracts/<int:pk>/', ContractDetailView.as_view(), name="contract"),
-    #path('contracts/<int:pk>/add-kv', contracts.add_kv_to_contract, name="add_kv_to_contract"),
     path('contracts/<int:pk>/add-partner-role', contracts.PartnerRoleCreateView.as_view(), name="add_partner_role_to_contract"),
     path('partner_role/<int:pk>/delete', contracts.partner_role_delete, name="delete_partner_role"),
 
-    #path('contracts/<int:pk>/rm-kv/<str:key>', contracts.rm_kv_from_contract, name="rm_kv_from_contract"),
+
 
     # path('definitions/contacts', ContactListView.as_view(), name='contacts'),
     path('definitions/contact/<int:pk>', ContactDetailView.as_view(), name='contact'),
@@ -85,17 +84,6 @@ web_urls = [
          name="remove_storage_location_from_dataset"),
 
 
-    # dataset's links methods
-    # path('dataset/<int:pk>/link', datasets.dataset_dataset_link, name="dataset_dataset_link"),
-    # path('dataset/<int:target_id>/unlink/<int:used_id>', datasets.dataset_dataset_unlink,
-    #      name="dataset_dataset_unlink"),
-
-    # dataset's contract methods
-    # path('dataset/<int:pk>/contract/add', datasets.dataset_contract_add, name="dataset_contract_add"),
-    # path('dataset/<int:pk>/contract/remove/<int:cid>', datasets.dataset_contract_remove,
-    #      name="dataset_contract_remove"),
-
-
     # dataset's data location methods
     path('datalocation/<int:pk>', storage_locations.DataLocationDetailView.as_view(), name='datalocation'),
     path('dataset/<int:pk>/datalocation/add/', storage_locations.DataLocationCreateView.as_view(),
@@ -108,10 +96,16 @@ web_urls = [
     path('dataset/<int:dataset_pk>/access/add/', AccessCreateView.as_view(), name='access_add'),
     path('dataset/<int:dataset_pk>/access/remove/<int:access_pk>/', access.remove_access, name='access_remove'),
 
+
+    # LEGAL BASIS
+    path('dataset/<int:dataset_pk>/legalbasis/add/', legalbasis.LegalBasisCreateView.as_view(), name='dataset_legalbasis_add'),
+    path('dataset/<int:dataset_pk>/legalbasis/remove/<int:legalbasis_pk>/', legalbasis.remove_legalbasis, name='dataset_legalbasis_remove'),
+    path('dataset/<int:dataset_pk>/legalbasis/<int:pk>/edit', legalbasis.edit_legalbasis, name="dataset_legalbasis_edit"),
+
+
     # (EXTERNAL) SHARES
     path('dataset/<int:dataset_pk>/share/add/', share.ShareCreateView.as_view(), name='dataset_share_add'),
     path('dataset/<int:dataset_pk>/share/remove/<int:share_pk>/', share.remove_share, name='dataset_share_remove'),
-    #
     path('share/<int:pk>/', ShareDetailView.as_view(), name="share"),
     path('share/<int:pk>/edit', ShareEditView.as_view(), name="share_edit"),
 

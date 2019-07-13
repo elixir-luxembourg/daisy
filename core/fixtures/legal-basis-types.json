@@ -1,0 +1,26 @@
+[
+  {
+    "code": "6.1(a)",
+    "name": "Consent"
+  },
+  {
+    "code": "6.1(b)",
+    "name": "Performance of a contract to which the data subject is party"
+  },
+  {
+    "code": "6.1(c)",
+    "name": "Compliance with a legal obligation to which the controller is subject"
+  },
+  {
+    "code": "6.1(d)",
+    "name": "Protection the vital interests of the data subject"
+  },
+  {
+    "code": "6.1(e)",
+    "name": "Public interest"
+  },
+  {
+    "code": "6.1(f)",
+    "name": "Legitimate interest"
+  }
+]

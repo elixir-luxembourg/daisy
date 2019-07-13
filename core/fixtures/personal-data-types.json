@@ -1,0 +1,48 @@
+[
+  {
+    "code": "Standard",
+    "name": "Standard personal data"
+  },
+  {
+    "code": "Special",
+    "name": "Special category, i.e. sensitive, personal data"
+  },
+  {
+    "code": "Race",
+    "name": "Racial or ethnic origin"
+  },
+  {
+    "code": "Genetic",
+    "name": "Genetic data"
+  },
+  {
+    "code": "Biometric",
+    "name": "Biometric data for the purpose of uniquely identifying a natural person"
+  },
+  {
+    "code": "Health",
+    "name": "Data concerning health"
+  },
+  {
+    "code": "Sexual orientation",
+    "name": "Data concerning a natural person’s sex life or sexual orientation"
+  },
+  {
+    "code": "Convictions",
+    "name": "Data relating to criminal convictions and offences"
+  },
+  {
+    "code": "Other",
+    "name": "Other special categories of data (e.g. molecular data that can give indication on a person's health)"
+  }
+]
+
+
+
+
+
+
+
+
+
+

@@ -14,6 +14,9 @@ from .partner import Partner
 from .project import Project
 from .publication import Publication
 from .share import Share
+from .legal_basis import LegalBasis
+from .legal_basis_type import LegalBasisType
+from .personal_data_type import PersonalDataType
 from .storage_location import DataLocation
 from .storage_resource import StorageResource
 from .sensitivity_class import SensitivityClass
@@ -33,6 +36,9 @@ __all__ = ['GDPRRole',
            'DataDeclaration',
            'DataLocation',
            'Dataset',
+           'LegalBasis',
+           'LegalBasisType',
+           'PersonalDataType',
            'DataType',
            'Document',
            'DocumentType',

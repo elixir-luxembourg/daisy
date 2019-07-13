@@ -2,7 +2,7 @@ import os
 import unicodedata
 
 
-from django.http import JsonResponse, Http404, HttpResponse
+from django.http import JsonResponse, Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404 , redirect, render
 from django.utils.http import urlquote
 from django.views.decorators.http import require_http_methods
@@ -64,7 +64,7 @@ def document_edit(request, pk):
             form.save()
             messages.add_message(request, messages.SUCCESS, "Document updated")
             redirecturl = document.content_type.name
-            return redirect(to=redirecturl, pk=document.object_id)
+            return HttpResponseRedirect(to=redirecturl, pk=document.object_id)
         else:
             return JsonResponse(
                 {'error':

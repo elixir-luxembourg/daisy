@@ -99,7 +99,8 @@
                             <th>Special subjects</th>
                             <th>Storage end</th>
                             {% if can_edit %}
-                                <th style="width:7em">Actions</th>{% endif %}
+                                <th style="width:7em">Actions</th>
+                            {% endif %}
                         </tr>
                         </thead>
                         <tbody>
@@ -140,12 +141,68 @@
         </div>
     </div>
 
-
+    <div class="row  mt-4">
+        {#    LEGAL BASIS  DEFINITIONS for the DATASET     #}
+        <div class="card col-md-12 mr-0">
+            <div class="card-body">
+                {% if can_edit %}
+                    <div class="ml-1 float-right btn-group">
+                        <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button"
+                                id="addlegalbasis"
+                                title="add a legal basis definition"
+                                data-toggle="modal"
+                                data-target="#modal"
+                                data-modal-title="Add a legal basis definition"
+                                data-ajax-url="{% url 'dataset_legalbasis_add' dataset_pk=dataset.id %}"
+                                data-post-mode="true"
+                                data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}">
+                            <i class="material-icons">add</i>
+                        </button>
+                    </div>
+                {% endif %}
+                <h2 class="card-title">Legal basis declarations</h2>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Scope</th>
+                        <th>Legal Basis Categories</th>
+                        <th>Categories of personal data</th>
+                        <th>Remarks</th>
+                        {% if can_edit %}
+                            <th style="width:7em">Actions</th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for lbd in dataset.legal_basis_definitions.all %}
+                        <tr>
+                            <td><p>{% for ddec in lbd.data_declarations.all  %}{{ ddec.title}} <br/> {% empty %}Entire dataset{% endfor %}</p></td>
+                            <td><p>{% for personal_data_type in lbd.personal_data_types.all  %}{{ personal_data_type}} <br/> {% empty %} - {% endfor %}</p></td>
+                            <td><p>{% for basis_type in lbd.legal_basis_types.all  %}{{ basis_type}} <br/> {% empty %} - {% endfor %}</p></td>
+                            <td>{{ lbd.remarks }}</td>
+                            <td>
+                                {% if can_edit %}
+                                    <i class="material-icons clickable"
+                                       id="editlegalbasis"
+                                       title="edit this legal basis definition"
+                                       data-toggle="modal"
+                                       data-target="#modal"
+                                       data-modal-title="Edit legal basis definition"
+                                       data-ajax-url="{% url 'dataset_legalbasis_edit' pk=lbd.id dataset_pk=dataset.id %}">edit</i>
+                                    <i class="red material-icons clickable" data-method="delete"
+                                       data-parent-to-remove="tr"
+                                       data-url="{% url 'dataset_legalbasis_remove' dataset_pk=dataset.id legalbasis_pk=lbd.id %}">delete_forever</i>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
     <div class="row card-deck mt-4">
-
-
         {#    DATA FILES    #}
-
         <div class="card with-max-height col-md-6 ml-0">
             <div class="card-body">
                 {% if can_edit %}
@@ -188,7 +245,6 @@
         </div>
 
         {#    (INTERNAL) ACCESS GIVEN TO DATA FILES     #}
-
         <div class="card with-max-height col-md-6 mr-0">
             <div class="card-body">
                 {% if can_edit %}
@@ -285,10 +341,6 @@
             </div>
         </div>
     </div>
-
-
-
-
 {% endblock %}
 
 
