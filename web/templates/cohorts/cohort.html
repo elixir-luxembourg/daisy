@@ -27,6 +27,10 @@
                             {% endfor %}
                         </dl>
                     </dl>
+                    <dt>Ethics Approval</dt>
+                    <dd>{{ cohort.ethics_confirmation | yesno }}</dd>
+                    <dt>Accession Number</dt>
+                    <dd>{{ cohort.elu_accession }}</dd>
                 </div>
                 <div class="floating-buttons-absolute">
                     {% if can_edit %}

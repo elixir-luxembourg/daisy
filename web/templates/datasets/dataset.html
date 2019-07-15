@@ -28,6 +28,8 @@
                                 <a href="{% url 'project' pk=dataset.project.pk %}">{{ dataset.project }}</a>
                             </dd>
                         {% endif %}
+                        <dt>Other external id(s)</dt>
+                        <dd>{{ dataset.other_external_id | default:'-' }}</dd>
                     </dl>
                 </div>
 
@@ -37,6 +39,8 @@
                         <dd>{{ dataset.added }}</dd>
                         <dt>Last edit</dt>
                         <dd>{{ dataset.updated }}</dd>
+                        <dt>Sensitivity class</dt>
+                        <dd>{{ dataset.sensitivity.name | default:'-'}}</dd>
                     </dl>
 
                 </div>

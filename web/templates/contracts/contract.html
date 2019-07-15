@@ -25,7 +25,12 @@
                         <dl>{{ contract.company_roles.all | join:", " | default:'-' }}</dl>
                     </dl>
                  </div>
-
+                <div class="col">
+                    <dl>
+                        <dt>Remarks</dt>
+                        <dd>{{ contract.comments | default:'-' }}</dd>
+                    </dl>
+                </div>
                 <div class="floating-buttons-absolute">
                     {% if can_edit %}
                         <a class="btn btn-primary bmd-btn-fab float-right"
