@@ -53,7 +53,7 @@ class Partner(CoreModel):
 
     address = TextFieldWithInputWidget(verbose_name='Address', help_text='The contact address of the partner.')
 
-    country = CountryField(blank_label='select country', blank=False)
+    country = CountryField(blank_label='select country', blank=True, null=True)
 
     geo_category = models.CharField(choices=GEO_CATEGORY, blank=False, null=False, default=GEO_CATEGORY.EU,
                                     max_length=20, verbose_name='Geo-Category',
