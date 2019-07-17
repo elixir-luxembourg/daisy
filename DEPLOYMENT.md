@@ -465,7 +465,7 @@ It should be possible to create datasets and projects.
 
 # Operation Manual
 
-If web application python code is modified, gunicorn should be restarted:
+If web the application python code or configuration (e.g. settings_local.py) is modified, gunicorn must be restarted to load the new code/configuration:
 
 ```bash
 sudo systemctl restart gunicorn
