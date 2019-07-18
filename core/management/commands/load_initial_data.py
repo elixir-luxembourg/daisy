@@ -286,6 +286,7 @@ class Command(BaseCommand):
         self.create_sensitivity_classes()
         self.create_legal_basis_types()
         self.create_personal_data_types()
+        self.create_restriction_classes()
         self.create_document_types()
         self.create_funding_sources()
         self.create_storage_resources()

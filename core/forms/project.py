@@ -85,27 +85,26 @@ class ProjectForm(ModelForm):
         self.fields['study_terms'].widget.attrs['data-url'] = reverse_lazy('api_termsearch', kwargs={'category': TermCategory.study.value})
 
 
-def clean(self):
-        """
-        Override to check if at least one PI is in the responsibles people.
-        """
-        cleaned_data = super().clean()
-        local_custodians = cleaned_data.get("local_custodians", [])
-        if not local_custodians or not local_custodians.vips().exists():
-            raise ValidationError(
-                "At least one PI must be in the responsible persons."
-            )
-        # validation for Ethics approval fields
-        has_cner = cleaned_data.get('has_cner')
-        has_erp = cleaned_data.get('has_erp')
-        cner_notes = cleaned_data.get('cner_notes')
-        erp_notes = cleaned_data.get('erp_notes')
-        if not has_cner and not has_erp:
-            if not cner_notes and not erp_notes:
+    def clean(self):
+            """
+            Override to check if at least one PI is in the responsibles people.
+            """
+            cleaned_data = super().clean()
+            local_custodians = cleaned_data.get("local_custodians", [])
+            if not local_custodians or not local_custodians.vips().exists():
                 raise ValidationError(
-                    "Please enter notes on why there is no Institutional or National Ethics approval"
+                    "At least one PI must be in the responsible persons."
                 )
-        return self.cleaned_data
+            # validation for Ethics approval fields
+            has_cner = cleaned_data.get('has_cner')
+            has_erp = cleaned_data.get('has_erp')
+            cner_notes = cleaned_data.get('cner_notes')
+            erp_notes = cleaned_data.get('erp_notes')
+            if not has_cner and not has_erp:
+                if not cner_notes and not erp_notes:
+                    self.add_error('cner_notes',  "Please enter notes on why there is no Institutional or National Ethics approval")
+                    self.add_error('erp_notes',  "Please enter notes on why there is no Institutional or National Ethics approval")
+            return self.cleaned_data
 
 
 class DatasetSelection(forms.Form):

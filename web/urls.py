@@ -71,8 +71,13 @@ web_urls = [
          name='data_declarations_add_sub_form'),
     path('data-declarations-get-contracts', data_declarations.data_declarations_get_contracts,
          name="data_declarations_get_contracts"),
+
+
+    #TODO merge the two search views into one
     path('data-declarations-autocomplete', data_declarations.data_declarations_autocomplete,
          name="data_declarations_autocomplete"),
+    path('data-dec-paginated-search', data_declarations.data_dec_paginated_search,
+         name="data_dec_paginated_search"),
 
     path('datasets/add/', DatasetCreateView.as_view(), name='dataset_add'),
     path('datasets/', dataset_list, name="datasets"),

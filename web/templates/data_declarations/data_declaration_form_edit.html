@@ -2,10 +2,9 @@
 {% load widget_tweaks %}
 
 {% block title %}Data Declaration - Edit - {{ data_declaration.title }}{% endblock %}
-
 {% block content %}
     <div class="jumbotron mt-4">
-        <h1 class="display-4">{% block content_title %}{{ data_declaration.title }}{% endblock %}</h1>
+        <h1 class="display-4">{% block content_title %}Data declaration "<strong>{{ data_declaration.title }}</strong>"{% endblock %}</h1>
     </div>
     <div class="card">
         <div class="card-body">
@@ -17,24 +16,22 @@
                     {% include '_includes/field.html' with field=form.title %}
                     <fieldset>
                         <legend>Data Source</legend>
-                        {% if data_declaration.data_declarations_parents.all %}
-                            {% for dd_parent in data_declaration.data_declarations_parents.all %}
-                                <strong>Derived from:</strong> <a href="{% url 'data_declaration' pk=dd_parent.id %}">{{ dd_parent }}</a>
-                            {% endfor %}
-                        {% endif %}
-                        {% if data_declaration.contract %}
-                            <strong>Covered by contract:</strong>  <a href="{% url 'contract' pk=data_declaration.contract.id %}">{{ data_declaration.contract }}</a>
-                        {% endif %}
                         <div class="row">
-                            <div class="col">{% include '_includes/field.html' with field=form.cohorts %}</div>
-                            <div class="col">{% include '_includes/field.html' with field=form.comments %}</div>
+                            <div class="col">
+                                {% include '_includes/field.html' with field=form.partner %}
+                                {% include '_includes/field.html' with field=form.contract %}
+                                {% include '_includes/field.html' with field=form.data_declarations_parents %}
+                            </div>
+                            <div class="col">
+                                {% include '_includes/field.html' with field=form.cohorts %}
+                                {% include '_includes/field.html' with field=form.comments %}
+                            </div>
                         </div>
                     </fieldset>
                     <fieldset>
-                        <legend>Characteristics</legend>
+                        <legend>Data types</legend>
                         <div class="row">
                             <div class="col">
-                                {% include '_includes/field.html' with field=form.deidentification_method %}
                                 {% include '_includes/field.html' with field=form.data_types_received %}
                                 {% include '_includes/field.html' with field=form.data_types_generated %}
                             </div>
@@ -54,6 +51,7 @@
                             </div>
                             <div class="col">
                                 {% include '_includes/field.html' with field=form.special_subjects_description %}
+                                {% include '_includes/field.html' with field=form.deidentification_method %}
                             </div>
                         </div>
                     </fieldset>
@@ -75,7 +73,7 @@
                                     <tr>
                                         <th colspan="3">Other Restrictions</th>
                                     </tr>
-                                    <tbody>
+                                    <tbody>project.
                                     {% for restriction_form in restriction_formset.forms %}
                                     <tr class="formset-row">
                                             <td>
@@ -97,5 +95,4 @@
             </div>
         </div>
     </div>
-
 {% endblock %}

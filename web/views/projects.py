@@ -106,20 +106,6 @@ class ProjectDetailView(DetailView):
         pk = ContentType.objects.get(model='project').pk
         context['content_type'] = pk
         context['object_id'] = self.object.pk
-        # context['document_form'] = DocumentForm(
-        #     dropzone={
-        #         #'selector': '#document_dropzone',
-        #         'datafiles': [d for d in self.object.legal_documents.all()],
-        #         "download_url": reverse_lazy('document_download', args=(0,)),
-        #         "document_edit": reverse_lazy('document_edit', args=(0,)),
-        #         "delete_url": reverse_lazy('document_delete', args=(0,)),
-        #         'config': {
-        #             # "url": reverse_lazy('document_add', content_type=pk, object_id=self.object.pk),
-        #             "maxFilesize": 5 * 1024,  # 10GB
-        #             "paramName": "content",
-        #             "dictDefaultMessage": "Drop files here to upload or click to choose the files you want to upload.",
-        #         }})
-
         context['datafiles'] = [d for d in self.object.legal_documents.all()]
 
 
