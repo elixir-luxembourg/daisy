@@ -1,16 +1,14 @@
 from django.conf import settings
 from django.contrib import messages
-from django.db import IntegrityError
-from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView
 
 from core.forms import DatasetForm
-from core.forms.dataset import ContractSelection, DatasetSelection, DatasetFormEdit
+from core.forms.dataset import DatasetFormEdit
 from core.forms.share import shareFormFactory
 from core.forms.storage_location import dataLocationFormFactory
-from core.models import Contract, Dataset, Partner
+from core.models import Dataset, Partner
 from core.models.utils import COMPANY
 from core.permissions import permission_required, CheckerMixin, constants
 from core.utils import DaisyLogger

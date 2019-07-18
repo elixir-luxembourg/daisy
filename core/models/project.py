@@ -3,7 +3,7 @@ from django.db import models
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from core import constants
-from .utils import CoreModel, COMPANY, TextFieldWithInputWidget
+from .utils import CoreModel, COMPANY
 
 
 class Project(CoreModel):

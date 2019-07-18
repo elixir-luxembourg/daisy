@@ -1,4 +1,3 @@
-import os
 
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404 , redirect, render

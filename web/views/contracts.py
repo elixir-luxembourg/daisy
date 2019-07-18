@@ -49,22 +49,6 @@ class ContractDetailView(DetailView):
         can_edit = the_user.can_edit_contract(self.object)
         context['can_edit'] = can_edit
         context['company_name'] = COMPANY
-        # context['document_form'] = DocumentForm(
-        #     dropzone={
-        #         'selector': '#document_dropzone',
-        #         'datafiles': [d for d in self.object.legal_documents.all()],
-        #         "download_url": reverse_lazy('document_download', args=(0,)),
-        #         "document_edit": reverse_lazy('document_edit', args=(0,)),
-        #         "delete_url": reverse_lazy('document_delete', args=(0,)),
-        #         'config': {
-        #             "url": reverse_lazy('document_add'),
-        #             "maxFilesize": 5 * 1024,  # 10GB
-        #             "paramName": "content",
-        #             "dictDefaultMessage": "Drop files here to upload or click to choose the files you wan't to upload.",
-        #         }
-        #     },
-        #
-        # )
         pk = ContentType.objects.get(model='contract').pk
         context['content_type'] = pk
         context['object_id'] = self.object.pk
@@ -160,78 +144,3 @@ def partner_role_delete(request, pk):
     partner_role = get_object_or_404(PartnerRole, id=pk)
     partner_role.delete()
     return HttpResponse("Partner (signatory) removed from contract.")
-
-#
-# @permission_required('EDIT', (Contract, 'pk', 'pk'))
-# def add_kv_to_contract(request, pk):
-#     if request.method == 'POST':
-#         form = KVForm(request.POST)
-#         if form.is_valid():
-#             data = form.cleaned_data
-#             contract = get_object_or_404(Contract, pk=pk)
-#             metadata = contract.metadata
-#             if metadata is None:
-#                 metadata = {}
-#             metadata.update({data['key']: data['value']})
-#             contract.metadata = metadata
-#             contract.save()
-#             messages.add_message(request, messages.SUCCESS, "Metadata added")
-#         else:
-#             error_messages = []
-#             for field, error in form.errors.items():
-#                 error_message = "{}: {}".format(field, error[0])
-#                 error_messages.append(error_message)
-#             messages.add_message(request, messages.ERROR, "\n".join(error_messages))
-#         return redirect(to='contract', pk=pk)
-#
-#     else:
-#         form = KVForm()
-#
-#     return render(request, 'modal_form.html', {'form': form, 'submit_url': request.get_full_path()})
-#
-#
-# @permission_required('EDIT', (Contract, 'pk', 'pk'))
-# def rm_kv_from_contract(request, pk, key):
-#     contract = get_object_or_404(Contract, pk=pk)
-#     metadata = contract.metadata
-#     metadata.pop(key, None)
-#     contract.metadata = metadata
-#     contract.save()
-#     return HttpResponse("Metadata removed")
-
-## DATASET METHODS ##
-#
-# @permission_required('EDIT', (Collaboration, 'pk', 'pk'))
-# def collaboration_dataset_add(request, pk):
-#     contract = get_object_or_404(Collaboration, pk=pk)
-#     if request.method == 'GET':
-#         form = DatasetSelection()
-#         return render(request, 'modal_form.html', {
-#             'contract': contract,
-#             'form': form,
-#             'submit_url': request.get_full_path(),
-#         })
-#     if request.method == 'POST':
-#         form = DatasetSelection(request.POST)
-#         if form.is_valid():
-#             try:
-#                 dataset = form.cleaned_data['dataset']
-#             except IntegrityError as e:
-#                 messages.add_message(request, messages.ERROR, e)
-#                 return redirect('contract', pk=contract.pk)
-#
-#             messages.add_message(request, messages.SUCCESS, 'Dataset added')
-#             return redirect('contract', pk=contract.pk)
-#         return render(request, 'modal_form.html', {
-#             'contract': contract,
-#             'form': form,
-#             'submit_url': request.get_full_path(),
-#         })
-#
-#
-# @permission_required('EDIT', (Collaboration, 'pk', 'pk'))
-# def collaboration_dataset_remove(request, pk, dataset_id):
-#     # TODO: check that contract is membership with project
-#     contract = get_object_or_404(Collaboration, pk=pk)
-#     dataset = get_object_or_404(Dataset, pk=dataset_id)
-#     return HttpResponse("Dataset removed")
