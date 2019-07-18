@@ -183,10 +183,13 @@ class DatadeclarationDetailView(DetailView):
         return context
 
 
+
 class DatadeclarationEditView(CheckerMixin, UpdateView):
     model = DataDeclaration
     template_name = 'data_declarations/data_declaration_form_edit.html'
+    permission_required = constants.Permissions.EDIT
 
+    
     def get(self, request, *args, **kwargs):
 
         data_declaration = self.get_object()
