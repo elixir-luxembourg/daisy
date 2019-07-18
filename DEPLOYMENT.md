@@ -1,6 +1,6 @@
 # Installation
 
-## Base
+## Base
 
 ```bash
 sudo yum update
@@ -28,7 +28,7 @@ sudo /usr/local/bin/pip install -e /home/daisy/daisy
 sudo /usr/local/bin/pip install gunicorn
 ```
 
-## NPM and Node.js
+## NPM and Node.js
 
 ```bash
 curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
@@ -74,6 +74,10 @@ sudo chmod -R 775 /var/solr
 ```
 
 <span style="color:red;">Review the 'schema.xml' file you just copied. Ensure that all file references inside it (e.g. stopwords.txt) actually exist in the path specified.</span>
+
+<p style="color:red;">By default, the Solr instance listens on port 8983 on all interfaces.
+Solr has no authentication system. It is crucial to secure it by either blocking external accesses to the Solr port or by changing it's configuration to listen only on localhost (see https://stackoverflow.com/a/1955591)</p>
+
 
 You can restart solr and check that it is working with the following commands
 
@@ -465,7 +469,7 @@ It should be possible to create datasets and projects.
 
 # Operation Manual
 
-If web application python code is modified, gunicorn should be restarted:
+If the web application python code (including the configuration files such as settings_local.py) is modified, gunicorn must be restarted to load the new code/configuration:
 
 ```bash
 sudo systemctl restart gunicorn
