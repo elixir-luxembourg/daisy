@@ -88,7 +88,7 @@ sudo systemctl restart solr
 
 ## Gunicorn
 
-1) Create the file ```/etc/systemd/system/gunicorn.service``` as the _sudo_ user and with the following content:
+1) Create the file ```/etc/systemd/system/gunicorn.service``` as the _root_ user or with _sudo_ and with the following content:
 
 
 ```
@@ -156,8 +156,8 @@ CELERYD_LOG_FILE="/home/daisy/log/celery/%n%I.log"
 CELERYD_LOG_LEVEL="DEBUG"
 ```
 
-Create the  folders '/var/run/celery/' as  _sudo_ and the folder '/home/daisy/log/celery' as _daisy_ must be created. 
-Create also the service config file '/etc/systemd/system/celery_worker.service' as _sudo_ and with the following content:
+Create the  folders '/var/run/celery/' as _root_ or with _sudo_ and the folder '/home/daisy/log/celery' as _daisy_ must be created. 
+Create also the service config file '/etc/systemd/system/celery_worker.service' as _root_ or with _sudo_ and with the following content:
 
 ```
 [Unit]
@@ -369,24 +369,23 @@ exit
     sudo systemctl enable nginx
     sudo systemctl start nginx
     ```
-1) As _sudo_ create the file ```/etc/nginx/conf.d/daisy.conf``` with the following content:
+    
+1) As _root_ or with _sudo_ create the file ```/etc/nginx/conf.d/ssl.conf``` with the following content:
 
-    ```
+   ```
     proxy_connect_timeout       600;
     proxy_send_timeout          600;
     proxy_read_timeout          600;
     send_timeout                600;
     
     server {
-        listen 80;
         server_name daisy.com;
     
         location /static {
             alias /home/daisy/static;
             autoindex on;
         }
-    
-    
+        
         location / {
             proxy_set_header Host $http_host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -402,6 +401,18 @@ exit
     }
     ```
     Changing daisy.com to your particular case.  
+    
+1) To have a redirect from http to https, as _root_ or with _sudo_ create the file ```/etc/nginx/conf.d/daisy.conf``` with the following content:
+
+    ```
+    server {
+      listen 80;
+      server_name daisy.com;
+      return 301 https://daisy.com$request_uri;
+    }
+    ```
+    Changing daisy.com to your particular case.
+    
 1) Create self-signed certificates if they already don't exist.
 
     ```bash
