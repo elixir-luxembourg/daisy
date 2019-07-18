@@ -98,17 +98,17 @@
             <div class="card-body">
                 <h2 class="card-title">Ethics</h2>
                 <dl>
-                    <dt>Has CNER?</dt>
+                    <dt>Has national approval ?</dt>
                     <dd>{{ project.has_cner | yesno }} {% if project.cner_notes %}
                         <a href="#" data-toggle="modal" data-target="#modal"
                            data-modal-content="{{ project.cner_notes }}"
-                           data-modal-title="CNER notes">(view notes)
+                           data-modal-title="National ethics approval remarks">(view notes)
                         </a>{% endif %}</dd>
-                    <dt>Has UniLu ERP?</dt>
+                    <dt>Has institutional approval ?</dt>
                     <dd>{{ project.has_erp | yesno }} {% if project.erp_notes %}
                         <a href="#" data-toggle="modal" data-target="#modal"
                            data-modal-content="{{ project.erp_notes }}"
-                           data-modal-title="ERP notes">(view notes)
+                           data-modal-title="Institutional ethics approval remarks">(view notes)
                         </a>{% endif %}</dd>
                 </dl>
             </div>
@@ -143,7 +143,6 @@
 
 
         {#   CONTACTS     #}
-
         <div class="mh-100 card m-2 col">
             <div class="card-body">
                 {% if can_edit %}

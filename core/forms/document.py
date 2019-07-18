@@ -15,7 +15,6 @@ class DocumentForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        dropzone = kwargs.pop('dropzone', {})
         super().__init__(*args, **kwargs)
 
 

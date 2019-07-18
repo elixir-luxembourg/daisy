@@ -115,11 +115,12 @@ $(document).ready(function () {
         return def.promise();
     }
 
-    function _loadModal(modal, url, button, postMode, ajaxRefreshSelector, ajaxRefreshParam, redirectURI, data) {
+    function _loadModal(modal, title, url, button, postMode, ajaxRefreshSelector, ajaxRefreshParam, redirectURI, data) {
         if (data !== undefined) {
             url = url.split('?')[0];
             url += '?' + _insertParamInURL(ajaxRefreshParam, data);
         }
+        modal.find('.modal-title').text(title);
         modal.find('.modal-body').load(url, function () {
 
             modal.bootstrapMaterialDesign();
@@ -189,7 +190,7 @@ $(document).ready(function () {
         var ajaxRefreshParam = button.data('ajax-refresh-param');
         var redirectURI = button.data('ajax-redirect-uri');
         if (ajaxUrl !== undefined) {
-            _loadModal(modal, ajaxUrl, button, postMode, ajaxRefreshSelector, ajaxRefreshParam, redirectURI);
+            _loadModal(modal, title, ajaxUrl, button, postMode, ajaxRefreshSelector, ajaxRefreshParam, redirectURI);
         } else {
             modal.find('.modal-body').text(content);
         }
