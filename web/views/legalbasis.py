@@ -1,4 +1,3 @@
-import os
 
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404 , redirect, render
@@ -16,18 +15,6 @@ from web.views.utils import AjaxViewMixin
 log = DaisyLogger(__name__)
 
 
-# class ShareDetailView(DetailView):
-#     model = LegalBasis
-#     template_name = 'shares/share.html'
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         the_user = self.request.user
-#         can_edit = the_user.can_edit_dataset(self.object.dataset)
-#         context['can_edit'] = can_edit
-#         return context
-
-
 class LegalBasisCreateView(CreateView, AjaxViewMixin):
     model = LegalBasis
     template_name = 'legalbases/legalbasis_form.html'
@@ -64,41 +51,6 @@ class LegalBasisCreateView(CreateView, AjaxViewMixin):
             return reverse_lazy('dataset', kwargs={'pk': self.dataset.pk})
         return super().get_success_url()
 
-class LegalBasisCreateView(CreateView, AjaxViewMixin):
-    model = LegalBasis
-    template_name = 'legalbases/legalbasis_form.html'
-    form_class = LegalBasisForm
-
-    def dispatch(self, request, *args, **kwargs):
-        """
-        Hook method to save related dataset.
-        """
-        self.dataset = None
-        dataset_pk = kwargs.get('dataset_pk')
-        if dataset_pk:
-            self.dataset = get_object_or_404(Dataset, pk=dataset_pk)
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        """If the form is valid, save the associated model and add to the dataset"""
-        self.object = form.save(commit=False)
-        if self.dataset:
-            self.object.dataset = self.dataset
-
-        self.object.save()
-        messages.add_message(self.request, messages.SUCCESS, "Legal basis definition created")
-        return super().form_valid(form)
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        if self.dataset:
-            kwargs['dataset'] = self.dataset
-        return kwargs
-
-    def get_success_url(self, **kwargs):
-        if self.dataset:
-            return reverse_lazy('dataset', kwargs={'pk': self.dataset.pk})
-        return super().get_success_url()
 
 
 def edit_legalbasis(request, pk, dataset_pk):

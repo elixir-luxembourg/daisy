@@ -1,16 +1,14 @@
 from django.conf import settings
 from django.contrib import messages
-from django.db import IntegrityError
-from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView
 
 from core.forms import DatasetForm
-from core.forms.dataset import ContractSelection, DatasetSelection, DatasetFormEdit
+from core.forms.dataset import DatasetFormEdit
 from core.forms.share import shareFormFactory
 from core.forms.storage_location import dataLocationFormFactory
-from core.models import Contract, Dataset, Partner
+from core.models import Dataset, Partner
 from core.models.utils import COMPANY
 from core.permissions import permission_required, CheckerMixin, constants
 from core.utils import DaisyLogger
@@ -114,113 +112,6 @@ def dataset_list(request):
             ('End of storage duration', 'end_of_storage_duration')
         ]
     })
-
-
-## COLLABORATION METHODS ##
-#
-# @permission_required('EDIT', (Dataset, 'pk', 'pk'))
-# def dataset_contract_add(request, pk):
-#     dataset = get_object_or_404(Dataset, pk=pk)
-#     if request.method == 'GET':
-#         form = ContractSelection(dataset=dataset)
-#         return render(request, 'modal_form.html', {
-#             'dataset': dataset,
-#             'form': form,
-#             'submit_url': request.get_full_path(),
-#         })
-#     if request.method == 'POST':
-#         form = ContractSelection(request.POST, dataset=dataset)
-#         if form.is_valid():
-#             try:
-#                 contract = form.cleaned_data['contract']
-#             except IntegrityError as e:
-#                 messages.add_message(request, messages.ERROR, e)
-#                 return redirect('dataset', pk=dataset.pk)
-#
-#             messages.add_message(request, messages.SUCCESS, 'Dataset added')
-#             return redirect('dataset', pk=dataset.pk)
-#         return render(request, 'modal_form.html', {
-#             'dataset': dataset,
-#             'form': form,
-#             'submit_url': request.get_full_path(),
-#         })
-#
-#
-# @permission_required('EDIT', (Dataset, 'pk', 'pk'))
-# @permission_required('DELETE', (Contract, 'pk', 'cid'))
-# def dataset_contract_remove(request, pk, cid):
-#     dataset = get_object_or_404(Dataset, pk=pk)
-#     contract = get_object_or_404(Contract, pk=cid)
-#     messages.add_message(request, messages.SUCCESS, 'Contract removed.')
-#     return HttpResponse("Contract deleted")
-#
-#
-# @permission_required('EDIT', (Dataset, 'pk', 'pk'))
-# def dataset_dataset_link(request, pk):
-#     dataset = get_object_or_404(Dataset, pk=pk)
-#     if request.method == 'GET':
-#         form = DatasetSelection(dataset=dataset)
-#         return render(request, 'modal_form.html', {
-#             'dataset': dataset,
-#             'form': form,
-#             'submit_url': request.get_full_path(),
-#         })
-#     if request.method == 'POST':
-#         form = DatasetSelection(request.POST, dataset=dataset)
-#         if form.is_valid():
-#             used = form.cleaned_data['dataset']
-#             try:
-#                 pass
-#             except IntegrityError as e:
-#                 messages.add_message(request, messages.ERROR, e)
-#                 return redirect('dataset', pk=dataset.pk)
-#             messages.add_message(request, messages.SUCCESS, 'Datasets linked')
-#             return redirect('dataset', pk=dataset.pk)
-#         return render(request, 'modal_form.html', {
-#             'dataset': dataset,
-#             'form': form,
-#             'submit_url': request.get_full_path(),
-#         })
-#
-#
-# @permission_required('EDIT', (Dataset, 'pk', 'target_id'))
-# def dataset_dataset_unlink(request, target_id, used_id):
-#     target = get_object_or_404(Dataset, pk=target_id)
-#     used = get_object_or_404(Dataset, pk=used_id)
-#     messages.add_message(request, messages.SUCCESS, 'Link removed.')
-#     return HttpResponse("ink deleted")
-
-
-# @permission_required('EDIT', (Dataset, 'pk', 'pk'))
-# def dataset_data_add(request, pk):
-#     dataset = get_object_or_404(Dataset, pk=pk)
-#     if request.method == 'GET':
-#         backend = request.GET.get('backend', None)
-#         if backend is not None:
-#             backend = get_object_or_404(StorageResource, pk=int(backend))
-#         form = dataLocationFormFactory(backend=backend)
-#         return render(request, 'modal_form.html', {
-#             'dataset': dataset,
-#             'form': form,
-#             'submit_url': request.get_full_path(),
-#         })
-#     if request.method == 'POST':
-#         backend = request.POST.get('backend', None)
-#         if backend is not None:
-#             backend = get_object_or_404(StorageResource, pk=int(backend))
-#             form = dataLocationFormFactory(request.POST, backend=backend)
-#             if form.is_valid():
-#                 datalocation = form.save()
-#                 dataset.data.add(datalocation)
-#                 messages.add_message(request, messages.SUCCESS, 'File added')
-#                 return redirect('dataset', pk=dataset.pk)
-#             return render(request, 'modal_form.html', {
-#                 'dataset': dataset,
-#                 'form': form,
-#                 'submit_url': request.get_full_path(),
-#             })
-#         messages.add_message(request, messages.ERROR, 'No valid backend detected.')
-#         return redirect('dataset', pk=dataset.pk)
 
 
 @permission_required('EDIT', (Dataset, 'pk', 'pk'))

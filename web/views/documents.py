@@ -10,7 +10,7 @@ from django.contrib import messages
 from core.constants import Permissions
 from core.forms import DocumentForm
 from core.models import Document
-from core.permissions import permission_required_from_content_type, permission_required
+from core.permissions import permission_required
 from core.utils import DaisyLogger
 
 

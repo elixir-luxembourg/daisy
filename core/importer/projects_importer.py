@@ -7,7 +7,7 @@ from core.models import Partner, Project, Publication, Contact, ContactType
 from core.models import User
 
 
-#from core.models.utils import COMPANY
+from django.conf import settings
 
 PRINCIPAL_INVESTIGATOR = 'Principal_Investigator'
 
@@ -121,7 +121,7 @@ class ProjectsImporter:
         local_personnel = []
         external_contacts = []
 
-        home_organisation =  Partner.objects.get(acronym='LCSB')
+        home_organisation =  Partner.objects.get(acronym=settings.COMPANY)
 
         for contact_dict in project_dict.get('contacts', []):
             first_name = contact_dict.get('first_name').strip()
