@@ -16,18 +16,6 @@ from web.views.utils import AjaxViewMixin
 log = DaisyLogger(__name__)
 
 
-# class ShareDetailView(DetailView):
-#     model = LegalBasis
-#     template_name = 'shares/share.html'
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         the_user = self.request.user
-#         can_edit = the_user.can_edit_dataset(self.object.dataset)
-#         context['can_edit'] = can_edit
-#         return context
-
-
 class LegalBasisCreateView(CreateView, AjaxViewMixin):
     model = LegalBasis
     template_name = 'legalbases/legalbasis_form.html'
