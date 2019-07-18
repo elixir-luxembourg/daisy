@@ -48,6 +48,7 @@ class DataDeclaration(CoreModel):
         "core.Partner",
         related_name="data_declarations",
         null=True,
+        blank=True,
         on_delete=models.SET_NULL,
         help_text='The Partner/Institute that have provided this data.'
     )
@@ -56,13 +57,14 @@ class DataDeclaration(CoreModel):
         "core.Contract",
         related_name="data_declarations",
         null=True,
+        blank=True,
         on_delete=models.SET_NULL,
         help_text='The Contract that ensures the legal receipt, keeping and analysis of this data.'
     )
 
     cohorts = models.ManyToManyField("core.Cohort", blank=True, related_name="data_declarations",  help_text='If the data is collected from subjects from a known/predefined Cohort please select it from the list.')
 
-    comments = models.TextField(verbose_name='Other comments', blank=True, null=True, help_text='Pleae provide any remarks on the source and nature of data.')
+    comments = models.TextField(verbose_name='Remarks on data source', blank=True, null=True, help_text='Pleaes provide any remarks on the source and nature of data.')
 
     consent_status = EnumChoiceField(ConsentStatus, default=ConsentStatus.unknown, blank=False, null=False,
                                      help_text='Is the consent given by data subjects heterogeneous or homogeneous. Homogeneous consent  means that all subjects\' data have the same restrictions. Heterogeneous means that there are differences among consents given by subjects, therefore  there are differing use restrictions on data.')
@@ -78,7 +80,7 @@ class DataDeclaration(CoreModel):
                                                  related_name="data_declarations_received",
                                                  verbose_name='Data types received', help_text='Select from the list the types of data received.')
 
-    data_types_notes = models.TextField(verbose_name="Data types notes", blank=True, null=True, help_text='Remarks on data types, especially if dealing with a data type not present in the predefined list.')
+    data_types_notes = models.TextField(verbose_name="Remarks on data types", blank=True, null=True, help_text='Remarks on data types, especially if dealing with a data type not present in the predefined list.')
 
     deidentification_method = EnumChoiceField(DeidentificationMethod, verbose_name='Deidentification method',
                                               default=DeidentificationMethod.pseudonymization, blank=False, null=False, help_text='How has the data been de-identified, is it pseudonymized or anonymized?')
@@ -135,8 +137,8 @@ class DataDeclaration(CoreModel):
                                  help_text='This is the unique identifier used by DAISY for this dataset. This field annot be edited.')
 
 
-    data_declarations_parents = models.ManyToManyField('core.DataDeclaration', verbose_name="", blank=True,
-                                                       help_text='If this data declaration is based on or derived from an earlier declaration, then this field points to that ancestor/source declaration.',
+    data_declarations_parents = models.ManyToManyField('core.DataDeclaration', verbose_name="Derived/re-used from:", blank=True,
+                                                       help_text='If this data declaration is based on or derived from an earlier data declaration, then select ancestor data declaration.',
                                                        related_name='data_declarations_derivated')
 
     def copy(self, source_data_declaration, excluded_fields=None, ignore_many_to_many=False):
@@ -175,6 +177,15 @@ class DataDeclaration(CoreModel):
 
     def __str__(self):
         return self.title
+
+
+    def get_long_name(self):
+        lname =  self.title + " Dataset: "+ self.dataset.title + ", Project: "
+        if (self.dataset.project is not None and self.dataset.project.title is not None):
+             lname +=  self.dataset.project.title
+        else:
+            lname +=   "-"
+        return lname
 
     @property
     def data_types(self):

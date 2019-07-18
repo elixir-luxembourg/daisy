@@ -2,7 +2,7 @@ from .cohort import CohortForm, CohortFormEdit
 from .contact import ContactForm, PickContactForm
 from .contract import ContractForm, ContractFormEdit, PartnerRoleForm
 from .data_declaration import DataDeclarationForm, DataDeclarationSubFormOther, DataDeclarationSubFormNew, \
-    DataDeclarationDetailsForm, DataDeclarationSubFormFromExisting
+    DataDeclarationEditForm, DataDeclarationSubFormFromExisting
 from .dataset import DatasetForm
 from .document import DocumentForm
 from .partner import PartnerForm
@@ -22,7 +22,7 @@ __all__ = [
     "PickContactForm",
     "DatasetForm",
     "DataDeclarationForm",
-    "DataDeclarationDetailsForm",
+    "DataDeclarationEditForm",
     "DataDeclarationSubFormOther",
     "DataDeclarationSubFormNew",
     "DataDeclarationSubFormFromExisting",

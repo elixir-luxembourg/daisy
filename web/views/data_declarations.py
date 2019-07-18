@@ -11,12 +11,15 @@ from haystack.query import SearchQuerySet
 from django.db import IntegrityError, transaction
 from core.constants import Permissions
 from core.forms import DataDeclarationForm, DataDeclarationSubFormOther, DataDeclarationSubFormNew, \
-    DataDeclarationSubFormFromExisting, DataDeclarationDetailsForm
+    DataDeclarationSubFormFromExisting, DataDeclarationEditForm
 from core.forms.data_declaration import RestrictionFormset
 from core.models import Dataset, Partner, DataDeclaration, UseRestriction
-
 from core.utils import DaisyLogger
 from core.permissions import permission_required, CheckerMixin, constants
+from django.core.paginator import Paginator
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.db.models import Q
+
 log = DaisyLogger(__name__)
 
 DATA_DECLARATIONS_SUB_FORMS = [
@@ -84,6 +87,9 @@ def data_declarations_get_contracts(request):
     return render(request, 'data_declarations/data_declaration_sub_form_new_contract.html', context=context_form)
 
 
+# Methods data_declarations_autocomplete  and data_dec_paginated_search
+# should ideally be
+
 def data_declarations_autocomplete(request):
     def list_or_none(attribute, result):
         value = getattr(result, attribute)
@@ -100,12 +106,42 @@ def data_declarations_autocomplete(request):
             local_custodians = list_or_none('local_custodians', result)
             data_types = list_or_none('data_types', result)
             suggestion = {"id": result.pk, "title": result.title, "project": result.project, "cohorts": cohorts,
-                          "local_custodians": local_custodians, "data_types": data_types}
+                          "local_custodians": local_custodians, "data_types": data_types, "text":result.title + ", Project: "+result.project}
             suggestions.append(suggestion)
     the_data = json.dumps({
         'results': suggestions
     })
     return HttpResponse(the_data, content_type='application/json')
+
+
+def data_dec_paginated_search(request):
+
+    search = request.GET.get('search')
+    page = request.GET.get('page')
+
+
+    matching_declarations = DataDeclaration.objects.filter(Q(title__icontains=search) | Q(dataset__title__icontains=search)| Q(dataset__project__title__icontains=search)).order_by('id')
+
+    paginator = Paginator(matching_declarations, 25)
+
+    if int(page) > paginator.num_pages:
+        return HttpResponseBadRequest("invalid page parameter")
+
+    matching_decs_on_page = paginator.get_page(page)
+
+    results = []
+    for matching_dec in matching_decs_on_page:
+        results.append({
+            "id": matching_dec.id,
+            "text": matching_dec.get_long_name()
+        })
+
+    return JsonResponse({
+        "results": results,
+        "pagination": {
+            "more": int(page) < paginator.num_pages
+        }
+    })
 
 
 @require_http_methods(["DELETE"])
@@ -135,49 +171,6 @@ def data_declarations_duplicate(request, pk):
     new_data_declaration.copy(data_declaration, excluded_fields, ignore_many_to_many=False)
     return redirect('dataset', pk=data_declaration.dataset.pk)
 
-#
-# @permission_required(Permissions.EDIT, (DataDeclaration, 'pk', 'pk'))
-# def data_declarations_edit(request, pk):
-#     data_declaration = get_object_or_404(DataDeclaration, id=pk)
-#     if request.method == 'POST':
-#         declaration_form = DataDeclarationDetailsForm(request.POST, instance=data_declaration)
-#         restriction_formset = RestrictionFormset(request.POST)
-#
-#         import operator
-#         formset_valid = reduce(operator.and_, [res_form.is_valid() for res_form in restriction_formset], True)
-#
-#         if declaration_form.is_valid() and formset_valid:
-#             try:
-#                 with transaction.atomic():
-#                     declaration_form.save()
-#                     #Replace the old use restrictions with the new
-#                     UseRestriction.objects.filter(data_declaration=data_declaration).delete()
-#                     for restriction_form in restriction_formset:
-#                         if restriction_form.is_valid():
-#                             restriction = restriction_form.save(commit=False)
-#                             restriction.data_declaration = data_declaration
-#                             restriction.save()
-#
-#                     messages.add_message(request, messages.SUCCESS, "data declaration edited")
-#             except IntegrityError:
-#             #If the transaction failed
-#                 messages.add_message(request, messages.ERROR, "An error occurred when saving data declaration")
-#             return redirect("dataset", pk=data_declaration.dataset.id)
-#     else:
-#         declaration_form = DataDeclarationDetailsForm(instance=data_declaration)
-#         # restriction_formset = RestrictionFormset(
-#         #     queryset=data_declaration.use_restrictions.only('restriction_class', 'notes'))
-#         restriction_data = [{'restriction_class': l.restriction_class, 'notes': l.notes}
-#                      for l in data_declaration.data_use_restrictions.all()]
-#         restriction_formset = RestrictionFormset(initial=restriction_data)
-#     return render(request, 'data_declarations/edit_form.html', {
-#         'form': declaration_form,
-#         'submit_url': request.get_full_path(),
-#         'data_declaration': data_declaration,
-#         'restriction_formset': restriction_formset,
-#     })
-#
-
 
 class DatadeclarationDetailView(DetailView):
     model = DataDeclaration
@@ -198,7 +191,7 @@ class DatadeclarationEditView(CheckerMixin, UpdateView):
 
         data_declaration = self.get_object()
 
-        declaration_form = DataDeclarationDetailsForm(instance=data_declaration)
+        declaration_form = DataDeclarationEditForm(instance=data_declaration)
         restriction_data = [{'restriction_class': l.restriction_class, 'notes': l.notes}
                             for l in data_declaration.data_use_restrictions.all()]
         restriction_formset = RestrictionFormset(initial=restriction_data)
@@ -210,10 +203,9 @@ class DatadeclarationEditView(CheckerMixin, UpdateView):
         })
 
 
-
     def post(self, request, **kwargs):
         data_declaration = self.get_object()
-        declaration_form = DataDeclarationDetailsForm(request.POST, instance=data_declaration)
+        declaration_form = DataDeclarationEditForm(request.POST, instance=data_declaration)
         restriction_formset = RestrictionFormset(request.POST)
 
         import operator
