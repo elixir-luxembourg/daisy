@@ -64,7 +64,7 @@ class DataDeclaration(CoreModel):
 
     cohorts = models.ManyToManyField("core.Cohort", blank=True, related_name="data_declarations",  help_text='If the data is collected from subjects from a known/predefined Cohort please select it from the list.')
 
-    comments = models.TextField(verbose_name='Remarks on data source', blank=True, null=True, help_text='Pleaes provide any remarks on the source and nature of data.')
+    comments = models.TextField(verbose_name='Remarks on data source', blank=True, null=True, help_text='Please provide any remarks on the source and nature of data.')
 
     consent_status = EnumChoiceField(ConsentStatus, default=ConsentStatus.unknown, blank=False, null=False,
                                      help_text='Is the consent given by data subjects heterogeneous or homogeneous. Homogeneous consent  means that all subjects\' data have the same restrictions. Heterogeneous means that there are differences among consents given by subjects, therefore  there are differing use restrictions on data.')

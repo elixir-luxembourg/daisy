@@ -1,14 +1,14 @@
 
-from django.http import JsonResponse, Http404, HttpResponse
+from django.http import JsonResponse,  HttpResponse
 from django.shortcuts import get_object_or_404 , redirect, render
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.urls import reverse_lazy
 from core.forms import LegalBasisForm
 from core.forms.legal_basis import LegalBasisEditForm
 from core.models import LegalBasis, Dataset
-from core.permissions import permission_required_from_content_type, permission_required
+from core.permissions import permission_required
 from core.utils import DaisyLogger
 from web.views.utils import AjaxViewMixin
 
@@ -52,7 +52,7 @@ class LegalBasisCreateView(CreateView, AjaxViewMixin):
         return super().get_success_url()
 
 
-
+@permission_required('EDIT', (Dataset, 'pk', 'dataset_pk'))
 def edit_legalbasis(request, pk, dataset_pk):
     # log.debug('editing legal basis', post=request.POST)
     legalbasis = get_object_or_404(LegalBasis, pk=pk)
@@ -75,8 +75,10 @@ def edit_legalbasis(request, pk, dataset_pk):
     log.debug(submit_url=request.get_full_path())
     return render(request, 'modal_form.html', {'form': form, 'submit_url': request.get_full_path() })
 
+
+
 @require_http_methods(["DELETE"])
-@permission_required('EDIT', (Dataset, 'pk', 'dataset_pk'))
+@permission_required('DELETE', (Dataset, 'pk', 'dataset_pk'))
 def remove_legalbasis(request, dataset_pk, legalbasis_pk):
     legbasis = get_object_or_404(LegalBasis, pk=legalbasis_pk)
     dataset = get_object_or_404(Dataset, pk=dataset_pk)

@@ -1,34 +1,43 @@
 from django.contrib import messages
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.http import HttpResponse, JsonResponse
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView
+from django.shortcuts import get_object_or_404 , redirect, render
 
 from core.forms.share import ShareForm, shareFormFactory, ShareFormEdit
 from core.models import Share, Dataset, Partner
 from core.permissions import permission_required
 from web.views.utils import AjaxViewMixin
-
-class ShareEditView(UpdateView):
-    model = Share
-    template_name = 'shares/share_form_edit.html'
-    form_class = ShareFormEdit
-
-    def get_success_url(self):
-        return reverse_lazy('dataset', kwargs={'pk': self.object.dataset.id})
+from core.utils import DaisyLogger
 
 
-class ShareDetailView(DetailView):
-    model = Share
-    template_name = 'shares/share.html'
+log = DaisyLogger(__name__)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        the_user = self.request.user
-        can_edit = the_user.can_edit_dataset(self.object.dataset)
-        context['can_edit'] = can_edit
-        return context
+
+@permission_required('DELETE', (Dataset, 'pk', 'dataset_pk'))
+def edit_share(request, pk, dataset_pk):
+    # log.debug('editing share', post=request.POST)
+    share = get_object_or_404(Share, pk=pk)
+    if request.method == 'POST':
+        form = ShareFormEdit(request.POST,  request.FILES, instance=share)
+        if form.is_valid():
+            # data = form.cleaned_data
+            form.save()
+            messages.add_message(request, messages.SUCCESS, "Share updated")
+            redirecturl = reverse_lazy('dataset', kwargs={'pk': dataset_pk})
+            return redirect(to=redirecturl, pk=share.id)
+        else:
+            return JsonResponse(
+                {'error':
+                     {'type': 'Edit error', 'messages': [str(e) for e in form.errors]
+                      }}, status=405)
+    else:
+        form = ShareFormEdit(instance=share)
+
+    log.debug(submit_url=request.get_full_path())
+    return render(request, 'modal_form.html', {'form': form, 'submit_url': request.get_full_path() })
+
 
 
 class ShareCreateView(CreateView, AjaxViewMixin):

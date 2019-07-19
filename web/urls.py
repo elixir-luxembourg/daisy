@@ -17,8 +17,6 @@ from web.views.partner import PartnerCreateView, partner_search_view, PartnerDet
 from web.views.projects import ProjectCreateView, ProjectEditView, ProjectDetailView
 from web.views.publication import PublicationCreateView, PublicationListView, PublicationEditView, \
     add_publication_to_project, remove_publication_from_project, pick_publication_for_project
-
-from web.views.share import ShareDetailView, ShareEditView
 from web.views.storage_locations import StorageLocationListView, StorageLocationEditView, \
     StorageLocationDetailView, StorageLocationCreateView, remove_storage_location_from_dataset, \
     pick_storage_location_for_dataset, add_storage_location_to_dataset
@@ -111,8 +109,8 @@ web_urls = [
     # (EXTERNAL) SHARES
     path('dataset/<int:dataset_pk>/share/add/', share.ShareCreateView.as_view(), name='dataset_share_add'),
     path('dataset/<int:dataset_pk>/share/remove/<int:share_pk>/', share.remove_share, name='dataset_share_remove'),
-    path('share/<int:pk>/', ShareDetailView.as_view(), name="share"),
-    path('share/<int:pk>/edit', ShareEditView.as_view(), name="share_edit"),
+    path('dataset/<int:dataset_pk>/share/<int:pk>/edit', share.edit_share, name="dataset_share_edit"),
+
 
 
     path('documents/<int:object_id>/<int:content_type>/add', documents.upload_document,  name='document_add'),

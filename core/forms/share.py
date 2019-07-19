@@ -31,17 +31,20 @@ class ShareForm(ModelForm):
     field_order = [
         'partner',
         'contract',
+        'data_declarations',
         'share_notes',
         'granted_on',
         'grant_expires_on'
     ]
 
 
+
+
 class ShareFormEdit(ShareForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['partner'].disabled = True
-        self.dataset = kwargs.pop('dataset', None)
+        kwargs.pop('dataset', None)
         share_inst = kwargs.pop('instance', None)
         contracts = []
         partner_contracts = PartnerRole.objects.filter(partner=share_inst.partner)
@@ -51,6 +54,7 @@ class ShareFormEdit(ShareForm):
             self.fields[
                 'contract'].help_text = 'No contracts found with selected partner, please create a contract first.'
         self.fields['contract'].choices = [(c.id, c.short_name()) for c in contracts]
+        self.fields['data_declarations'].choices = [(d.id, d.title) for d in share_inst.dataset.data_declarations.all()]
 
 
 def shareFormFactory(*args, **kwargs):
@@ -97,5 +101,6 @@ def shareFormFactory(*args, **kwargs):
                     'contract'].help_text = 'No contract has been found with selected partner, once you save one will be created automatically'
 
             self.fields['contract'].choices = [(c.id, c.short_name()) for c in contracts]
+            self.fields['data_declarations'].choices = [(d.id, d.title) for d in self.dataset.data_declarations.all()]
 
     return ShareCreationForm(*args, **kwargs, initial=initial)
