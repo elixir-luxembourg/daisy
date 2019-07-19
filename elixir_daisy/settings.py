@@ -14,6 +14,9 @@ import os
 
 import pytz
 
+COMPANY = 'LCSB'  # Used for generating some models' verbose names
+
+
 AUTH_USER_MODEL = 'core.User'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
