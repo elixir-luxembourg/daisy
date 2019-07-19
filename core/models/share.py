@@ -45,6 +45,13 @@ class Share(CoreModel):
                               blank=False,
                               help_text   = 'The dataset that has been shared.')
 
+
+    data_declarations = models.ManyToManyField('core.DataDeclaration',
+                                               blank=True,
+                                               related_name='share_records',
+                                               verbose_name='Scope of transfer',
+                                               help_text='The scope of this transfer. Leave empty if the all data declarations were transferred.')
+
     contract = models.ForeignKey(
         'core.Contract',
         verbose_name='Contract',

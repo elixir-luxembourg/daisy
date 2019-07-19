@@ -319,21 +319,30 @@
                     <thead>
                     <tr>
                         <th>Partner</th>
+                        <th>Contract</th>
                         <th>Granted On</th>
-                        <th>Notes</th>
+                        <th>Scope</th>
+                        <th>Remarks</th>
                         <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for share in dataset.shares.all %}
                         <tr>
-                            <td> <a href="{% url  'share' pk=share.pk %}"> <strong>{{ share.partner.name }}</strong></a></td>
+                            <td>{{ share.partner }}</td>
+                            <td>{{ share.contract }}</td>
                             <td>{{ share.granted_on | default:"-" }}</td>
+                            <td><p>{% for ddec in share.data_declarations.all  %}{{ ddec.title}} <br/> {% empty %}Entire dataset{% endfor %}</p></td>
                             <td>{{ share.share_notes  | default:"-" }}</td>
                             <td>
                                 {% if can_edit %}
-                                    <a href="{% url 'share_edit' pk=share.id %}"
-                                       title="edit"><i class="material-icons">edit</i></a>
+                                    <i class="material-icons clickable"
+                                       id="editshare"
+                                       title="edit this share definition"
+                                       data-toggle="modal"
+                                       data-target="#modal"
+                                       data-modal-title="Edit share definition"
+                                       data-ajax-url="{% url 'dataset_share_edit' pk=share.id dataset_pk=dataset.id %}">edit</i>
                                     <i class="red material-icons clickable"
                                        data-method="delete"
                                        data-parent-to-remove="tr"
