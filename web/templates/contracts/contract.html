@@ -38,6 +38,15 @@
                            href="{% url 'contract_edit' pk=contract.id %}"><i
                                 class="material-icons">edit</i>
                         </a>
+                        {% if not contract.is_published %}
+                            <a  id="deletecontract" class="btn btn-danger bmd-btn-fab float-right red"
+                            title="Delete"
+                            data-toggle="modal" data-target="#modal"
+                            data-ajax-url="{% url 'contract_delete' pk=contract.id %}">
+                                <i class="material-icons">delete</i>
+
+                            </a>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>

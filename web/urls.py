@@ -4,17 +4,18 @@ from web.views import contracts, datasets, permissions, api, profile, documents,
     share, notifications, data_declarations, access, legalbasis
 from web.views.access import AccessCreateView, AccessDetailView
 from web.views.cohorts import CohortCreateView, CohortEditView, \
-    CohortDetailView, cohort_list
+    CohortDetailView, cohort_list, CohortDelete
 from web.views.contact import ContactCreateView, ContactDetailView, add_contact_to_project, \
-    remove_contact_from_project, ContactEditView, pick_contact_for_project, contact_search_view
-from web.views.contracts import ContractCreateView, ContractEditView, \
+    remove_contact_from_project, ContactEditView, pick_contact_for_project, contact_search_view, ContactDelete
+from web.views.contracts import ContractCreateView, ContractEditView, ContractDelete, \
     ContractDetailView, contract_list
 from web.views.dashboard import dashboard
 from web.views.data_declarations import DatadeclarationDetailView, DatadeclarationEditView
 from web.views.datasets import DatasetDetailView, DatasetEditView, dataset_list, \
-    DatasetCreateView
-from web.views.partner import PartnerCreateView, partner_search_view, PartnerDetailView, PartnerEditView, publish_partner
-from web.views.projects import ProjectCreateView, ProjectEditView, ProjectDetailView
+    DatasetCreateView, DatasetDelete
+from web.views.partner import PartnerCreateView, PartnerDelete, partner_search_view, PartnerDetailView, PartnerEditView, publish_partner
+
+from web.views.projects import ProjectCreateView, ProjectEditView, ProjectDetailView, ProjectDelete
 from web.views.publication import PublicationCreateView, PublicationListView, PublicationEditView, \
     add_publication_to_project, remove_publication_from_project, pick_publication_for_project
 
@@ -35,12 +36,14 @@ web_urls = [
     path('definitions/cohorts/', cohort_list, name="cohorts"),
     path('definitions/cohorts/add', CohortCreateView.as_view(), name='cohort_add'),
     path('definitions/cohorts/<int:pk>/edit', CohortEditView.as_view(), name="cohort_edit"),
+    path('definitions/cohorts//<int:pk>/delete', CohortDelete.as_view(), name="cohort_delete"),
     path('definitions/cohorts/<int:pk>/', CohortDetailView.as_view(), name="cohort"),
 
     path('contracts/', contract_list, name="contracts"),
 
     path('contracts/add/', ContractCreateView.as_view(), name='contract_add'),
     path('contracts/<int:pk>/edit', ContractEditView.as_view(), name="contract_edit"),
+    path('contracts/<int:pk>/delete', ContractDelete.as_view(), name="contract_delete"),
     path('contracts/<int:pk>/', ContractDetailView.as_view(), name="contract"),
     path('contracts/<int:pk>/add-partner-role', contracts.PartnerRoleCreateView.as_view(), name="add_partner_role_to_contract"),
     path('partner_role/<int:pk>/delete', contracts.partner_role_delete, name="delete_partner_role"),
@@ -52,6 +55,7 @@ web_urls = [
     path('definitions/contact/<int:pk>/edit', ContactEditView.as_view(), name='contact_edit'),
     path('definitions/contacts/add/', ContactCreateView.as_view(), name='contact_add'),
     path('definitions/contacts', contact_search_view, name='contacts'),
+    path('definitions/contacts/<int:pk>/delete', ContactDelete.as_view(), name="contact_delete"),
 
 
     path('storage_locations', StorageLocationListView.as_view(), name='storage_locations'),
@@ -78,6 +82,7 @@ web_urls = [
     path('datasets/', dataset_list, name="datasets"),
     path('dataset/<int:pk>/', DatasetDetailView.as_view(), name="dataset"),
     path('dataset/<int:pk>/edit', DatasetEditView.as_view(), name="dataset_edit"),
+    path('dataset/<int:pk>/delete', DatasetDelete.as_view(), name="dataset_delete"),
     path('dataset/<int:pk>/add-datafile', add_storage_location_to_dataset, name="add_storage_location_to_dataset"),
     path('dataset/<int:pk>/pick-datafile', pick_storage_location_for_dataset, name="pick_storage_location_for_dataset"),
     path('dataset/<int:pk>/del-datafile/<int:storage_location_id>', remove_storage_location_from_dataset,
@@ -120,6 +125,7 @@ web_urls = [
     path('definitions/partners/<int:pk>/', PartnerDetailView.as_view(), name="partner"),
     path('definitions/partners', partner_search_view, name='partners'),
     path('definitions/partners/add/', PartnerCreateView.as_view(), name='partner_add'),
+    path('definitions/partners/<int:pk>/delete', PartnerDelete.as_view(), name="partner_delete"),
     path('definitions/partners/<int:pk>/publish_partner/', publish_partner, name='publish_partner'),
 
     path('permissions/', permissions.index, name="permissions"),
@@ -133,6 +139,7 @@ web_urls = [
     path('projects/', projects.project_list, name="projects"),
     path('projects/add/', ProjectCreateView.as_view(), name='project_add'),
     path('project/<int:pk>/edit', ProjectEditView.as_view(), name="project_edit"),
+    path('project/<int:pk>/delete', ProjectDelete.as_view(), name="project_delete"),
     path('project/<int:pk>/', ProjectDetailView.as_view(), name="project"),
     path('project/<int:pk>/add-personnel', add_personnel_to_project, name="add_personnel_to_project"),
     path('project/<int:pk>/add-dataset', datasets.DatasetCreateView.as_view(), name="datasets_add_to_project"),

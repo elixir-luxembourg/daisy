@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
-from django.views.generic import CreateView, ListView, DetailView, UpdateView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 
 from core.constants import Permissions
 from core.forms import ContractForm, ContractFormEdit, PartnerRoleForm
@@ -235,3 +235,16 @@ def partner_role_delete(request, pk):
 #     contract = get_object_or_404(Collaboration, pk=pk)
 #     dataset = get_object_or_404(Dataset, pk=dataset_id)
 #     return HttpResponse("Dataset removed")
+
+
+class ContractDelete(DeleteView):
+    model = Contract
+    template_name = '../templates/generic_confirm_delete.html'
+    success_url = reverse_lazy('contracts')
+    success_message = "Contract was deleted successfully."
+
+    def get_context_data(self, **kwargs):
+        context = super(ContractDelete, self).get_context_data(**kwargs)
+        context['action_url'] = 'contract_delete'
+        context['id'] = self.object.id
+        return context

@@ -4,7 +4,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 
 from core.forms import DatasetForm
 from core.forms.dataset import ContractSelection, DatasetSelection, DatasetFormEdit
@@ -114,6 +114,19 @@ def dataset_list(request):
             ('End of storage duration', 'end_of_storage_duration')
         ]
     })
+
+
+class DatasetDelete(DeleteView):
+    model = Dataset
+    template_name = '../templates/generic_confirm_delete.html'
+    success_url = reverse_lazy('datasets')
+    success_message = "Dataset was deleted successfully."
+
+    def get_context_data(self, **kwargs):
+        context = super(DatasetDelete, self).get_context_data(**kwargs)
+        context['action_url'] = 'dataset_delete'
+        context['id'] = self.object.id
+        return context
 
 
 ## COLLABORATION METHODS ##

@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
-from django.views.generic import CreateView, ListView, DetailView, UpdateView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 
 from core.forms import ContactForm, PickContactForm
 from core.models import Contact, Project
@@ -138,3 +138,16 @@ def contact_search_view(request):
             ('Last Name', 'last_name'),
         ]
     })
+
+
+class ContactDelete(DeleteView):
+    model = Contact
+    template_name = '../templates/generic_confirm_delete.html'
+    success_url = reverse_lazy('contacts')
+    success_message = "Contact was deleted successfully."
+
+    def get_context_data(self, **kwargs):
+        context = super(ContactDelete, self).get_context_data(**kwargs)
+        context['action_url'] = 'contact_delete'
+        context['id'] = self.object.id
+        return context

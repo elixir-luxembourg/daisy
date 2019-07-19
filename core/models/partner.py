@@ -3,7 +3,7 @@ from django.db import models
 from model_utils import Choices
 from django_countries.fields import CountryField
 
-from .utils import COMPANY, CoreModel, TextFieldWithInputWidget
+from .utils import COMPANY, CoreTractModel, TextFieldWithInputWidget
 
 GEO_CATEGORY = Choices(
     ('EU', 'EU'),
@@ -19,7 +19,7 @@ SECTOR_CATEGORY = Choices(
 )
 
 
-class Partner(CoreModel):
+class Partner(CoreTractModel):
     """
     Represents a partner.
       {
@@ -49,7 +49,7 @@ class Partner(CoreModel):
         help_text='The acronym for the partner institutes name e.g. EMBL for European Molecular Biology Laboratory.'
     )
 
-    elu_accession = models.CharField(default='-', blank=False, null=False, max_length=20)
+
 
     address = TextFieldWithInputWidget(verbose_name='Address', help_text='The contact address of the partner.')
 
@@ -66,8 +66,7 @@ class Partner(CoreModel):
     is_clinical = models.BooleanField(default=False, blank=False, null=False, verbose_name='Is clinical?',
                                       help_text='Please select if this is a clinical partner.')
 
-    is_published = models.BooleanField(default=False, blank=False, null=False, verbose_name='Is published?',
-                                       help_text='Please select if ELU_Accession is present ')
+
 
     name = TextFieldWithInputWidget(
         blank=False,

@@ -45,6 +45,17 @@
 
                 </div>
                 <div class="floating-buttons-absolute">
+                    {% if request.user.is_superuser %}
+                <p class="text-center mt-5">
+                    {% if dataset.is_published %}
+                        <a id="unpublish" class="btn btn-primary bmd-btn-fab float-right"><i
+                                class="material-icons">Unpublish</i></a>
+                    {% else %}
+                        <a id="publish" class="btn btn-primary bmd-btn-fab float-right"><i
+                                class="material-icons">publish</i></a>
+                    {% endif %}
+                </p>
+            {% endif %}
                     {% if is_admin %}
                         <a class="btn btn-default bmd-btn-fab float-right"
                            title="Permissions"
@@ -53,26 +64,37 @@
 
                         </a>
                     {% endif %}
+
                     {% if can_edit %}
                         <a class="btn btn-primary bmd-btn-fab float-right"
                            title="Edit"
-                           href="{% url 'dataset_edit' pk=dataset.id %}"><i
-                                class="material-icons">edit</i>
-
+                           href="{% url 'dataset_edit' pk=dataset.id %}">
+                            <i class="material-icons">edit</i>
                         </a>
+                        {% if not dataset.is_published %}
+                            <a  id="deletedataset" class="btn btn-danger bmd-btn-fab float-right red"
+                            title="Delete"
+                            data-toggle="modal" data-target="#modal"
+                            data-ajax-url="{% url 'dataset_delete' dataset.id %}">
+                                <i class="material-icons">delete</i>
+
+                            </a>
+                        {% endif %}
+
                     {% endif %}
+
                 </div>
             </div>
 
-            {% if request.user.is_superuser %}
-                <p class="text-center mt-5">
-                    {% if dataset.is_published %}
-                        <button id="unpublish" class="btn btn-danger btn-raised">Unpublish</button>
-                    {% else %}
-                        <button id="publish" class="btn btn-primary btn-raised">Publish</button>
-                    {% endif %}
-                </p>
-            {% endif %}
+{#            {% if request.user.is_superuser %}#}
+{#                <p class="text-center mt-5">#}
+{#                    {% if dataset.is_published %}#}
+{#                        <button id="unpublish" class="btn btn-danger btn-raised">Unpublish</button>#}
+{#                    {% else %}#}
+{#                        <button id="publish" class="btn btn-primary btn-raised">Publish</button>#}
+{#                    {% endif %}#}
+{#                </p>#}
+{#            {% endif %}#}
         </div>
     </div>
 
@@ -161,7 +183,7 @@
                                 data-modal-title="Add a legal basis definition"
                                 data-ajax-url="{% url 'dataset_legalbasis_add' dataset_pk=dataset.id %}"
                                 data-post-mode="true"
-                                data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}">
+                                    x>
                             <i class="material-icons">add</i>
                         </button>
                     </div>

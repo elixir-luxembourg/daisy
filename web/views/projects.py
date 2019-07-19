@@ -5,7 +5,7 @@ from django.db import transaction, IntegrityError
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, DetailView, UpdateView
+from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 
 from core import constants
 from core.forms.contract import ContractForm
@@ -260,3 +260,18 @@ def project_contract_remove(request, pk, cid):
     contract = get_object_or_404(Contract, pk=cid)
     contract.delete()
     return HttpResponse("Contract deleted")
+
+
+class ProjectDelete(DeleteView):
+    model = Project
+    template_name = '../templates/generic_confirm_delete.html'
+    success_url = reverse_lazy('projects')
+    action_url = 'project_delete'
+    success_message = "Project was deleted successfully."
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectDelete, self).get_context_data(**kwargs)
+        context['action_url'] = 'project_delete'
+        context['id'] = self.object.id
+        return context
+
