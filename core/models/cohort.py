@@ -1,9 +1,9 @@
 from django.db import models
 
-from .utils import COMPANY, CoreTractModel, TextFieldWithInputWidget
+from .utils import COMPANY, CoreTrackedModel, TextFieldWithInputWidget
 
 
-class Cohort(CoreTractModel):
+class Cohort(CoreTrackedModel):
     class Meta:
         app_label = 'core'
         get_latest_by = "added"
@@ -13,10 +13,6 @@ class Cohort(CoreTractModel):
         help_text = "Cohorts are  studies that collect data and/or biosamples from a group of participants. " \
                     "Longitudinal, case-control, family studies are typical examples of cohorts."
 
-    # elu_accession = TextFieldWithInputWidget(blank=False, null=False, unique=True,
-    #                                          verbose_name='{} accession number'.format(COMPANY),
-    #                                          help_text='The reference identifier for this cohort in {} databases/applications.'.format(
-    #                                              COMPANY))
 
     ethics_confirmation =  models.BooleanField(default=True, blank=False, null=False,
                                                verbose_name='Confirmation of Ethics Approval?',

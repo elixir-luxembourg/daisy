@@ -3,7 +3,7 @@ from django.db import models
 from model_utils import Choices
 from django_countries.fields import CountryField
 
-from .utils import COMPANY, CoreTractModel, TextFieldWithInputWidget
+from .utils import  CoreTrackedModel, TextFieldWithInputWidget
 
 GEO_CATEGORY = Choices(
     ('EU', 'EU'),
@@ -19,7 +19,7 @@ SECTOR_CATEGORY = Choices(
 )
 
 
-class Partner(CoreTractModel):
+class Partner(CoreTrackedModel):
     """
     Represents a partner.
       {

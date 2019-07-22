@@ -7,10 +7,10 @@ from django.urls import reverse
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from core import constants
-from .utils import CoreTractModel, TextFieldWithInputWidget
+from .utils import CoreTrackedModel, TextFieldWithInputWidget
 
 
-class Dataset(CoreTractModel):
+class Dataset(CoreTrackedModel):
     class Meta:
         app_label = 'core'
         get_latest_by = "added"

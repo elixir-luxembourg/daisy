@@ -19,7 +19,7 @@ class CoreModel(models.Model):
         abstract = True
 
 
-class CoreTractModel(CoreModel):
+class CoreTrackedModel(CoreModel):
     is_published = models.BooleanField(default=False,
                                        blank=False,
                                        verbose_name='Is published?')
