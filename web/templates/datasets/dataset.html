@@ -261,7 +261,7 @@
                                 data-toggle="modal"
                                 data-target="#modal"
                                 data-modal-title="Add new access specification"
-                                data-ajax-url="{% url 'access_add' dataset_pk=dataset.id %}"
+                                data-ajax-url="{% url 'dataset_access_add' dataset_pk=dataset.id %}"
                                 data-post-mode="true"
                                 data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
                         >
@@ -270,23 +270,43 @@
                     </div>
                 {% endif %}
                 <h2 class="card-title">Accesses</h2>
-                <ul class="card-text list-group">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Location</th>
+                        <th>Granted on</th>
+                        <th>Granted expires</th>
+                        <th>Remarks</th>
+                        {% if can_edit %}
+                            <th style="width:7em">Actions</th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
                     {% for access in dataset.accesses.all %}
-                        <li {% if can_edit %} class="list-group-item deletable"
-                                              data-url="{% url 'access_remove' dataset_pk=dataset.id access_pk=access.id %}" {% else %}
-                                              class="list-group-item"  {% endif %}>
-                            <ul>
-                                <li class="list-group-item">
-                                    <a href="{% url 'access' pk=access.id %}"><strong>{{ access.access_notes|truncatechars:100 }}</strong></a>
-                                </li>
-                                <li class="list-group-item" style="border:2px solid #a1a1a1;">
-                                    {{ access.display_locations |truncatechars:100 }}
-                                </li>
-                            </ul>
-                        </li>
+                        <tr>
+                            <td><p>{{ access.display_locations |truncatechars:100 }}</p></td>
+                            <td><p>{{ access.granted_on }}</p></td>
+                            <td><p>{{ access.grant_expires_on }}</p></td>
+                            <td>{{ access.access_notes }}</td>
+                            <td>
+                                {% if can_edit %}
+                                    <i class="material-icons clickable"
+                                       id="editaccess"
+                                       title="edit this access definition"
+                                       data-toggle="modal"
+                                       data-target="#modal"
+                                       data-modal-title="Edit access definition"
+                                       data-ajax-url="{% url 'dataset_access_edit' pk=access.id dataset_pk=dataset.id %}">edit</i>
+                                    <i class="red material-icons clickable" data-method="delete"
+                                       data-parent-to-remove="tr"
+                                       data-url="{% url 'dataset_access_remove' dataset_pk=dataset.id access_pk=access.id %}">delete_forever</i>
+                                {% endif %}
+                            </td>
+                        </tr>
                     {% endfor %}
-
-                </ul>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
