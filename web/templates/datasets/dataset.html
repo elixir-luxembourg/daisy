@@ -74,7 +74,7 @@
                         {% if not dataset.is_published %}
                             <a  id="deletedataset" class="btn btn-danger bmd-btn-fab float-right red"
                             title="Delete"
-                            data-toggle="modal" data-target="#modal"
+                            data-toggle="modal" data-target="#modal" data-confirmation = "delete"
                             data-ajax-url="{% url 'dataset_delete' dataset.id %}">
                                 <i class="material-icons">delete</i>
 
@@ -86,15 +86,6 @@
                 </div>
             </div>
 
-{#            {% if request.user.is_superuser %}#}
-{#                <p class="text-center mt-5">#}
-{#                    {% if dataset.is_published %}#}
-{#                        <button id="unpublish" class="btn btn-danger btn-raised">Unpublish</button>#}
-{#                    {% else %}#}
-{#                        <button id="publish" class="btn btn-primary btn-raised">Publish</button>#}
-{#                    {% endif %}#}
-{#                </p>#}
-{#            {% endif %}#}
         </div>
     </div>
 

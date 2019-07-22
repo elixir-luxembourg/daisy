@@ -94,7 +94,7 @@ $(document).ready(function () {
     }
     function confirmDialog(msg) {
         var def = $.Deferred();
-        $("<div></div>").html("Proceed with "+ msg +" ?").dialog({
+        $("<div></div>").html("Proceed with "+ msg +"?").dialog({
             modal: true,
             title: 'Confirmation',
             buttons: {
