@@ -274,9 +274,8 @@
                     <thead>
                     <tr>
                         <th>Location</th>
-                        <th>Granted on</th>
-                        <th>Granted expires</th>
                         <th>Remarks</th>
+                        <th>Granted on</th>
                         {% if can_edit %}
                             <th style="width:7em">Actions</th>
                         {% endif %}
@@ -286,9 +285,8 @@
                     {% for access in dataset.accesses.all %}
                         <tr>
                             <td><p>{{ access.display_locations |truncatechars:100 }}</p></td>
-                            <td><p>{{ access.granted_on }}</p></td>
-                            <td><p>{{ access.grant_expires_on }}</p></td>
                             <td>{{ access.access_notes }}</td>
+                            <td><p>{{ access.granted_on  | default:"-"  }}</p></td>
                             <td>
                                 {% if can_edit %}
                                     <i class="material-icons clickable"
