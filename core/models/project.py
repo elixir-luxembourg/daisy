@@ -3,10 +3,10 @@ from django.db import models
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from core import constants
-from .utils import CoreModel, COMPANY
+from .utils import CoreTractModel, COMPANY, TextFieldWithInputWidget
 
 
-class Project(CoreModel):
+class Project(CoreTractModel):
     class Meta:
         app_label = 'core'
         get_latest_by = "added"

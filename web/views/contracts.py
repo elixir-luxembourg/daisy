@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
-from django.views.generic import CreateView, ListView, DetailView, UpdateView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 
 from core.constants import Permissions
 from core.forms import ContractForm, ContractFormEdit, PartnerRoleForm
@@ -144,3 +144,91 @@ def partner_role_delete(request, pk):
     partner_role = get_object_or_404(PartnerRole, id=pk)
     partner_role.delete()
     return HttpResponse("Partner (signatory) removed from contract.")
+
+#
+# @permission_required('EDIT', (Contract, 'pk', 'pk'))
+# def add_kv_to_contract(request, pk):
+#     if request.method == 'POST':
+#         form = KVForm(request.POST)
+#         if form.is_valid():
+#             data = form.cleaned_data
+#             contract = get_object_or_404(Contract, pk=pk)
+#             metadata = contract.metadata
+#             if metadata is None:
+#                 metadata = {}
+#             metadata.update({data['key']: data['value']})
+#             contract.metadata = metadata
+#             contract.save()
+#             messages.add_message(request, messages.SUCCESS, "Metadata added")
+#         else:
+#             error_messages = []
+#             for field, error in form.errors.items():
+#                 error_message = "{}: {}".format(field, error[0])
+#                 error_messages.append(error_message)
+#             messages.add_message(request, messages.ERROR, "\n".join(error_messages))
+#         return redirect(to='contract', pk=pk)
+#
+#     else:
+#         form = KVForm()
+#
+#     return render(request, 'modal_form.html', {'form': form, 'submit_url': request.get_full_path()})
+#
+#
+# @permission_required('EDIT', (Contract, 'pk', 'pk'))
+# def rm_kv_from_contract(request, pk, key):
+#     contract = get_object_or_404(Contract, pk=pk)
+#     metadata = contract.metadata
+#     metadata.pop(key, None)
+#     contract.metadata = metadata
+#     contract.save()
+#     return HttpResponse("Metadata removed")
+
+## DATASET METHODS ##
+#
+# @permission_required('EDIT', (Collaboration, 'pk', 'pk'))
+# def collaboration_dataset_add(request, pk):
+#     contract = get_object_or_404(Collaboration, pk=pk)
+#     if request.method == 'GET':
+#         form = DatasetSelection()
+#         return render(request, 'modal_form.html', {
+#             'contract': contract,
+#             'form': form,
+#             'submit_url': request.get_full_path(),
+#         })
+#     if request.method == 'POST':
+#         form = DatasetSelection(request.POST)
+#         if form.is_valid():
+#             try:
+#                 dataset = form.cleaned_data['dataset']
+#             except IntegrityError as e:
+#                 messages.add_message(request, messages.ERROR, e)
+#                 return redirect('contract', pk=contract.pk)
+#
+#             messages.add_message(request, messages.SUCCESS, 'Dataset added')
+#             return redirect('contract', pk=contract.pk)
+#         return render(request, 'modal_form.html', {
+#             'contract': contract,
+#             'form': form,
+#             'submit_url': request.get_full_path(),
+#         })
+#
+#
+# @permission_required('EDIT', (Collaboration, 'pk', 'pk'))
+# def collaboration_dataset_remove(request, pk, dataset_id):
+#     # TODO: check that contract is membership with project
+#     contract = get_object_or_404(Collaboration, pk=pk)
+#     dataset = get_object_or_404(Dataset, pk=dataset_id)
+#     return HttpResponse("Dataset removed")
+
+
+class ContractDelete(DeleteView):
+    model = Contract
+    template_name = '../templates/generic_confirm_delete.html'
+    success_url = reverse_lazy('contracts')
+    success_message = "Contract was deleted successfully."
+
+    def get_context_data(self, **kwargs):
+        context = super(ContractDelete, self).get_context_data(**kwargs)
+        context['action_url'] = 'contract_delete'
+        context['id'] = self.object.id
+        return context

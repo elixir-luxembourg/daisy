@@ -2,7 +2,7 @@ from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 
 from core.forms import CohortForm, CohortFormEdit
 from core.models import Cohort
@@ -89,3 +89,16 @@ def cohort_list(request):
             ('Title', 'title_l'),
         ]
     })
+
+
+class CohortDelete(DeleteView):
+    model = Cohort
+    template_name = '../templates/generic_confirm_delete.html'
+    success_url = reverse_lazy('cohorts')
+    success_message = "Cohort was deleted successfully."
+
+    def get_context_data(self, **kwargs):
+        context = super(CohortDelete, self).get_context_data(**kwargs)
+        context['action_url'] = 'cohort_delete'
+        context['id'] = self.object.id
+        return context

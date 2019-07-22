@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, DetailView, UpdateView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.shortcuts import render, redirect
 from core.forms import PartnerForm
 from core.forms.partner import PartnerFormEdit
@@ -116,3 +116,14 @@ def publish_partner(request, pk):
     return HttpResponseRedirect(reverse_lazy('partner', kwargs={'pk': pk}))
 
 
+class PartnerDelete(DeleteView):
+    model = Partner
+    template_name = '../templates/generic_confirm_delete.html'
+    success_url = reverse_lazy('partners')
+    success_message = "Partner was deleted successfully."
+
+    def get_context_data(self, **kwargs):
+        context = super(PartnerDelete, self).get_context_data(**kwargs)
+        context['action_url'] = 'partner_delete'
+        context['id'] = self.object.id
+        return context
