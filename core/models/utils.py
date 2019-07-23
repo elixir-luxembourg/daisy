@@ -19,6 +19,16 @@ class CoreModel(models.Model):
         abstract = True
 
 
+class CoreTrackedModel(CoreModel):
+    is_published = models.BooleanField(default=False,
+                                       blank=False,
+                                       verbose_name='Is published?')
+    elu_accession = models.CharField(default='-', blank=True, null=False, max_length=20)
+
+    class Meta:
+        abstract = True
+
+
 class TextFieldWithInputWidget(TextField):
 
     def formfield(self, **kwargs):

@@ -24,14 +24,7 @@
                         <dt>Country</dt>
                         <dd>{{ partner.country.name | default:'-' }}</dd>
                     </dl>
-                    {% if request.user.is_superuser %}
-                        <p class="text-center mt-5">
-                            {% if not partner.is_published %}
-                                <a id="publish" class="btn btn-primary btn-raised"
-                                   href="{% url 'publish_partner' pk=partner.id %}">Publish</a>
-                            {% endif %}
-                        </p>
-                    {% endif %}
+
                 </div>
                 <div class="col">
                     <dl>
@@ -50,10 +43,31 @@
                     </dl>
                 </div>
                 <div class="floating-buttons-absolute">
+                    {% if request.user.is_superuser %}
+
+                            {% if not partner.is_published %}
+                                <a id="publish" class="btn btn-primary bmd-btn-fab float-right"
+                                   href="{% url 'publish_partner' pk=partner.id %}"><i
+                                class="material-icons">publish</i></a>
+                            {% endif %}
+
+                    {% endif %}
                     {% if can_edit %}
                         <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'partner_edit' pk=partner.id %}"><i
                                 class="material-icons">edit</i>
-                        </a>{% endif %}
+                        </a>
+                        {% if not partner.is_published %}
+                            <a  id="deletepartner" class="btn btn-danger bmd-btn-fab float-right red"
+                            title="Delete"
+                            data-toggle="modal" data-target="#modal"
+                            data-ajax-url="{% url 'partner_delete' partner.id %}">
+                                <i class="material-icons">delete</i>
+
+                            </a>
+                        {% endif %}
+
+
+                    {% endif %}
 
                 </div>
             </div>

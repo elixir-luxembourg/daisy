@@ -37,6 +37,12 @@
                         <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'cohort_edit' pk=cohort.id %}"><i
                                 class="material-icons">edit</i>
                         </a>
+                        <a  id="deletecohort" class="btn btn-danger bmd-btn-fab float-right red"
+                            title="Delete"
+                            data-toggle="modal" data-target="#modal"
+                            data-ajax-url="{% url 'cohort_delete' cohort.id %}">
+                                <i class="material-icons">delete</i>
+                            </a>
                     {% endif %}
                 </div>
             </div>

@@ -1,0 +1,7 @@
+<h2 class="card-title">Confirm</h2>
+<form method="post" action="{% url   action_url  id %}">{% csrf_token %}
+    <p>Proceed with deletion of  "{{ object }}"?</p>
+    <button type="submit"
+            class="btn btn-primary btn-raised">Proceed</button>
+    <a href="{{ cancel_button }}" class="btn btn-secondary btn-raised float-right">Cancel</a>
+</form>

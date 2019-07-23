@@ -1,13 +1,16 @@
-from core.forms.access import AccessForm
+from core.forms.access import AccessForm, AccessEditForm
 from web.views.utils import AjaxViewMixin
-from django.views.generic import CreateView, DetailView
+from django.views.generic import CreateView
 from core.models import Access, Dataset
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from core.permissions import permission_required
+from core.utils import DaisyLogger
 from django.views.decorators.http import require_http_methods
+
+log = DaisyLogger(__name__)
 
 class AccessCreateView(CreateView, AjaxViewMixin):
     model = Access
@@ -45,16 +48,26 @@ class AccessCreateView(CreateView, AjaxViewMixin):
         return super().get_success_url()
 
 
-class AccessDetailView(DetailView):
-    model = Access
-    template_name = 'accesses/access.html'
+@permission_required('EDIT', (Dataset, 'pk', 'dataset_pk'))
+def edit_access(request, pk, dataset_pk):
+    access = get_object_or_404(Access, pk=pk)
+    if request.method == 'POST':
+        form = AccessEditForm(request.POST,  request.FILES, instance=access)
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.SUCCESS, "Access definition updated")
+            redirecturl = reverse_lazy('dataset', kwargs={'pk': dataset_pk})
+            return redirect(to=redirecturl, pk=access.id)
+        else:
+            return JsonResponse(
+                {'error':
+                     {'type': 'Edit error', 'messages': [str(e) for e in form.errors]
+                      }}, status=405)
+    else:
+        form = AccessEditForm(instance=access)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        the_user = self.request.user
-        can_edit = the_user.can_edit_dataset(self.object.dataset)
-        context['can_edit'] = can_edit
-        return context
+    log.debug(submit_url=request.get_full_path())
+    return render(request, 'modal_form.html', {'form': form, 'submit_url': request.get_full_path() })
 
 @require_http_methods(["DELETE"])
 @permission_required('EDIT', (Dataset, 'pk', 'dataset_pk'))

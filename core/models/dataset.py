@@ -7,10 +7,10 @@ from django.urls import reverse
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from core import constants
-from .utils import CoreModel, TextFieldWithInputWidget
+from .utils import CoreTrackedModel, TextFieldWithInputWidget
 
 
-class Dataset(CoreModel):
+class Dataset(CoreTrackedModel):
     class Meta:
         app_label = 'core'
         get_latest_by = "added"
@@ -30,10 +30,7 @@ class Dataset(CoreModel):
     comments = models.TextField(verbose_name='Other Comments', blank=True, null=True,
                                 help_text='Comments should provide any remarks on the dataset such as data\'s purpose.')
 
-    is_published = models.BooleanField(default=False,
-                                       blank=False,
-                                       verbose_name='Is published?',
-                                       help_text='Published field designates whether this dataset should be included in the Data Catalog. This field cannot be changed by user.')
+
 
     local_custodians = models.ManyToManyField('core.User',
                                               blank=False,
