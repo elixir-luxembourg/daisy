@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block content_title %}{{ user }}{% endblock %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+
+            <span style="color: #8D8F8F;">User</span>
+            <h1>{{ user }}</h1>
+            <div class="row">
+                <div class="col">
+                    <dl>
+                        <dt>First Name</dt>
+                        <dd>{{ uset.name | default:'unknown' }}</dd>
+                        <dt>LastcName</dt>
+                        <dd>{{ user.acronym | default:'-' }}</dd>
+                        <dt>Email Address</dt>
+                        <dd>{{ user.email | default:'unknown' }}</dd>
+
+                    </dl>
+                </div>
+{% endblock %}
