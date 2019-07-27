@@ -57,7 +57,7 @@ class Share(CoreModel):
         verbose_name='Contract',
         related_name='shares',
         on_delete=models.SET_NULL,
-        blank=False,
+        blank=True,
         null=True,
         help_text   = 'The contract that provides the legal basis for this data share.'
     )
