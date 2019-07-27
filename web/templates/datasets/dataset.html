@@ -161,7 +161,7 @@
     </div>
 
     <div class="row  mt-4">
-        {#    LEGAL BASIS  DEFINITIONS for the DATASET     #}
+        {#    LEGAL BASIS  definitions for the DATASET     #}
         <div class="card col-md-12 mr-0">
             <div class="card-body">
                 {% if can_edit %}
@@ -174,12 +174,13 @@
                                 data-modal-title="Add a legal basis definition"
                                 data-ajax-url="{% url 'dataset_legalbasis_add' dataset_pk=dataset.id %}"
                                 data-post-mode="true"
-                                    x>
+                                data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
+                        >
                             <i class="material-icons">add</i>
                         </button>
                     </div>
                 {% endif %}
-                <h2 class="card-title">Legal basis declarations</h2>
+                <h2 class="card-title">Legal basis</h2>
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -221,20 +222,18 @@
         </div>
     </div>
     <div class="row card-deck mt-4">
-        {#    DATA FILES    #}
+        {#    STORAGE LOCATION definitions for the DATASET  #}
         <div class="card with-max-height col-md-6 ml-0">
             <div class="card-body">
                 {% if can_edit %}
                     <div class="ml-1 float-right btn-group">
                         <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button"
-                                id="adddatafile"
-                                title="add a data file"
+                                id="addstoragelocation"
+                                title="add a storage location"
                                 data-toggle="modal"
                                 data-target="#modal"
-                                data-modal-title="Add a new data file"
-                                data-ajax-url="{% url 'datalocation_add' pk=dataset.id %}"
-                                data-ajax-refresh-selector="#storage-backend"
-                                data-ajax-refresh-param='backend'
+                                data-modal-title="Add a new storage location"
+                                data-ajax-url="{% url 'dataset_storagelocation_add' dataset_pk=dataset.id %}"
                                 data-post-mode="true"
                                 data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
                         >
@@ -242,24 +241,42 @@
                         </button>
                     </div>
                 {% endif %}
-                <h2 class="card-title">Storage Locations</h2>
-                <ul class="card-text list-group">
-                    {% for file in dataset.data_locations.select_subclasses %}
+                <h2 class="card-title">Storage locations</h2>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Copy</th>
+                        <th>Platform</th>
+                        <th>Location</th>
                         {% if can_edit %}
-                            <li class="list-group-item deletable"
-                                data-url="{% url 'datalocation_remove' dataset_pk=dataset.id data_pk=file.id %}">
-                                <a href="{% url 'datalocation' pk=file.id %}"><strong>{{ file.category |truncatechars:80 }}</strong> {{ file.cast.display |truncatechars:80 }}
-                                </a>
-                            </li>
-                        {% else %}
-                            <li class="list-group-item">
-                                <a href="{% url 'datalocation' pk=file.id %}"><strong>{{ file.category |truncatechars:80 }}</strong> {{ file.cast.display |truncatechars:80 }}
-                                </a>
-                            </li>
+                            <th style="width:7em">Actions</th>
                         {% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for location in dataset.data_locations.all %}
+                        <tr>
+                            <td><p>{{location.category}}</p></td>
+                            <td><p>{{location.backend}}</p></td>
+                            <td><p>{{location.location_description|truncatechars:80 }}</p></td>
+                            <td>
+                                {% if can_edit %}
+                                    <i class="material-icons clickable"
+                                       id="editstoragelocation"
+                                       title="edit this storage location definition"
+                                       data-toggle="modal"
+                                       data-target="#modal"
+                                       data-modal-title="Edit storage location definition"
+                                       data-ajax-url="{% url 'dataset_storagelocation_edit' pk=location.id dataset_pk=dataset.id %}">edit</i>
+                                    <i class="red material-icons clickable" data-method="delete"
+                                       data-parent-to-remove="tr"
+                                       data-url="{% url 'dataset_storagelocation_remove' dataset_pk=dataset.id storagelocation_pk=location.id %}">delete_forever</i>
+                                {% endif %}
+                            </td>
+                        </tr>
                     {% endfor %}
-
-                </ul>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -297,9 +314,9 @@
                     <tbody>
                     {% for access in dataset.accesses.all %}
                         <tr>
-                            <td><p>{{ access.display_locations |truncatechars:100 }}</p></td>
-                            <td>{{ access.access_notes }}</td>
-                            <td><p>{{ access.granted_on  | default:"-"  }}</p></td>
+                            <td><p>{{ access.display_locations |truncatechars:90 }}</p></td>
+                            <td>{{ access.access_notes |truncatechars:45  }}</td>
+                            <td><p>{{ access.granted_on | default:"-"  }}</p></td>
                             <td>
                                 {% if can_edit %}
                                     <i class="material-icons clickable"

@@ -3,133 +3,114 @@
         "name": "Gaia cluster",
         "slug": "gaia-cluster",
         "description": "Gaia cluster.",
-        "managed_by": "HPC",
-        "location_definition": "locationholder"
+        "managed_by": "HPC"
     },
     {
         "name": "Iris cluster",
         "slug": "iris-cluster",
         "description": "Iris cluster.",
-        "managed_by": "HPC",
-        "location_definition": "locationholder"
+        "managed_by": "HPC"
     },
     {
         "name": "Chaos cluster",
         "slug": "chaos-cluster",
         "description": "Chaos cluster.",
-        "managed_by": "HPC",
-        "location_definition": "locationholder"
+        "managed_by": "HPC"
     },
     {
         "name": "LCSB OwnCloud",
         "slug": "lcsb-owncloud",
         "description": "Owncloud LCSB server available at https://owncloud.lcsb.uni.lu.",
-        "managed_by": "LCSB",
-        "location_definition": "locationholder"
+        "managed_by": "LCSB"
     },
     {
         "name": "LCSB Bertha server",
         "slug": "lcsb-bertha",
         "description": "LCSB backup server.",
-        "managed_by": "LCSB",
-        "location_definition": "locationholder"
+        "managed_by": "LCSB"
     },
     {
         "name": "Atlas server",
         "slug": "atlas-server",
         "description": "Central storage service",
-        "managed_by": "SIU",
-        "location_definition": "locationholder"
+        "managed_by": "SIU"
     },
     {
         "name": "HPC Isilon",
         "slug": "hpc-isilon",
         "description": "Isilon storage for HPC",
-        "managed_by": "HPC",
-        "location_definition": "locationholder"
+        "managed_by": "HPC"
     },
     {
         "name": "LCSB Aspera",
         "slug": "lcsb-aspera",
         "description": "LCSB Aspera server",
-        "managed_by": "LCSB",
-        "location_definition": "locationholder"
+        "managed_by": "LCSB"
     },
     {
         "name": "Dropbox",
         "slug": "dropbox",
         "description": "Dropbox personnal account",
-        "managed_by": "user",
-        "location_definition": "locationholder"
+        "managed_by": "user"
     },
     {
         "name": "University desktop",
         "slug": "uni-desktop",
         "description": "University desktop station",
-        "managed_by": "group",
-        "location_definition": "locationholder"
+        "managed_by": "group"
     },
     {
         "name": "Personal desktop",
         "slug": "personal-desktop",
         "description": "Personal desktop station",
-        "managed_by": "user",
-        "location_definition": "locationholder"
+        "managed_by": "user"
     },
     {
         "name": "University laptop",
         "slug": "uni-laptop",
         "description": "University laptop",
-        "managed_by": "user",
-        "location_definition": "locationholder"
+        "managed_by": "user"
     },
     {
         "name": "Personal laptop",
         "slug": "personal-laptop",
         "description": "Personal laptop",
-        "managed_by": "user",
-        "location_definition": "locationholder"
+        "managed_by": "user"
     },
     {
         "name": "External Device",
         "slug": "external-device",
         "description": "External storage: e.g. Hard disk, DVD, USB stick, ...",
-        "managed_by": "user",
-        "location_definition": "locationholder"
+        "managed_by": "user"
     },
     {
         "name": "Group server",
         "slug": "group-server",
         "description": "Group managed server",
-        "managed_by": "group",
-        "location_definition": "locationholder"
+        "managed_by": "group"
     },
     {
         "name": "Certon blocks",
         "slug": "certons-block",
         "description": "Secondary backup server",
-        "managed_by": "LCSB",
-        "location_definition": "locationholder"
+        "managed_by": "LCSB"
     },
     {
         "name": "Other",
         "slug": "other",
         "description": "Other storage",
-        "managed_by": "user",
-        "location_definition": "locationholder"
+        "managed_by": "user"
     },
     {
         "name": "Application/SW Platform",
         "slug": "application",
         "description": "An online application service",
-        "managed_by": "user",
-        "location_definition": "locationholder"
+        "managed_by": "user"
     },
     {
         "name": "Sample Storage",
         "slug": "sample-storage",
         "description": "Storage facility for biological samples.",
-        "managed_by": "user",
-        "location_definition": "locationholder"
+        "managed_by": "user"
     }
 ]

@@ -15,7 +15,7 @@ from core.utils import DaisyLogger
 log = DaisyLogger(__name__)
 
 
-@permission_required('DELETE', (Dataset, 'pk', 'dataset_pk'))
+@permission_required('EDIT', (Dataset, 'pk', 'dataset_pk'))
 def edit_share(request, pk, dataset_pk):
     # log.debug('editing share', post=request.POST)
     share = get_object_or_404(Share, pk=pk)

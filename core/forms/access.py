@@ -19,7 +19,7 @@ class AccessForm(ModelForm):
         super().__init__(*args, **kwargs)
         # we don't allow editing dataset
         self.fields.pop('dataset')
-        self.fields['defined_on_locations'].choices = [(d.id, ' - '.join([str(d.category), str(d.backend), d.cast().display])) for d in dataset.data_locations.all()]
+        self.fields['defined_on_locations'].choices = [(d.id, d) for d in dataset.data_locations.all()]
 
 
     field_order = [
@@ -55,5 +55,5 @@ class AccessEditForm(ModelForm):
         super().__init__(*args, **kwargs)
         # we don't allow editing dataset
         self.fields.pop('dataset')
-        self.fields['defined_on_locations'].choices = [(d.id, ' - '.join([str(d.category), str(d.backend), d.cast().display])) for d in kwargs['instance'].dataset.data_locations.all()]
+        self.fields['defined_on_locations'].choices = [(d.id, d) for d in kwargs['instance'].dataset.data_locations.all()]
 

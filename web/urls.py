@@ -18,9 +18,9 @@ from web.views.partner import PartnerCreateView, PartnerDelete, partner_search_v
 from web.views.projects import ProjectCreateView, ProjectEditView, ProjectDetailView, ProjectDelete
 from web.views.publication import PublicationCreateView, PublicationListView, PublicationEditView, \
     add_publication_to_project, remove_publication_from_project, pick_publication_for_project
-from web.views.storage_locations import StorageLocationListView, StorageLocationEditView, \
-    StorageLocationDetailView, StorageLocationCreateView, remove_storage_location_from_dataset, \
-    pick_storage_location_for_dataset, add_storage_location_to_dataset
+# from web.views.storage_locations import  StorageLocationEditView, \
+#      StorageLocationCreateView, remove_storage_location_from_dataset, \
+#     pick_storage_location_for_dataset, add_storage_location_to_dataset
 from web.views.users import add_personnel_to_project, remove_personnel_from_project
 
 # Use include() to add paths from the catalog application
@@ -55,12 +55,6 @@ web_urls = [
     path('definitions/contacts', contact_search_view, name='contacts'),
     path('definitions/contacts/<int:pk>/delete', ContactDelete.as_view(), name="contact_delete"),
 
-
-    path('storage_locations', StorageLocationListView.as_view(), name='storage_locations'),
-    path('storage_location/<int:pk>', StorageLocationDetailView.as_view(), name='storage_location'),
-    path('storage_location/<int:pk>/edit', StorageLocationEditView.as_view(), name='storage_location_edit'),
-    path('storage_location/add/', StorageLocationCreateView.as_view(), name='storage_location_add'),
-
     path('dataset/<int:pk>/add-data-declaration', data_declarations.data_declarations_add,
          name='data_declarations_add'),
     path('data_declaration/<int:pk>/duplicate', data_declarations.data_declarations_duplicate,
@@ -86,18 +80,15 @@ web_urls = [
     path('dataset/<int:pk>/', DatasetDetailView.as_view(), name="dataset"),
     path('dataset/<int:pk>/edit', DatasetEditView.as_view(), name="dataset_edit"),
     path('dataset/<int:pk>/delete', DatasetDelete.as_view(), name="dataset_delete"),
-    path('dataset/<int:pk>/add-datafile', add_storage_location_to_dataset, name="add_storage_location_to_dataset"),
-    path('dataset/<int:pk>/pick-datafile', pick_storage_location_for_dataset, name="pick_storage_location_for_dataset"),
-    path('dataset/<int:pk>/del-datafile/<int:storage_location_id>', remove_storage_location_from_dataset,
-         name="remove_storage_location_from_dataset"),
+
 
 
     # dataset's data location methods
-    path('datalocation/<int:pk>', storage_locations.DataLocationDetailView.as_view(), name='datalocation'),
-    path('dataset/<int:pk>/datalocation/add/', storage_locations.DataLocationCreateView.as_view(),
-         name='datalocation_add'),
-    path('dataset/<int:dataset_pk>/data/remove/<int:data_pk>/', storage_locations.datalocation_remove,
-         name='datalocation_remove'),
+    path('dataset/<int:dataset_pk>/storagelocation/add/', storage_locations.StorageLocationCreateView.as_view(),
+         name='dataset_storagelocation_add'),
+    path('dataset/<int:dataset_pk>/storagelocation/remove/<int:storagelocation_pk>/', storage_locations.remove_storagelocation,
+         name='dataset_storagelocation_remove'),
+    path('dataset/<int:dataset_pk>/storagelocation/<int:pk>/edit', storage_locations.edit_storagelocation, name="dataset_storagelocation_edit"),
 
     # (INTERNAL) ACCESSES
     path('dataset/<int:dataset_pk>/access/add/', AccessCreateView.as_view(), name='dataset_access_add'),

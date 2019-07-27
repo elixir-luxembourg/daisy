@@ -171,7 +171,7 @@ $(document).ready(function () {
             if (ajaxRefreshSelector !== undefined) {
                 modal.find(ajaxRefreshSelector).on('change', function (evt) {
                     var data = $(ajaxRefreshSelector).val();
-                    _loadModal(modal, url, button, postMode, ajaxRefreshSelector, ajaxRefreshParam, redirectURI, data);
+                    _loadModal(modal, title, url, button, postMode, ajaxRefreshSelector, ajaxRefreshParam, redirectURI, data);
                 })
             }
         });
