@@ -378,7 +378,7 @@
                     {% for share in dataset.shares.all %}
                         <tr>
                             <td>{{ share.partner }}</td>
-                            <td>{{ share.contract }}</td>
+                            <td>{%if share.contract  %} {{ share.contract }} {% else %}<p class="alert-error"> missing </p>{% endif %}</td>
                             <td>{{ share.granted_on | default:"-" }}</td>
                             <td><p>{% for ddec in share.data_declarations.all  %}{{ ddec.title}} <br/> {% empty %}Entire dataset{% endfor %}</p></td>
                             <td>{{ share.share_notes  | default:"-" }}</td>
