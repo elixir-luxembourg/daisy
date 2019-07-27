@@ -1,7 +1,5 @@
 from django import forms
-
 from core.models.storage_location import DataLocation
-from core.models.storage_resource import StorageResource
 
 
 class StorageLocationForm(forms.ModelForm):
@@ -10,40 +8,74 @@ class StorageLocationForm(forms.ModelForm):
         fields = '__all__'
         exclude = []
 
+    def __init__(self, *args, **kwargs):
+        dataset = kwargs.pop('dataset', None)
+        super().__init__(*args, **kwargs)
+        # we don't allow editing dataset
+        self.fields.pop('dataset')
+        self.fields['data_declarations'].choices = [(d.id, d.title) for d in dataset.data_declarations.all()]
 
-class PickStorageLocationForm(forms.Form):
+    field_order = [
+        'category',
+        'backend',
+        'data_declarations',
+        'datatypes',
+        'location_description'
+    ]
+
+class StorageLocationEditForm(forms.ModelForm):
+    class Meta:
+        model = DataLocation
+        fields = '__all__'
+        exclude = []
+
+    field_order = [
+        'category',
+        'backend',
+        'data_declarations',
+        'datatypes',
+        'location_description'
+    ]
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['data_file'] = forms.ChoiceField(choices=[(d.id, str(d)) for d in DataLocation.objects.all()])
+        # we don't allow editing dataset
+        self.fields.pop('dataset')
+        self.fields['data_declarations'].choices = [(d.id, d.title) for d in kwargs['instance'].dataset.data_declarations.all()]
 
 
-def dataLocationFormFactory(*args, **kwargs):
-    model_form_class = DataLocation
-    initial = kwargs.pop('initial', {})
-    backend = kwargs.pop('backend', None)
-    if backend is not None:
-        model_form_class = backend.get_location_class()
-        initial['backend'] = backend
+    # class PickStorageLocationForm(forms.Form):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.fields['data_file'] = forms.ChoiceField(choices=[(d.id, str(d)) for d in DataLocation.objects.all()])
+#
 
-    class DataLocationForm(forms.ModelForm):
-
-        class Meta:
-            model = model_form_class
-            fields = '__all__'
-            exclude = []
-
-        backend = forms.ModelChoiceField(
-            queryset=StorageResource.objects.all(),
-            widget=forms.Select(attrs={'id': 'storage-backend'})
-        )
-
-        def __init__(self, *args, **kwargs):
-            self.dataset = kwargs.pop('dataset', None)
-            super().__init__(*args, **kwargs)
-            if self.dataset:
-                self.fields.pop('dataset')
-
-    return DataLocationForm(*args, **kwargs, initial=initial)
+# def dataLocationFormFactory(*args, **kwargs):
+#     model_form_class = DataLocation
+#     initial = kwargs.pop('initial', {})
+#     backend = kwargs.pop('backend', None)
+#     if backend is not None:
+#         model_form_class = backend.get_location_class()
+#         initial['backend'] = backend
+#
+#     class DataLocationForm(forms.ModelForm):
+#
+#         class Meta:
+#             model = model_form_class
+#             fields = '__all__'
+#             exclude = []
+#
+#         backend = forms.ModelChoiceField(
+#             queryset=StorageResource.objects.all(),
+#             widget=forms.Select(attrs={'id': 'storage-backend'})
+#         )
+#
+#         def __init__(self, *args, **kwargs):
+#             self.dataset = kwargs.pop('dataset', None)
+#             super().__init__(*args, **kwargs)
+#             if self.dataset:
+#                 self.fields.pop('dataset')
+#
+#     return DataLocationForm(*args, **kwargs, initial=initial)
 
     # def get_form_class(self):
     #     print('get form class')

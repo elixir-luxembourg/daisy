@@ -35,7 +35,6 @@ class LegalBasisCreateView(CreateView, AjaxViewMixin):
         self.object = form.save(commit=False)
         if self.dataset:
             self.object.dataset = self.dataset
-
         self.object.save()
         messages.add_message(self.request, messages.SUCCESS, "Legal basis definition created")
         return super().form_valid(form)
@@ -47,9 +46,7 @@ class LegalBasisCreateView(CreateView, AjaxViewMixin):
         return kwargs
 
     def get_success_url(self, **kwargs):
-        if self.dataset:
-            return reverse_lazy('dataset', kwargs={'pk': self.dataset.pk})
-        return super().get_success_url()
+        return reverse_lazy('dataset', kwargs={'pk': self.dataset.pk})
 
 
 @permission_required('EDIT', (Dataset, 'pk', 'dataset_pk'))

@@ -52,4 +52,4 @@ class Access(CoreModel):
 
     @property
     def display_locations(self):
-        return "\n".join(str(loc.cast().display) for loc in self.defined_on_locations.all())
+        return "\n".join([ str(loc) for loc in self.defined_on_locations.all()])

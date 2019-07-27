@@ -158,15 +158,15 @@ class DatasetsImporter:
                     raise DatasetImportError(data=f'Cannot find StorageResource with slug: "{backend_name}".')
                 category = self.process_category(storage_location_dict)
                 acl_policy_description = self.process_acl_info(storage_location_dict)
-                DLCLazz = backend.get_location_class()
+                #DLCLazz = backend.get_location_class()
 
                 location_delimeted = '\n'.join(storage_location_dict['locations'])
 
-                dl = DLCLazz.objects.create(
+                dl = DataLocation.objects.create(
                     category=category,
                     backend=backend,
                     dataset=dataset,
-                    **{'location': location_delimeted}
+                    **{'location_description': location_delimeted}
                 )
                 master_locations = DataLocation.objects.filter(category=StorageLocationCategory.master, dataset=dataset)
 

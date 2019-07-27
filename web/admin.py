@@ -29,9 +29,8 @@ admin.site.register(User)
 class StorageResourceForm(forms.ModelForm):
     class Meta:
         model = StorageResource
-        fields = ['name', 'slug', 'description', 'managed_by', 'location_definition']
+        fields = ['name', 'slug', 'description', 'managed_by']
 
-    location_definition = forms.ChoiceField(choices=DataLocation.SUBCLASS_CHOICES)
 
 
 class StorageResourceAdmin(admin.ModelAdmin):
