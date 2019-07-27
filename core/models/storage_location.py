@@ -21,17 +21,18 @@ class DataLocation(CoreModel):
         get_latest_by = "added"
         ordering = ['added']
 
-    # objects = InheritanceManager()
 
     backend = models.ForeignKey(
         'core.StorageResource',
         verbose_name="Storage back-end",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        help_text='Select the storage or application platform that holds data.'
     )
 
     category = EnumChoiceField(
         StorageLocationCategory, default=StorageLocationCategory.master, blank=False, null=False,
-        verbose_name='Nature of data copy.'
+        verbose_name='Nature of data copy.',
+        help_text='Is this the master copy, a working copy or a backup?.'
     )
 
     dataset = models.ForeignKey('core.Dataset',
@@ -40,7 +41,9 @@ class DataLocation(CoreModel):
                                 )
 
     datatypes = models.ManyToManyField("core.DataType", verbose_name="Stored datatypes", blank=True,
-                                       related_name="storage_locations")
+                                       related_name="storage_locations",
+                                       help_text='The scope of this storage. Leave empty if all data types are stored in a single location.'
+                                       )
 
     data_declarations = models.ManyToManyField('core.DataDeclaration',
                                                blank=True,
@@ -50,7 +53,8 @@ class DataLocation(CoreModel):
 
 
     location_description = TextFieldWithInputWidget(blank=True, null=True,
-        verbose_name='Location of the data'
+        verbose_name='Location of the data',
+        help_text='E.g. Laptop 1, server folder path or application URL endpoint.'
     )
 
     def __str__(self):
