@@ -19,8 +19,8 @@ class DatasetForm(forms.ModelForm):
         projects = Project.objects.filter().all()
         project_choices = [(None, "---------------------")]
         project_choices.extend([(p.id, str(p)) for p in projects])
-        if dataset is not None and dataset.project:
-            project_choices.append((dataset.project.id, str(dataset.project)))
+        # if dataset is not None and dataset.project:
+        #     project_choices.append((dataset.project.id, str(dataset.project)))
 
         self.fields['project'] = forms.ChoiceField(choices=project_choices, required=False,
                                                    label       = Dataset.project.field.verbose_name,
@@ -33,14 +33,24 @@ class DatasetForm(forms.ModelForm):
         """
         cleaned_data = super().clean()
 
-        if not cleaned_data.get('project'):
-            cleaned_data['project'] = None
+        # if not cleaned_data.get('project'):
+        #     cleaned_data['project'] = None
+        # else:
+        proj = cleaned_data['project']
+        if proj:
+            contracts = self.instance.collect_contracts()
+            for contract in contracts:
+                if contract.project:
+                    if str(contract.project.id) != proj:
+                        self.add_error('project', "Dataset has indirect references to project {}. Please remove those before updating project field.".format(contract.project.acronym))
+
         if 'local_custodians' not in cleaned_data:
             self.add_error('local_custodians', "You must specify Local Custodians for the dataset.")
         else:
             pis = cleaned_data.get('local_custodians').vips()
             if pis.first() is None:
                 self.add_error('local_custodians', "Dataset\'s Local Custodians must include at least one PI.")
+
         return cleaned_data
 
     def save(self, commit=True):
@@ -48,6 +58,8 @@ class DatasetForm(forms.ModelForm):
         if project_id:
             project = get_object_or_404(Project, pk=project_id)
             self.instance.project = project
+        else:
+            self.instance.project = None
         return super().save(commit)
 
     field_order = [
@@ -64,7 +76,7 @@ class DatasetFormEdit(DatasetForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['project'].disabled = True
+        #self.fields['project'].disabled = True
 
 
 

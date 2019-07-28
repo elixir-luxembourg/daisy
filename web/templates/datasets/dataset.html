@@ -22,12 +22,11 @@
                             {% endfor %}
                         </dd>
 
-                        {% if dataset.project %}
                             <dt>Project</dt>
                             <dd>
-                                <a href="{% url 'project' pk=dataset.project.pk %}">{{ dataset.project }}</a>
+                                {%if dataset.project  %}<a href="{% url 'project' pk=dataset.project.pk %}">{{ dataset.project }}</a> {% else %}-{% endif %}
+
                             </dd>
-                        {% endif %}
                         <dt>Other external id(s)</dt>
                         <dd>{{ dataset.other_external_id | default:'-' }}</dd>
                     </dl>
