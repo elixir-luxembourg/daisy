@@ -478,10 +478,23 @@ Check the the installation was successful by accessing the URL `https://${IP_OF_
 You should be able to login with `admin/demo` if the `load_demo_data` command was used or with your own admin account if the `createsuperuser` command was used.
 It should be possible to create datasets and projects.
 
-# Operation Manual
+# Updating DAISY
 
-If the web application python code (including the configuration files such as settings_local.py) is modified, gunicorn must be restarted to load the new code/configuration:
+
+If you want to move to the newest release of DAISY, do the following:
+
+```bash
+cd /home/daisy/daisy/web/static/vendor/
+git pull
+npm install
+cd /home/daisy/daisy
+python36 manage.py migrate && python36 manage.py build_solr_schema -c /var/solr/data/daisy/conf/ -r daisy && yes | python36 manage.py clear_index && yes "yes" | python36 manage.py collectstatic ;
+yes | python36 manage.py rebuild_index;
+```
+
+In addition when the DAISY is updated or configurations are changed (including the configuration files such as ```settings_local.py```) is modified, gunicorn must be restarted to load the new code/configuration, to do so run:
 
 ```bash
 sudo systemctl restart gunicorn
 ```
+
