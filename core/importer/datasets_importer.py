@@ -85,6 +85,8 @@ class DatasetsImporter:
             dataset.shares.set(shares, bulk=False)
 
         dataset.save()
+        for local_custodian in local_custodians:
+            local_custodian.assign_permissions_to_dataset(dataset)
 
     @staticmethod
     def process_local_custodians(dataset_dict):
