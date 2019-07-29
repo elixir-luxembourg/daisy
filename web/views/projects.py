@@ -241,11 +241,11 @@ def project_contract_create(request, pk):
 
 
 @permission_required('EDIT', (Project, 'pk', 'pk'))
-@permission_required('DELETE', (Contract, 'pk', 'cid'))
 def project_contract_remove(request, pk, cid):
     contract = get_object_or_404(Contract, pk=cid)
-    contract.delete()
-    return HttpResponse("Contract deleted")
+    contract.project = None
+    contract.save()
+    return HttpResponse("Contract removed from project")
 
 
 class ProjectDelete(DeleteView):

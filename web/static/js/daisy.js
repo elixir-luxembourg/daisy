@@ -201,6 +201,10 @@ $(document).ready(function () {
     $('.deletable').hover(function () {
         var url_delete = $(this).data('url');
         var delete_link = $("<i  id='dynamic_delete_button' class='red delete-button material-icons'>delete_forever</i>").data('url', url_delete);
+        var delete_title = $(this).data('delete-title');
+         if (delete_title){
+            delete_link.attr('title', delete_title);
+        }
         $(this).append(delete_link);
     }, function () {
         $(this).find('.delete-button').remove();

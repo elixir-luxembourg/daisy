@@ -53,7 +53,7 @@ class PublicationEditView(UpdateView):
 def remove_publication_from_project(request, pk, publication_id):
     project = get_object_or_404(Project, pk=pk)
     project.publications.remove(publication_id)
-    return HttpResponse("Publication unlinked from project")
+    return HttpResponse("Publication removed from project.")
 
 
 @permission_required('EDIT', (Project, 'pk', 'pk'))
@@ -86,7 +86,7 @@ def add_publication_to_project(request, pk):
             publication = form.save()
             project.publications.add(publication)
             project.save()
-            add_message(request, messages.SUCCESS, "Publication added")
+            add_message(request, messages.SUCCESS, "Publication added.")
         else:
             error_messages = []
             for field, error in form.errors.items():

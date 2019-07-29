@@ -8,7 +8,7 @@ from core.models import User
 class PickUserForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['personnel'] = forms.ChoiceField(
+        self.fields['personnel'] = forms.ChoiceField(label='Select user',
             choices=[(d.id, str(d)) for d in User.objects.exclude(username='AnonymousUser').all()])
 
 

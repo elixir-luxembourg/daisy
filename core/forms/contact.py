@@ -26,4 +26,4 @@ class ContactForm(ModelForm):
 class PickContactForm(Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['contact'] = ChoiceField(choices=[(d.id, str(d)) for d in Contact.objects.all()])
+        self.fields['contact'] = ChoiceField(label='Select contact', choices=[(d.id, str(d)) for d in Contact.objects.all()])

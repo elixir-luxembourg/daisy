@@ -16,11 +16,11 @@
                 <div class="col">
                     <dl>
                         <dt>Name</dt>
-                        <dd>{{ partner.name | default:'unknown' }}</dd>
+                        <dd>{{ partner.name}}</dd>
                         <dt>Acronym</dt>
-                        <dd>{{ partner.acronym | default:'-' }}</dd>
+                        <dd>{{ partner.acronym}}</dd>
                         <dt>Address</dt>
-                        <dd>{{ partner.address | default:'unknown' }}</dd>
+                        <dd>{{ partner.address | default:'-' }}</dd>
                         <dt>Country</dt>
                         <dd>{{ partner.country.name | default:'-' }}</dd>
                     </dl>
@@ -34,11 +34,11 @@
                         {% else %}
                             <dd>NO</dd>
                         {% endif %}
-                        <dt>Geographic Category</dt>
-                        <dd>{{ partner.geo_category | default:'unknown' }}</dd>
-                        <dt>Sector Category</dt>
-                        <dd>{{ partner.sector_category | default:'unknown' }}</dd>
-                        <dt>ELU Accession</dt>
+                        <dt>Geographic category</dt>
+                        <dd>{{ partner.geo_category }}</dd>
+                        <dt>Sector category</dt>
+                        <dd>{{ partner.sector_category }}</dd>
+                        <dt>Accession number</dt>
                         <dd>{{ partner.elu_accession | default:'-'  }}</dd>
                     </dl>
                 </div>
@@ -91,7 +91,7 @@
         {#    Contracts    #}
         <div class="card ml-0 col-md-6">
             <div class="card-body">
-                <h2 class="card-title">Contracts involving this partner</h2>
+                <h2 class="card-title">Contracts with this partner</h2>
                 <ul class="card-text list-group">
                     {% for collab in partner.contracts.all %}
                         <li class="list-group-item">
