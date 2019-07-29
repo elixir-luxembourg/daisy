@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
+from django.urls import reverse_lazy
 
 from guardian.shortcuts import get_objects_for_user, get_users_with_perms, assign_perm, remove_perm
 
@@ -111,6 +112,6 @@ def index(request, selection, pk):
                     else:
                         remove_perm(perm, user, obj)
 
-        return redirect('permission_%s' % selection, pk=pk)
+        return redirect(reverse_lazy(selection, kwargs={'pk': pk}))
     context['formset'] = formset
     return render(request, 'permissions.html', context)

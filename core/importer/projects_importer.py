@@ -115,6 +115,9 @@ class ProjectsImporter:
 
         project.updated = True
         project.save()
+        for local_custodian in local_custodians:
+            local_custodian.assign_permissions_to_dataset(project)
+
 
     def process_contacts(self, project_dict):
         local_custodians = []
