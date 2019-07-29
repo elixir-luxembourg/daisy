@@ -36,7 +36,7 @@ class LegalBasisCreateView(CreateView, AjaxViewMixin):
         if self.dataset:
             self.object.dataset = self.dataset
         self.object.save()
-        messages.add_message(self.request, messages.SUCCESS, "Legal basis definition created")
+        messages.add_message(self.request, messages.SUCCESS, "Legal basis definition created.")
         return super().form_valid(form)
 
     def get_form_kwargs(self):
@@ -75,10 +75,10 @@ def edit_legalbasis(request, pk, dataset_pk):
 
 
 @require_http_methods(["DELETE"])
-@permission_required('DELETE', (Dataset, 'pk', 'dataset_pk'))
+@permission_required('EDIT', (Dataset, 'pk', 'dataset_pk'))
 def remove_legalbasis(request, dataset_pk, legalbasis_pk):
     legbasis = get_object_or_404(LegalBasis, pk=legalbasis_pk)
     dataset = get_object_or_404(Dataset, pk=dataset_pk)
     if legbasis.dataset == dataset:
         legbasis.delete()
-    return HttpResponse("Legal basis deleted")
+    return HttpResponse("Legal basis deleted.")

@@ -47,15 +47,7 @@
                         <dt>Includes automated profiling</dt>
                         <dd>{{ project.includes_automated_profiling | yesno }}</dd>
                         <dt>Remarks</dt>
-                        <dd> {% if project.comments %}
-                            <a href="#" data-toggle="modal" data-target="#modal"
-                               data-modal-content="{{ project.comments }}"
-                               data-modal-title="Comments">view comments
-                            </a>
-                        {% else %}
-                            -
-                        {% endif %}
-                        </dd>
+                        <dd>{{ project.comments | default:'-' }}</dd>
                         <dt>Last update</dt>
                         <dd>{{ project.updated }}</dd>
                     </dl>
@@ -63,20 +55,20 @@
                 <div class="floating-buttons-absolute">
                     {% if is_admin %}
                         <a class="btn btn-default bmd-btn-fab float-right"
-                           title="Permissions"
+                           title="Manage project permissions"
                            href="{% url 'permission_project' pk=project.id %}"><i
                                 class="material-icons">visibility</i>
                         </a>
                     {% endif %}
                     {% if can_edit %}
                         <a class="btn btn-primary bmd-btn-fab float-right"
-                           title="Edit"
+                           title="Edit project"
                            href="{% url 'project_edit' pk=project.id %}"><i
                                 class="material-icons">edit</i>
                         </a>
                         {% if not project.is_published %}
                             <a  id="deleteproject" class="btn btn-danger bmd-btn-fab float-right red"
-                            title="Delete"
+                            title="Delete project"
                             data-toggle="modal" data-target="#modal"
                             data-ajax-url="{% url 'project_delete' project.id %}">
                                 <i class="material-icons">delete</i>
@@ -106,17 +98,17 @@
             <div class="card-body">
                 <h2 class="card-title">Ethics</h2>
                 <dl>
-                    <dt>Has national approval ?</dt>
+                    <dt>Has national approval?</dt>
                     <dd>{{ project.has_cner | yesno }} {% if project.cner_notes %}
                         <a href="#" data-toggle="modal" data-target="#modal"
                            data-modal-content="{{ project.cner_notes }}"
-                           data-modal-title="National ethics approval remarks">(view notes)
+                           data-modal-title="National ethics approval notes">(view notes)
                         </a>{% endif %}</dd>
-                    <dt>Has institutional approval ?</dt>
+                    <dt>Has institutional approval?</dt>
                     <dd>{{ project.has_erp | yesno }} {% if project.erp_notes %}
                         <a href="#" data-toggle="modal" data-target="#modal"
                            data-modal-content="{{ project.erp_notes }}"
-                           data-modal-title="Institutional ethics approval remarks">(view notes)
+                           data-modal-title="Institutional ethics approval notes">(view notes)
                         </a>{% endif %}</dd>
                 </dl>
             </div>
@@ -130,17 +122,18 @@
                     <div class="ml-1 float-right btn-group">
                         <button data-toggle="modal"
                                 data-target="#modal"
-                                data-modal-title="Add some personnel"
+                                data-modal-title="Add personnel to project"
                                 data-ajax-url="{% url 'add_personnel_to_project' pk=project.id %}"
-                                class="btn bmd-btn-fab bmd-btn-fab-sm" type="button" title="add some personnel">
+                                class="btn bmd-btn-fab bmd-btn-fab-sm" type="button" title="Add personnel to project">
                             <i class="material-icons">add</i>
                         </button>
                     </div>
                 {% endif %}
-                <h2 class="card-title">{{ company_name }} Personnel</h2>
+                <h2 class="card-title">Personnel</h2>
                 <ul class="card-text list-group">
                     {% for company_personnel in project.company_personnel.all %}
                         <li class="list-group-item {% if can_edit %}deletable"
+                            data-delete-title="Remove personnel from project"
                             data-url="{% url 'remove_personnel_from_project' pk=project.id user_id=company_personnel.pk %}{% endif %}">
                             {{ company_personnel }}
                         </li>
@@ -149,30 +142,27 @@
             </div>
         </div>
 
-
         {#   CONTACTS     #}
         <div class="mh-100 card m-2 col">
             <div class="card-body">
                 {% if can_edit %}
                     <div class="ml-1 float-right btn-group">
-                        <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button" id="adddataset"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="add a dataset">
+                        <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button" id="addcontact"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Add contact to project">
                             <i class="material-icons">add</i>
                         </button>
-                        <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="adddataset">
+                        <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="addcontact">
                             <button data-toggle="modal"
                                     data-target="#modal"
-                                    data-modal-title="Add a existing contact"
+                                    data-modal-title="Add contact to project"
                                     data-ajax-url="{% url 'pick_contact_for_project' pk=project.id %}"
-                                    class="dropdown-item" type="button" title="select existing contact">Reference an
-                                existing
-                                contact
+                                    class="dropdown-item" type="button" title="Link to existing contact">Link to existing contact
                             </button>
                             <button data-toggle="modal"
                                     data-target="#modal"
-                                    data-modal-title="Add a new contact"
+                                    data-modal-title="Add contact to project"
                                     data-ajax-url="{% url 'add_contact_to_project' pk=project.id %}"
-                                    class="dropdown-item" type="button" title="add a new contact">
+                                    class="dropdown-item" type="button" title="Add new contact">
                                 Create a new contact
                             </button>
                         </div>
@@ -183,6 +173,7 @@
                     {% for contact in project.contacts.all %}
                         {% if can_edit %}
                             <li class="list-group-item deletable"
+                                data-delete-title="Remove contact from project"
                                 data-url="{% url 'remove_contact_from_project' pk=project.id contact_id=contact.pk %}">
                                 <a href="{% url 'contact' pk=contact.id %}">{{ contact.full_name }}</a>
                             </li>
@@ -197,10 +188,6 @@
         </div>
     </div>
 
-    {% include '_includes/other_comments.html' with entity=project %}
-
-
-
     {#    DATASETS OWNED BY PROJECT      #}
 
     <div class="row mt-4">
@@ -211,7 +198,7 @@
                     <div class="ml-1 float-right btn-group">
                         <a href="{% url 'datasets_add_to_project' pk=project.pk %}">
                             <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button"
-                                    title="add a dataset">
+                                    title="Add new dataset to project">
                                 <i class="material-icons">add</i>
                             </button>
                         </a>
@@ -258,14 +245,14 @@
         </div>
     </div>
     <div class="row mt-4">
-        {#    COLLABORATIONS      #}
+        {#    CONTRACTS      #}
         <div class="card col m-2">
             <div class="card-body">
                 {% if can_edit %}
                     <div class="ml-1 float-right btn-group">
                         <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button" id="ex4"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                title="add a contract">
+                                title="Add contract to project">
                             <i class="material-icons">add</i>
                         </button>
                         <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="ex4">
@@ -278,6 +265,7 @@
                 <ul class="card-text list-group">
                     {% for contract in project.contracts.all %}
                         <li class="list-group-item {% if can_edit %}deletable"
+                            data-delete-title="Remove contract from project"
                             data-url="{% url 'project_contract_remove' pk=project.id cid=contract.pk %}{% endif %}">
                             <a href="{% url 'contract' pk=contract.id %}">{{ contract }}</a>
                         </li>
@@ -292,18 +280,18 @@
      <div class="card col-md-12">
         <div class="card-body">
             <div class="ml-1 float-right btn-group">
-                <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button" id="adddataset"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="add a dataset">
+                <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button" id="adddocument"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Add document to project">
                             <i class="material-icons">add</i>
                         </button>
-                         <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="adddataset">
+                         <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="adddocument">
 
                             <button data-toggle="modal"
                                     data-target="#modal"
-                                    data-modal-title="Add a new contact"
+                                    data-modal-title="Add document to project"
                                     data-ajax-url="{% url 'document_add' object_id=object_id content_type=content_type %}"
-                                    class="dropdown-item" type="button" title="add a new contact">
-                                Create a new Document
+                                    class="dropdown-item" type="button" title="Add document to project">
+                                Upload new document
                             </button>
                         </div>
              </div>
@@ -329,12 +317,12 @@
                               <td>
                                 <a data-toggle="modal" id="btnupdate" class="jsBtn clickable"
                                         data-target="#modal"
-                                        data-modal-title="Change document"
+                                        data-modal-title="Update document"
                                         data-ajax-url="{% url "document_edit" pk=file.id %}"
-                                         title="Edit Documents">
+                                        title="Update document">
                                 <i class="material-icons">edit</i>
                              </a>
-                              <i title="delete" class="material-icons red clickable" data-method="delete"
+                              <i title="Delete document" class="material-icons red clickable" data-method="delete"
                                            data-parent-to-remove="tr"
                                            data-url="{% url 'document_delete' pk=file.id  %}">delete_forever</i>
                             </td>
@@ -359,23 +347,21 @@
                         <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button"
                                 id="adddpublication"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                title="add a publication">
+                                title="Add publication to project">
                             <i class="material-icons">add</i>
                         </button>
                         <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="adddpublication">
                             <button data-toggle="modal"
                                     data-target="#modal"
-                                    data-modal-title="Add an existing publication"
+                                    data-modal-title="Add publication to project"
                                     data-ajax-url="{% url 'pick_publication_for_project' pk=project.id %}"
-                                    class="dropdown-item" type="button" title="select existing publication">Reference an
-                                existing publication
+                                    class="dropdown-item" type="button" title="Link to existing publication">Link to existing publication
                             </button>
                             <button data-toggle="modal"
                                     data-target="#modal"
-                                    data-modal-title="Add a new publication"
+                                    data-modal-title="Add publication to project"
                                     data-ajax-url="{% url 'add_publication_to_project' pk=project.id %}"
-                                    class="dropdown-item" type="button" title="add a publication">
-                                Create new publication
+                                    class="dropdown-item" type="button" title="Add new publication">Create a new publication
                             </button>
                         </div>
                     </div>
@@ -390,6 +376,7 @@
                     {% for publication in project.publications.all %}
                         {% if can_edit %}
                             <li class="list-group-item deletable"
+                                data-delete-title="Remove publication from project"
                                 data-url="{% url 'remove_publication_from_project' pk=project.id publication_id=publication.pk %}"
                             >
                                 {{ publication.citation }}

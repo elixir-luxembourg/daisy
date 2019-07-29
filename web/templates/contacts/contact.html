@@ -31,21 +31,21 @@
                         <dt>Email</dt>
                         <dd><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></dd>
                         <dt>Address</dt>
-                        <dd>{{ contact.address }}</dd>
+                        <dd>{{ contact.address | default:'-' }}</dd>
                         <dt>Phone</dt>
-                        <dd>{{ contact.phone }}</dd>
+                        <dd>{{ contact.phone  | default:'-' }}</dd>
                     </dl>
 
                 </div>
 
                 <div class="floating-buttons-absolute">
                     <a class="btn btn-primary bmd-btn-fab float-right"
-                       title="Edit"
+                       title="Edit contact"
                        href="{% url 'contact_edit' pk=contact.id %}"><i
                             class="material-icons">edit</i>
                     </a>
                     <a  id="deletecontact" class="btn btn-danger bmd-btn-fab float-right red"
-                            title="Delete"
+                            title="Delete contact"
                             data-toggle="modal" data-target="#modal"
                             data-ajax-url="{% url 'contact_delete' contact.id %}">
                                 <i class="material-icons">delete</i>
@@ -60,7 +60,7 @@
         {% if contact.partners_roles.all %}
             <div class="card ml-0 col-md-6">
                 <div class="card-body">
-                    <h2 class="card-title">Contracts involving this contact</h2>
+                    <h2 class="card-title">Contracts with this contact</h2>
                     <ul class="card-text list-group">
                         {% for partner_role in contact.partners_roles.all %}
                             <li class="list-group-item">

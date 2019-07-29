@@ -10,35 +10,37 @@
             <div class="row">
                 <div class="col">
                     <dl>
-                        <dt>Cohort Owner:</dt>
+                        <dt>Cohort owner</dt>
                         <dl>
                             {% for contact in cohort.owners.all %}
                             <span class="badge badge-pill badge-secondary">{{ contact }}</span>
                         {% empty %}
-                            "unknown"
+                            -
                         {% endfor %}
                         </dl>
-                        <dt>Institutes:</dt>
+                        <dt>Institutes</dt>
                         <dl>
                             {% for institute in cohort.institutes.all %}
                                 <span class="badge badge-pill badge-secondary">{{ institute }}</span>
                             {% empty %}
-                                "unknown"
+                               -
                             {% endfor %}
                         </dl>
                     </dl>
-                    <dt>Ethics Approval</dt>
+                    <dt>Ethics confirmation</dt>
                     <dd>{{ cohort.ethics_confirmation | yesno }}</dd>
-                    <dt>Accession Number</dt>
-                    <dd>{{ cohort.elu_accession }}</dd>
+                    <dt>Accession number</dt>
+                    <dd>{{ cohort.elu_accession | default:'-'}}</dd>
+                    <dt>Remarks</dt>
+                    <dd>{{ cohort.comments | default:'-'}}</dd>
                 </div>
                 <div class="floating-buttons-absolute">
                     {% if can_edit %}
-                        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'cohort_edit' pk=cohort.id %}"><i
+                        <a class="btn btn-primary bmd-btn-fab float-right"  title="Edit cohort" href="{% url 'cohort_edit' pk=cohort.id %}"><i
                                 class="material-icons">edit</i>
                         </a>
                         <a  id="deletecohort" class="btn btn-danger bmd-btn-fab float-right red"
-                            title="Delete"
+                            title="Delete cohort"
                             data-toggle="modal" data-target="#modal"
                             data-ajax-url="{% url 'cohort_delete' cohort.id %}">
                                 <i class="material-icons">delete</i>
@@ -49,7 +51,6 @@
         </div>
     </div>
 
-    {% include '_includes/other_comments.html' with entity=cohort %}
 
     <div class="row card-deck mt-4">
         {#    Datasets    #}
