@@ -5,19 +5,48 @@
 {% block content %}
     <div class="row mt-4">
         <div class="jumbotron col">
-
+            {% if user.source %}
+                <div class="ribbon ribbon-orange"><span>{{ user.source }}</span></div>
+            {% endif %}
             <span style="color: #8D8F8F;">User</span>
             <h1>{{ user }}</h1>
             <div class="row">
                 <div class="col">
                     <dl>
                         <dt>First Name</dt>
-                        <dd>{{ uset.name | default:'unknown' }}</dd>
-                        <dt>LastcName</dt>
-                        <dd>{{ user.acronym | default:'-' }}</dd>
+                        <dd>{{ user.first_name | default:'unknown' }}</dd>
+                        <dt>Last Name</dt>
+                        <dd>{{ user.last_name | default:'-' }}</dd>
                         <dt>Email Address</dt>
                         <dd>{{ user.email | default:'unknown' }}</dd>
 
                     </dl>
                 </div>
+                <div class="col">
+                    <dl>
+                        <dt>Is active</dt>
+                        <dd>{{ user.is_active | yesno}}</dd>
+                        <dt>User permissions</dt>
+                        <dd>{{ user.user_permissions.all | join:", " | default:'-' }} </dd>
+                    </dl>
+                </div>
+                <div class="floating-buttons-absolute">
+                    {% if can_edit %}
+                        {% if user.source == manual_source%}
+                             <a  id="deleteuser" class="btn btn-danger bmd-btn-fab float-right red"
+                            title="Delete"
+                            data-toggle="modal" data-target="#modal"
+                            data-ajax-url="{% url 'user_delete' user.id %}">
+                                <i class="material-icons">delete</i>
+                            </a>
+
+                        {% endif %}
+                        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'user_edit' pk=user.id %}"><i
+                                class="material-icons">edit</i>
+                        </a>
+
+                    {% endif %}
+
+                </div>
+            </div>
 {% endblock %}

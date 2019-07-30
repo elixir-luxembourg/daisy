@@ -1,17 +1,34 @@
 from django import forms
 from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
-from django.forms import ModelForm
 from core.models import User
 
 
-class UserForm(ModelForm):
+class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'is_active', 'user_permissions']
+        fields = ['first_name', 'last_name', 'email', 'password', 'is_active', 'groups']
 
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    field_order = [
+        'first_name',
+        'last_name',
+        'email',
+        'password',
+        'is_active',
+        'groups'
+    ]
+
+
+class UserEditForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['is_active', 'groups']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 
 class PickUserForm(forms.Form):

@@ -79,6 +79,8 @@ class User(AbstractUser):
         app_label = 'core'
         ordering = ['first_name', 'last_name']
 
+    email = models.EmailField(blank=False)
+    source = models.CharField(max_length=128, blank=True, null=True,)
     full_name = TextFieldWithInputWidget(max_length=128)
 
     objects = UserManager()

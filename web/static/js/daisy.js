@@ -44,7 +44,9 @@ function initFormsets(elements) {
 $(document).ready(function () {
 
     csrftoken = Cookies.get("csrftoken");
+
     $('#users_table').DataTable();
+
     $('.nice-selects select').not('.dummy-select').select2({'width': '100%'});
 
     $('.ontocomplete').select2({
