@@ -50,15 +50,16 @@
                                    href="{% url 'publish_partner' pk=partner.id %}"><i
                                 class="material-icons">publish</i></a>
                             {% endif %}
-
                     {% endif %}
                     {% if can_edit %}
-                        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'partner_edit' pk=partner.id %}"><i
+                        <a class="btn btn-primary bmd-btn-fab float-right"
+                           title="Edit partner"
+                           href="{% url 'partner_edit' pk=partner.id %}"><i
                                 class="material-icons">edit</i>
                         </a>
                         {% if not partner.is_published %}
                             <a  id="deletepartner" class="btn btn-danger bmd-btn-fab float-right red"
-                            title="Delete"
+                            title="Delete partner"
                             data-toggle="modal" data-target="#modal"
                             data-ajax-url="{% url 'partner_delete' partner.id %}">
                                 <i class="material-icons">delete</i>
