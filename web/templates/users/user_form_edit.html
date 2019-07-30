@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'users/user_form.html' %}
 
-</body>
-</html>
+{% block title %}User - Edit{% endblock %}
+{% block card_title %}Edit user{% endblock %}
+{% block content_title %}<strong>{{ user.full_name }}</strong>{% endblock %}

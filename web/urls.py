@@ -21,9 +21,10 @@ from web.views.publication import PublicationCreateView, PublicationListView, Pu
 from web.views.storage_locations import StorageLocationListView, StorageLocationEditView, \
     StorageLocationDetailView, StorageLocationCreateView, remove_storage_location_from_dataset, \
     pick_storage_location_for_dataset, add_storage_location_to_dataset
-from web.views.user import UsersListView, UserDetailView
+from web.views.user import UsersListView, UserDetailView, UserEditView, UserCreateView, UserPasswordChange, \
+    change_password, UserDelete
 from web.views.users import add_personnel_to_project, remove_personnel_from_project
-
+# from core.permissions import superuser_only
 # Use include() to add paths from the catalog application
 
 
@@ -174,6 +175,9 @@ web_urls = [
     #User Management
     path('definitions/users', UsersListView.as_view(), name="users"),
     path('definitions/users/<int:pk>/', UserDetailView.as_view(), name="user"),
-    # path('definitions/users/<int:pk>/edit', UserEditView.as_view(), name="user_edit")
+    path('definitions/users/<int:pk>/edit', UserEditView.as_view(), name="user_edit"),
+    path('definitions/users/add', UserCreateView.as_view(), name="users_add"),
+    path('definitions/users/change-password', change_password, name="users_change_password"),
+    path('definitions/users/<int:pk>/delete', UserDelete.as_view(), name="user_delete"),
 
 ]
