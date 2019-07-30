@@ -481,7 +481,14 @@ It should be possible to create datasets and projects.
 # Updating DAISY
 
 
-If you want to move to the newest release of DAISY, do the following:
+If you want to move to the newest release of DAISY, we advise you to first backup your deployment. To do so:
+```bash
+systemctl stop gunicorn 
+tar -cvf /tmp/daisy.tar /home/daisy 
+sudo su -c 'PGPASSWORD="<PASSWORD_OF_POSTGRES_USER>" pg_dump elixir_daisy --port=5432 --username=daisy --clean > /tmp/daisy_dump.sql' - daisy 
+systemctl start gunicorn 
+```
+Once you have have created the tar ball of the application directory and the postgres dump, then you may proceed to update. To do so:
 
 ```bash
 cd /home/daisy/daisy/web/static/vendor/
