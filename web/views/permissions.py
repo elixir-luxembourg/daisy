@@ -9,7 +9,7 @@ from guardian.shortcuts import get_objects_for_user, get_users_with_perms, assig
 from core.constants import Permissions, Groups
 from core.models import Dataset, Project
 from core.forms import UserPermFormSet
-
+from core.permissions.checker import AutoChecker
 
 PAGINATE_BY = 5
 
@@ -31,9 +31,9 @@ def index(request, selection, pk):
     # get selected object (project or dataset)
     obj = klass.objects.get(pk=pk)
 
-
+    checker = AutoChecker(request.user)
     # check if admin permission is there, otherwise forbid access
-    if not request.user.has_perm(Permissions.ADMIN.value, obj):
+    if not checker.check(Permissions.ADMIN, obj):
         raise PermissionDenied
 
 
