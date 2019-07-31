@@ -42,6 +42,8 @@
                         <dd>{{ project.disease_terms.all | join:", "  | default:'-'  }}</dd>
                         <dt>Gene terms</dt>
                         <dd>{{ project.gene_terms.all | join:", "  | default:'-'  }}</dd>
+                        <dt>Phenotype terms</dt>
+                        <dd>{{ project.phenotype_terms.all | join:", "  | default:'-'  }}</dd>
                         <dt>DPIA link</dt>
                         <dd>{{ project.dpia | default:'-' }}</dd>
                         <dt>Includes automated profiling</dt>

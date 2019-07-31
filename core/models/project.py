@@ -85,7 +85,7 @@ class Project(CoreTrackedModel):
                                              verbose_name='Funding sources',
                                              help_text='Funding sources are national, international bodies or initiatives that have funded the research project.')
 
-    gene_terms = models.ManyToManyField('core.DiseaseTerm',
+    gene_terms = models.ManyToManyField('core.GeneTerm',
                                         verbose_name='List of gene terms',
                                         blank=True,
                                         help_text='Select one or more terms that would characterize the genes that fall in project\'s scope.')
