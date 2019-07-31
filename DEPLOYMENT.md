@@ -449,7 +449,7 @@ python36 manage.py collectstatic
 python36 manage.py migrate 
 python36 manage.py build_solr_schema -c /var/solr/data/daisy/conf -r daisy  
 cd /home/daisy/daisy/core/fixtures/
-wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/tree/master/metadata_tools/resources/edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/tree/master/metadata_tools/resources/hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/tree/master/metadata_tools/resources/hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/tree/master/metadata_tools/resources/hgnc.json
+wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json
 python36 manage.py load_initial_data
 ```
 The load_initial_data command needs several minutes to complete.
@@ -494,7 +494,7 @@ Once you have have created the tar ball of the application directory and the pos
 
 ```bash
 cd /home/daisy/daisy/core/fixtures/
-wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/tree/master/metadata_tools/resources/edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/tree/master/metadata_tools/resources/hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/tree/master/metadata_tools/resources/hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/tree/master/metadata_tools/resources/hgnc.json
+wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json
 cd /home/daisy/daisy/web/static/vendor/
 git pull
 npm install
