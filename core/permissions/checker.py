@@ -1,6 +1,8 @@
 """
 Module that handle permission management.
 """
+import logging
+
 from abc import ABCMeta, abstractmethod
 
 from django.contrib.contenttypes.models import ContentType
@@ -13,6 +15,8 @@ from guardian.mixins import PermissionRequiredMixin
 
 from core import constants
 from core.exceptions import DaisyError
+
+logger = logging.getLogger('daisy.permissions')
 
 
 class AbstractChecker(metaclass=ABCMeta):
@@ -61,7 +65,9 @@ class DatasetChecker(AbstractChecker):
     """
 
     def _check(self, perm, obj, **kwargs):
-        if self.checker.has_perm(perm, obj):
+        hasperm = self.checker.has_perm(perm, obj)
+        logger.debug(f'[DatasetChecker _check] Checking permission "{perm}" on: "{obj}": {hasperm}.')
+        if hasperm:
             return True
         nofollow = kwargs.pop('nofollow', False)
         if nofollow:
@@ -156,8 +162,10 @@ class AutoChecker(AbstractChecker):
         Check the permission on the object.
         Automatically determines which permission class to use.
         """
-        return self.__mapping[obj.__class__.__name__](self.user_or_group, checker=self.checker).check(perm, obj,
+        value = self.__mapping[obj.__class__.__name__](self.user_or_group, checker=self.checker).check(perm, obj,
                                                                                                       **kwargs)
+        logger.debug(f'[AutoChecker] Checking permission "{perm}" on {obj.__class__.__name__}: "{obj}" for "{self.user_or_group}": {value}.')
+        return value
 
 
 def permission_required(perm, lookup_variables):

@@ -1,3 +1,4 @@
+import logging
 from django.conf import settings
 from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
@@ -6,6 +7,7 @@ from core.models import Dataset, Project, User, Contract
 from core.search_indexes import DatasetIndex, ProjectIndex, ContractIndex
 from notification.models import Notification, NotificationVerb, NotificationStyle
 
+logger = logging.getLogger("daisy.signals")
 
 @receiver(post_save, sender=Dataset, dispatch_uid='dataset_change')
 def dataset_changed(sender, instance, created, **kwargs):
@@ -37,11 +39,13 @@ def dataset_local_custodians_changed(sender, instance, action, pk_set, **kwargs)
     if action == 'post_add':
         added_custodians_ids = pk_set
         added_custodians = User.objects.filter(pk__in=added_custodians_ids)
+        logger.debug(f'[dataset_local_custodians_changed] action: {action} on "{instance}". Adding custodians: {pk_set} .')
         for custodian in added_custodians:
             custodian.assign_permissions_to_dataset(instance)
     elif action == 'post_remove':
         removed_custodians_ids = pk_set
         removed_custodians = User.objects.filter(pk__in=removed_custodians_ids)
+        logger.debug(f'[dataset_local_custodians_changed] action: {action} on "{instance}". Removing custodians: {pk_set} .')
         for custodian in removed_custodians:
             custodian.remove_permissions_to_dataset(instance)
     DatasetIndex().update_object(instance)
