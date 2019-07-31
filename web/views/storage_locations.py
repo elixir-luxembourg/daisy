@@ -10,13 +10,14 @@ from core.forms.storage_location import StorageLocationForm, StorageLocationEdit
 from core.models import Dataset
 from core.models.storage_location import DataLocation
 from core.permissions import permission_required
+from core.constants import Permissions
 from web.views.utils import AjaxViewMixin
 from core.utils import DaisyLogger
 
 
 log = DaisyLogger(__name__)
 
-@permission_required('EDIT', (Dataset, 'pk', 'dataset_pk'))
+@permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
 def edit_storagelocation(request, pk, dataset_pk):
     loc = get_object_or_404(DataLocation, pk=pk)
     if request.method == 'POST':
