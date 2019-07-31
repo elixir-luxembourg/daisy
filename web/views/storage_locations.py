@@ -73,7 +73,7 @@ class StorageLocationCreateView(CreateView, AjaxViewMixin):
         return reverse_lazy('dataset', kwargs={'pk': self.dataset.pk})
 
 @require_http_methods(["DELETE"])
-@permission_required('EDIT', (Dataset, 'pk', 'dataset_pk'))
+@permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
 def remove_storagelocation(request, dataset_pk, storagelocation_pk):
     dataset = get_object_or_404(Dataset, pk=dataset_pk)
     datalocation = get_object_or_404(DataLocation, pk=storagelocation_pk)

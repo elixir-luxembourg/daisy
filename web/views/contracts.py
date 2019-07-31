@@ -146,7 +146,7 @@ def partner_role_delete(request, pk):
     return HttpResponse("Partner (signatory) removed from contract.")
 
 #
-# @permission_required('EDIT', (Contract, 'pk', 'pk'))
+# @permission_required(Permissions.EDIT, (Contract, 'pk', 'pk'))
 # def add_kv_to_contract(request, pk):
 #     if request.method == 'POST':
 #         form = KVForm(request.POST)
@@ -174,7 +174,7 @@ def partner_role_delete(request, pk):
 #     return render(request, 'modal_form.html', {'form': form, 'submit_url': request.get_full_path()})
 #
 #
-# @permission_required('EDIT', (Contract, 'pk', 'pk'))
+# @permission_required(Permissions.EDIT, (Contract, 'pk', 'pk'))
 # def rm_kv_from_contract(request, pk, key):
 #     contract = get_object_or_404(Contract, pk=pk)
 #     metadata = contract.metadata
@@ -185,7 +185,7 @@ def partner_role_delete(request, pk):
 
 ## DATASET METHODS ##
 #
-# @permission_required('EDIT', (Collaboration, 'pk', 'pk'))
+# @permission_required(Permissions.EDIT, (Collaboration, 'pk', 'pk'))
 # def collaboration_dataset_add(request, pk):
 #     contract = get_object_or_404(Collaboration, pk=pk)
 #     if request.method == 'GET':
@@ -213,7 +213,7 @@ def partner_role_delete(request, pk):
 #         })
 #
 #
-# @permission_required('EDIT', (Collaboration, 'pk', 'pk'))
+# @permission_required(Permissions.EDIT, (Collaboration, 'pk', 'pk'))
 # def collaboration_dataset_remove(request, pk, dataset_id):
 #     # TODO: check that contract is membership with project
 #     contract = get_object_or_404(Collaboration, pk=pk)

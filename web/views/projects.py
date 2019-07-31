@@ -8,6 +8,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 
 from core import constants
+from core.constants import Permissions
 from core.forms.contract import ContractForm
 from core.forms.dataset import DatasetForm
 from core.forms.document import DocumentForm
@@ -137,7 +138,7 @@ class ProjectEditView(CheckerMixin, UpdateView):
 
 ## DATASET METHODS ##
 
-@permission_required('EDIT', (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
 def project_dataset_create(request, pk, flag):
     project = get_object_or_404(Project, pk=pk)
 
@@ -167,7 +168,7 @@ def project_dataset_create(request, pk, flag):
         })
 
 
-@permission_required('EDIT', (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
 def project_dataset_add(request, pk):
     project = get_object_or_404(Project, pk=pk)
     if request.method == 'GET':
@@ -193,7 +194,7 @@ def project_dataset_add(request, pk):
         })
 
 
-@permission_required('EDIT', (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
 def project_dataset_choose_type(request, pk):
     """
     View to choose dataset type to create
@@ -207,7 +208,7 @@ def project_dataset_choose_type(request, pk):
 # CONTRACTS METHODS
 
 
-@permission_required('EDIT', (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
 def project_contract_create(request, pk):
     project = get_object_or_404(Project, pk=pk)
     # get the correct form from the flag selected
@@ -240,7 +241,7 @@ def project_contract_create(request, pk):
         })
 
 
-@permission_required('EDIT', (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
 def project_contract_remove(request, pk, cid):
     contract = get_object_or_404(Contract, pk=cid)
     contract.project = None
