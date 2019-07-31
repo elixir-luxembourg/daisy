@@ -248,3 +248,4 @@ class CheckerMixin(PermissionRequiredMixin):
         if not has_permission:
             raise PermissionDenied()
         return None
+
