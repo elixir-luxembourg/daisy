@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.management import BaseCommand
 from guardian.shortcuts import assign_perm
 from ontobio import obograph_util, Ontology
-
+from django.db import connection
 from core.exceptions import FixtureImportError
 from core.models import ContactType, DataType, DocumentType, StorageResource, FundingSource, RestrictionClass, \
     SensitivityClass, Cohort, Contact, GDPRRole, LegalBasisType, PersonalDataType
@@ -196,6 +196,9 @@ class Command(BaseCommand):
 
     @staticmethod
     def create_study_terms():
+        print('Removing existing study terms')
+        with connection.cursor() as cursor:
+            cursor.execute("truncate core_studyterm cascade")
         print('Creating study terms')
         handle = os.path.join(FIXTURE_DIR, 'edda.json')
         with open(handle, 'r', encoding='utf-8') as f:
@@ -209,7 +212,10 @@ class Command(BaseCommand):
 
     @staticmethod
     def create_disease_terms():
-        print('Creating disease terms')
+        print('Removing existing disease terms')
+        with connection.cursor() as cursor:
+            cursor.execute("truncate core_diseaseterm cascade")
+        print('Creating hdo disease terms')
         handle = os.path.join(FIXTURE_DIR, 'hdo.json')
         with open(handle, 'r', encoding='utf-8') as f:
             hdo_json = f.read()
@@ -222,7 +228,10 @@ class Command(BaseCommand):
 
     @staticmethod
     def create_phenotype_terms():
-        print('Creating phenotype terms')
+        print('Removing existing phenotype terms')
+        with connection.cursor() as cursor:
+            cursor.execute("truncate core_phenotypeterm cascade")
+        print('Creating hpo phenotype terms')
         handle = os.path.join(FIXTURE_DIR, 'hpo.json')
         with open(handle, 'r', encoding='utf-8') as f:
             hpo_json = f.read()
@@ -235,7 +244,10 @@ class Command(BaseCommand):
 
     @staticmethod
     def create_gene_terms():
-        print('Creating gene terms')
+        print('Removing existing gene terms')
+        with connection.cursor() as cursor:
+            cursor.execute("truncate core_geneterm cascade")
+        print('Importing hgnc gene terms')
         handle = os.path.join(FIXTURE_DIR, 'hgnc.json')
         with open(handle, 'r', encoding='utf-8') as f:
             hgnc_json = f.read()
