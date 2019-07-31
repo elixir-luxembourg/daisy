@@ -11,6 +11,7 @@ from core.models import LegalBasis, Dataset
 from core.permissions import permission_required
 from core.utils import DaisyLogger
 from web.views.utils import AjaxViewMixin
+from core.constants import Permissions
 
 log = DaisyLogger(__name__)
 
@@ -49,7 +50,7 @@ class LegalBasisCreateView(CreateView, AjaxViewMixin):
         return reverse_lazy('dataset', kwargs={'pk': self.dataset.pk})
 
 
-@permission_required('EDIT', (Dataset, 'pk', 'dataset_pk'))
+@permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
 def edit_legalbasis(request, pk, dataset_pk):
     # log.debug('editing legal basis', post=request.POST)
     legalbasis = get_object_or_404(LegalBasis, pk=pk)
@@ -75,7 +76,7 @@ def edit_legalbasis(request, pk, dataset_pk):
 
 
 @require_http_methods(["DELETE"])
-@permission_required('EDIT', (Dataset, 'pk', 'dataset_pk'))
+@permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
 def remove_legalbasis(request, dataset_pk, legalbasis_pk):
     legbasis = get_object_or_404(LegalBasis, pk=legalbasis_pk)
     dataset = get_object_or_404(Dataset, pk=dataset_pk)

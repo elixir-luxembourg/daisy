@@ -53,7 +53,7 @@ def upload_document(request, object_id, content_type):
     return render(request, 'modal_form.html', {'form': form, 'submit_url': request.get_full_path()})
 
 
-@permission_required('EDIT', (Document, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, (Document, 'pk', 'pk'))
 def document_edit(request, pk):
     log.debug('editing document', post=request.POST)
     document = get_object_or_404(Document, pk=pk)
