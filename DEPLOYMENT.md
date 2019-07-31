@@ -50,7 +50,7 @@ exit
 
 ```bash
 sudo useradd solr
-wget https://www-us.apache.org/dist/lucene/solr/7.7.1/solr-7.7.1.tgz
+wget https://archive.apache.org/dist/lucene/solr/7.7.1/solr-7.7.1.tgz
 tar -xf solr-7.7.1.tgz solr-7.7.1/bin/install_solr_service.sh
 sudo yum install lsof java-1.8.0-openjdk
 sudo solr-7.7.1/bin/install_solr_service.sh solr-7.7.1.tgz
