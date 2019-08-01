@@ -235,7 +235,7 @@
                         <li class="list-group-item">
                             <ul>
                                 <li class="list-group-item">
-                                    <a href="{% url 'access' pk=access.id %}"><strong>{{ access.dataset.project|truncatechars:80 }}</strong> {{ access.dataset.title|truncatechars:80 }}
+                                    <a href="{% url 'dataset' pk=access.dataset.id %}"> {{ access.dataset.title|truncatechars:80 }}
                                     </a>
                                 </li>
                             </ul>
