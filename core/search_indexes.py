@@ -14,7 +14,7 @@ class DataDeclarationIndex(CelerySearchIndex, indexes.Indexable):
 
     text = indexes.CharField(document=True, use_template=True)
     pk = indexes.IntegerField(indexed=True, stored=True, faceted=True)
-    cohorts = indexes.CharField(indexed=True, stored=True, faceted=True)
+    cohorts = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
     consent_status = indexes.CharField(model_attr='consent_status', indexed=True, stored=True, faceted=True)
     data_types = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
     data_types_generated = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
@@ -105,6 +105,7 @@ class CohortIndex(CelerySearchIndex, indexes.Indexable):
 
     def prepare_ethics_confirmation(self, obj):
         return obj.ethics_confirmation
+
 
 class DatasetIndex(CelerySearchIndex, indexes.Indexable):
 
