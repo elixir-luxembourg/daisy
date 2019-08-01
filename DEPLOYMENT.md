@@ -363,6 +363,7 @@ exit
 # Web server
 
 1) Install nginx
+
     ```bash
     sudo yum install epel-release
     sudo yum install nginx
@@ -371,8 +372,8 @@ exit
     ```
     
 1) As _root_ or with _sudo_ create the file ```/etc/nginx/conf.d/ssl.conf``` with the following content:
-
-   ```
+	   
+    ```bash
     proxy_connect_timeout       600;
     proxy_send_timeout          600;
     proxy_read_timeout          600;
@@ -399,8 +400,9 @@ exit
         ssl_certificate /etc/ssl/certs/daisy.com.crt;
         ssl_certificate_key /etc/ssl/private/daisy.com.key;
     }
-    ```
-    Changing daisy.com to your particular case.  
+	```    
+    
+	Changing daisy.com to your particular case.  
     
 1) To have a redirect from http to https, as _root_ or with _sudo_ create the file ```/etc/nginx/conf.d/daisy.conf``` with the following content:
 
@@ -480,32 +482,61 @@ Check the the installation was successful by accessing the URL `https://${IP_OF_
 You should be able to login with `admin/demo` if the `load_demo_data` command was used or with your own admin account if the `createsuperuser` command was used.
 It should be possible to create datasets and projects.
 
-# Updating DAISY
-
-
-If you want to move to the newest release of DAISY, we advise you to first backup your deployment. To do so:
-```bash
-systemctl stop gunicorn 
-tar -cvf /tmp/daisy.tar /home/daisy 
-sudo su -c 'PGPASSWORD="<PASSWORD_OF_POSTGRES_USER>" pg_dump elixir_daisy --port=5432 --username=daisy --clean > /tmp/daisy_dump.sql' - daisy 
-systemctl start gunicorn 
-```
-Once you have have created the tar ball of the application directory and the postgres dump, then you may proceed to update. To do so:
-
-```bash
-cd /home/daisy/daisy/core/fixtures/
-wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json
-cd /home/daisy/daisy/web/static/vendor/
-git pull
-npm install
-cd /home/daisy/daisy
-python36 manage.py migrate && python36 manage.py load_initial_data && python36 manage.py build_solr_schema -c /var/solr/data/daisy/conf/ -r daisy && yes | python36 manage.py clear_index && yes "yes" | python36 manage.py collectstatic ;
-yes | python36 manage.py rebuild_index;
-```
-
 In addition when the DAISY is updated or configurations are changed (including the configuration files such as ```settings_local.py```) is modified, gunicorn must be restarted to load the new code/configuration, to do so run:
 
 ```bash
 sudo systemctl restart gunicorn
+sudo systemctl restart celery_worker
 ```
+
+# Updating DAISY
+
+
+If you want to move to the newest release of DAISY, we advise you to first backup your deployment.  
+To do so:
+
+
+As root user:
+
+```bash
+systemctl stop gunicorn
+systemctl stop celery_worker 
+tar -cvf /tmp/daisy.tar /home/daisy 
+sudo su -c 'PGPASSWORD="<PASSWORD_OF_POSTGRES_USER>" pg_dump elixir_daisy --port=5432 --username=daisy --clean > daisy_dump.sql' - daisy 
+```
+
+Once you have have created the tar ball of the application directory and the postgres dump, then you may proceed to update.
+
+As daisy user:
+
+```bash
+cd /home/daisy/daisy/core/fixtures/
+wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json -O edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json -O hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json -O hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json -O hgnc.json
+cd /home/daisy/daisy/web/static/vendor/
+git checkout master
+git pull
+npm install
+```
+As root user:
+
+```bash
+/usr/local/bin/pip install -e /home/daisy/daisy --upgrade
+```
+
+
+As daisy user:
+
+```bash
+cd /home/daisy/daisy
+python36 manage.py migrate && python36 manage.py build_solr_schema -c /var/solr/data/daisy/conf/ -r daisy && yes | python36 manage.py clear_index && yes "yes" | python36 manage.py collectstatic && python36 manage.py load_initial_data && yes | python36 manage.py rebuild_index;
+```
+
+As root user:
+
+```bash
+systemctl start gunicorn
+systemctl start celery_worker
+```
+
+
 
