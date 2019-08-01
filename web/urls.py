@@ -18,14 +18,11 @@ from web.views.partner import PartnerCreateView, PartnerDelete, partner_search_v
 from web.views.projects import ProjectCreateView, ProjectEditView, ProjectDetailView, ProjectDelete
 from web.views.publication import PublicationCreateView, PublicationListView, PublicationEditView, \
     add_publication_to_project, remove_publication_from_project, pick_publication_for_project
-from web.views.storage_locations import StorageLocationListView, StorageLocationEditView, \
-    StorageLocationDetailView, StorageLocationCreateView, remove_storage_location_from_dataset, \
-    pick_storage_location_for_dataset, add_storage_location_to_dataset
+
 from web.views.user import UsersListView, UserDetailView, UserEditView, UserCreateView, UserPasswordChange, \
     change_password, UserDelete
 from web.views.users import add_personnel_to_project, remove_personnel_from_project
-# from core.permissions import superuser_only
-# Use include() to add paths from the catalog application
+
 
 
 web_urls = [
