@@ -1,6 +1,6 @@
 from django import forms
 from django.shortcuts import get_object_or_404
-
+from django.forms import ValidationError
 from core.models import Dataset, User, Project
 from core.models.contract import Contract
 
@@ -19,8 +19,6 @@ class DatasetForm(forms.ModelForm):
         projects = Project.objects.filter().all()
         project_choices = [(None, "---------------------")]
         project_choices.extend([(p.id, str(p)) for p in projects])
-        # if dataset is not None and dataset.project:
-        #     project_choices.append((dataset.project.id, str(dataset.project)))
 
         self.fields['project'] = forms.ChoiceField(choices=project_choices, required=False,
                                                    label       = Dataset.project.field.verbose_name,
@@ -33,24 +31,26 @@ class DatasetForm(forms.ModelForm):
         """
         cleaned_data = super().clean()
 
-        # if not cleaned_data.get('project'):
-        #     cleaned_data['project'] = None
-        # else:
+        errors = []
         proj = cleaned_data['project']
         if proj:
+            project_inconsistency = False
             contracts = self.instance.collect_contracts()
-            for contract in contracts:
+            for contract,obj in contracts:
                 if contract.project:
                     if str(contract.project.id) != proj:
-                        self.add_error('project', "Dataset has indirect references to project {}. Please remove those before updating project field.".format(contract.project.acronym))
+                        project_inconsistency = True
+                        self.add_error('project', "Dataset has existing link to Project {} via {}. Please remove link before updating this field.".format(contract.project.acronym, obj))
+            if project_inconsistency:
+                errors.append("Unable to update project information.")
 
-        if 'local_custodians' not in cleaned_data:
-            self.add_error('local_custodians', "You must specify Local Custodians for the dataset.")
-        else:
-            pis = cleaned_data.get('local_custodians').vips()
-            if pis.first() is None:
-                self.add_error('local_custodians', "Dataset\'s Local Custodians must include at least one PI.")
+        local_custodians = cleaned_data.get("local_custodians", [])
+        if not local_custodians or not local_custodians.vips().exists():
+            errors.append("Local custodian information is missing or incomplete.")
+            self.add_error('local_custodians',  "At least one PI must be in the responsible persons.")
 
+        if errors:
+            raise ValidationError(errors)
         return cleaned_data
 
     def save(self, commit=True):
@@ -76,7 +76,7 @@ class DatasetFormEdit(DatasetForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        #self.fields['project'].disabled = True
+
 
 
 
