@@ -24,6 +24,8 @@ class NotificationStyle(ChoiceEnum):
 class NotificationVerb(ChoiceEnum):
     new_dataset = 'New dataset'
     update_dataset = 'Dataset update'
+    data_storage_expiry = 'Data storage expiry'
+    document_expiry = 'Document expiry'
 
 
 class NotificationSetting(models.Model):
@@ -68,6 +70,8 @@ class Notification(models.Model):
     def get_absolute_url(self):
         if self.content_type.model_class() ==  apps.get_model('core.Dataset'):
             return reverse('dataset', args=[str(self.object_id)])
+        elif self.content_type.model_class() == apps.get_model('core.DataDeclaration'):
+            return reverse('data_declaration', args=[str(self.object_id)])
         raise Exception('No url defined for this content type')
 
     def get_full_url(self):

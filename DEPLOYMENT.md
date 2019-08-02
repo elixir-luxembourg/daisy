@@ -538,5 +538,11 @@ systemctl start gunicorn
 systemctl start celery_worker
 ```
 
+# Setting up reminder type notifications 
 
+In order to allow DAISY to generate notifications on approaching deadlines (e.g. data storage end date or document expiry), the following command should be executed:
 
+```bash
+./manage.py generate_notifications
+```
+We advise you to set up a  **daily cron job** to run this command periodically.
