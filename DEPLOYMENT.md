@@ -530,6 +530,12 @@ As daisy user:
 cd /home/daisy/daisy
 python36 manage.py migrate && python36 manage.py build_solr_schema -c /var/solr/data/daisy/conf/ -r daisy && yes | python36 manage.py clear_index && yes "yes" | python36 manage.py collectstatic && python36 manage.py load_initial_data && yes | python36 manage.py rebuild_index;
 ```
+If LDAP was used to import users, they have to be imported again:
+
+```bash
+python36 manage.py import_users
+```
+
 
 As root user:
 

@@ -12,15 +12,18 @@ Data Information System (DAISY) is a data bookkeeping application designed to he
 ### Installation
 
 1. Get the source code
+    
     ```bash
     git clone git@github.com:elixir-luxembourg/daisy.git
     cd daisy
     ```
- 1. Create your settings file
-    ```bash
-    cp elixir_daisy/settings_local.template.py elixir_daisy/settings_local.py
-    ```
+1. Create your settings file
+    
+	```bash
+	cp elixir_daisy/settings_local.template.py elixir_daisy/settings_local.py
+	```
     Optional: edit the file elixir_daisy/settings_local.py to adapt to your environment.
+
 1. Build daisy docker image  
     ```bash
     docker-compose up --build
@@ -157,6 +160,13 @@ See folder daisy/data/datasets as an example.
     ```bash
     docker-compose exec web python manage.py rebuild_index -u default
     ```	
+1. Reimport the users  
+	    
+    If LDAP was used to import users, they have to be imported again:
+    
+    ```bash
+    docker-compose exec web python manage.py import_users
+    ```
     
 ## Without Docker - CentOS
 
