@@ -26,6 +26,7 @@ class DataDeclarationEditForm(forms.ModelForm):
                 'consent_status',
                 'special_subjects_description',
                 'end_of_storage_duration',
+                'storage_duration_criteria',
                 'embargo_date',
                 'data_types_notes'
             ]
