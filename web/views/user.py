@@ -1,16 +1,17 @@
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
-from web.views.utils import AjaxViewMixin
-from core.models import User
-from core.forms.user import UserForm, UserEditForm
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import PasswordChangeView
 from django.shortcuts import render, redirect
-from django.contrib.auth.mixins import UserPassesTestMixin
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+
+from core.forms.user import UserForm, UserEditFormActiveDirectory, UserEditFormManual
+from core.models import User
+from core.models.user import UserSource
+from web.views.utils import AjaxViewMixin
 
 
 def superuser_required():
@@ -20,15 +21,14 @@ def superuser_required():
                 return self.request.user.is_superuser
 
         return WrappedClass
-    return wrapper
 
+    return wrapper
 
 
 @superuser_required()
 class UsersListView(ListView):
     model = User
     template_name = 'users/user_list.html'
-
 
 
 @superuser_required()
@@ -42,13 +42,13 @@ class UserCreateView(CreateView, AjaxViewMixin):
         user = form.save(commit=False)
         email = form.cleaned_data['email']
         password = form.cleaned_data['password']
-        user_permissions = form.cleaned_data['user_permissions']
+        groups = form.cleaned_data['groups']
         user.set_password(password)
-        user.save()
         user.username = email
-        user.source = settings.USER_SOURCE['manual']
-        user.user_permissions.set(user_permissions)
-        return super(UserCreateView, self).form_valid(form)
+        user.source = UserSource.MANUAL
+        user.save()
+        user.groups.set(groups)
+        return super().form_valid(form)
 
     def get_success_url(self):
         return reverse_lazy('users')
@@ -58,8 +58,14 @@ class UserCreateView(CreateView, AjaxViewMixin):
 class UserEditView(UpdateView):
     model = User
     template_name = 'users/user_form_edit.html'
-    form_class = UserEditForm
     success_message = 'User profile has been updated'
+
+    def get_form_class(self):
+        user = self.get_object()
+        if user.source == UserSource.ACTIVE_DIRECTORY:
+            return UserEditFormActiveDirectory
+        else:
+            return UserEditFormManual
 
     def get_success_url(self):
         return reverse_lazy('user', kwargs={'pk': self.object.id})
@@ -74,8 +80,9 @@ class UserDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         can_edit = True
         context['can_edit'] = can_edit
-        context['manual_source'] = settings.USER_SOURCE['manual']
+        context['manual_source'] = UserSource.MANUAL
         return context
+
 
 @login_required
 def change_password(request):
@@ -102,7 +109,6 @@ class UserPasswordChange(PasswordChangeView):
     success_url = '/'
 
     def get_success_url(self):
-
         return reverse_lazy('login')
 
 

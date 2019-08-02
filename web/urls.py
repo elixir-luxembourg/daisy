@@ -169,7 +169,7 @@ web_urls = [
     path('api/partners', api.partners, name="api_partners"),
     path('api/termsearch/<slug:category>', api.termsearch, name="api_termsearch"),
 
-    #User Management
+    # User Management
     path('definitions/users', UsersListView.as_view(), name="users"),
     path('definitions/users/<int:pk>/', UserDetailView.as_view(), name="user"),
     path('definitions/users/<int:pk>/edit', UserEditView.as_view(), name="user_edit"),
