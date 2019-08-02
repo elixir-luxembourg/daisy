@@ -1,6 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
+
 from core.models import User
 
 
@@ -22,10 +23,19 @@ class UserForm(forms.ModelForm):
     ]
 
 
-class UserEditForm(forms.ModelForm):
+class UserEditFormActiveDirectory(forms.ModelForm):
     class Meta:
         model = User
         fields = ['is_active', 'groups']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class UserEditFormManual(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'is_active', 'groups']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -35,7 +45,8 @@ class PickUserForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['personnel'] = forms.ChoiceField(label='Select user',
-            choices=[(d.id, str(d)) for d in User.objects.exclude(username='AnonymousUser').all()])
+                                                     choices=[(d.id, str(d)) for d in
+                                                              User.objects.exclude(username='AnonymousUser').all()])
 
 
 class UserAuthForm(AuthenticationForm):
@@ -54,6 +65,3 @@ class UserAuthForm(AuthenticationForm):
                 else:
                     self.cleaned_data['username'] = username + suffix
         return super().clean()
-
-
-
