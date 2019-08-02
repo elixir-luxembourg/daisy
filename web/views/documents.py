@@ -64,7 +64,7 @@ def document_edit(request, pk):
             form.save()
             messages.add_message(request, messages.SUCCESS, "Document updated")
             redirecturl = document.content_type.name
-            return HttpResponseRedirect(to=redirecturl, pk=document.object_id)
+            return redirect(to=redirecturl, pk=document.object_id)
         else:
             return JsonResponse(
                 {'error':

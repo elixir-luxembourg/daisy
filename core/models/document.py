@@ -53,6 +53,11 @@ class Document(CoreModel):
                                      null=True)
     domain_type = models.TextField(verbose_name='Domain Type', choices=type, default=type.not_specified)
 
+    expiry_date = models.DateField(verbose_name='Expiry date',
+                                blank=True,
+                                help_text='If the document has a validity period, please specify the expiry date here.',
+                                null=True)
+
     def __str__(self):
         return "{} ({})".format(self.content.name, self.content_object)
 
