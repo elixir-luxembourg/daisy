@@ -98,31 +98,4 @@ def send_notifications(period):
     return users
 
 
-@shared_task
-def send_data_steward_notifications(days=32):
-    """
-    Send notifications for admin users:
-    * about soon expiring datasets
-    """
-    now = timezone.now()
-    threshold = now + datetime.timedelta(days=days)
-    datasets = Dataset.objects.filter(end_of_storage_duration__lte=threshold)
-    if not datasets:
-        return
 
-    data_stewards = User.objects.data_stewards()
-    expiring_datasets = {}
-    for dataset in datasets:
-        expiring_datasets[dataset] = dataset.local_custodians.all()
-
-    context = {
-        'time': threshold,
-        'datasets': expiring_datasets,
-    }
-    send_the_email(
-        settings.EMAIL_DONOTREPLY,
-        [u.email for u in data_stewards.all()],
-        'Notifications',
-        'notification/data_steward_notifications',
-        context,
-    )

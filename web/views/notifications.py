@@ -1,14 +1,7 @@
-from django.conf import settings
 from django import forms
-from django.db import transaction, IntegrityError
-from django.contrib import messages
-from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import ListView, CreateView, DetailView, UpdateView
-from django.http import HttpResponse
 from django.core.paginator import Paginator
-
 from core.models import User
 
 
