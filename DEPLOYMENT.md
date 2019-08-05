@@ -487,6 +487,7 @@ In addition when the DAISY is updated or configurations are changed (including t
 ```bash
 sudo systemctl restart gunicorn
 sudo systemctl restart celery_worker
+sudo systemctl restart celery_beat
 ```
 
 # Setting up reminders 
@@ -519,7 +520,8 @@ As root user:
 
 ```bash
 systemctl stop gunicorn
-systemctl stop celery_worker 
+systemctl stop celery_worker
+systemctl stop celery_beat 
 tar -cvf /tmp/daisy.tar /home/daisy 
 sudo su -c 'PGPASSWORD="<PASSWORD_OF_POSTGRES_USER>" pg_dump elixir_daisy --port=5432 --username=daisy --clean > daisy_dump.sql' - daisy 
 ```
@@ -555,4 +557,5 @@ As root user:
 ```bash
 systemctl start gunicorn
 systemctl start celery_worker
+systemctl start celery_beat 
 ```
