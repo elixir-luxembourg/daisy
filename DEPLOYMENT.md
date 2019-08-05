@@ -489,6 +489,25 @@ sudo systemctl restart gunicorn
 sudo systemctl restart celery_worker
 ```
 
+# Setting up reminders 
+
+DAISY can generate reminders on approaching deadlines (e.g. data storage end date or document expiry). To enable this feature, do the following:
+
+ 1) Login to DAISY as a super user. e.g. `admin` user in the demo application
+ 
+ 2) Go to https://${IP_OF_THE_SERVER}/admin
+ 
+ 3) From the 'Site administration' list select 'Periodic tasks' under 'PERIODIC TASKS' heading.
+ 
+ 4) Clicking the 'ADD PERIODIC TASK' button, then:
+    4.1) Give your task a name, 
+    4.2) From the 'Task(registered)' list select `notification.tasks.document_expiry_notifications`,
+    4.3) From the 'Interval' list select `every day`. If this interval does not exist, you may create it by clicking the (+) button next to the select,.
+    4.4) Select a start date and time, e.g. today and now,
+    4.5) Click 'SAVE'.
+    
+ 5) You may repeat the steps in (4) to create a daily periodic task also for `notification.tasks.data_storage_expiry_notifications`,
+ 
 # Updating DAISY
 
 
@@ -537,12 +556,3 @@ As root user:
 systemctl start gunicorn
 systemctl start celery_worker
 ```
-
-# Setting up reminder type notifications 
-
-In order to allow DAISY to generate notifications on approaching deadlines (e.g. data storage end date or document expiry), the following command should be executed:
-
-```bash
-./manage.py generate_notifications
-```
-We advise you to set up a  **daily cron job** to run this command periodically.
