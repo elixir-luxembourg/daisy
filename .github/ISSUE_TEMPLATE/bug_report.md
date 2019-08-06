@@ -24,7 +24,7 @@ assignees: ''
 
  - Deployment: [e.g. daisy-test.lcsb.uni.lu]
  - Version [e.g. 1.1.0]
- - BRowser [e.g. Firefox 68.x]
+ - Browser [e.g. Firefox 68.x]
  
  
 **Additional information; error logs, screenshots**
