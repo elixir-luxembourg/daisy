@@ -9,7 +9,8 @@ assignees: ''
 
 **Describe the bug (current behaviour)**
 
-**To Reproduce**
+
+**To reproduce**
 
 1. 
 2. 
@@ -23,6 +24,7 @@ assignees: ''
 
  - Deployment: [e.g. daisy-test.lcsb.uni.lu]
  - Version [e.g. 1.1.0]
-
-
-**Additional information**
+ - BRowser [e.g. Firefox 68.x]
+ 
+ 
+**Additional information; error logs, screenshots**
