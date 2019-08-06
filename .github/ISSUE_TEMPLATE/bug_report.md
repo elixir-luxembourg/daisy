@@ -27,4 +27,4 @@ assignees: ''
  - Browser [e.g. Firefox 68.x]
  
  
-**Additional information; error logs, screenshots**
+**Additional information (error logs, screenshots)**
