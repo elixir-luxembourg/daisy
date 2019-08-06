@@ -41,7 +41,7 @@ Then you need to compile the static files.
 ```bash
 sudo su - daisy
 cd /home/daisy/daisy/web/static/vendor/
-npm install
+npm ci
 exit
 ```
 
@@ -536,7 +536,7 @@ wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_too
 cd /home/daisy/daisy/web/static/vendor/
 git checkout master
 git pull
-npm install
+npm ci
 ```
 As root user:
 

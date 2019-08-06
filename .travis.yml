@@ -3,13 +3,14 @@ language: python
 python:
   - "3.6"
   - "3.5"
-  
+
 services:
   - docker
-  
+
 before_install:
+  - npm install npm@latest -g
   - cp elixir_daisy/settings_compose_ci.py elixir_daisy/settings_compose.py
-  
+
 install:
   - docker-compose build
   - docker-compose up -d

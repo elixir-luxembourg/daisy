@@ -197,7 +197,7 @@ To be completed.
 
 ```bash
 cd web/static/vendor/
-npm install
+npm ci
 ```
 
 ### Compile daisy.scss
