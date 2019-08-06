@@ -9,7 +9,7 @@ from guardian.shortcuts import get_objects_for_user, get_users_with_perms, assig
 from core.constants import Permissions, Groups
 from core.models import Dataset, Project
 from core.forms import UserPermFormSet
-
+from core.permissions.checker import AutoChecker
 
 PAGINATE_BY = 5
 
@@ -31,9 +31,9 @@ def index(request, selection, pk):
     # get selected object (project or dataset)
     obj = klass.objects.get(pk=pk)
 
-
+    checker = AutoChecker(request.user)
     # check if admin permission is there, otherwise forbid access
-    if not request.user.has_perm(Permissions.ADMIN.value, obj):
+    if not checker.check(Permissions.ADMIN, obj):
         raise PermissionDenied
 
 
@@ -44,7 +44,7 @@ def index(request, selection, pk):
     # remove request user and local custodians from it and treat them separately
     initial = []
     local_custodians = obj.local_custodians.all()
-    local_vips = [u.is_part_of(Groups.VIP.value) for u in local_custodians]
+    local_vips = [u for u in local_custodians if u.is_part_of(Groups.VIP.value)]
     context = {
         'object': obj,
         'selection': selection,
@@ -52,9 +52,6 @@ def index(request, selection, pk):
         'local_custodians': local_custodians,
         'local_vips': local_vips,
     }
-    for user in local_custodians:
-        if user.is_part_of(Groups.VIP.value):
-            local_vips.append(user)
     for user, permissions in users_with_perms.items():
         # add user
         data = {
