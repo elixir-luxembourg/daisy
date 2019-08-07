@@ -432,7 +432,12 @@ exit
 
     Comment out the block server {} in /etc/nginx/nginx.conf
     Change the user running nginx from nginx to daisy
-
+    
+1) Grant access on `/var/lib/nginx` to **daisy** user:
+   ```
+   sudo chown -R daisy:daisy /var/lib/nginx
+   ```
+   
 1) Restart nginx
 
     ```bash
