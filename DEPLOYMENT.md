@@ -528,7 +528,7 @@ systemctl stop gunicorn
 systemctl stop celery_worker
 systemctl stop celery_beat 
 tar -cvf /tmp/daisy.tar /home/daisy 
-sudo su -c 'PGPASSWORD="<PASSWORD_OF_POSTGRES_USER>" pg_dump elixir_daisy --port=5432 --username=daisy --clean > daisy_dump.sql' - daisy 
+su -c 'PGPASSWORD="<PASSWORD_OF_POSTGRES_USER>" pg_dump daisy --port=5432 --username=daisy --clean > daisy_dump.sql' - daisy 
 ```
 
 Once you have have created the tar ball of the application directory and the postgres dump, then you may proceed to update.
@@ -536,11 +536,14 @@ Once you have have created the tar ball of the application directory and the pos
 As daisy user:
 
 ```bash
-cd /home/daisy/daisy/core/fixtures/
-wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json -O edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json -O hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json -O hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json -O hgnc.json
-cd /home/daisy/daisy/web/static/vendor/
+cd /home/daisy/daisy
 git checkout master
 git pull
+
+cd /home/daisy/daisy/core/fixtures/
+wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json -O edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json -O hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json -O hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json -O hgnc.json
+
+cd /home/daisy/daisy/web/static/vendor/
 npm ci
 ```
 As root user:
@@ -548,7 +551,6 @@ As root user:
 ```bash
 /usr/local/bin/pip install -e /home/daisy/daisy --upgrade
 ```
-
 
 As daisy user:
 
