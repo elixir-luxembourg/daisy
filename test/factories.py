@@ -7,7 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from core.constants import Groups as GroupConstants
 from core.models import User, Dataset
 from core.models.data_declaration import DeidentificationMethod, SubjectCategory, ShareCategory, ConsentStatus
-from core.models.partner import GEO_CATEGORY
+from core.models.partner import GEO_CATEGORY, SECTOR_CATEGORY
 from notification.models import NotificationVerb
 
 
@@ -199,13 +199,15 @@ class PartnerFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = 'core.Partner'
-        django_get_or_create = ('elu_accession',)
+        django_get_or_create = ('name',)
 
+    name = factory.Faker('company')
     acronym = factory.Faker('company_suffix')
     address = factory.Faker('address')
-    elu_accession = factory.Faker('company_suffix')
-    geo_category = factory.Iterator([GEO_CATEGORY.EU, GEO_CATEGORY.Non_EU])
-    name = factory.Faker('company')
+    country = factory.Faker('country')
+    sector_category = factory.Iterator([SECTOR_CATEGORY.PUBLIC, SECTOR_CATEGORY.PRIVATE_NP, SECTOR_CATEGORY.PRIVATE_P])
+    geo_category = factory.Iterator([GEO_CATEGORY.EU, GEO_CATEGORY.Non_EU, GEO_CATEGORY.International, GEO_CATEGORY.National])
+    is_clinical = factory.Iterator([True, False])
 
 
 class GDPRRoleFactory(factory.DjangoModelFactory):
