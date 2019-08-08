@@ -8,6 +8,7 @@ from test import factories
 @pytest.mark.parametrize('url_name,factory,model', [
     ('dataset_delete',factories.DatasetFactory, 'Dataset'),
     ('project_delete',factories.ProjectFactory, 'Project'),
+    ('user_delete',factories.UserFactory, 'User'),
 ])
 def test_permissions_for_normal_user_on_delete_view(django_user_model, client, factory, url_name, model):
     obj = factory()
