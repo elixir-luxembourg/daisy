@@ -249,12 +249,13 @@ def project_contract_remove(request, pk, cid):
     return HttpResponse("Contract removed from project")
 
 
-class ProjectDelete(DeleteView):
+class ProjectDelete(CheckerMixin, DeleteView):
     model = Project
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('projects')
     action_url = 'project_delete'
     success_message = "Project was deleted successfully."
+    permission_required = constants.Permissions.DELETE
 
     def get_context_data(self, **kwargs):
         context = super(ProjectDelete, self).get_context_data(**kwargs)
