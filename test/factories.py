@@ -199,12 +199,13 @@ class PartnerFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = 'core.Partner'
-        django_get_or_create = ('name',)
-
+        django_get_or_create = ('elu_accession',)
+    
+    elu_accession = factory.Faker('company_suffix')
     name = factory.Faker('company')
     acronym = factory.Faker('company_suffix')
     address = factory.Faker('address')
-    country = factory.Faker('country')
+    country = factory.Faker('country_code', representation="alpha-2")
     sector_category = factory.Iterator([SECTOR_CATEGORY.PUBLIC, SECTOR_CATEGORY.PRIVATE_NP, SECTOR_CATEGORY.PRIVATE_P])
     geo_category = factory.Iterator([GEO_CATEGORY.EU, GEO_CATEGORY.Non_EU, GEO_CATEGORY.International, GEO_CATEGORY.National])
     is_clinical = factory.Iterator([True, False])
