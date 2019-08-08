@@ -139,6 +139,9 @@ class DocumentChecker(AbstractChecker):
                 **kwargs
             )
 
+class UserChecker(AbstractChecker):
+    def _check(self, perm, obj, **kwargs):
+        return self.user_or_group.is_staff
 
 class AutoChecker(AbstractChecker):
     """
@@ -150,7 +153,8 @@ class AutoChecker(AbstractChecker):
         'Project': ProjectChecker,
         'Contract': ContractChecker,
         'Document': DocumentChecker,
-        'DataDeclaration': DataDeclarationChecker
+        'DataDeclaration': DataDeclarationChecker,
+        'User': UserChecker,
     }
 
     # override default check method
