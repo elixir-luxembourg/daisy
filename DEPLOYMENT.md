@@ -537,6 +537,7 @@ As daisy user:
 
 ```bash
 cd /home/daisy/daisy
+git checkout -- web/static/vendor/package-lock.json
 git checkout master
 git pull
 
