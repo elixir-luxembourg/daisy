@@ -109,8 +109,26 @@ class CohortFactory(factory.django.DjangoModelFactory):
         model = 'core.Cohort'
         django_get_or_create = ('title',)
 
-    owners = factory.Faker('city')
+    ethics_confirmation = factory.Iterator([True, False])
     comments = factory.Faker('text')
+    title = factory.Faker('bs')
+    
+
+    @factory.post_generation
+    def owners(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted:
+            for contact in extracted:
+                self.owners.add(contact)
+    
+    @factory.post_generation
+    def institutes(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted:
+            for contact in extracted:
+                self.institutes.add(contact)
 
 
 class DatasetFactory(factory.django.DjangoModelFactory):
