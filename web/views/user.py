@@ -8,9 +8,11 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 
+from core import constants
 from core.forms.user import UserForm, UserEditFormActiveDirectory, UserEditFormManual
 from core.models import User
 from core.models.user import UserSource
+from core.permissions.checker import CheckerMixin
 from web.views.utils import AjaxViewMixin
 
 
@@ -112,12 +114,13 @@ class UserPasswordChange(PasswordChangeView):
         return reverse_lazy('login')
 
 
-class UserDelete(DeleteView):
+class UserDelete(CheckerMixin, DeleteView):
     model = User
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('users')
     success_message = "User was deleted successfully."
-
+    permission_required = constants.Permissions.DELETE
+    
     def get_context_data(self, **kwargs):
         context = super(UserDelete, self).get_context_data(**kwargs)
         context['action_url'] = 'user_delete'
