@@ -87,7 +87,6 @@ class UserDetailView(DetailView):
 @login_required
 def change_password(request):
     if request.method == 'POST':
-        print(request.POST)
         form = PasswordChangeForm(request.user, request.POST or None)
         if form.is_valid():
             form.save()
