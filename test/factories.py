@@ -183,7 +183,14 @@ class ContactFactory(factory.DjangoModelFactory):
     last_name = factory.Faker('last_name')
     phone = factory.Sequence(lambda n: '123-555-%04d' % n)
     type = factory.SubFactory(ContactTypeFactory)
-
+    
+    @factory.post_generation
+    def partners(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted:
+            for contact in extracted:
+                self.partners.add(contact)
 
 class PartnerFactory(factory.DjangoModelFactory):
     """
