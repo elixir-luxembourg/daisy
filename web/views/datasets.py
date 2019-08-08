@@ -113,11 +113,12 @@ def dataset_list(request):
     })
 
 
-class DatasetDelete(DeleteView):
+class DatasetDelete(CheckerMixin, DeleteView):
     model = Dataset
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('datasets')
     success_message = "Dataset was deleted successfully."
+    permission_required = constants.Permissions.DELETE
 
     def get_context_data(self, **kwargs):
         context = super(DatasetDelete, self).get_context_data(**kwargs)
