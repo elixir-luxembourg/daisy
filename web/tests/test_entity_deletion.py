@@ -1,7 +1,6 @@
 import pytest
 from django.urls import reverse
 
-from django.contrib.auth.models import Group
 from django.apps import apps
 from core import constants
 from test import factories
