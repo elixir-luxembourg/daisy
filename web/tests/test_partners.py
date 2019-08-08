@@ -13,7 +13,7 @@ from core import constants
     (constants.Groups.AUDITOR, 403),
     (constants.Groups.LEGAL, 403),
 ])
-def test_create_view(django_user_model, client, group, code):
+def test_permissions_on_create_view(django_user_model, client, group, code):
     url = reverse('partner_add')
     user = django_user_model.objects.create(username='test.user')
     user.set_password('pwd')
