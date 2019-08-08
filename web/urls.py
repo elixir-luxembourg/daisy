@@ -33,7 +33,7 @@ web_urls = [
     path('definitions/cohorts/', cohort_list, name="cohorts"),
     path('definitions/cohorts/add', CohortCreateView.as_view(), name='cohort_add'),
     path('definitions/cohorts/<int:pk>/edit', CohortEditView.as_view(), name="cohort_edit"),
-    path('definitions/cohorts//<int:pk>/delete', CohortDelete.as_view(), name="cohort_delete"),
+    path('definitions/cohorts/<int:pk>/delete', CohortDelete.as_view(), name="cohort_delete"),
     path('definitions/cohorts/<int:pk>/', CohortDetailView.as_view(), name="cohort"),
 
     path('contracts/', contract_list, name="contracts"),
