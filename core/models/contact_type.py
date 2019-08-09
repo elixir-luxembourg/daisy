@@ -1,6 +1,7 @@
+import reversion
 from .utils import CoreModel, TextFieldWithInputWidget
 
-
+@reversion.register()
 class ContactType(CoreModel):
     """
     ContactType tries to model type of the contact.

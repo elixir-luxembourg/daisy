@@ -1,3 +1,4 @@
+import reversion
 from django.db import models
 from enumchoicefield import EnumChoiceField, ChoiceEnum
 from model_utils.managers import InheritanceManager
@@ -10,7 +11,7 @@ class StorageLocationCategory(ChoiceEnum):
     backup = 'backup'
     copy = 'copy'
 
-
+@reversion.register()
 class DataLocation(CoreModel):
     """
     Represent a data location.

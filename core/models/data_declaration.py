@@ -1,3 +1,4 @@
+import reversion
 import uuid
 
 from django.db import models
@@ -30,7 +31,7 @@ class SubjectCategory(ChoiceEnum):
     controls = "Controls"
     cases_and_controls = "Cases and Controls"
 
-
+@reversion.register()
 class DataDeclaration(CoreModel):
     class Meta:
         app_label = 'core'

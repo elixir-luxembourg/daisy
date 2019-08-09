@@ -1,8 +1,10 @@
+import reversion
 from django.db import models
 
 from .utils import CoreModel, TextFieldWithInputWidget
 from core.models.storage_location import DataLocation
 
+@reversion.register()
 class StorageResource(CoreModel):
     """
     Represents storage Back-end, like Aspera, HPC, ownCloud etc.

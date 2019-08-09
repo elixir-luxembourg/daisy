@@ -1,6 +1,7 @@
+import reversion
 from .utils import CoreModel, TextFieldWithInputWidget
 
-
+@reversion.register()
 class DocumentType(CoreModel):
     """
     Represents document type - for example CNER Approval

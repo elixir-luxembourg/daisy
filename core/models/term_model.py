@@ -1,3 +1,4 @@
+import reversion
 from enum import Enum
 from core.models.utils import CoreModel
 from django.db import models
@@ -9,7 +10,7 @@ class TermCategory(Enum):
     phenotype = 'phenotype'
     gene = 'gene'
 
-
+@reversion.register()
 class TermModel(CoreModel):
     class Meta:
         abstract = True
@@ -20,28 +21,28 @@ class TermModel(CoreModel):
     def __str__(self):
         return self.label
 
-
+@reversion.register()
 class StudyTerm(TermModel):
     class Meta:
         app_label = 'core'
         get_latest_by = "added"
         ordering = ['added']
 
-
+@reversion.register()
 class GeneTerm(TermModel):
     class Meta:
         app_label = 'core'
         get_latest_by = "added"
         ordering = ['added']
 
-
+@reversion.register()
 class PhenotypeTerm(TermModel):
     class Meta:
         app_label = 'core'
         get_latest_by = "added"
         ordering = ['added']
 
-
+@reversion.register()
 class DiseaseTerm(TermModel):
     class Meta:
         app_label = 'core'

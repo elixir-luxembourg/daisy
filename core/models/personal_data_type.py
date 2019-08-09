@@ -1,6 +1,7 @@
+import reversion
 from .utils import CoreModel, TextFieldWithInputWidget
 
-
+@reversion.register()
 class PersonalDataType(CoreModel):
     """
     Represents categories of personal data.

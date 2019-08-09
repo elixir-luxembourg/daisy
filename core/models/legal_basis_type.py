@@ -1,6 +1,7 @@
+import reversion
 from .utils import CoreModel, TextFieldWithInputWidget
 
-
+@reversion.register()
 class LegalBasisType(CoreModel):
     """
     Represents categories of legal basis. We populate it with those defined in the GDPR.

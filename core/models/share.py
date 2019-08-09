@@ -1,8 +1,9 @@
+import reversion
 from django.db import models
 
 from .utils import CoreModel
 
-
+@reversion.register()
 class Share(CoreModel):
     """
     Represents the share of  dataset with an external (non-LCSB) entity.

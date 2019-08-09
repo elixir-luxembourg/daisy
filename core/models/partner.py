@@ -1,3 +1,4 @@
+import reversion
 from django.apps import apps
 from django.db import models
 from model_utils import Choices
@@ -18,7 +19,7 @@ SECTOR_CATEGORY = Choices(
     ('PRIVATE_P', 'Private For-Profit')
 )
 
-
+@reversion.register()
 class Partner(CoreTrackedModel):
     """
     Represents a partner.

@@ -1,4 +1,5 @@
 import os
+import reversion
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -20,7 +21,7 @@ def get_file_name(instance, filename):
         instance.content_type.name, now, instance.object_id, filename
     )
 
-
+@reversion.register()
 class Document(CoreModel):
     """
     Represents a document

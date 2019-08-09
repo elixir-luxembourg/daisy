@@ -1,3 +1,4 @@
+import reversion
 import uuid
 
 from django.conf import settings
@@ -9,7 +10,7 @@ from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from core import constants
 from .utils import CoreTrackedModel, TextFieldWithInputWidget
 
-
+@reversion.register()
 class Dataset(CoreTrackedModel):
     class Meta:
         app_label = 'core'

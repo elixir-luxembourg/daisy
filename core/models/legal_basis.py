@@ -1,8 +1,9 @@
+import reversion
 from django.db import models
 
 from .utils import CoreModel
 
-
+@reversion.register()
 class LegalBasis(CoreModel):
     """
     Holds the legal basis definition for a dataset.

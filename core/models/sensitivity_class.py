@@ -1,6 +1,7 @@
+import reversion
 from .utils import CoreModel, TextFieldWithInputWidget
 
-
+@reversion.register()
 class SensitivityClass(CoreModel):
     """
     Represents data sensitivity classes.

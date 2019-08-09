@@ -1,7 +1,7 @@
+import reversion
 from django.db.models.base import ModelBase
 
 from .utils import CoreModel, TextFieldWithInputWidget
-
 
 class MetaGDRPRole(ModelBase):
     def __getitem__(cls, item):
@@ -10,7 +10,7 @@ class MetaGDRPRole(ModelBase):
             cls.all_roles[item] = role
         return cls.all_roles[item]
 
-
+@reversion.register()
 class GDPRRole(CoreModel, metaclass=MetaGDRPRole):
     """
     Objects of this class represent the different GDPR Roles

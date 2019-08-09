@@ -1,8 +1,9 @@
+import reversion
 from django.db import models
 
 from .utils import COMPANY, CoreTrackedModel, TextFieldWithInputWidget
 
-
+@reversion.register()
 class Cohort(CoreTrackedModel):
     class Meta:
         app_label = 'core'

@@ -1,3 +1,4 @@
+import reversion
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 
@@ -6,7 +7,7 @@ from .contact import Contact
 from .partner import Partner
 from .utils import CoreModel, COMPANY
 
-
+@reversion.register()
 class PartnerRole(CoreModel):
     class Meta:
         app_label = 'core'
@@ -33,7 +34,7 @@ class PartnerRole(CoreModel):
                                  blank=False,
                                  null=False)
 
-
+@reversion.register()
 class Contract(CoreModel):
     """
     Represents a contract, which can be source or recipient of dataset if it's not internal project

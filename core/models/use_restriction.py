@@ -1,8 +1,9 @@
+import reversion
 from django.db import models
 
 from .utils import CoreModel, TextFieldWithInputWidget
 
-
+@reversion.register()
 class UseRestriction(CoreModel):
     class Meta:
         app_label = 'core'

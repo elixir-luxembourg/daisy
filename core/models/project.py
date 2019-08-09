@@ -1,3 +1,4 @@
+import reversion
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
@@ -5,7 +6,7 @@ from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from core import constants
 from .utils import CoreTrackedModel, COMPANY, TextFieldWithInputWidget
 
-
+@reversion.register()
 class Project(CoreTrackedModel):
     class Meta:
         app_label = 'core'

@@ -1,6 +1,7 @@
+import reversion
 from .utils import CoreModel, TextFieldWithInputWidget
 
-
+@reversion.register()
 class RestrictionClass(CoreModel):
     """
     Represents data use restriction code. We currently populate this with GA4GH Consent Codes.

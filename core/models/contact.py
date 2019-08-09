@@ -1,8 +1,9 @@
+import reversion
 from django.db import models
 
 from .utils import CoreModel, TextFieldWithInputWidget
 
-
+@reversion.register()
 class Contact(CoreModel):
     """
     Contact represents a contact person.

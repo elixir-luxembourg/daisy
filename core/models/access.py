@@ -1,8 +1,10 @@
+import reversion
+
 from django.db import models
 
 from .utils import CoreModel
 
-
+@reversion.register()
 class Access(CoreModel):
     """
     Represents the access given to an internal (LCSB) entity over data storage locations.

@@ -1,3 +1,4 @@
+import reversion
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -74,7 +75,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-
+@reversion.register()
 class User(AbstractUser):
     """
     Represents application user - real person, that can log in and have valid information coupled - like name or email.
