@@ -2,7 +2,8 @@ from django import forms
 from django.conf import settings
 from django.db import models
 from django.db.models import TextField
-from django.urls import reverse
+from django.urls import reverse, NoReverseMatch
+
 COMPANY = getattr(settings, "COMPANY", 'Company')
 
 
@@ -19,15 +20,21 @@ class CoreModel(models.Model):
         abstract = True
 
     def get_audit_url(self):
-        return reverse('audit', kwargs={
-            'pk': self.pk,
-            'model_name': self.__class__.__name__.lower()
-        })
+        try:
+            return reverse('audit', kwargs={
+                'pk': self.pk,
+                'model_name': self.__class__.__name__.lower()
+            })
+        except NoReverseMatch:
+            pass
     
     def get_detail_url(self):
-        return reverse(self.__class__.__name__.lower(), kwargs={
-            'pk': self.pk,
-        })
+        try:
+            return reverse(self.__class__.__name__.lower(), kwargs={
+                'pk': self.pk,
+            })
+        except NoReverseMatch:
+            pass
 
 class CoreTrackedModel(CoreModel):
     is_published = models.BooleanField(default=False,
