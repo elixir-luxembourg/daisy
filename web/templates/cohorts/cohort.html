@@ -45,6 +45,9 @@
                             data-ajax-url="{% url 'cohort_delete' cohort.id %}">
                                 <i class="material-icons">delete</i>
                             </a>
+                        <a class="btn btn-primary bmd-btn-fab float-right"  title="Audit cohort" href="{{cohort.get_audit_url}}"><i
+                                class="material-icons">visibility</i>
+                        </a>
                     {% endif %}
                 </div>
             </div>
