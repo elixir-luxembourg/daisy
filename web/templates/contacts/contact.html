@@ -44,6 +44,9 @@
                        href="{% url 'contact_edit' pk=contact.id %}"><i
                             class="material-icons">edit</i>
                     </a>
+                    <a class="btn btn-primary bmd-btn-fab float-right"  title="Audit cohort" href="{{contact.get_audit_url}}"><i
+                        class="material-icons">visibility</i>
+                    </a>
                     <a  id="deletecontact" class="btn btn-danger bmd-btn-fab float-right red"
                             title="Delete contact"
                             data-toggle="modal" data-target="#modal"

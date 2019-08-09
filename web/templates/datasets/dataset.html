@@ -72,6 +72,9 @@
                            href="{% url 'dataset_edit' pk=dataset.id %}">
                             <i class="material-icons">edit</i>
                         </a>
+                        <a class="btn btn-primary bmd-btn-fab float-right"  title="Audit" href="{{dataset.get_audit_url}}"><i
+                            class="material-icons">visibility</i>
+                        </a>
                         {% if not dataset.is_published %}
                             <a  id="deletedataset" class="btn btn-danger bmd-btn-fab float-right red"
                             title="Delete dataset"
