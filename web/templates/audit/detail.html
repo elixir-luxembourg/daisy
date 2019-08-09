@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+
+{% block content_title %}Audit trail{% endblock %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <span style="color: #8D8F8F;">Audit trails for {{model_name}}: {{object}}</span>
+            {% if object.get_detail_url %}
+                <div class="floating-buttons-absolute">
+                    <a class="btn btn-primary bmd-btn-fab float-right"  title="View {{model_name}}" href="{{object.get_detail_url}}">
+                        <i class="material-icons">visibility</i>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% include "audit/fragments/action_list_partial.html"  %}
+    {% if request.GET.version_id1 %}
+        {% include "audit/fragments/compare_links_partial.html"  %}
+        {% include "audit/fragments/compare_partial.html"  %}
+    {% endif %}
+{% endblock %}
+
+{% block js %}
+<script>
+    $(function () {
+        $('.pop').popover({})
+    })
+    $(function () {
+        $('.ttip').tooltip({})
+    })
+    </script>
+{% endblock %}

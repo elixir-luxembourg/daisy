@@ -2,7 +2,7 @@ from django import forms
 from django.conf import settings
 from django.db import models
 from django.db.models import TextField
-
+from django.urls import reverse
 COMPANY = getattr(settings, "COMPANY", 'Company')
 
 
@@ -18,6 +18,16 @@ class CoreModel(models.Model):
     class Meta:
         abstract = True
 
+    def get_audit_url(self):
+        return reverse('audit', kwargs={
+            'pk': self.pk,
+            'model_name': self.__class__.__name__.lower()
+        })
+    
+    def get_detail_url(self):
+        return reverse(self.__class__.__name__.lower(), kwargs={
+            'pk': self.pk,
+        })
 
 class CoreTrackedModel(CoreModel):
     is_published = models.BooleanField(default=False,
