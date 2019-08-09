@@ -172,3 +172,7 @@ web/static/vendor/node_modules/*
 /documents
 /web/static/css/daisy.min.css
 /web/static/css/daisy.css
+
+
+# fixtures
+/core/fixtures/*.json
