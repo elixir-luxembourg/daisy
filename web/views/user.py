@@ -93,7 +93,6 @@ class UserDetailView(DetailView):
 @create_revision
 def change_password(request):
     if request.method == 'POST':
-        print(request.POST)
         form = PasswordChangeForm(request.user, request.POST or None)
         if form.is_valid():
             form.save()
