@@ -289,7 +289,7 @@ class Command(BaseCommand):
                 )
 
     def handle(self, *args, **options):
-        self.stdout.write(self.style.MIGRATE_HEADING(f'Loading initial data.'))
+        self.stdout.write(self.style.MIGRATE_HEADING('Loading initial data.'))
         self.create_study_terms()
         self.create_disease_terms()
         self.create_phenotype_terms()
@@ -307,4 +307,4 @@ class Command(BaseCommand):
         self.create_elu_institutions()
         self.create_elu_cohorts()
         self.create_gdpr_roles()
-        self.stdout.write(self.style.SUCCESS(f'Done'))
+        self.stdout.write(self.style.SUCCESS('Done'))
