@@ -39,25 +39,26 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'celery_haystack',
+    'core.apps.CoreConfig',
+    'debug_toolbar',
+    'django_celery_beat',
+    'django_celery_results',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sessions',
     'django.contrib.staticfiles',
-    'haystack',
-    'stronghold',
-    'guardian',
     'formtools',
-    'widget_tweaks',
-    'core.apps.CoreConfig',
-    'web.apps.WebConfig',
+    'guardian',
+    'haystack',
     'notification.apps.NotificationConfig',
-    'django.contrib.admin',
-    'debug_toolbar',
-    'django_celery_results',
-    'django_celery_beat',
-    'celery_haystack',
-    'sequences.apps.SequencesConfig'
+    'reversion',
+    'sequences.apps.SequencesConfig',
+    'stronghold',
+    'web.apps.WebConfig',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

@@ -7,20 +7,25 @@ except ImportError:
     from distutils.core import setup
 
 requirements = [
-    'Django==2.1.11',
+    'celery-haystack==0.10',
+    'celery==4.3.0',
     'django-auth-ldap==1.7.0',
     'django-celery-beat==1.4.0',
     'django-celery-results==1.0.4',
     'django-compressor==2.2',
+    'django-countries==5.3.3',
     'django-debug-toolbar==1.11',
     'django-enumchoicefield==1.1.0',
     'django-formtools==2.1',
     'django-guardian==1.5.0',
     'django-haystack==2.8.1',
+    'django-model-utils==3.1.2',
     'django-reversion==3.0.3',
+    'django-reversion==3.0.3',
+    'django-sequences==2.2',
     'django-stronghold==0.3.0',
     'django-widget-tweaks==1.4.3',
-    'django-countries==5.3.3',
+    'Django==2.1.11',
     'gunicorn==19.9.0',
     'ipython==7.3.0',
     'libsass==0.17.0',
@@ -29,11 +34,7 @@ requirements = [
     'pysolr==3.8.1',
     'pytest-runner==5.1',
     'pytz==2018.9',
-    'celery==4.3.0',
-    'celery-haystack==0.10',
     'setuptools-scm',
-    'django-model-utils==3.1.2',
-    'django-sequences==2.2'
 ]
 
 test_requirements = [
