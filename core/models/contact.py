@@ -3,7 +3,7 @@ from django.db import models
 
 from .utils import CoreModel, TextFieldWithInputWidget
 
-@reversion.register()
+@reversion.register(follow=('type', 'parners'))
 class Contact(CoreModel):
     """
     Contact represents a contact person.

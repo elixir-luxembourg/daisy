@@ -11,7 +11,7 @@ class StorageLocationCategory(ChoiceEnum):
     backup = 'backup'
     copy = 'copy'
 
-@reversion.register()
+@reversion.register(follow=('backend', 'dataset', 'datatypes', 'data_declarations'))
 class DataLocation(CoreModel):
     """
     Represent a data location.

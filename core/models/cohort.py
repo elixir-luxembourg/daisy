@@ -3,7 +3,10 @@ from django.db import models
 
 from .utils import COMPANY, CoreTrackedModel, TextFieldWithInputWidget
 
-@reversion.register()
+@reversion.register(follow=(
+  'owners',
+  'institutes'  
+))
 class Cohort(CoreTrackedModel):
     class Meta:
         app_label = 'core'

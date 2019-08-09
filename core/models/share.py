@@ -3,7 +3,7 @@ from django.db import models
 
 from .utils import CoreModel
 
-@reversion.register()
+@reversion.register(follow=('partner', 'dataset', 'data_declarations', 'contract'))
 class Share(CoreModel):
     """
     Represents the share of  dataset with an external (non-LCSB) entity.

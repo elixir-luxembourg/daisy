@@ -3,7 +3,7 @@ from django.db import models
 
 from .utils import CoreModel, TextFieldWithInputWidget
 
-@reversion.register()
+@reversion.register(follow=('parent',))
 class DataType(CoreModel):
     """
     Objects of this class represent tree structure of data types

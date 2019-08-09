@@ -10,7 +10,7 @@ from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from core import constants
 from .utils import CoreTrackedModel, TextFieldWithInputWidget
 
-@reversion.register()
+@reversion.register(follow=('local_custodians', 'project', 'sensitivity'))
 class Dataset(CoreTrackedModel):
     class Meta:
         app_label = 'core'

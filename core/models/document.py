@@ -21,7 +21,7 @@ def get_file_name(instance, filename):
         instance.content_type.name, now, instance.object_id, filename
     )
 
-@reversion.register()
+@reversion.register(follow=('content_type',))
 class Document(CoreModel):
     """
     Represents a document

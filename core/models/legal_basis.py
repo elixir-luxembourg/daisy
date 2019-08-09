@@ -3,7 +3,7 @@ from django.db import models
 
 from .utils import CoreModel
 
-@reversion.register()
+@reversion.register(follow=('dataset', 'data_declarations', 'legal_basis_types', 'personal_data_types'))
 class LegalBasis(CoreModel):
     """
     Holds the legal basis definition for a dataset.

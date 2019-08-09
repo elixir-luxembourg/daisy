@@ -31,7 +31,7 @@ class SubjectCategory(ChoiceEnum):
     controls = "Controls"
     cases_and_controls = "Cases and Controls"
 
-@reversion.register()
+@reversion.register(follow=('partners', 'contract', 'cohorts', 'dataset', 'data_types_generated', 'data_types_received', 'data_declarations_parents'))
 class DataDeclaration(CoreModel):
     class Meta:
         app_label = 'core'

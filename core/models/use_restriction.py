@@ -3,7 +3,7 @@ from django.db import models
 
 from .utils import CoreModel, TextFieldWithInputWidget
 
-@reversion.register()
+@reversion.register(follow=('data_declaration',))
 class UseRestriction(CoreModel):
     class Meta:
         app_label = 'core'

@@ -4,7 +4,7 @@ from django.db import models
 
 from .utils import CoreModel
 
-@reversion.register()
+@reversion.register(follow=('dataset', 'defined_on_locations', 'project'))
 class Access(CoreModel):
     """
     Represents the access given to an internal (LCSB) entity over data storage locations.
