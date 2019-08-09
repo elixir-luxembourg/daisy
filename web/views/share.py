@@ -4,19 +4,21 @@ from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView
 from django.shortcuts import get_object_or_404 , redirect, render
+from reversion.views import RevisionMixin, create_revision
 
 from core.forms.share import ShareForm, shareFormFactory, ShareFormEdit
 from core.models import Share, Dataset, Partner
 from core.constants import Permissions
 from core.permissions import permission_required
-from web.views.utils import AjaxViewMixin
 from core.utils import DaisyLogger
+from web.views.utils import AjaxViewMixin
 
 
 log = DaisyLogger(__name__)
 
 
 @permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
+@create_revision
 def edit_share(request, pk, dataset_pk):
     # log.debug('editing share', post=request.POST)
     share = get_object_or_404(Share, pk=pk)
@@ -41,7 +43,7 @@ def edit_share(request, pk, dataset_pk):
 
 
 
-class ShareCreateView(CreateView, AjaxViewMixin):
+class ShareCreateView(RevisionMixin, CreateView, AjaxViewMixin):
     model = Share
     template_name = 'shares/share_form.html'
     form_class = ShareForm
@@ -81,6 +83,7 @@ class ShareCreateView(CreateView, AjaxViewMixin):
 
 @require_http_methods(["DELETE"])
 @permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
+@create_revision
 def remove_share(request, dataset_pk, share_pk):
     share = get_object_or_404(Share, pk=share_pk)
     dataset = get_object_or_404(Dataset, pk=dataset_pk)

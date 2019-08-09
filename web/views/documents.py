@@ -1,12 +1,14 @@
 import os
 import unicodedata
 
-
 from django.http import JsonResponse, Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404 , redirect, render
 from django.utils.http import urlquote
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
+
+from reversion.views import RevisionMixin, create_revision
+
 from core.constants import Permissions
 from core.forms import DocumentForm
 from core.models import Document
@@ -25,7 +27,7 @@ def rfc5987_content_disposition(file_name):
         header += '; filename*=UTF-8\'\'{}'.format(quoted_name)
     return header
 
-
+@create_revision
 def upload_document(request, object_id, content_type):
     log.debug('uploading document', post=request.POST, files=request.FILES)
     if request.method == 'POST':
@@ -54,6 +56,7 @@ def upload_document(request, object_id, content_type):
 
 
 @permission_required(Permissions.EDIT, (Document, 'pk', 'pk'))
+@create_revision
 def document_edit(request, pk):
     log.debug('editing document', post=request.POST)
     document = get_object_or_404(Document, pk=pk)
@@ -96,6 +99,7 @@ def download_document(request, pk):
 
 @require_http_methods(["DELETE"])
 @permission_required(Permissions.PROTECTED, (Document, 'pk', 'pk'))
+@create_revision
 def delete_document(request, pk):
     document = get_object_or_404(Document, pk=pk)
     # perm = PERMISSION_MAPPING[document.content_type.name].DELETE.value

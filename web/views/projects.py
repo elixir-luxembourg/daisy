@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
+from reversion.views import RevisionMixin, create_revision
 
 from core import constants
 from core.constants import Permissions
@@ -57,7 +58,7 @@ def project_list(request):
     })
 
 
-class ProjectCreateView(CreateView):
+class ProjectCreateView(RevisionMixin, CreateView):
     model = Project
     form_class = ProjectForm
     template_name = 'projects/project_form.html'
@@ -113,7 +114,7 @@ class ProjectDetailView(DetailView):
         return context
 
 
-class ProjectEditView(CheckerMixin, UpdateView):
+class ProjectEditView(CheckerMixin, RevisionMixin, UpdateView):
     model = Project
     form_class = ProjectForm
     template_name = 'projects/project_form_edit.html'
@@ -139,6 +140,7 @@ class ProjectEditView(CheckerMixin, UpdateView):
 ## DATASET METHODS ##
 
 @permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@create_revision
 def project_dataset_create(request, pk, flag):
     project = get_object_or_404(Project, pk=pk)
 
@@ -169,6 +171,7 @@ def project_dataset_create(request, pk, flag):
 
 
 @permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@create_revision
 def project_dataset_add(request, pk):
     project = get_object_or_404(Project, pk=pk)
     if request.method == 'GET':
@@ -195,6 +198,7 @@ def project_dataset_add(request, pk):
 
 
 @permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@create_revision
 def project_dataset_choose_type(request, pk):
     """
     View to choose dataset type to create
@@ -209,6 +213,7 @@ def project_dataset_choose_type(request, pk):
 
 
 @permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@create_revision
 def project_contract_create(request, pk):
     project = get_object_or_404(Project, pk=pk)
     # get the correct form from the flag selected
@@ -242,6 +247,7 @@ def project_contract_create(request, pk):
 
 
 @permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@create_revision
 def project_contract_remove(request, pk, cid):
     contract = get_object_or_404(Contract, pk=cid)
     contract.project = None
@@ -249,7 +255,7 @@ def project_contract_remove(request, pk, cid):
     return HttpResponse("Contract removed from project")
 
 
-class ProjectDelete(CheckerMixin, DeleteView):
+class ProjectDelete(CheckerMixin, RevisionMixin, DeleteView):
     model = Project
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('projects')

@@ -5,6 +5,9 @@ from django.views.generic import CreateView
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.urls import reverse_lazy
+
+from reversion.views import RevisionMixin, create_revision
+
 from core.forms import LegalBasisForm
 from core.forms.legal_basis import LegalBasisEditForm
 from core.models import LegalBasis, Dataset
@@ -16,7 +19,7 @@ from core.constants import Permissions
 log = DaisyLogger(__name__)
 
 
-class LegalBasisCreateView(CreateView, AjaxViewMixin):
+class LegalBasisCreateView(RevisionMixin, CreateView, AjaxViewMixin):
     model = LegalBasis
     template_name = 'legalbases/legalbasis_form.html'
     form_class = LegalBasisForm
@@ -51,6 +54,7 @@ class LegalBasisCreateView(CreateView, AjaxViewMixin):
 
 
 @permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
+@create_revision
 def edit_legalbasis(request, pk, dataset_pk):
     # log.debug('editing legal basis', post=request.POST)
     legalbasis = get_object_or_404(LegalBasis, pk=pk)
@@ -77,6 +81,7 @@ def edit_legalbasis(request, pk, dataset_pk):
 
 @require_http_methods(["DELETE"])
 @permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
+@create_revision
 def remove_legalbasis(request, dataset_pk, legalbasis_pk):
     legbasis = get_object_or_404(LegalBasis, pk=legalbasis_pk)
     dataset = get_object_or_404(Dataset, pk=dataset_pk)

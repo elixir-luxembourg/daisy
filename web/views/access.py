@@ -1,19 +1,22 @@
-from core.forms.access import AccessForm, AccessEditForm
-from web.views.utils import AjaxViewMixin
 from django.views.generic import CreateView
-from core.models import Access, Dataset
-from core.constants import Permissions
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.http import require_http_methods
+
+from reversion.views import RevisionMixin, create_revision
+
+from core.models import Access, Dataset
+from core.forms.access import AccessForm, AccessEditForm
+from core.constants import Permissions
 from core.permissions import permission_required
 from core.utils import DaisyLogger
-from django.views.decorators.http import require_http_methods
+from web.views.utils import AjaxViewMixin
 
 log = DaisyLogger(__name__)
 
-class AccessCreateView(CreateView, AjaxViewMixin):
+class AccessCreateView(RevisionMixin, CreateView, AjaxViewMixin):
     model = Access
     template_name = 'accesses/access_form.html'
     form_class = AccessForm
@@ -48,8 +51,8 @@ class AccessCreateView(CreateView, AjaxViewMixin):
             return reverse_lazy('dataset', kwargs={'pk': self.dataset.pk})
         return super().get_success_url()
 
-
 @permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
+@create_revision
 def edit_access(request, pk, dataset_pk):
     access = get_object_or_404(Access, pk=pk)
     if request.method == 'POST':
@@ -72,6 +75,7 @@ def edit_access(request, pk, dataset_pk):
 
 @require_http_methods(["DELETE"])
 @permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
+@create_revision
 def remove_access(request, dataset_pk, access_pk):
     access = get_object_or_404(Access, pk=access_pk)
     dataset = get_object_or_404(Dataset, pk=dataset_pk)

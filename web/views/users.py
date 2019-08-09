@@ -8,9 +8,11 @@ from core.models import Project
 from core.models import User
 from core.constants import Permissions
 from core.permissions import permission_required
+from reversion.views import create_revision
 
 
 @permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@create_revision
 def add_personnel_to_project(request, pk):
     if request.method == 'POST':
         form = PickUserForm(request.POST)
@@ -36,6 +38,7 @@ def add_personnel_to_project(request, pk):
 
 @require_http_methods(["DELETE"])
 @permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@create_revision
 def remove_personnel_from_project(request, pk, user_id):
     project = get_object_or_404(Project, pk=pk)
     project.company_personnel.remove(user_id)

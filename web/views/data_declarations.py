@@ -7,8 +7,14 @@ from django.views.decorators.http import require_http_methods
 from functools import reduce
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, UpdateView
-from haystack.query import SearchQuerySet
 from django.db import IntegrityError, transaction
+from django.core.paginator import Paginator
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.db.models import Q
+
+from haystack.query import SearchQuerySet
+from reversion.views import RevisionMixin, create_revision
+
 from core.constants import Permissions
 from core.forms import DataDeclarationForm, DataDeclarationSubFormOther, DataDeclarationSubFormNew, \
     DataDeclarationSubFormFromExisting, DataDeclarationEditForm
@@ -16,9 +22,6 @@ from core.forms.data_declaration import RestrictionFormset
 from core.models import Dataset, Partner, DataDeclaration, UseRestriction
 from core.utils import DaisyLogger
 from core.permissions import permission_required, CheckerMixin, constants
-from django.core.paginator import Paginator
-from django.http import JsonResponse, HttpResponseBadRequest
-from django.db.models import Q
 
 log = DaisyLogger(__name__)
 
@@ -42,6 +45,7 @@ def data_declarations_add_sub_form(request):
 
 
 @permission_required(Permissions.EDIT, (Dataset, 'pk', 'pk'))
+@create_revision
 def data_declarations_add(request, pk):
     template_name = 'data_declarations/data_declaration_form.html'
     form_class = DataDeclarationForm
@@ -146,6 +150,7 @@ def data_dec_paginated_search(request):
 
 @require_http_methods(["DELETE"])
 @permission_required(Permissions.DELETE, (DataDeclaration, 'pk', 'pk'))
+@create_revision
 def data_declarations_delete(request, pk):
     data_declaration = get_object_or_404(DataDeclaration, id=pk)
     data_declaration.delete()
@@ -153,6 +158,7 @@ def data_declarations_delete(request, pk):
 
 
 @permission_required(Permissions.EDIT, (DataDeclaration, 'pk', 'pk'))
+@create_revision
 def data_declarations_duplicate(request, pk):
     data_declaration = get_object_or_404(DataDeclaration, id=pk)
     new_data_declaration = DataDeclaration()
@@ -184,7 +190,7 @@ class DatadeclarationDetailView(DetailView):
 
 
 
-class DatadeclarationEditView(CheckerMixin, UpdateView):
+class DatadeclarationEditView(CheckerMixin, RevisionMixin, UpdateView):
     model = DataDeclaration
     template_name = 'data_declarations/data_declaration_form_edit.html'
     permission_required = constants.Permissions.EDIT

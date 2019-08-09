@@ -4,6 +4,8 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 
+from reversion.views import RevisionMixin, create_revision
+
 from core.forms import CohortForm, CohortFormEdit
 from core.models import Cohort
 from . import facet_view_utils
@@ -12,7 +14,7 @@ FACET_FIELDS = settings.FACET_FIELDS['cohort']
 from core.models.utils import COMPANY
 
 
-class CohortCreateView(CreateView):
+class CohortCreateView(RevisionMixin, CreateView):
     model = Cohort
     template_name = 'cohorts/cohort_form.html'
     form_class = CohortForm
@@ -39,7 +41,7 @@ class CohortDetailView(DetailView):
         return context
 
 
-class CohortEditView(UpdateView):
+class CohortEditView(RevisionMixin, UpdateView):
     model = Cohort
     template_name = 'cohorts/cohort_form_edit.html'
     form_class = CohortFormEdit
@@ -91,7 +93,7 @@ def cohort_list(request):
     })
 
 
-class CohortDelete(DeleteView):
+class CohortDelete(RevisionMixin, DeleteView):
     model = Cohort
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('cohorts')

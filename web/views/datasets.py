@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 
+from reversion.views import RevisionMixin, create_revision
+
 from core.forms import DatasetForm
 from core.forms.dataset import DatasetFormEdit
 from core.forms.share import shareFormFactory
@@ -17,7 +19,7 @@ log = DaisyLogger(__name__)
 
 FACET_FIELDS = settings.FACET_FIELDS['dataset']
 
-class DatasetCreateView(CreateView):
+class DatasetCreateView(RevisionMixin, CreateView):
     model = Dataset
     template_name = 'datasets/dataset_form.html'
     form_class = DatasetForm
@@ -61,7 +63,7 @@ class DatasetDetailView(DetailView):
         return context
 
 
-class DatasetEditView(CheckerMixin, UpdateView):
+class DatasetEditView(CheckerMixin, RevisionMixin, UpdateView):
     model = Dataset
     template_name = 'datasets/dataset_form_edit.html'
     form_class = DatasetFormEdit
@@ -113,7 +115,7 @@ def dataset_list(request):
     })
 
 
-class DatasetDelete(CheckerMixin, DeleteView):
+class DatasetDelete(CheckerMixin, RevisionMixin, DeleteView):
     model = Dataset
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('datasets')

@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, ListView, UpdateView
+from reversion.views import RevisionMixin, create_revision
 
 from core.forms import PublicationForm, PickPublicationForm
 from core.models import Project
@@ -13,7 +14,7 @@ from core.permissions import permission_required
 from core.constants import Permissions
 
 
-class PublicationCreateView(CreateView):
+class PublicationCreateView(RevisionMixin, CreateView):
     model = Publication
     template_name = 'publications/publication_form.html'
     form_class = PublicationForm
@@ -36,7 +37,7 @@ class PublicationListView(ListView):
     template_name = 'publications/publication_list.html'
 
 
-class PublicationEditView(UpdateView):
+class PublicationEditView(RevisionMixin, UpdateView):
     model = Publication
     template_name = 'publications/publication_form_edit.html'
     form_class = PublicationForm
@@ -51,6 +52,7 @@ class PublicationEditView(UpdateView):
 
 @require_http_methods(["DELETE"])
 @permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@create_revision
 def remove_publication_from_project(request, pk, publication_id):
     project = get_object_or_404(Project, pk=pk)
     project.publications.remove(publication_id)
@@ -58,6 +60,7 @@ def remove_publication_from_project(request, pk, publication_id):
 
 
 @permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@create_revision
 def pick_publication_for_project(request, pk):
     if request.method == 'POST':
         form = PickPublicationForm(request.POST)
@@ -79,6 +82,7 @@ def pick_publication_for_project(request, pk):
 
 
 @permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@create_revision
 def add_publication_to_project(request, pk):
     if request.method == 'POST':
         form = PublicationForm(request.POST)

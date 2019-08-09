@@ -8,6 +8,9 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 
+from reversion.views import RevisionMixin, create_revision
+
+
 from core import constants
 from core.forms.user import UserForm, UserEditFormActiveDirectory, UserEditFormManual
 from core.models import User
@@ -34,7 +37,7 @@ class UsersListView(ListView):
 
 
 @superuser_required()
-class UserCreateView(CreateView, AjaxViewMixin):
+class UserCreateView(RevisionMixin, CreateView, AjaxViewMixin):
     model = User
     template_name = 'users/user_form.html'
     form_class = UserForm
@@ -57,7 +60,7 @@ class UserCreateView(CreateView, AjaxViewMixin):
 
 
 @superuser_required()
-class UserEditView(UpdateView):
+class UserEditView(RevisionMixin, UpdateView):
     model = User
     template_name = 'users/user_form_edit.html'
     success_message = 'User profile has been updated'
@@ -87,6 +90,7 @@ class UserDetailView(DetailView):
 
 
 @login_required
+@create_revision
 def change_password(request):
     if request.method == 'POST':
         print(request.POST)
@@ -114,7 +118,7 @@ class UserPasswordChange(PasswordChangeView):
         return reverse_lazy('login')
 
 
-class UserDelete(CheckerMixin, DeleteView):
+class UserDelete(CheckerMixin, RevisionMixin, DeleteView):
     model = User
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('users')

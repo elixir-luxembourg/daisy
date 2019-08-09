@@ -3,21 +3,23 @@ from django.http import HttpResponse,  JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
-
 from django.views.generic import CreateView
+
+from reversion.views import RevisionMixin, create_revision
 
 from core.forms.storage_location import StorageLocationForm, StorageLocationEditForm
 from core.models import Dataset
 from core.models.storage_location import DataLocation
 from core.permissions import permission_required
 from core.constants import Permissions
-from web.views.utils import AjaxViewMixin
 from core.utils import DaisyLogger
+from web.views.utils import AjaxViewMixin
 
 
 log = DaisyLogger(__name__)
 
 @permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
+@create_revision
 def edit_storagelocation(request, pk, dataset_pk):
     loc = get_object_or_404(DataLocation, pk=pk)
     if request.method == 'POST':
@@ -40,7 +42,7 @@ def edit_storagelocation(request, pk, dataset_pk):
 
 
 
-class StorageLocationCreateView(CreateView, AjaxViewMixin):
+class StorageLocationCreateView(RevisionMixin, CreateView, AjaxViewMixin):
     model = DataLocation
     template_name = 'storage_locations/storage_location_form.html'
     form_class = StorageLocationForm
@@ -74,6 +76,7 @@ class StorageLocationCreateView(CreateView, AjaxViewMixin):
 
 @require_http_methods(["DELETE"])
 @permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
+@create_revision
 def remove_storagelocation(request, dataset_pk, storagelocation_pk):
     dataset = get_object_or_404(Dataset, pk=dataset_pk)
     datalocation = get_object_or_404(DataLocation, pk=storagelocation_pk)

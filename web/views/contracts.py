@@ -7,6 +7,8 @@ from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 
+from reversion.views import RevisionMixin, create_revision
+
 from core.constants import Permissions
 from core.forms import ContractForm, ContractFormEdit, PartnerRoleForm
 from core.forms.contract import KVForm
@@ -19,7 +21,7 @@ FACET_FIELDS = settings.FACET_FIELDS['contract']
 from core.models.utils import COMPANY
 
 
-class ContractCreateView(CreateView):
+class ContractCreateView(RevisionMixin, CreateView):
     model = Contract
     template_name = 'contracts/contract_form.html'
     form_class = ContractForm
@@ -57,7 +59,7 @@ class ContractDetailView(DetailView):
         return context
 
 
-class ContractEditView(UpdateView):
+class ContractEditView(RevisionMixin, UpdateView):
     model = Contract
     template_name = 'contracts/contract_form_edit.html'
     form_class = ContractFormEdit
@@ -109,7 +111,7 @@ def contract_list(request):
     })
 
 
-class PartnerRoleCreateView(CreateView):
+class PartnerRoleCreateView(RevisionMixin, CreateView):
     model = PartnerRole
     template_name = 'contracts/partner_role_form.html'
     form_class = PartnerRoleForm
@@ -140,6 +142,7 @@ class PartnerRoleCreateView(CreateView):
 
 
 @require_http_methods(["DELETE"])
+@create_revision
 def partner_role_delete(request, pk):
     partner_role = get_object_or_404(PartnerRole, id=pk)
     partner_role.delete()
@@ -221,7 +224,7 @@ def partner_role_delete(request, pk):
 #     return HttpResponse("Dataset removed")
 
 
-class ContractDelete(DeleteView):
+class ContractDelete(RevisionMixin, DeleteView):
     model = Contract
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('contracts')

@@ -4,6 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.urls import reverse_lazy
 
+from reversion.views import create_revision
 from guardian.shortcuts import get_objects_for_user, get_users_with_perms, assign_perm, remove_perm
 
 from core.constants import Permissions, Groups
@@ -13,7 +14,7 @@ from core.permissions.checker import AutoChecker
 
 PAGINATE_BY = 5
 
-
+@create_revision
 def index(request, selection, pk):
     """
     Permission management page for projects or datasets.

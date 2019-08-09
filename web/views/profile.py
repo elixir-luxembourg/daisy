@@ -1,11 +1,12 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView
+from reversion.views import RevisionMixin, create_revision
 
 from notification.models import NotificationSetting
 
 
-class ProfileEditView(UpdateView):
+class ProfileEditView(RevisionMixin, UpdateView):
     model = NotificationSetting
     template_name = 'profile.html'
     # form_class = ProfileForm

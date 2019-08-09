@@ -2,20 +2,22 @@ from django.conf import settings
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.shortcuts import render, redirect
+from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from core.forms import PartnerForm
 from core.forms.partner import PartnerFormEdit
 from core.models import Partner
-from web.views.utils import AjaxViewMixin
-from django.http import HttpResponseForbidden, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from reversion.views import RevisionMixin, create_revision
 from sequences import get_next_value
-from . import facet_view_utils
+
+from web.views.utils import AjaxViewMixin
 from core.permissions import permission_required
-FACET_FIELDS = settings.FACET_FIELDS['partner']
 from core.models.utils import COMPANY
+from . import facet_view_utils
 
+FACET_FIELDS = settings.FACET_FIELDS['partner']
 
-class PartnerCreateView(CreateView, AjaxViewMixin):
+class PartnerCreateView(RevisionMixin, CreateView, AjaxViewMixin):
     model = Partner
     template_name = 'partners/partner_form.html'
     form_class = PartnerForm
@@ -48,7 +50,7 @@ class PartnerDetailView(DetailView):
         return context
 
 
-class PartnerEditView(UpdateView):
+class PartnerEditView(RevisionMixin, UpdateView):
     model = Partner
     template_name = 'partners/partner_form_edit.html'
     form_class = PartnerFormEdit
@@ -103,7 +105,7 @@ def generate_elu_accession():
     elu_accession = 'ELU_I_' + str(get_next_value('elu_accession', initial_value=100))
     return elu_accession
 
-
+@create_revision
 def publish_partner(request, pk):
     partner = get_object_or_404(Partner, pk=pk)
     if not partner.is_published:
@@ -116,7 +118,7 @@ def publish_partner(request, pk):
     return HttpResponseRedirect(reverse_lazy('partner', kwargs={'pk': pk}))
 
 
-class PartnerDelete(DeleteView):
+class PartnerDelete(RevisionMixin, DeleteView):
     model = Partner
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('partners')
