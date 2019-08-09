@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'haystack',
     'notification.apps.NotificationConfig',
     'reversion',
+    'reversion_compare',
     'sequences.apps.SequencesConfig',
     'stronghold',
     'web.apps.WebConfig',

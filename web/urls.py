@@ -22,7 +22,7 @@ from web.views.publication import PublicationCreateView, PublicationListView, Pu
 from web.views.user import UsersListView, UserDetailView, UserEditView, UserCreateView, UserPasswordChange, \
     change_password, UserDelete
 from web.views.users import add_personnel_to_project, remove_personnel_from_project
-
+from web.views.audit import AuditDetailView
 
 
 web_urls = [
@@ -33,7 +33,7 @@ web_urls = [
     path('definitions/cohorts/', cohort_list, name="cohorts"),
     path('definitions/cohorts/add', CohortCreateView.as_view(), name='cohort_add'),
     path('definitions/cohorts/<int:pk>/edit', CohortEditView.as_view(), name="cohort_edit"),
-    path('definitions/cohorts//<int:pk>/delete', CohortDelete.as_view(), name="cohort_delete"),
+    path('definitions/cohorts/<int:pk>/delete', CohortDelete.as_view(), name="cohort_delete"),
     path('definitions/cohorts/<int:pk>/', CohortDetailView.as_view(), name="cohort"),
 
     path('contracts/', contract_list, name="contracts"),
@@ -176,5 +176,8 @@ web_urls = [
     path('definitions/users/add', UserCreateView.as_view(), name="users_add"),
     path('definitions/users/change-password', change_password, name="users_change_password"),
     path('definitions/users/<int:pk>/delete', UserDelete.as_view(), name="user_delete"),
+
+    # Auditing
+    path('audit/<str:model_name>/<int:pk>', AuditDetailView.as_view(), name="audit"),
 
 ]

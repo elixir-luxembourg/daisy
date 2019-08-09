@@ -22,6 +22,7 @@ requirements = [
     'django-model-utils==3.1.2',
     'django-reversion==3.0.3',
     'django-reversion==3.0.3',
+    'django-reversion-compare==0.8.6',
     'django-sequences==2.2',
     'django-stronghold==0.3.0',
     'django-widget-tweaks==1.4.3',
