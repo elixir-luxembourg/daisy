@@ -108,8 +108,8 @@ class CohortFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'core.Cohort'
         django_get_or_create = ('title',)
-
-    owners = factory.Faker('city')
+    title = factory.Faker('bs')
+    #owners = factory.Faker('city')
     comments = factory.Faker('text')
 
 
@@ -150,6 +150,16 @@ class ContactTypeFactory(factory.DjangoModelFactory):
     name = factory.Faker('job')
 
 
+class AccessFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = 'core.Access'
+    access_notes = factory.Faker('catch_phrase')
+    granted_on = factory.Faker('date')
+    grant_expires_on = factory.Faker('date')
+    dataset = factory.SubFactory(DatasetFactory)
+    #defined_on_locations
+    #project
+    
 class ContactFactory(factory.DjangoModelFactory):
     """
     Contact factory
@@ -299,3 +309,18 @@ class ContractDocumentFactory(AbstractDocumentFactory):
         model = 'core.Document'
 
     content_object = factory.SubFactory(ContractFactory)
+
+
+class PartnerRoleFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = 'core.PartnerRole'
+    partner = factory.SubFactory(PartnerFactory)
+    #roles
+    #contacts = 
+    contract = factory.SubFactory(ContractFactory)
+
+class DataTypeFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = 'core.DataType'
+    name = factory.Faker('first_name')
+    #parent
