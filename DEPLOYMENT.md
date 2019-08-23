@@ -609,13 +609,19 @@ systemctl start celery_beat
 # Restoring backup of Daisy
 First, make sure you have successfully backed up your Daisy deployment - see first section of chapter Updating Daisy.
 
+```bash
+systemctl stop gunicorn
+systemctl stop celery_worker
+systemctl stop celery_beat
+```
+
 Wipe out broken/unwanted version of Daisy by deleting all files in daisy user home directory and dropping the database:
+
 ```
 sudo mv /home/daisy/daisy_dump.sql /tmp/
 sudo rm -rf /home/daisy/*
 sudo su -c 'dropdb daisy' - postgres
 ```
-
 Restore files from tar ball:
 
 ```
@@ -636,7 +642,7 @@ Restore the database as daisy user:
 sudo su -c 'psql -d daisy -U daisy -p 5432 < /tmp/daisy_dump.sql' - daisy
 ```
 
-Start services 
+Start services: 
 ```
 sudo systemctl start gunicorn
 sudo systemctl start celery_worker
