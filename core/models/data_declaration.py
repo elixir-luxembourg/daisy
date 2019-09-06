@@ -93,7 +93,7 @@ class DataDeclaration(CoreModel):
     end_of_storage_duration = models.DateField(verbose_name='Storage end date', blank=True, null=True,
                                                help_text='Is the data obtained for a limited duration? If so please state the storage end date for data.')
 
-    storage_duration_criteria = models.TextField(blank=True, null=True)
+    storage_duration_criteria = models.TextField(verbose_name='Storage duration criteria', blank=True, null=True, help_text='Please describe criteria used to determine storage duration.')
 
     has_special_subjects = models.NullBooleanField(null=True,
                                                    blank=True,

@@ -12,15 +12,18 @@ Data Information System (DAISY) is a data bookkeeping application designed to he
 ### Installation
 
 1. Get the source code
+    
     ```bash
     git clone git@github.com:elixir-luxembourg/daisy.git
     cd daisy
     ```
- 1. Create your settings file
-    ```bash
-    cp elixir_daisy/settings_local.template.py elixir_daisy/settings_local.py
-    ```
+1. Create your settings file
+    
+	```bash
+	cp elixir_daisy/settings_local.template.py elixir_daisy/settings_local.py
+	```
     Optional: edit the file elixir_daisy/settings_local.py to adapt to your environment.
+
 1. Build daisy docker image  
     ```bash
     docker-compose up --build
@@ -29,6 +32,7 @@ Data Information System (DAISY) is a data bookkeeping application designed to he
 1. Open a new shell and go to daisy folder
 
 1. Build the database
+    
     ```bash
     docker-compose exec web python manage.py migrate
     ```
@@ -39,17 +43,21 @@ Data Information System (DAISY) is a data bookkeeping application designed to he
     ```
 
 1. Compile and deploy static files
+    
     ```bash
     docker-compose exec web python manage.py collectstatic
     ```
 1. Create initial data in the database
+    
     ```bash
+    docker-compose exec web bash -c "cd core/fixtures/ && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json"
     docker-compose exec web python manage.py load_initial_data
     ```
    Initial data includes, for instance, controlled vocabularies terms and initial list of institutions and cohorts.  
    **This step can take several minutes to complete**
     
 1. Load demo data
+    
     ```bash
     docker-compose exec web python manage.py load_demo_data
     ```
@@ -62,6 +70,7 @@ Data Information System (DAISY) is a data bookkeeping application designed to he
     ```
     
 1.  Build the search index
+    
     ```bash
     docker-compose exec web python manage.py rebuild_index -u default
     ```
@@ -92,6 +101,73 @@ docker-compose exec web python manage.py import_datasets -d ${DATASETS_FOLDER}
 where ${DATASETS_FOLDER} is the path to a folder containing datasets and data declarations definitions.  
 See folder daisy/data/datasets as an example.
 
+### Upgrade to last Daisy version
+
+1. Create a database backup
+
+	```bash
+	docker-compose exec db pg_dump daisy --port=5432 --username=daisy --no-password --clean > backup_`date +%y-%m-%d`.sql
+	```
+	
+1. Make sure docker containers are stopped.
+
+	```bash
+	docker-compose stop
+	```
+
+1. Get last Daisy release
+
+	```bash
+	git checkout master
+	git pull
+	```
+
+1. Rebuild and start the docker containers
+
+	```bash
+	docker-compose up --build
+	```
+	Open a new terminal window to execute the following commands.
+
+1. Update the database
+
+	```bash
+	docker-compose exec web python manage.py migrate
+	```
+
+1. Update the solr schema
+
+	```bash
+	docker-compose exec web python manage.py build_solr_schema -c /solr/daisy/conf -r daisy -u default
+	```
+
+1. Collect static files
+ 
+	```bash
+	docker-compose exec web python manage.py collectstatic
+	```
+	
+1. Reload initial data
+ 
+	```bash
+	docker-compose exec web bash -c "cd core/fixtures/ && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json"
+	docker-compose exec web python manage.py load_initial_data
+	```
+	**This step can take several minutes to complete**
+	
+1. Rebuild the search index
+    
+    ```bash
+    docker-compose exec web python manage.py rebuild_index -u default
+    ```	
+1. Reimport the users  
+	    
+    If LDAP was used to import users, they have to be imported again:
+    
+    ```bash
+    docker-compose exec web python manage.py import_users
+    ```
+    
 ## Without Docker - CentOS
 
 
@@ -121,7 +197,7 @@ To be completed.
 
 ```bash
 cd web/static/vendor/
-npm install
+npm ci
 ```
 
 ### Compile daisy.scss

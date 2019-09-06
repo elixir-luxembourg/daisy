@@ -1,6 +1,6 @@
 {
   "name": "elixir-daisy",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -18,22 +18,25 @@
   "author": "LCSB",
   "license": "Apache-2.0",
   "dependencies": {
-    "bootstrap": "4.1.1",
+    "bootstrap": "4.2.1",
     "bootstrap-material-design": "4.1.1",
-    "jquery": "^3.3.1",
-    "jquery-ui-dist": "^1.12.1",
-    "js-cookie": "^2.2.0",
-    "jsrender": "^0.9.90",
-    "moment": "^2.22.1",
-    "npm": "^6.4.1",
-    "popper.js": "^1.14.3",
-    "select2": "^4.0.6-rc.1",
-    "select2-bootstrap-theme": "^0.1.0-beta.10"
+    "datatables.net": "1.10.19",
+    "datatables.net-dt": "1.10.19",
+    "jquery": "3.4.1",
+    "jquery-ui-dist": "1.12.1",
+    "js-cookie": "2.2.0",
+    "jsrender": "0.9.90",
+    "moment": "2.22.1",
+    "npm": "6.10.2",
+    "popper.js": "1.15.0",
+    "select2": "4.0.6-rc.1",
+    "select2-bootstrap-theme": "0.1.0-beta.10"
   },
   "devDependencies": {
-    "concurrently": "^4.1.0",
-    "cssnano-cli": "^1.0.5",
-    "node-sass": "^4.11.0",
-    "node-sass-tilde-importer": "^1.0.2"
+    "concurrently": "4.1.0",
+    "cssnano-cli": "1.0.5",
+    "js-yaml": "3.13.1",
+    "node-sass": "4.11.0",
+    "node-sass-tilde-importer": "1.0.2"
   }
 }

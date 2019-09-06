@@ -104,5 +104,5 @@ class Contract(CoreModel):
         return self.short_name()
 
     def short_name(self):
-        partners_list = ", ".join([p.name for p in self.partners.all()]) or "???"
+        partners_list = ", ".join([p.name for p in self.partners.all()]) or "Undefined partner(s)"
         return f'Contract with {partners_list}'

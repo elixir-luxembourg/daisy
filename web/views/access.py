@@ -2,6 +2,7 @@ from core.forms.access import AccessForm, AccessEditForm
 from web.views.utils import AjaxViewMixin
 from django.views.generic import CreateView
 from core.models import Access, Dataset
+from core.constants import Permissions
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.urls import reverse_lazy
@@ -48,7 +49,7 @@ class AccessCreateView(CreateView, AjaxViewMixin):
         return super().get_success_url()
 
 
-@permission_required('EDIT', (Dataset, 'pk', 'dataset_pk'))
+@permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
 def edit_access(request, pk, dataset_pk):
     access = get_object_or_404(Access, pk=pk)
     if request.method == 'POST':
@@ -70,7 +71,7 @@ def edit_access(request, pk, dataset_pk):
     return render(request, 'modal_form.html', {'form': form, 'submit_url': request.get_full_path() })
 
 @require_http_methods(["DELETE"])
-@permission_required('EDIT', (Dataset, 'pk', 'dataset_pk'))
+@permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
 def remove_access(request, dataset_pk, access_pk):
     access = get_object_or_404(Access, pk=access_pk)
     dataset = get_object_or_404(Dataset, pk=dataset_pk)

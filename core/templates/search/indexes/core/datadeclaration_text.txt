@@ -1,4 +1,4 @@
-{% for o in object.dataset.local_custodians.all %}{{o}} {{o}} {% endfor %}
+{% for o in object.dataset.local_custodians.all %}{{o}} {% endfor %}
 {{ object.title }}
 {{ object.unique_id }}
 {{ object.comments }}

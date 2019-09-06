@@ -7,7 +7,7 @@ except ImportError:
     from distutils.core import setup
 
 requirements = [
-    'Django==2.1.10',
+    'Django==2.1.11',
     'django-auth-ldap==1.7.0',
     'django-celery-beat==1.4.0',
     'django-celery-results==1.0.4',
@@ -45,9 +45,9 @@ dev_requirements = [
 
 setup(
     name='elixir-daisy',
-    version='1.0.0-alpha',
+    version='1.1.0',
     description="Elixir-LU DAISY",
-    author="Valentin Grouès",
+    author="Pinar Alper, Valentin Grouès, Yohan Jarosz, Jacek Lebioda, Kavita Rege",
     author_email='valentin.groues@uni.lu',
     url='https://github.com/elixir-luxembourg/daisy',
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
@@ -56,7 +56,7 @@ setup(
     include_package_data=True,
     install_requires=requirements,
     zip_safe=False,
-    keywords=['elixir'],
+    keywords=['elixir', 'gdpr', 'data protection'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         # 'Intended Audience :: Developers',

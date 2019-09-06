@@ -3,7 +3,7 @@
 {{object.direction}}
 {{object.project}}
 {% for o in object.data_declarations.all %}{{o}} {% endfor %}
-{% for o in object.local_custodians.all %}{{o}} {{o}} {% endfor %}
+{% for o in object.local_custodians.all %}{{o}} {% endfor %}
 {% for o in object.partners_roles.all %} {{o.partner}} {% for r in o.roles.all %}{{r}}{% endfor %} {% for c in o.contacts.all %}{{c}}{% endfor %} {% endfor %}
 {% for r in object.company_roles.all %} {{r}} {% endfor %}
 

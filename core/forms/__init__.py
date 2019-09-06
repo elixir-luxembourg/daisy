@@ -10,7 +10,7 @@ from .permission import UserPermFormSet
 from .legal_basis import LegalBasisForm
 from .publication import PublicationForm, PickPublicationForm
 from .share import ShareForm
-from .storage_location import StorageLocationForm, PickStorageLocationForm
+
 
 
 __all__ = [
@@ -34,7 +34,5 @@ __all__ = [
     "PublicationForm",
     "ShareForm",
     "PickPublicationForm",
-    "StorageLocationForm",
-    "PickStorageLocationForm",
     "UseRestrictionForm"
 ]

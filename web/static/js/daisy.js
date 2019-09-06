@@ -44,6 +44,9 @@ function initFormsets(elements) {
 $(document).ready(function () {
 
     csrftoken = Cookies.get("csrftoken");
+
+    $('#users_table').DataTable();
+
     $('.nice-selects select').not('.dummy-select').select2({'width': '100%'});
 
     $('.ontocomplete').select2({
@@ -171,7 +174,7 @@ $(document).ready(function () {
             if (ajaxRefreshSelector !== undefined) {
                 modal.find(ajaxRefreshSelector).on('change', function (evt) {
                     var data = $(ajaxRefreshSelector).val();
-                    _loadModal(modal, url, button, postMode, ajaxRefreshSelector, ajaxRefreshParam, redirectURI, data);
+                    _loadModal(modal, title, url, button, postMode, ajaxRefreshSelector, ajaxRefreshParam, redirectURI, data);
                 })
             }
         });
@@ -201,6 +204,10 @@ $(document).ready(function () {
     $('.deletable').hover(function () {
         var url_delete = $(this).data('url');
         var delete_link = $("<i  id='dynamic_delete_button' class='red delete-button material-icons'>delete_forever</i>").data('url', url_delete);
+        var delete_title = $(this).data('delete-title');
+         if (delete_title){
+            delete_link.attr('title', delete_title);
+        }
         $(this).append(delete_link);
     }, function () {
         $(this).find('.delete-button').remove();

@@ -7,7 +7,6 @@ from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from core.forms import DatasetForm
 from core.forms.dataset import DatasetFormEdit
 from core.forms.share import shareFormFactory
-from core.forms.storage_location import dataLocationFormFactory
 from core.models import Dataset, Partner
 from core.models.utils import COMPANY
 from core.permissions import permission_required, CheckerMixin, constants
@@ -114,11 +113,12 @@ def dataset_list(request):
     })
 
 
-class DatasetDelete(DeleteView):
+class DatasetDelete(CheckerMixin, DeleteView):
     model = Dataset
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('datasets')
     success_message = "Dataset was deleted successfully."
+    permission_required = constants.Permissions.DELETE
 
     def get_context_data(self, **kwargs):
         context = super(DatasetDelete, self).get_context_data(**kwargs)
@@ -128,33 +128,3 @@ class DatasetDelete(DeleteView):
 
 
 
-@permission_required('EDIT', (Dataset, 'pk', 'pk'))
-def dataset_share_add(request, pk):
-    dataset = get_object_or_404(Dataset, pk=pk)
-    if request.method == 'GET':
-        partner = request.GET.get('partner', None)
-        if partner is not None:
-            partner = get_object_or_404(Partner, pk=int(partner))
-        form = dataLocationFormFactory(partner=partner)
-        return render(request, 'modal_form.html', {
-            'dataset': dataset,
-            'form': form,
-            'submit_url': request.get_full_path(),
-        })
-    if request.method == 'POST':
-        partner = request.POST.get('partner', None)
-        if partner is not None:
-            partner = get_object_or_404(Partner, pk=int(partner))
-            form = shareFormFactory(request.POST, partner=partner)
-            if form.is_valid():
-                share = form.save()
-                dataset.shares.add(share)
-                messages.add_message(request, messages.SUCCESS, 'New share added')
-                return redirect('dataset', pk=dataset.pk)
-            return render(request, 'modal_form.html', {
-                'dataset': dataset,
-                'form': form,
-                'submit_url': request.get_full_path(),
-            })
-        messages.add_message(request, messages.ERROR, 'No valid partner detected.')
-        return redirect('dataset', pk=dataset.pk)

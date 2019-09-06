@@ -73,6 +73,15 @@ class Dataset(CoreTrackedModel):
             all_data_types.update(data_declaration.data_types_received.all())
         return all_data_types
 
+
+    def collect_contracts(self):
+        result = set()
+        for share in self.shares.all():
+            result.add((share.contract, share))
+        for ddec in self.data_declarations.all():
+            result.add((ddec.contract,ddec))
+        return result
+
     def __str__(self):
         return self.title
 

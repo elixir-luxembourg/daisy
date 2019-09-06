@@ -5,11 +5,48 @@ from django.contrib.auth.forms import AuthenticationForm
 from core.models import User
 
 
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'password', 'is_active', 'groups']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    field_order = [
+        'first_name',
+        'last_name',
+        'email',
+        'password',
+        'is_active',
+        'groups'
+    ]
+
+
+class UserEditFormActiveDirectory(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['is_active', 'groups']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class UserEditFormManual(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'is_active', 'groups']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
 class PickUserForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['personnel'] = forms.ChoiceField(
-            choices=[(d.id, str(d)) for d in User.objects.exclude(username='AnonymousUser').all()])
+        self.fields['personnel'] = forms.ChoiceField(label='Select user',
+                                                     choices=[(d.id, str(d)) for d in
+                                                              User.objects.exclude(username='AnonymousUser').all()])
 
 
 class UserAuthForm(AuthenticationForm):

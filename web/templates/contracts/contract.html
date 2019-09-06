@@ -24,7 +24,7 @@
                         <dt>{{ company_name }} Roles:</dt>
                         <dl>{{ contract.company_roles.all | join:", " | default:'-' }}</dl>
                     </dl>
-                 </div>
+                </div>
                 <div class="col">
                     <dl>
                         <dt>Remarks</dt>
@@ -34,15 +34,15 @@
                 <div class="floating-buttons-absolute">
                     {% if can_edit %}
                         <a class="btn btn-primary bmd-btn-fab float-right"
-                           title="Edit"
+                           title="Edit contract"
                            href="{% url 'contract_edit' pk=contract.id %}"><i
                                 class="material-icons">edit</i>
                         </a>
                         {% if not contract.is_published %}
                             <a  id="deletecontract" class="btn btn-danger bmd-btn-fab float-right red"
-                            title="Delete"
-                            data-toggle="modal" data-target="#modal"
-                            data-ajax-url="{% url 'contract_delete' pk=contract.id %}">
+                                title="Delete contract"
+                                data-toggle="modal" data-target="#modal"
+                                data-ajax-url="{% url 'contract_delete' pk=contract.id %}">
                                 <i class="material-icons">delete</i>
 
                             </a>
@@ -61,12 +61,12 @@
                 {% if can_edit %}
                     <div class="ml-1 float-right btn-group">
                         <a href="{% url 'add_partner_role_to_contract' pk=contract.pk %}">
-                            <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button" title="add partner"><i
+                            <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button" title="Add participant to contract"><i
                                     class="material-icons">add</i></button>
                         </a>
                     </div>
                 {% endif %}
-                <h2 class="card-title">Partners (Signatories)</h2>
+                <h2 class="card-title">Participants</h2>
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -94,9 +94,10 @@
                             </td>
                             {% if can_edit %}
                                 <td>
-                                <i title="delete" class="material-icons red clickable" data-method="delete"
-                                   data-parent-to-remove="tr"
-                                   data-url="{% url 'delete_partner_role' pk=partner_role.id %}">delete_forever</i>
+                                    <i title="Delete participant" class="material-icons red clickable" data-method="delete"
+                                       data-parent-to-remove="tr"
+                                       data-confirmation = "delete"
+                                       data-url="{% url 'delete_partner_role' pk=partner_role.id %}">delete_forever</i>
                                 </td>
                             {% endif %}
                         </tr>
@@ -111,51 +112,62 @@
     {#    DOCUMENTS    #}
 
     <div class="row mt-4">
-    <div class="card col-md-12">
-        <div class="card-body">
-            <div class="ml-1 float-right btn-group">
-                <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button" id="adddataset"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="add a dataset">
-                            <i class="material-icons">add</i>
-                        </button>
-                         <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="adddataset">
+        <div class="card col-md-12">
+            <div class="card-body">
+                <div class="ml-1 float-right btn-group">
+                    <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button" id="adddocument"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Add document to contract">
+                        <i class="material-icons">add</i>
+                    </button>
+                    <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="adddocument">
 
-                            <button data-toggle="modal"
-                                    data-target="#modal"
-                                    data-modal-title="Add a new contact"
-                                    data-ajax-url="{% url 'document_add' object_id=object_id content_type=content_type %}"
-                                    class="dropdown-item" type="button" title="add a new contact">
-                                Create a new Document
-                            </button>
-                        </div>
-            </div>
-            <h2 class="card-title"><span><i class="material-icons">link</i></span> Documents</h2>
-            <table class="table table-striped">
-                <thead></thead>
-                <tbody>
+                        <button data-toggle="modal"
+                                data-target="#modal"
+                                data-modal-title="Add document to contract"
+                                data-ajax-url="{% url 'document_add' object_id=object_id content_type=content_type %}"
+                                class="dropdown-item" type="button" title="Add document to contract">
+                            Upload new document
+                        </button>
+                    </div>
+                </div>
+                <h2 class="card-title"><span><i class="material-icons">link</i></span> Documents</h2>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Size</th>
+                        <th>Expiry</th>
+                        <th>Document Type</th>
+                        {% if can_edit %}
+                            <th style="width:7em">Actions</th>{% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
                     {% for file in datafiles %}
                         <tr>
                             <td><a href="{% url 'document_download' pk=file.id %}">{{ file.shortname}}</a></td>
                             <td><span class="col-xs-4 text-center">size:  {{ file.size | filesizeformat  }}</span></td>
-                              <td>
+                            <td><span class="col-xs-4 text-center">{{ file.expiry_date | default:'-' }}</span></td>
+                            <td><span class="col-xs-4 text-center">{{ file.domain_type  }}</span></td>
+                            <td>
                                 <a data-toggle="modal" id="btnupdate" class="jsBtn clickable"
-                                        data-target="#modal"
-                                        data-modal-title="Add a existing contact"
-                                        data-ajax-url="{% url "document_edit" pk=file.id %}"
-                                         title="Edit Documents">
-                                <i class="material-icons">edit</i>
-                             </a>
-                              <i title="delete" class="material-icons red clickable" data-method="delete"
-                                           data-parent-to-remove="tr"
-                                           data-url="{% url 'document_delete' pk=file.id  %}">delete_forever</i>
+                                   data-target="#modal"
+                                   data-modal-title="Update document"
+                                   data-ajax-url="{% url "document_edit" pk=file.id %}"
+                                   title="Update document">
+                                    <i class="material-icons">edit</i>
+                                </a>
+                                <i title="Delete document" class="material-icons red clickable" data-method="delete"
+                                   data-confirmation = "delete"
+                                   data-parent-to-remove="tr"
+                                   data-url="{% url 'document_delete' pk=file.id  %}">delete_forever</i>
                             </td>
                         </tr>
                     {% endfor %}
-                </tbody>
-
+                    </tbody>
                 </table>
+            </div>
         </div>
-    </div>
     </div>
 
 
@@ -182,9 +194,6 @@
             </div>
         </div>
     </div>
-
-    {% include '_includes/other_comments.html' with entity=contract %}
-
 
 {% endblock %}
 

@@ -45,16 +45,16 @@
 
                     </dl>
                 </div>
+                <div class="floating-buttons-absolute">
+                    {% if can_edit %}
+                        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'data_declaration_edit' pk=object.id %}"><i
+                                class="material-icons">edit</i>
+                        </a>
+                    {% endif %}
+
+                </div>
             </div>
         </div>
     </div>
 {% endblock %}
 
-
-
-{% block floating-buttons %}
-    {% if can_edit %}
-        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'data_declaration_edit' pk=object.id %}"><i
-                class="material-icons">edit</i>
-        </a>{% endif %}
-{% endblock %}

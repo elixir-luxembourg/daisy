@@ -32,16 +32,9 @@ class StorageResource(CoreModel):
         verbose_name='Managed by',
     )
 
-    location_definition = models.TextField()
 
     acl_policy_description = TextFieldWithInputWidget(max_length=255, blank=True, null=True,
                                                       verbose_name='Default Access Control Policy of platform')
-
-    def get_location_class(self):
-        """
-        Get the mapped location definition for the storage resource.
-        """
-        return DataLocation.SUBCLASS(self.location_definition)
 
 
     def __str__(self):

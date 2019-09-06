@@ -68,6 +68,12 @@ class ProjectForm(ModelForm):
                 self.fields['phenotype_terms'].queryset = instance.phenotype_terms.all()
                 self.fields['gene_terms'].queryset = instance.gene_terms.all()
                 self.fields['study_terms'].queryset = instance.study_terms.all()
+        else:
+                self.fields['disease_terms'].queryset = DiseaseTerm.objects.all()
+                self.fields['phenotype_terms'].queryset = PhenotypeTerm.objects.all()
+                self.fields['gene_terms'].queryset = GeneTerm.objects.all()
+                self.fields['study_terms'].queryset = StudyTerm.objects.all()
+
 
         self.fields['company_personnel'].queryset = User.objects.exclude(username='AnonymousUser')
         self.fields['local_custodians'].queryset = User.objects.exclude(username='AnonymousUser')
@@ -87,23 +93,33 @@ class ProjectForm(ModelForm):
 
     def clean(self):
             """
-            Override to check if at least one PI is in the responsibles people.
+            Override to check local custodian and ethic validation.
             """
             cleaned_data = super().clean()
+            self.fields['disease_terms'].queryset = cleaned_data.get("disease_terms", DiseaseTerm.objects.none())
+            self.fields['phenotype_terms'].queryset = cleaned_data.get("phenotype_terms", PhenotypeTerm.objects.none())
+            self.fields['gene_terms'].queryset = cleaned_data.get("gene_terms", GeneTerm.objects.none())
+            self.fields['study_terms'].queryset = cleaned_data.get("study_terms",StudyTerm.objects.none())
+
             local_custodians = cleaned_data.get("local_custodians", [])
+
+            errors = []
             if not local_custodians or not local_custodians.vips().exists():
-                raise ValidationError(
-                    "At least one PI must be in the responsible persons."
-                )
-            # validation for Ethics approval fields
+                errors.append("Local custodian information is missing or incomplete.")
+                self.add_error('local_custodians',  "At least one PI must be in the responsible persons.")
+
             has_cner = cleaned_data.get('has_cner')
             has_erp = cleaned_data.get('has_erp')
             cner_notes = cleaned_data.get('cner_notes')
             erp_notes = cleaned_data.get('erp_notes')
             if not has_cner and not has_erp:
                 if not cner_notes and not erp_notes:
-                    self.add_error('cner_notes',  "Please enter notes on why there is no Institutional or National Ethics approval")
-                    self.add_error('erp_notes',  "Please enter notes on why there is no Institutional or National Ethics approval")
+                    errors.append("Ethics information is missing.")
+                    self.add_error('cner_notes',  "Please enter notes on why there is no institutional or national ethics approval.")
+                    self.add_error('erp_notes',  "Please enter notes on why there is no institutional or national ethics approval.")
+
+            if errors:
+                raise ValidationError(errors)
             return self.cleaned_data
 
 

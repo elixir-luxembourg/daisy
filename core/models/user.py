@@ -1,11 +1,18 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from enumchoicefield import EnumChoiceField
+from enumchoicefield.enum import ChoiceEnum
 from guardian.shortcuts import assign_perm, remove_perm
 
 from core import constants
 from core.permissions import ProjectChecker, DatasetChecker, ContractChecker, AutoChecker
 from .utils import TextFieldWithInputWidget
+
+
+class UserSource(ChoiceEnum):
+    ACTIVE_DIRECTORY = "active directory"
+    MANUAL = "manual"
 
 
 class UserQuerySet(models.QuerySet):
@@ -38,7 +45,7 @@ class UserManager(BaseUserManager):
     def legal_team(self):
         return self.get_queryset().legal_team()
 
-    def create_user(self, username, email, password=None,is_active=True,is_staff=False,is_admin=False):
+    def create_user(self, username, email, password=None, is_active=True, is_staff=False, is_admin=False):
         """
         Creates and saves a User with the given email and password.
         """
@@ -50,20 +57,18 @@ class UserManager(BaseUserManager):
             email=self.normalize_email(email),
         )
 
-
         user.set_password(password)
         user.save(using=self._db)
         return user
-
 
     def create_superuser(self, username, email, password):
         """
         Creates and saves a superuser with the given email and password.
         """
         user = self.create_user(username,
-            email,
-            password=password,
-        )
+                                email,
+                                password=password,
+                                )
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
@@ -79,6 +84,8 @@ class User(AbstractUser):
         app_label = 'core'
         ordering = ['first_name', 'last_name']
 
+    email = models.EmailField(blank=False)
+    source = EnumChoiceField(UserSource, default=UserSource.MANUAL, blank=False, null=False)
     full_name = TextFieldWithInputWidget(max_length=128)
 
     objects = UserManager()
