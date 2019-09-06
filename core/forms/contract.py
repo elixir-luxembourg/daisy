@@ -18,8 +18,8 @@ class ContractForm(ModelForm):
         super().__init__(*args, **kwargs)
         if show_project:
             self.fields['project'] = ModelChoiceField(queryset=Project.objects.all(), required=False,
-                                                      label       = Contract.project.field.verbose_name,
-                                                      help_text   = Contract.project.field.help_text)
+                                                      label=Contract.project.field.verbose_name,
+                                                      help_text=Contract.project.field.help_text)
         else:
             del self.fields['project']
 
@@ -35,7 +35,7 @@ class ContractForm(ModelForm):
 class ContractFormEdit(ContractForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['project'].disabled = True
+        self.fields['project'].disabled = False
 
 
 class KVForm(forms.Form):
