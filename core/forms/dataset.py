@@ -8,7 +8,7 @@ from core.models.contract import Contract
 class DatasetForm(forms.ModelForm):
     class Meta:
         model = Dataset
-        fields = ['local_custodians', 'title']
+        fields = ['local_custodians', 'title', 'comments']
 
     def __init__(self, *args, **kwargs):
         dataset = None
@@ -23,6 +23,8 @@ class DatasetForm(forms.ModelForm):
         self.fields['project'] = forms.ChoiceField(choices=project_choices, required=False,
                                                    label       = Dataset.project.field.verbose_name,
                                                    help_text   = Dataset.project.field.help_text )
+        self.fields_order = ['local_custodians', 'title', 'project', 'comments']
+        self.order_fields(self.fields_order)
 
     def clean(self):
         """
@@ -62,11 +64,7 @@ class DatasetForm(forms.ModelForm):
             self.instance.project = None
         return super().save(commit)
 
-    field_order = [
-        'project',
-        'local_custodians',
-        'title'
-    ]
+
 
 
 class DatasetFormEdit(DatasetForm):
