@@ -2,7 +2,7 @@ from django.apps import apps
 from django.db import models
 from model_utils import Choices
 from django_countries.fields import CountryField
-
+from elixir_daisy import settings
 from .utils import  CoreTrackedModel, TextFieldWithInputWidget
 
 GEO_CATEGORY = Choices(
@@ -17,6 +17,8 @@ SECTOR_CATEGORY = Choices(
     ('PRIVATE_NP', 'Private Non-Profit'),
     ('PRIVATE_P', 'Private For-Profit')
 )
+
+
 
 
 class Partner(CoreTrackedModel):
@@ -43,6 +45,10 @@ class Partner(CoreTrackedModel):
                     "Clinics, research institutes, or data hubs are examples of Partners."
 
 
+    class HomeOrganisation:
+        @property
+        def as_object(cls):
+            return Partner.objects.get(acronym=settings.COMPANY)
     acronym = TextFieldWithInputWidget(
         max_length=255,
         verbose_name='Acronym',
@@ -111,3 +117,5 @@ class Partner(CoreTrackedModel):
             "country_code": self.country.ioc_code if self.country.ioc_code else None
         }
         return base_dict
+
+

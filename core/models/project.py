@@ -3,11 +3,12 @@ from django.db import models
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from core import constants
-from core.models import Partner
+
 from elixir_daisy import settings
 from .utils import CoreTrackedModel, COMPANY
+from .partner import Partner
 
-HOME_ORGANISATION = Partner.objects.get(acronym=settings.COMPANY)
+
 
 class Project(CoreTrackedModel):
     class Meta:
@@ -178,7 +179,7 @@ class Project(CoreTrackedModel):
                  "last_name": lc.last_name,
                  "email": lc.email,
                  "role":  "Principal_Investigator" if lc.is_part_of(constants.Groups.VIP.name) else "Researcher",
-                 "affiliations": [HOME_ORGANISATION.name]})
+                 "affiliations": [Partner.HomeOrganisation.as_object]})
 
         base_dict = {
             "source": settings.SERVER_URL,

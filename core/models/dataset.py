@@ -7,11 +7,8 @@ from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from core import constants
 
 from .utils import CoreTrackedModel, TextFieldWithInputWidget
-from elixir_daisy import settings
-
 from .partner import Partner
 
-HOME_ORGANISATION = Partner.objects.get(acronym=settings.COMPANY)
 
 class Dataset(CoreTrackedModel):
     class Meta:
@@ -108,7 +105,7 @@ class Dataset(CoreTrackedModel):
                  "last_name": lc.last_name,
                  "email": lc.email,
                  "role":  "Principal_Investigator" if lc.is_part_of(constants.Groups.VIP.name) else "Researcher",
-                 "affiliations": [HOME_ORGANISATION.name]})
+                 "affiliations": [Partner.HomeOrganisation.as_object]})
 
         storage_dicts = []
         for dl in self.data_locations.all():
