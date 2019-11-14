@@ -45,10 +45,6 @@ class Partner(CoreTrackedModel):
                     "Clinics, research institutes, or data hubs are examples of Partners."
 
 
-    class HomeOrganisation:
-        @property
-        def as_object(cls):
-            return Partner.objects.get(acronym=settings.COMPANY)
     acronym = TextFieldWithInputWidget(
         max_length=255,
         verbose_name='Acronym',
@@ -119,3 +115,12 @@ class Partner(CoreTrackedModel):
         return base_dict
 
 
+
+
+class HomeOrganisation():
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = Partner.objects.get(acronym=settings.COMPANY)
+        return cls._instance

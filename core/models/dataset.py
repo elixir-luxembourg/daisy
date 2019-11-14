@@ -7,7 +7,7 @@ from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from core import constants
 
 from .utils import CoreTrackedModel, TextFieldWithInputWidget
-from .partner import Partner
+from .partner import HomeOrganisation
 
 
 class Dataset(CoreTrackedModel):
@@ -99,13 +99,16 @@ class Dataset(CoreTrackedModel):
     def to_dict(self):
 
         contact_dicts = []
+
+        # p = HomeOrganisation()
+
         for lc in self.local_custodians.all():
             contact_dicts.append(
                 {"first_name": lc.first_name,
                  "last_name": lc.last_name,
                  "email": lc.email,
                  "role":  "Principal_Investigator" if lc.is_part_of(constants.Groups.VIP.name) else "Researcher",
-                 "affiliations": [Partner.HomeOrganisation.as_object]})
+                 "affiliations": [HomeOrganisation().name]})
 
         storage_dicts = []
         for dl in self.data_locations.all():

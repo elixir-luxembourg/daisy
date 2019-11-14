@@ -6,8 +6,7 @@ from core import constants
 
 from elixir_daisy import settings
 from .utils import CoreTrackedModel, COMPANY
-from .partner import Partner
-
+from .partner import  HomeOrganisation
 
 
 class Project(CoreTrackedModel):
@@ -179,7 +178,7 @@ class Project(CoreTrackedModel):
                  "last_name": lc.last_name,
                  "email": lc.email,
                  "role":  "Principal_Investigator" if lc.is_part_of(constants.Groups.VIP.name) else "Researcher",
-                 "affiliations": [Partner.HomeOrganisation.as_object]})
+                 "affiliations": [HomeOrganisation().name]})
 
         base_dict = {
             "source": settings.SERVER_URL,
