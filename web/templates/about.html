@@ -1,0 +1,65 @@
+{% extends 'layout.html' %}
+{% load staticfiles %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1 class="display-4">About</h1>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="col">
+                <dd>
+                <dt>Version</dt>
+                <dd>{{ app_version }}</dd>
+                <dt>User guide</dt>
+                <dd><a href="https://howto.lcsb.uni.lu/?daisy">https://howto.lcsb.uni.lu/?daisy</a></dd>
+                <dt>Bug reporting</dt>
+                <dd><a href="https://github.com/elixir-luxembourg/daisy/issues">https://github.com/elixir-luxembourg/daisy/issues</a>
+                </dd>
+                <dt>Notes</dt>
+                <!-- For demo deployments uncomment the following -->
+                {% comment %}
+                <dd>This is a demo deployment. It contains fictitious user accounts, projects and datasets to help you
+                    understand DAISY's information model.<br/>
+                    Data in the demo deployment is cleaned periodically. Please refrain from recording information that
+                    is
+                    private. Also refrain from recording any personal information.
+                    This deployment has the following users: <br/><br/>
+                    <table style="width:100%">
+                        <tr>
+                            <td><p style="text-decoration: underline;">username</p></td>
+                            <td><p style="text-decoration: underline;">password</p></td>
+                            <td><p style="text-decoration: underline;">role</p></td>
+                        </tr>
+                        <tr>
+                            <td>alice.white</td>
+                            <td>demo</td>
+                            <td>VIP User (Principle Investigator)</td>
+                        </tr>
+                        <tr>
+                            <td>jane.doe</td>
+                            <td>demo</td>
+                            <td>Standard User (Researcher)</td>
+                        </tr>
+                        <tr>
+                            <td>john.doe</td>
+                            <td>demo</td>
+                            <td>VIP User (Principle Investigator)</td>
+                        </tr>
+                        <tr>
+                            <td>admin</td>
+                            <td>demo</td>
+                            <td>Super User (Application Admin)</td>
+                        </tr>
+                    </table>
+                </dd>
+                {% endcomment %}
+            </div>
+        </div>
+    </div>
+
+
+{% endblock content %}
