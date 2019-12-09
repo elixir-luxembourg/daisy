@@ -9,6 +9,7 @@ from web.views.contact import ContactCreateView, ContactDetailView, add_contact_
     remove_contact_from_project, ContactEditView, pick_contact_for_project, contact_search_view, ContactDelete
 from web.views.contracts import ContractCreateView, ContractEditView, ContractDelete, \
     ContractDetailView, contract_list
+from web.views.about import about
 from web.views.dashboard import dashboard
 from web.views.data_declarations import DatadeclarationDetailView, DatadeclarationEditView
 from web.views.datasets import DatasetDetailView, DatasetEditView, dataset_list, \
@@ -27,7 +28,7 @@ from web.views.users import add_personnel_to_project, remove_personnel_from_proj
 
 web_urls = [
     path('', dashboard, name='dashboard'),
-
+    path('about', about, name='about'),
     path('profile', profile.ProfileEditView.as_view(), name='profile'),
 
     path('definitions/cohorts/', cohort_list, name="cohorts"),
