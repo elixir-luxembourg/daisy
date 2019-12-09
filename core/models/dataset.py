@@ -3,11 +3,11 @@ import uuid
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
-
 from core import constants
+
 from .utils import CoreTrackedModel, TextFieldWithInputWidget
+from .partner import HomeOrganisation
 
 
 class Dataset(CoreTrackedModel):
@@ -93,6 +93,55 @@ class Dataset(CoreTrackedModel):
         Get the full url of the dataset (with the server scheme and url).
         """
         return '%s://%s%s' % (settings.SERVER_SCHEME, settings.SERVER_URL, self.get_absolute_url())
+
+
+
+    def to_dict(self):
+
+        contact_dicts = []
+
+        # p = HomeOrganisation()
+
+        for lc in self.local_custodians.all():
+            contact_dicts.append(
+                {"first_name": lc.first_name,
+                 "last_name": lc.last_name,
+                 "email": lc.email,
+                 "role":  "Principal_Investigator" if lc.is_part_of(constants.Groups.VIP.name) else "Researcher",
+                 "affiliations": [HomeOrganisation().name]})
+
+        storage_dicts = []
+        for dl in self.data_locations.all():
+            storage_dicts.append(
+                {"platform": dl.category.name,
+                 "location": dl.location_description,
+                 "accesses": [ acc.access_notes for acc in dl.accesses.all()]
+                 })
+
+        transfer_dicts = []
+        for trf in self.shares.all():
+            transfer_dicts.append(
+                {"partner": trf.partner.name,
+                 "transfer_details": trf.share_notes,
+                 "transfer_date":  trf.granted_on.strftime('%Y-%m-%d') if trf.granted_on else None
+                 })
+
+
+        base_dict = {
+            "source": settings.SERVER_URL,
+            "id_at_source": self.id.__str__(),
+            "project": self.project.acronym if self.project else None,
+            "name": self.title,
+            "elu_accession": self.elu_accession if self.elu_accession else None,
+            "description":  self.comments if self.comments else None,
+            "elu_uuid": self.unique_id.__str__() if self.unique_id else None,
+            "other_external_id": self.other_external_id if self.other_external_id else None,
+            "data_declarations": [ddec.to_dict() for ddec in self.data_declarations.all()],
+            "storages": storage_dicts,
+            "transfers": transfer_dicts,
+            "contacts": contact_dicts
+        }
+        return base_dict
 
 
 # faster lookup for permissions

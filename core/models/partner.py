@@ -2,7 +2,7 @@ from django.apps import apps
 from django.db import models
 from model_utils import Choices
 from django_countries.fields import CountryField
-
+from elixir_daisy import settings
 from .utils import  CoreTrackedModel, TextFieldWithInputWidget
 
 GEO_CATEGORY = Choices(
@@ -17,6 +17,8 @@ SECTOR_CATEGORY = Choices(
     ('PRIVATE_NP', 'Private Non-Profit'),
     ('PRIVATE_P', 'Private For-Profit')
 )
+
+
 
 
 class Partner(CoreTrackedModel):
@@ -100,8 +102,25 @@ class Partner(CoreTrackedModel):
 
     def to_dict(self):
         base_dict = {
-            'elu_accession': self.elu_accession,
-            'name': self.name,
-            'acronym': self.acronym
+            "pk": self.id.__str__(),
+            "name": self.name,
+            "elu_accession": self.elu_accession if self.elu_accession else None,
+            "acronym": self.acronym if self.acronym else None,
+            "is_clinical": self.is_clinical,
+            "geo_category": self.geo_category,
+            "sector_category": self.sector_category,
+            "address": self.address if self.address else None,
+            "country_code": self.country.ioc_code if self.country.ioc_code else None
         }
         return base_dict
+
+
+
+
+class HomeOrganisation():
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = Partner.objects.get(acronym=settings.COMPANY)
+        return cls._instance
