@@ -77,9 +77,11 @@ class Dataset(CoreTrackedModel):
     def collect_contracts(self):
         result = set()
         for share in self.shares.all():
-            result.add((share.contract, share))
+            if share.contract is not None:
+                result.add((share.contract, share))
         for ddec in self.data_declarations.all():
-            result.add((ddec.contract,ddec))
+            if ddec.contract is not None:
+                result.add((ddec.contract,ddec))
         return result
 
     def __str__(self):
