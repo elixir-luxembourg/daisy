@@ -5,6 +5,11 @@
 {% block content %}
     <div class="jumbotron mt-4">
         <h1 class="display-4">Login</h1>
+        {% comment %}
+        <div class="alert alert-info" role="alert">
+            This is a demo deployment, sample credentials that can be used for login are described <a href="{% url 'about' %}">here</a>.
+        </div>
+        {% endcomment %}
         {% include '_includes/forms.html' with submit_label="Login" %}
     </div>
 {% endblock %}

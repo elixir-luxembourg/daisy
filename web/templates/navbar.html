@@ -14,6 +14,10 @@
                     <a class="nav-link" href="/">Home{% if request.resolver_match.url_name == "dashboard" %}
                         <span class="sr-only">(current)</span>{% endif %}</a>
                 </li>
+                <li class="nav-item {% if request.resolver_match.url_name == "about" %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'about' %}">About{% if request.resolver_match.url_name == "about" %}
+                        <span class="sr-only">(current)</span>{% endif %}</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link {% if "dataset" in request.resolver_match.url_name %}active{% endif %}"
                        href="{% url 'datasets' %}">Datasets{% if 'dataset' in request.resolver_match.url_name %}
