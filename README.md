@@ -85,7 +85,10 @@ Data Information System (DAISY) is a data bookkeeping application designed to he
 ### Operation manual
 
 
-#### Import projects
+#### Importing 
+
+In addition to loading of initial data, DAISY database can be populated by importing Project and Dataset records from JSON files.
+ The commands for import are given below: </br>
 
 ```bash
 docker-compose exec web python manage.py import_projects -f ${PROJECTS_JSON}
@@ -93,13 +96,21 @@ docker-compose exec web python manage.py import_projects -f ${PROJECTS_JSON}
 where ${PROJECTS_JSON} is the path to a json file containing the projects definitions.  
 See file daisy/data/projects.json as an example.
  
-#### Import datasets 
 
 ```bash
 docker-compose exec web python manage.py import_datasets -d ${DATASETS_FOLDER}
 ```
 where ${DATASETS_FOLDER} is the path to a folder containing datasets and data declarations definitions.  
 See folder daisy/data/datasets as an example.
+
+#### Exporting  
+
+Information in the DAISY database can be exported to JSON files. The command for export are given below:</br>
+
+```bash
+docker-compose exec web python manage.py export_partners -f ${JSON_FILE}
+```
+where ${JSON_FILE} is the path to a json file that will be produced.  In addition to ````export_partners````, you can run ````export_projects```` and ````export_datasets```` in the same way.
 
 ### Upgrade to last Daisy version
 

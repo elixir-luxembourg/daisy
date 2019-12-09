@@ -35,7 +35,7 @@ class ContractForm(ModelForm):
 class ContractFormEdit(ContractForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['project'].disabled = True
+        self.fields['project'].disabled = False
 
 
 class KVForm(forms.Form):
