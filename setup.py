@@ -25,6 +25,7 @@ requirements = [
     'ipython==7.3.0',
     'libsass==0.17.0',
     'ontobio==1.7.2',
+    'yamldown>=0.1.8',
     'psycopg2==2.7.7',
     'pysolr==3.8.1',
     'pytest-runner==5.1',
