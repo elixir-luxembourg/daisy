@@ -32,7 +32,7 @@ requirements = [
     'pytz==2018.9',
     'celery==4.3.0',
     'celery-haystack==0.10',
-    'setuptools-scm',
+    'setuptools-scm==3.3.3',
     'django-model-utils==3.1.2',
     'django-sequences==2.2'
 ]
