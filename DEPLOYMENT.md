@@ -289,7 +289,7 @@ postgres=# grant all privileges on database daisy to daisy ;
 postgres=# \q
 exit
 ```
-> <span style="color:red;">You can replace password `daisy` by a password of your choice.</span>
+<span style="color:red;">You can replace password `daisy` by a password of your choice.</span>
 
 Restart PostgreSQL:
 
@@ -371,7 +371,7 @@ exit
     sudo systemctl start nginx
     ```
     
-1) As _root_ or with _sudo_ create the file ```/etc/nginx/conf.d/ssl.conf``` with the following content:
+2) As _root_ or with _sudo_ create the file ```/etc/nginx/conf.d/ssl.conf``` with the following content:
 	   
     ```bash
     proxy_connect_timeout       600;
@@ -404,7 +404,7 @@ exit
     
 	Changing daisy.com to your particular case.  
     
-1) To have a redirect from http to https, as _root_ or with _sudo_ create the file ```/etc/nginx/conf.d/daisy.conf``` with the following content:
+3) To have a redirect from http to https, as _root_ or with _sudo_ create the file ```/etc/nginx/conf.d/daisy.conf``` with the following content:
 
     ```
     server {
@@ -415,7 +415,7 @@ exit
     ```
     Changing daisy.com to your particular case.
     
-1) Create self-signed certificates if they already don't exist.
+4) Create self-signed certificates if they already don't exist.
 
     ```bash
     openssl req -x509 -newkey rsa:4096 -nodes -out daisy.com.crt -keyout daisy.com.key -days 365
@@ -428,17 +428,17 @@ exit
     sudo cp daisy.com.key /etc/ssl/private/
  
     ```
-1) Edit the file /etc/nginx/nginx.conf:
+5) Edit the file /etc/nginx/nginx.conf:
 
     Comment out the block server {} in /etc/nginx/nginx.conf
     Change the user running nginx from nginx to daisy
     
-1) Grant access on `/var/lib/nginx` to **daisy** user:
+6) Grant access on `/var/lib/nginx` to **daisy** user:
    ```
    sudo chown -R daisy:daisy /var/lib/nginx
    ```
    
-1) Restart nginx
+7) Restart nginx
 
     ```bash
     sudo systemctl restart nginx
@@ -517,9 +517,9 @@ DAISY can generate reminders on approaching deadlines (e.g. data storage end dat
 # Updating DAISY
 
 
-If you want to move to the newest release of DAISY, we advise you to first backup your deployment.  
-To do so:
+If you want to move to the newest release of DAISY, do the following.  
 
+1) Stop services, create a database and application backup.
 
 As root user:
 
@@ -533,6 +533,8 @@ su -c 'PGPASSWORD="<PASSWORD_OF_POSTGRES_USER>" pg_dump daisy --port=5432 --user
 
 Once you have have created the tar ball of the application directory and the postgres dump, then you may proceed to update.
 
+2) Get the latest Daisy release.
+
 As daisy user:
 
 ```bash
@@ -541,8 +543,6 @@ git checkout -- web/static/vendor/package-lock.json
 git checkout master
 git pull
 
-cd /home/daisy/daisy/core/fixtures/
-wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json -O edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json -O hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json -O hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json -O hgnc.json
 
 cd /home/daisy/daisy/web/static/vendor/
 npm ci
@@ -553,18 +553,51 @@ As root user:
 /usr/local/bin/pip install -e /home/daisy/daisy --upgrade
 ```
 
+3) Update the database and solr schemas, collect static files.
+
 As daisy user:
 
 ```bash
 cd /home/daisy/daisy
-python36 manage.py migrate && python36 manage.py build_solr_schema -c /var/solr/data/daisy/conf/ -r daisy && yes | python36 manage.py clear_index && yes "yes" | python36 manage.py collectstatic && python36 manage.py load_initial_data && yes | python36 manage.py rebuild_index;
+python36 manage.py migrate && python36 manage.py build_solr_schema -c /var/solr/data/daisy/conf/ -r daisy && yes | python36 manage.py clear_index && yes "yes" | python36 manage.py collectstatic;
 ```
-If LDAP was used to import users, they have to be imported again:
 
+
+4) Reload initial data (optional). 
+
+
+**IMPORTANT NOTE:** The initial data package provides some default values for various lookup lists e.g. data sensitivity classes, document or data types.  If, while using DAISY, you have customized these default lists, please keep in mind that running the ``load_initial_data`` command
+during update will re-introduce those default values. If this is not desired, then please skip the reloading of initial data step during your update. You manage lookup lists through the application interface.<br/><br/>
+        
+As daisy user:
+```bash
+cd /home/daisy/daisy/core/fixtures/
+wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json -O edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json -O hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json -O hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json -O hgnc.json
+
+cd /home/daisy/daisy
+python36 manage.py load_initial_data
+```     
+  
+**IMPORTANT NOTE:** This step can take several minutes to complete. 
+
+
+5) Reimport the users (optional).
+
+If LDAP was used to import users, they have to be imported again.
+As daisy user:
 ```bash
 python36 manage.py import_users
 ```
 
+6) Rebuild Solr search index.
+
+As daisy user:
+ ```bash
+ cd /home/daisy/daisy
+ python36 manage.py rebuild_index
+```
+
+7) Restart services.
 
 As root user:
 
