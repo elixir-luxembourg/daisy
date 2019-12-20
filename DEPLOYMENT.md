@@ -608,15 +608,17 @@ systemctl start celery_beat
 ```
 # Restoring backup of Daisy
 First, make sure you have successfully backed up your Daisy deployment - see first section of chapter Updating Daisy.
+Your backup .tar file should contain both the dump of Postgresql database and everything from `/home/daisy` directory.
 
+As root user, stop services:
 ```bash
 systemctl stop gunicorn
 systemctl stop celery_worker
 systemctl stop celery_beat
 ```
 
-Wipe out broken/unwanted version of Daisy by deleting all files in daisy user home directory and dropping the database:
-
+Wipe out broken/unwanted version of Daisy by deleting all files in daisy user home directory and dropping the database:  
+**IMPORTANT NOTE**: Be sure that your backup .tar file is stored somewhere else!
 ```
 sudo mv /home/daisy/daisy_dump.sql /tmp/
 sudo rm -rf /home/daisy/*
