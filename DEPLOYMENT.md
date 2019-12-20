@@ -620,20 +620,19 @@ systemctl stop celery_beat
 Wipe out broken/unwanted version of Daisy by deleting all files in daisy user home directory and dropping the database:  
 **IMPORTANT NOTE**: Be sure that your backup .tar file is stored somewhere else!
 ```
-sudo mv /home/daisy/daisy_dump.sql /tmp/
-sudo rm -rf /home/daisy/*
-sudo su -c 'dropdb daisy' - postgres
+rm -rf /home/daisy/*
+su -c 'dropdb daisy' - postgres
 ```
-Restore files from tar ball:
 
+Restore files from tar ball:
 ```
-sudo su -c 'tar -xvf /tmp/daisy.tar --directory /' - daisy
+su -c 'tar -xvf <PATH-TO-BACKUP-FOLDER>/daisy.tar --directory /' - daisy
 ```
 
 Following steps assume that the Postgresql10 is installed, pg_hba.conf file is updated and database user *daisy* exists (please see the postgresql deployment instructions for more information).
 Create the database and grant privileges:
 ```
-sudo su - postgres
+su - postgres
 createdb daisy
 psql -d daisy -p 5432 -c "grant all privileges on database daisy to daisy"
 exit
@@ -641,12 +640,12 @@ exit
 
 Restore the database as daisy user: 
 ```
-sudo su -c 'psql -d daisy -U daisy -p 5432 < /tmp/daisy_dump.sql' - daisy
+su -c 'psql -d daisy -U daisy -p 5432 < /home/daisy/daisy_dump.sql' - daisy
 ```
 
 Start services: 
 ```
-sudo systemctl start gunicorn
-sudo systemctl start celery_worker
-sudo systemctl start celery_beat 
+systemctl start gunicorn
+systemctl start celery_worker
+systemctl start celery_beat 
 ```
