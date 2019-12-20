@@ -527,8 +527,8 @@ As root user:
 systemctl stop gunicorn
 systemctl stop celery_worker
 systemctl stop celery_beat 
-tar -cvf /tmp/daisy.tar /home/daisy 
 su -c 'PGPASSWORD="<PASSWORD_OF_POSTGRES_USER>" pg_dump daisy --port=5432 --username=daisy --clean > daisy_dump.sql' - daisy 
+tar -cvf /tmp/daisy.tar /home/daisy 
 ```
 
 Once you have have created the tar ball of the application directory and the postgres dump, then you may proceed to update.
