@@ -527,8 +527,8 @@ As root user:
 systemctl stop gunicorn
 systemctl stop celery_worker
 systemctl stop celery_beat 
-tar -cvf /tmp/daisy.tar /home/daisy 
 su -c 'PGPASSWORD="<PASSWORD_OF_POSTGRES_USER>" pg_dump daisy --port=5432 --username=daisy --clean > daisy_dump.sql' - daisy 
+tar -cvf /tmp/daisy.tar /home/daisy 
 ```
 
 Once you have have created the tar ball of the application directory and the postgres dump, then you may proceed to update.
@@ -602,6 +602,49 @@ As daisy user:
 As root user:
 
 ```bash
+systemctl start gunicorn
+systemctl start celery_worker
+systemctl start celery_beat 
+```
+# Restoring backup of Daisy
+First, make sure you have successfully backed up your Daisy deployment - see first section of chapter Updating Daisy.
+Your backup .tar file should contain both the dump of Postgresql database and everything from `/home/daisy` directory.
+
+As root user, stop services:
+```bash
+systemctl stop gunicorn
+systemctl stop celery_worker
+systemctl stop celery_beat
+```
+
+Wipe out broken/unwanted version of Daisy by deleting all files in daisy user home directory and dropping the database:  
+**IMPORTANT NOTE**: Be sure that your backup .tar file is stored somewhere else!
+```
+rm -rf /home/daisy/*
+su -c 'dropdb daisy' - postgres
+```
+
+Restore files from tar ball:
+```
+su -c 'tar -xvf <PATH-TO-BACKUP-FOLDER>/daisy.tar --directory /' - daisy
+```
+
+Following steps assume that the Postgresql10 is installed, pg_hba.conf file is updated and database user *daisy* exists (please see the postgresql deployment instructions for more information).
+Create the database and grant privileges:
+```
+su - postgres
+createdb daisy
+psql -d daisy -p 5432 -c "grant all privileges on database daisy to daisy"
+exit
+```
+
+Restore the database as daisy user: 
+```
+su -c 'psql -d daisy -U daisy -p 5432 < /home/daisy/daisy_dump.sql' - daisy
+```
+
+Start services: 
+```
 systemctl start gunicorn
 systemctl start celery_worker
 systemctl start celery_beat 
