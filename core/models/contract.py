@@ -117,4 +117,9 @@ class Contract(CoreModel):
 
     def short_name(self):
         partners_list = ", ".join([p.name for p in self.partners.all()]) or "Undefined partner(s)"
-        return f'Contract with {partners_list}'
+        if self.project:
+            project_name = self.project.acronym if len(self.project.acronym) else self.project.title
+        else:
+            project_name = "Undefined project"
+
+        return f'Contract with {partners_list} on {project_name}'
