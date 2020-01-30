@@ -49,7 +49,7 @@ class Document(CoreModel):
     content = models.FileField(upload_to=get_file_name)
     content_url = models.URLField(verbose_name='Document Url', null=True, blank=True)
     content_notes = models.TextField(verbose_name='Document Notes',
-                                     blank=False,
+                                     blank=True,
                                      null=True)
     domain_type = models.TextField(verbose_name='Domain Type', choices=type, default=type.not_specified)
 
