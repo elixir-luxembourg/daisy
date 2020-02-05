@@ -1,24 +1,21 @@
 {% for contract in data.contracts %}
     <div class="row">
-        <div class="col-md-9 mb-4 card-item card">
+        <div class="col-md-12 mb-4 card-item card">
             <div class="card-body">
                 <h2 class="card-title">
-                    {{ contract.partners | join:", " }}
+                    <a href="{% url 'contract' pk=contract.pk %}">{{ contract.partners | join:", " }}</a>
                 </h2>
                 <ul class="card-text">
-                    <li>Project: <span class="badge badge-pill badge-secondary">{{ contract.project }}</span></li>
+                    <li><strong>Project:</strong> <span class="badge badge-pill badge-secondary">{{ contract.project }}</span></li>
                     {% if  contract.partners_roles %}
-                        <li>Partners roles: {{ contract.partners_roles | join:", " }}</li>
+                        <li><strong>Partners roles: </strong>{{ contract.partners_roles | join:", " }}</li>
                     {% endif %}
 
                 </ul>
-                <a href="{% url 'contract' pk=contract.pk %}" class="btn btn-primary">Details</a>
+                <a href="{% url 'contract' pk=contract.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
             </div>
         </div>
     </div>
 {% empty %}
     <p>No results</p>
 {% endfor %}
-
-
-
