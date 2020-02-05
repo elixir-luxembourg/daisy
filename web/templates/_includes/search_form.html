@@ -5,8 +5,10 @@
     <div class="col">
         <form class="form-inline" method="get" action="{% url url %}">
             <div class="form-group">
-                <label for="query" class="bmd-label-floating">Query</label>
-                <input type='text' class="form-control" name='query' value='{{ query }}'/>
+                <label for="query" class="bmd-label-floating">
+                    &nbsp;<i class="material-icons">search</i> Query
+                </label>
+                <input type='text' class="form-control border border-top-0 bg-white" name='query' value='{{ query }}'/>
             </div>
             <span class="form-group bmd-form-group"> <!-- needed to match padding for floating labels -->
             <button type="submit" class="btn btn-primary">Search</button>
