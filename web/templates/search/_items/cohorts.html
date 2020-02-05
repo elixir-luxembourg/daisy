@@ -1,23 +1,23 @@
 {% for cohort in data.cohorts %}
     <div class="row">
-        <div class="col-md-9 mb-4 card-item card">
+        <div class="col-md-12 mb-4 card-item card">
             <div class="card-body">
                 <h2 class="card-title">
-                    {{ cohort.title }}
+                    <a href="{% url 'cohort' pk=cohort.pk %}">{{ cohort.title }}</a>
                 </h2>
                 <ul class="card-text">
-                        <li>Owners:  {% for contact in cohort.owners %}
+                        <li><strong>Owners:</strong>  {% for contact in cohort.owners %}
                             <span class="badge badge-pill badge-secondary">{{ contact }}</span>
                         {% empty %}
                             "unknown"
                         {% endfor %}</li>
-                        <li>Institutes: {% for institute in cohort.institutes %}
+                        <li><strong>Institutes:</strong> {% for institute in cohort.institutes %}
                             <span class="badge badge-pill badge-secondary">{{ institute }}</span>
                         {% empty %}
                             "unknown"
                         {% endfor %}</li>
-                        <li>Ethics Confirmation: {% if cohort.ethics_confirmation %}
-                            <i class="material-icons">
+                        <li><strong>Ethics Confirmation:</strong> {% if cohort.ethics_confirmation %}
+                            <i class="material-icons text-success">
                                 check
                             </i>
                         {% else %}
@@ -25,13 +25,10 @@
                         {% endif %}
                         </li>
                 </ul>
-                <a href="{% url 'cohort' pk=cohort.pk %}" class="btn btn-primary">Details</a>
+                <a href="{% url 'cohort' pk=cohort.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
             </div>
         </div>
     </div>
 {% empty %}
     <p>No results</p>
 {% endfor %}
-
-
-
