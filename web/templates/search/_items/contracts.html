@@ -3,7 +3,7 @@
         <div class="col-md-9 mb-4 card-item card">
             <div class="card-body">
                 <h2 class="card-title">
-			{{ contract.partners | join:", " }}{% if contract.project %}<small>&nbsp;(on {{ contract.project }})</small>{% endif %}
+			{{ contract.partners | join:", " }}{% if contract.project %}<small> - "{{ contract.project }}"</small>{% endif %}
                 </h2>
                 <ul class="card-text">
                     <li>Project: <span class="badge badge-pill badge-secondary">{{ contract.project }}</span></li>
@@ -19,6 +19,3 @@
 {% empty %}
     <p>No results</p>
 {% endfor %}
-
-
-
