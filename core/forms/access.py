@@ -1,4 +1,4 @@
-from django.forms import ModelForm, DateInput, ChoiceField
+from django.forms import ModelForm, DateInput, ChoiceField, Textarea
 
 from core.models import Access, DataLocation
 
@@ -11,7 +11,9 @@ class AccessForm(ModelForm):
         widgets = {
             # Date pickers
             'granted_on': DateInput(attrs={'class': 'datepicker'}),
-            'grant_expires_on': DateInput(attrs={'class': 'datepicker'})
+            'grant_expires_on': DateInput(attrs={'class': 'datepicker'}),
+            # Textareas
+            'access_notes': Textarea(attrs={'rows': 3, 'cols': 40}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -40,7 +42,9 @@ class AccessEditForm(ModelForm):
         widgets = {
             # Date pickers
             'granted_on': DateInput(attrs={'class': 'datepicker'}),
-            'grant_expires_on': DateInput(attrs={'class': 'datepicker'})
+            'grant_expires_on': DateInput(attrs={'class': 'datepicker'}),
+            # Textareas
+            'access_notes': Textarea(attrs={'rows': 3, 'cols': 40}),
         }
 
     field_order = [
@@ -56,4 +60,3 @@ class AccessEditForm(ModelForm):
         # we don't allow editing dataset
         self.fields.pop('dataset')
         self.fields['defined_on_locations'].choices = [(d.id, d) for d in kwargs['instance'].dataset.data_locations.all()]
-

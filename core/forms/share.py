@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import ModelForm, DateInput
+from django.forms import ModelForm, DateInput, Textarea
 
 from core.models import Share, Partner, Contract, PartnerRole
 
@@ -12,7 +12,8 @@ class ShareForm(ModelForm):
         widgets = {
             # Date pickers
             'granted_on': DateInput(attrs={'class': 'datepicker'}),
-            'grant_expires_on': DateInput(attrs={'class': 'datepicker'})
+            'grant_expires_on': DateInput(attrs={'class': 'datepicker'}),
+            'share_notes': Textarea(attrs={'rows': 3, 'cols': 40}),
         }
         help_texts = {
             'contract': ''

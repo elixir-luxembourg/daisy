@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import ModelForm, ModelChoiceField
+from django.forms import ModelForm, ModelChoiceField, Textarea
 from django.utils.text import slugify
 
 from core.forms.input import SelectWithModal
@@ -11,6 +11,9 @@ class ContractForm(ModelForm):
         model = Contract
         fields = '__all__'
         exclude = ['partners_roles']
+        widgets = {
+            'comments': Textarea(attrs={'rows': 3, 'cols': 40}),
+        }
 
     def __init__(self, *args, **kwargs):
         kwargs['label_suffix'] = ""
