@@ -9,6 +9,10 @@ class DatasetForm(forms.ModelForm):
     class Meta:
         model = Dataset
         fields = ['local_custodians', 'title', 'comments']
+        widgets = {
+            'comments': forms.Textarea(attrs={'rows': 3, 'cols': 40}),
+        }
+
 
     def __init__(self, *args, **kwargs):
         dataset = None
@@ -70,7 +74,7 @@ class DatasetForm(forms.ModelForm):
 class DatasetFormEdit(DatasetForm):
 
     class Meta(DatasetForm.Meta):
-        fields = DatasetForm.Meta.fields +['other_external_id', 'sensitivity']
+        fields = DatasetForm.Meta.fields + ['other_external_id', 'sensitivity']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
