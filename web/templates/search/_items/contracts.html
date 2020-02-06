@@ -1,6 +1,6 @@
 {% for contract in data.contracts %}
     <div class="row">
-        <div class="col-md-12 mb-4 card-item card">
+        <div class="col-md-11 mb-4 card-item card">
             <div class="card-body">
                 <h2 class="card-title">
                     <a href="{% url 'contract' pk=contract.pk %}">{{ contract.partners | join:", " }}{% if contract.project %}<small> - "{{ contract.project }}"</small>{% endif %}</a>
