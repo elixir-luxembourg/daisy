@@ -33,6 +33,18 @@ class PartnerRole(CoreModel):
                                  blank=False,
                                  null=False)
 
+    def __str__(self):
+        return self.short_name()
+
+    def short_name(self):
+        partner = self.partner.name
+        project_acronym = self.contract.project.acronym if self.contract.project else 'unknown'
+        if len(self.roles.all()):
+            roles = 'as ' + '/'.join([str(role) for role in self.roles.all()])
+        else:
+            roles = ''
+        return f'{partner} on {project_acronym} {roles}'
+
 
 class Contract(CoreModel):
     """
