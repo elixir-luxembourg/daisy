@@ -110,4 +110,4 @@ class Contract(CoreModel):
         else:
             project_name = "Undefined project"
 
-        return f'Contract with {partners_list} on {project_name}'
+        return f'Contract with {partners_list} - "{project_name}"'
