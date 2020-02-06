@@ -8,16 +8,21 @@
         </button>
     </div>
 {% endfor %}
-<form {% if form_id %}id="{{ form_id }}"{% endif %}class="form {% if half %}col-md-6{% else %}col-md-12{% endif %} nice-selects {{ form_class }}"
-      {% if enctype %}enctype="{{ enctype }}"{% endif %} method="post"
-      {% if submit_url %}action="{{ submit_url }}"{% endif %}novalidate>
-    {% csrf_token %}
-    {% for hidden_field in form.hidden_fields %}
-        {{ hidden_field }}
-    {% endfor %}
-    {% for field in form.visible_fields %}
-        {% include '_includes/field.html' with field=field %}
-    {% endfor %}
+<form {% if form_id %}id="{{ form_id }}"{% endif %}
+      class="form nice-selects {{ form_class }}" method="post" novalidate
+      {% if enctype %}enctype="{{ enctype }}"{% endif %}
+      {% if submit_url %}action="{{ submit_url }}"{% endif %}>
+    <div class="row ml-1 mr-1">
+      {% csrf_token %}
+
+      {% for hidden_field in form.hidden_fields %}
+          {{ hidden_field }}
+      {% endfor %}
+
+      {% for field in form.visible_fields %}
+          {% include '_includes/field.html' with field=field %}
+      {% endfor %}
+    </div>
     {% if not hide_submit %}
         {% if wizard and wizard_url_name %}
             <div class="row">
@@ -33,10 +38,11 @@
         {% else %}
             <button type="submit"
                     {% if submit_disabled %}disabled="disabled"{% endif %}
-                    class="btn btn-primary btn-raised">{{ submit_label | default:"Submit" }}</button>
+                    class="btn btn-primary btn-raised btn-block">{{ submit_label | default:"Submit" }}</button>
         {% endif %}
     {% endif %}
     {% if cancel_button %}
-        <a href="{{ cancel_button }}" class="btn btn-secondary btn-raised float-right">Cancel</a>
+        <a href="{{ cancel_button }}" class="btn btn-secondary btn-block btn-raised float-right">Cancel</a>
     {% endif %}
+
 </form>
