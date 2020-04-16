@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_celery_beat',
     'celery_haystack',
-    'sequences.apps.SequencesConfig'
+    'sequences.apps.SequencesConfig',
+    'explorer'
 ]
 
 MIDDLEWARE = [
@@ -310,6 +311,11 @@ NOTIFICATIONS_DISABLED = True
 
 LOGIN_USERNAME_PLACEHOLDER = ''
 LOGIN_PASSWORD_PLACEHOLDER = ''
+
+# See: https://github.com/groveco/django-sql-explorer
+
+EXPLORER_CONNECTIONS = { 'Default': 'default' } 
+EXPLORER_DEFAULT_CONNECTION = 'default'
 
 # Import local settings to override those values based on the deployment environment
 try:
