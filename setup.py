@@ -20,6 +20,7 @@ requirements = [
     'django-haystack==2.8.1',
     'django-reversion==3.0.3',
     'django-stronghold==0.3.0',
+    'django-sql-explorer==1.1.3',
     'django-widget-tweaks==1.4.3',
     'django-countries==5.3.3',
     'gunicorn==19.9.0',
