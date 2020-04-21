@@ -29,5 +29,18 @@
                 </span>
             </div>
         {% endif %}
+
+        {% if add_new_link %}
+        <h5>
+            <a href="{{ add_new_link }}">
+                <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button">
+                    <i class="material-icons">add</i>
+                </button>
+            </a>
+            <span class="ml-1">
+                <a href="{{ add_new_link }}">Add new</a>
+            </span>
+        </h5>
+        {% endif %}
     </div>
 </div>
