@@ -36,8 +36,8 @@ function initDatetimepickers(elements) {
 function initFormsets(elements) {
 
     elements.formset({
-        addText: 'add new',
-        deleteText: 'remove'
+        addText: '<h5><button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button"><i class="material-icons">add</i><div class="ripple-container"></div></button><span class="ml-1">Add new</span></h5>',
+        deleteText: '<i class="material-icons">delete</i>'
     });
 }
 
