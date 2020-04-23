@@ -8,11 +8,13 @@
         </button>
     </div>
 {% endfor %}
+
 <form {% if form_id %}id="{{ form_id }}"{% endif %}
-      class="form nice-selects {{ form_class }}" method="post" novalidate
+      class="form {% if half %}col-md-6{% else %}col-md-12{% endif %} nice-selects {{ form_class }}"
+      method="post" novalidate
       {% if enctype %}enctype="{{ enctype }}"{% endif %}
       {% if submit_url %}action="{{ submit_url }}"{% endif %}>
-    <div class="row ml-1 mr-1">
+      
       {% csrf_token %}
 
       {% for hidden_field in form.hidden_fields %}
@@ -22,7 +24,7 @@
       {% for field in form.visible_fields %}
           {% include '_includes/field.html' with field=field %}
       {% endfor %}
-    </div>
+
     {% if not hide_submit %}
         {% if wizard and wizard_url_name %}
             <div class="row">
