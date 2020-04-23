@@ -24,7 +24,6 @@
       {% for field in form.visible_fields %}
           {% include '_includes/field.html' with field=field %}
       {% endfor %}
-
     {% if not hide_submit %}
         {% if wizard and wizard_url_name %}
             <div class="row">
