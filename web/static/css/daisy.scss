@@ -390,3 +390,8 @@ body {
   color: #d9d9d9;
   font-weight: bolder;
 }
+
+/* Reduce padding in forms */
+form.col-md-12.nice-selects > .form-group.bmd-form-group {
+  padding-top: 0.75rem;
+}
