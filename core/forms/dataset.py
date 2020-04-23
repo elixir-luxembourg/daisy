@@ -10,7 +10,7 @@ class DatasetForm(forms.ModelForm):
         model = Dataset
         fields = ['local_custodians', 'title', 'comments']
         widgets = {
-            'comments': forms.Textarea(attrs={'rows': 3, 'cols': 40}),
+            'comments': forms.Textarea(attrs={'rows': 2, 'cols': 40}),
         }
 
 

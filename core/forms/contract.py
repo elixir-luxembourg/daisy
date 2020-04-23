@@ -12,7 +12,7 @@ class ContractForm(ModelForm):
         fields = '__all__'
         exclude = ['partners_roles']
         widgets = {
-            'comments': Textarea(attrs={'rows': 3, 'cols': 40}),
+            'comments': Textarea(attrs={'rows': 2, 'cols': 40}),
         }
 
     def __init__(self, *args, **kwargs):

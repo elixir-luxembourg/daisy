@@ -13,7 +13,7 @@ class ShareForm(ModelForm):
             # Date pickers
             'granted_on': DateInput(attrs={'class': 'datepicker'}),
             'grant_expires_on': DateInput(attrs={'class': 'datepicker'}),
-            'share_notes': Textarea(attrs={'rows': 3, 'cols': 40}),
+            'share_notes': Textarea(attrs={'rows': 2, 'cols': 40}),
         }
         help_texts = {
             'contract': ''

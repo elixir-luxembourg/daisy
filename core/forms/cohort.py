@@ -9,7 +9,7 @@ class CohortForm(ModelForm):
         model = Cohort
         fields = '__all__'
         widgets = {
-            'comments': Textarea(attrs={'rows': 3, 'cols': 40}),
+            'comments': Textarea(attrs={'rows': 2, 'cols': 40}),
         }
 
     def __init__(self, *args, **kwargs):

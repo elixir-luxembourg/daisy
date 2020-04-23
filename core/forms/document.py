@@ -15,7 +15,7 @@ class DocumentForm(forms.ModelForm):
             'content_type': forms.HiddenInput(),
             'object_id': forms.HiddenInput(),
             'expiry_date': DateInput(attrs={'class': 'datepicker'}),
-            'content_notes': Textarea(attrs={'rows': 3, 'cols': 40}),
+            'content_notes': Textarea(attrs={'rows': 2, 'cols': 40}),
         }
 
     def __init__(self, *args, **kwargs):

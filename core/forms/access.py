@@ -13,7 +13,7 @@ class AccessForm(ModelForm):
             'granted_on': DateInput(attrs={'class': 'datepicker'}),
             'grant_expires_on': DateInput(attrs={'class': 'datepicker'}),
             # Textareas
-            'access_notes': Textarea(attrs={'rows': 3, 'cols': 40}),
+            'access_notes': Textarea(attrs={'rows': 2, 'cols': 40}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -44,7 +44,7 @@ class AccessEditForm(ModelForm):
             'granted_on': DateInput(attrs={'class': 'datepicker'}),
             'grant_expires_on': DateInput(attrs={'class': 'datepicker'}),
             # Textareas
-            'access_notes': Textarea(attrs={'rows': 3, 'cols': 40}),
+            'access_notes': Textarea(attrs={'rows': 2, 'cols': 40}),
         }
 
     field_order = [
