@@ -1,9 +1,14 @@
 # Elixir Daisy
 [![Build Status](https://travis-ci.com/elixir-luxembourg/daisy.svg?branch=develop)](https://travis-ci.com/elixir-luxembourg/daisy)
 
-Data Information System (DAISY) is a data bookkeeping application designed to help Biomedical Research  institutions with their GDPR compliance.
+Data Information System (DAISY) is a data bookkeeping application designed to help Biomedical Research institutions with their GDPR compliance.
 
-## Using Docker
+For more information, please refer to the official [Daisy documentation](https://elixir.pages.uni.lu/daisy-doc/).
+
+## Demo deployment
+You are encouraged to try Daisy for yourself using our [DEMO deployment](https://daisy-demo.elixir-luxembourg.org/).
+
+## Deployment using Docker
 
 ### Requirements
 
@@ -186,7 +191,7 @@ where ${JSON_FILE} is the path to a json file that will be produced.  In additio
     docker-compose exec web python manage.py import_users
     ```
     
-## Without Docker - CentOS
+## Deployment without Docker - CentOS
 
 
 See [DEPLOYMENT](DEPLOYMENT.md).
