@@ -15,7 +15,7 @@ class ProjectForm(ModelForm):
             'start_date': DateInput(attrs={'class': 'datepicker'}),
             'end_date': DateInput(attrs={'class': 'datepicker'}),
             # Smaller text-areas
-            'description': forms.Textarea(attrs={'rows': 2, 'cols': 40}),
+            'description': forms.Textarea(attrs={'rows': 6, 'cols': 40}),
             'cner_notes': forms.Textarea(attrs={'rows': 2, 'cols': 40}),
             'erp_notes': forms.Textarea(attrs={'rows': 2, 'cols': 40}),
             'comments': forms.Textarea(attrs={'rows': 2, 'cols': 40}),
