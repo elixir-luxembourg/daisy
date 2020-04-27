@@ -1,7 +1,6 @@
 {% load widget_tweaks %}
 
 <div class="form-group {% if field.field.required %}required{% endif %}">
-
     {% if field.field.widget.input_type == 'checkbox' %}
         {% include '_includes/checkbox.html' %}
     {% elif field.field.widget.input_type == 'radio' %}

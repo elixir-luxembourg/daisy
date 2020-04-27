@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, Textarea
 
 from core.forms.input import SelectWithModal
 from core.models import Cohort
@@ -8,6 +8,9 @@ class CohortForm(ModelForm):
     class Meta:
         model = Cohort
         fields = '__all__'
+        widgets = {
+            'comments': Textarea(attrs={'rows': 2, 'cols': 40}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

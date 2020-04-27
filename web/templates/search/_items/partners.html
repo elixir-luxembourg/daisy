@@ -1,28 +1,27 @@
 {% for partner in data.partners %}
     <div class="row">
-        <div class="col-md-9 mb-4 card-item card">
+        <div class="col-md-11 mb-4 card-item card">
             <div class="card-body">
                 <h2 class="card-title">
-                    {{ partner.name }} {% if  partner.acronym %}({{ partner.acronym }}){% endif %}
-                    {% if  partner.is_clinical %}
-                  <i class="material-icons">local_hospital</i>
-                    {% endif %}
+                    <a href="{% url 'partner' pk=partner.pk %}">
+                      {{ partner.name }} {% if  partner.acronym %}({{ partner.acronym }}){% endif %}
+                      {% if  partner.is_clinical %}
+                        <i class="material-icons">local_hospital</i>
+                      {% endif %}
+                    </a>
                 </h2>
                 <ul class="card-text">
-                        <li>Geo-Category:
+                        <li><strong>Geo-Category:</strong>
                             <span class="badge badge-pill badge-secondary">{{ partner.geo_category  }}</span>
                         </li>
-                        <li>Sector:
+                        <li><strong>Sector:</strong>
                             <span class="badge badge-pill badge-secondary">{{ partner.sector_category }}</span>
                         </li>
                 </ul>
-                <a href="{% url 'partner' pk=partner.pk %}" class="btn btn-primary">Details</a>
+                <a href="{% url 'partner' pk=partner.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
             </div>
         </div>
     </div>
 {% empty %}
     <p>No results</p>
 {% endfor %}
-
-
-

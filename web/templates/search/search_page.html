@@ -4,29 +4,31 @@
 {% block containerclass %}container-fluid{% endblock %}
 
 
-
 {% block content %}
     <div class="container card bg-light text-dark">
         <div class="card-body">
             <div class="card-title">
-                <h1 class="display-4">{{ title }}</h1>
+                <h1 class="display-4"><i class="material-icons text-secondary">info</i> {{ title }}</h1>
             </div>
             <p>{{ help_text }}</p>
-            <p>Use the categories on the left or the search box below to locate {{ title }}.</p>
+            <p>Use the categories on the left or the search box below to locate {{ title | lower }}. In order to create add a new one, use the button at bottom-right corner .</p>
         </div>
     </div>
 
-    <div class="row justify-content-between">
-
-        <div id="sidebar-left" class="d-flex flex-column m-5 col-3">
+    <div class="container-fluid">
+      <div class="row">
+        <div id="sidebar-left" class="d-none d-md-block mt-5 pl-5 col-xs-12 col-md-5 col-lg-5 col-xl-4 order-2">
             {% include '_includes/facets_sidebar.html' with facets=facets url=search_url %}
         </div>
-        <div class="mt-5 col-8">
+        <div id="sidebar-responsive-left" class="d-md-none mt-5 pl-5 col-12 order-6">
+            <h1 class="display-4">Filter the results</h1>
+            {% include '_includes/facets_sidebar.html' with facets=facets url=search_url %}
+        </div>
+        <div class="mt-5 pr-5 pl-5 col-xs-12 col-md-7 col-lg-7 col-xl-8 order-4">
             {% include '_includes/search_form.html' with title=title query=query url=search_url order_by_fields=order_by_fields %}
             {% include results_template_name with data=data %}
         </div>
-
-
+      </div>
     </div>
 {% endblock %}
 
@@ -34,5 +36,8 @@
 {% block floating-buttons %}
     <a class="btn btn-primary bmd-btn-fab float-right" href="{% url add_url %}{% if reset %}?reset=true{% endif %}">
         <i class="material-icons">add</i>
+    </a>
+    <a class="btn btn-secondary bmd-btn-fab d-md-none float-right" href="#sidebar-responsive-left">
+        <i class="material-icons">sort</i>
     </a>
 {% endblock %}
