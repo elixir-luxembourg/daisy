@@ -14,6 +14,7 @@ requirements = [
     'django-compressor==2.2',
     'django-debug-toolbar==1.11',
     'django-enumchoicefield==1.1.0',
+    'django-excel-response==2.0.4',
     'django-formtools==2.1',
     'django-guardian==1.5.0',
     'django-haystack==2.8.1',
