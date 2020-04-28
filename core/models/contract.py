@@ -3,7 +3,7 @@ from django.db import models
 
 from core import constants
 from .contact import Contact
-from .partner import Partner
+from .partner import Partner, HomeOrganisation
 from .utils import CoreModel, COMPANY
 
 
