@@ -123,3 +123,11 @@ class Contract(CoreModel):
             project_name = "Undefined project"
 
         return f'Contract with {partners_list} - "{project_name}"'
+
+    def to_dict(self):
+        return dict((field.name, getattr(self, field.name)) for field in self._meta.fields)
+
+    def serialize_to_export(self):
+        d = self.to_dict()
+        d['project'] = d['project'].title
+        return d

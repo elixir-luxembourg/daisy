@@ -6,7 +6,7 @@
     </div>
     <div class="col-5">
         {% if request.user.is_superuser %}
-            <a class="btn btn-primary btn-outline float-right" href="export?filters={{ filters | default:'' }}&order_by={{ order_by | default:'' }}&query={{ query | default:'' }}">Save the results as xlsx</a>
+            <a class="btn btn-secondary btn-outline float-right" href="export?{% if filters %}filters={{ filters }}&{% endif %}{% if order_by %}order_by={{ order_by | default:'' }}&{% endif %}{% if query %}query={{ query | default:'' }}{% endif %}">Save the results as xlsx</a>
         {% endif %}
     </div>
 </div>

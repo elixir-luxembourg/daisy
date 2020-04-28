@@ -99,7 +99,6 @@ class Dataset(CoreTrackedModel):
 
 
     def to_dict(self):
-
         contact_dicts = []
 
         # p = HomeOrganisation()
@@ -145,6 +144,24 @@ class Dataset(CoreTrackedModel):
         }
         return base_dict
 
+    def serialize_to_export(self):
+        import functools
+        d = self.to_dict()
+
+        contacts = map(lambda v: f"[{v['first_name']} {v['last_name']}, {v['email']}]", d['contacts'])
+        d['contacts'] = ','.join(contacts)
+
+        transfers = map(lambda v: f"[{v['partner']} {v['transfer_details']}, {v['transfer_date']}]", d['transfers'])
+        d['transfers'] = ','.join(transfers)
+
+        storages = map(lambda v: f"[{v['platform']} {v['location']}]", d['storages'])
+        d['storages'] = ','.join(storages)
+        
+        data_declarations = map(lambda v: f"[{v['title']}]", d['data_declarations'])
+        d['data_declarations'] = ','.join(data_declarations)
+
+        return d
+        
 
 # faster lookup for permissions
 # https://django-guardian.readthedocs.io/en/stable/userguide/performance.html#direct-foreign-keys

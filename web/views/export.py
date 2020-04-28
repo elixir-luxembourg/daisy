@@ -23,7 +23,8 @@ def contracts_export(request):
 
     contract_ids = [x.__dict__['pk'] for x in contracts]
     contracts = Contract.objects.filter(id__in=contract_ids)
-    return ExcelResponse(contracts)
+    values = [x.serialize_to_export() for x in contracts]
+    return ExcelResponse(values)
     
 def datasets_export(request):
     query = request.GET.get('query', '')
@@ -39,7 +40,8 @@ def datasets_export(request):
 
     dataset_ids = [x.__dict__['pk'] for x in datasets]
     datasets = Dataset.objects.filter(id__in=dataset_ids)
-    return ExcelResponse(datasets)
+    values = [x.serialize_to_export() for x in datasets]
+    return ExcelResponse(values)
 
 def projects_export(request):
     query = request.GET.get('query', '')
@@ -55,4 +57,5 @@ def projects_export(request):
 
     project_ids = [x.__dict__['pk'] for x in projects]
     projects = Project.objects.filter(id__in=project_ids)
-    return ExcelResponse(projects)
+    values = [x.serialize_to_export() for x in projects]
+    return ExcelResponse(values)
