@@ -2,60 +2,44 @@ from django.conf import settings
 
 from excel_response import ExcelResponse
 
-from core.models import Contract, Dataset, Project
+from core.models import Cohort, Contact, Contract, Dataset, Partner, Project
 from core.utils import DaisyLogger
 from . import facet_view_utils
 
 log = DaisyLogger(__name__)
 
 
-def contracts_export(request):
+def generic_export(request, object_class, object_name):
     query = request.GET.get('query', '')
     order_by = request.GET.get('order_by', '')
-    contracts = facet_view_utils.search_objects(
+    objects = facet_view_utils.search_objects(
         request,
         filters=request.GET.getlist('filters'),
         query=query,
-        object_model=Contract,
-        facets=settings.FACET_FIELDS['contract'],
+        object_model=object_class,
+        facets=settings.FACET_FIELDS[object_name],
         order_by=order_by
     )
 
-    contract_ids = [x.__dict__['pk'] for x in contracts]
-    contracts = Contract.objects.filter(id__in=contract_ids)
-    values = [x.serialize_to_export() for x in contracts]
+    objects_ids = [x.__dict__['pk'] for x in objects]
+    objects = object_class.objects.filter(id__in=objects_ids)
+    values = [x.serialize_to_export() for x in objects]
     return ExcelResponse(values)
+
+def cohorts_export(request):
+    return generic_export(request, Cohort, 'cohort')
+
+def contacts_export(request):
+    return generic_export(request, Contact, 'contact')
+
+def contracts_export(request):
+    return generic_export(request, Contract, 'contract')
     
 def datasets_export(request):
-    query = request.GET.get('query', '')
-    order_by = request.GET.get('order_by', '')
-    datasets = facet_view_utils.search_objects(
-        request,
-        filters=request.GET.getlist('filters'),
-        query=query,
-        object_model=Dataset,
-        facets=settings.FACET_FIELDS['dataset'],
-        order_by=order_by
-    )
+    return generic_export(request, Dataset, 'dataset')
 
-    dataset_ids = [x.__dict__['pk'] for x in datasets]
-    datasets = Dataset.objects.filter(id__in=dataset_ids)
-    values = [x.serialize_to_export() for x in datasets]
-    return ExcelResponse(values)
+def partners_export(request):
+    return generic_export(request, Partner, 'partner')
 
 def projects_export(request):
-    query = request.GET.get('query', '')
-    order_by = request.GET.get('order_by', '')
-    projects = facet_view_utils.search_objects(
-        request,
-        filters=request.GET.getlist('filters'),
-        query=query,
-        object_model=Project,
-        facets=settings.FACET_FIELDS['project'],
-        order_by=order_by
-    )
-
-    project_ids = [x.__dict__['pk'] for x in projects]
-    projects = Project.objects.filter(id__in=project_ids)
-    values = [x.serialize_to_export() for x in projects]
-    return ExcelResponse(values)
+    return generic_export(request, Project, 'project')

@@ -125,9 +125,32 @@ class Contract(CoreModel):
         return f'Contract with {partners_list} - "{project_name}"'
 
     def to_dict(self):
-        return dict((field.name, getattr(self, field.name)) for field in self._meta.fields)
+        contact_dicts = []
+        for lc in self.local_custodians.all():
+            contact_dicts.append(
+                {"first_name": lc.first_name,
+                 "last_name": lc.last_name,
+                 "email": lc.email,
+                 "role":  "Principal_Investigator" if lc.is_part_of(constants.Groups.VIP.name) else "Researcher",
+                 "affiliations": [HomeOrganisation().name]})
+
+        base_dict = {
+            'id': self.id,
+            'comments': self.comments,
+            'project': self.project,
+            'local_custodians': contact_dicts,
+            'OTHER_DATA': 'See models/contract.py'
+            # TODO: Some fields are missing, this might need to be continuted
+        }
+        return base_dict
 
     def serialize_to_export(self):
+        import functools
+
         d = self.to_dict()
+
+        local_custodians = map(lambda v: f"[{v['first_name']} {v['last_name']}, {v['email']}]", d['local_custodians'])
+        d['local_custodians'] = ','.join(local_custodians)
+
         d['project'] = d['project'].title
         return d

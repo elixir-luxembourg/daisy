@@ -51,4 +51,15 @@ class Cohort(CoreTrackedModel):
         }
         return base_dict
 
-    
+    def serialize_to_export(self):
+        import functools
+
+        d = self.to_dict()
+
+        owners = map(lambda v: f"[{v['first_name']} {v['last_name']}, {v['email']}]", self.owners)
+        d['owners'] = ','.join(owners)
+
+        institutes = map(lambda v: f"[{v['name']}]", self.institutes)
+        d['institutes'] = ','.join(institutes)
+
+        return d
