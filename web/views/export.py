@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
 
 from excel_response import ExcelResponse
 
@@ -9,6 +10,7 @@ from . import facet_view_utils
 log = DaisyLogger(__name__)
 
 
+@staff_member_required
 def generic_export(request, object_class, object_name):
     query = request.GET.get('query', '')
     order_by = request.GET.get('order_by', '')
