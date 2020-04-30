@@ -103,19 +103,25 @@ class UserChangeForm(forms.ModelForm):
     the user, but replaces the password field with admin's
     password hash display field.
     """
-    password = ReadOnlyPasswordHashField()
-    change_password = forms.CharField(label='Set new password:', 
-                                      help_text='Leave empty if no change is needed',
-                                      widget=forms.PasswordInput)
+    password = ReadOnlyPasswordHashField(help_text='This field contains hashed and salted value')
+    #change_password = forms.CharField(label='Set new password:', 
+    #                                  help_text='Leave empty if no change is needed',
+    #                                  widget=forms.PasswordInput)
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'source', 'is_active', 'change_password')
+        fields = (
+            'username', 'email', 'password', 'is_active', 
+            'source', 'first_name', 'last_name', 'full_name', 
+            'is_staff', 'is_superuser', 'groups', 
+            'user_permissions', 'date_joined', 'last_login'
+        )
 
     def clean_password(self):
-        # Regardless of what the user provides, return the initial value.
+       # Regardless of what the user provides, return the initial value.
         # This is done here, rather than on the field, because the
         # field does not have access to the initial value
+        print(self.initial["password"])
         return self.initial["password"]
 
     def save(self, commit=True):
@@ -137,13 +143,14 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model in `/admin/core/user/`
     list_display = ('email', 'full_name', 'source', 'is_staff', 'is_superuser')
 
+    # Sections in the Edit page
     fieldsets = (
         (None, {'fields': ('username', 'email', 'password', 'is_active', 'source')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'full_name')}),
         ('Permissions', {'fields': ('is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Additional metdata', {'fields': ('date_joined', 'last_login')}),
     )
-    # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
+    # add_fieldsets is not a standard ModelAdmin attribute. BaseUserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
     add_fieldsets = (
         (None, {
