@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 from core.models import Access, \
                         Cohort, \
@@ -42,6 +44,8 @@ class StorageResourceForm(forms.ModelForm):
 class StorageResourceAdmin(admin.ModelAdmin):
     form = StorageResourceForm
 
+
+# DAISY core models
 admin.site.site_header = 'DAISY administration'
 admin.site.register(Access)
 admin.site.register(Cohort)
@@ -68,10 +72,90 @@ admin.site.register(SensitivityClass)
 admin.site.register(Share)
 admin.site.register(StorageResource, StorageResourceAdmin)
 admin.site.register(UseRestriction)
-admin.site.register(User)
 
 # Term models (term_model.py)
 admin.site.register(DiseaseTerm)
 admin.site.register(GeneTerm)
 admin.site.register(PhenotypeTerm)
 admin.site.register(StudyTerm)
+
+# User-related
+# See https://docs.djangoproject.com/en/1.8/topics/auth/customizing/#a-full-example
+class UserCreationForm(forms.ModelForm):
+    password = forms.CharField(label='Password', widget=forms.PasswordInput)
+
+    class Meta:
+        model = User
+        fields = ('username', 'last_name', 'first_name', 'email', 'password', 'source', 'date_joined')
+
+    def save(self, commit=True):
+        # Save the provided password in hashed format
+        user = super(UserCreationForm, self).save(commit=False)
+        user.email = self.cleaned_data["email"]
+        user.set_password(self.cleaned_data["password"])
+        if commit:
+            user.save()
+        return user
+
+
+class UserChangeForm(forms.ModelForm):
+    """A form for updating users. Includes all the fields on
+    the user, but replaces the password field with admin's
+    password hash display field.
+    """
+    password = ReadOnlyPasswordHashField()
+    change_password = forms.CharField(label='Set new password:', 
+                                      help_text='Leave empty if no change is needed',
+                                      widget=forms.PasswordInput)
+
+    class Meta:
+        model = User
+        fields = ('email', 'password', 'source', 'is_active', 'change_password')
+
+    def clean_password(self):
+        # Regardless of what the user provides, return the initial value.
+        # This is done here, rather than on the field, because the
+        # field does not have access to the initial value
+        return self.initial["password"]
+
+    def save(self, commit=True):
+        user = super(UserChangeForm, self).save(commit=False)
+
+        # if len(self.cleaned_data["change_password"]):
+        #    user.set_password(self.cleaned_data["change_password"])
+
+        if commit:
+            user.save()
+
+        return user
+
+
+class UserAdmin(BaseUserAdmin):
+    form = UserChangeForm  # Form to change user
+    add_form = UserCreationForm  # Form to add new user
+
+    # The fields to be used in displaying the User model in `/admin/core/user/`
+    list_display = ('email', 'full_name', 'source', 'is_staff', 'is_superuser')
+
+    fieldsets = (
+        (None, {'fields': ('username', 'email', 'password', 'is_active', 'source')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'full_name')}),
+        ('Permissions', {'fields': ('is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Additional metdata', {'fields': ('date_joined', 'last_login')}),
+    )
+    # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
+    # overrides get_fieldsets to use this attribute when creating a user.
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'last_name', 'first_name', 'email', 'password', 'source', 'date_joined')
+            }
+        ),
+    )
+
+    search_fields = ('email',)
+    ordering = ('email',)
+    filter_horizontal = ()
+
+# User
+admin.site.register(User, UserAdmin)
