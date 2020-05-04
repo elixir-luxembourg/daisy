@@ -30,6 +30,14 @@ urlpatterns = [
     url(r'', include(web_urls)),
 ]
 
+# Custom error views, see e.g. 
+# https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-CSRF_FAILURE_VIEW
+from web.views.error_views import custom_400, custom_403, custom_404, custom_500
+handler400 = custom_400
+handler403 = custom_403
+handler404 = custom_404
+handler500 = custom_500
+
 if settings.DEBUG:
     import debug_toolbar
     from django.conf.urls.static import static

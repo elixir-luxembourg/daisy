@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+{% load staticfiles %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1 class="display-4">
+                We are sorry, there was something wrong with your request! <small>(error {{ reason }})</small>
+            </h1>
+        </div>
+    </div>
+
+    <div class="card row">
+        <div class="card-body">
+            <div class="col">
+                {% if reason == "404" %}
+                    <p>
+                        <strong>The page you requested does not exist.</strong> 
+                        Maybe you received a link to an obsolete resource or didn't copy the whole link?
+                    </p>
+                {% elif reason == "400" %}
+                    <p>
+                        <strong>Your browser sent a bad request, and we couldn't understand that.</strong> 
+                        In practice it usually means, that there's an error in the application.
+                        <br />
+                        If you'd like, please contact us about it.
+                    </p>
+                {% elif reason == "csrf" %}
+                    <p>
+                        <strong>The CSRF validation failed.</strong> 
+                        In practice it usually means, that filling the form took you slightly too long time (more than a few hours).
+                        <br /> 
+                        If you see this page in effect of clicking on any link you received from someone via mail or any other message, please let us know.
+                    </p>
+                {% elif reason == "500" %}
+                    <p>
+                        <strong>The application has encountered the error.</strong> 
+                        It might have happened because of the data you entered. If you'd like, you can let us know.
+                    </p>
+                {% elif reason == "403" %}
+                    <p>
+                        <strong>The page you requested is protected, and your user cannot access the resource.</strong> 
+                        If you are sure that you should have the access, please contact your Data Steward.
+                    </p>
+                {% endif %}
+                <p>
+                    You might want to <button type="button" class="btn btn-raised btn-primary" onclick="window.history.back()">go back</button>, or  
+                    <a class="btn btn-raised btn-primary" href="{% url 'dashboard' %}">navigate to the main page</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
