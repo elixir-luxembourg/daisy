@@ -311,6 +311,10 @@ NOTIFICATIONS_DISABLED = True
 LOGIN_USERNAME_PLACEHOLDER = ''
 LOGIN_PASSWORD_PLACEHOLDER = ''
 
+# Custom error view, see e.g. 
+# https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-CSRF_FAILURE_VIEW
+CSRF_FAILURE_VIEW = 'web.views.error_views.custom_csrf'
+
 # Import local settings to override those values based on the deployment environment
 try:
     from .settings_local import *

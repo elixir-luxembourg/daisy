@@ -1,15 +1,21 @@
 from django.shortcuts import render
 
 
+ERROR_VIEW = 'error.html'
+
 def custom_error(request, exception, reason, status):
     context = {
         'reason': reason,
         'exception': exception
     }
-    return render(request, 'error.html', context, status=status)
+    return render(request, ERROR_VIEW, context, status=status)
 
-def custom_csrf(request, exception):
-    return custom_error(request, exception, 'csrf', 400)
+def custom_csrf(request, reason):
+    context = {
+        'reason': 'csrf',
+        'exception': reason
+    }
+    return render(request, ERROR_VIEW, context, status=400)
 
 def custom_400(request, exception):
     return custom_error(request, exception, '400', 400)
