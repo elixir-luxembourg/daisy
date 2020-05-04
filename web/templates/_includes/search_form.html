@@ -12,8 +12,17 @@
                         <label for="query" class="bmd-label-floating">
                             &nbsp;<i class="material-icons">search</i> Query
                         </label>
-                        <input type='text' class="form-control border border-top-0 bg-white" name='query' value='{{ query }}'/>
+                        <input id="query_edit" type='text' class="form-control border border-top-0 bg-white" name='query' value='{{ query }}'/>
+
+                        {% if query %}
+                        <div class="input-group-append bg-white">
+                            <span class="input-group-text">
+                                 <i class="material-icons close reset-form-button" data-resets="query_edit" data-submits="yes">close</i>
+                            </span>
+                        </div>
+                        {% endif %}
                     </div>
+                    
                     <span class="form-group bmd-form-group"> <!-- needed to match padding for floating labels -->
                         <button type="submit" class="btn btn-primary">Search</button>
                     </span>
