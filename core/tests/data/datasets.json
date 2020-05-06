@@ -2,16 +2,17 @@
     {
         "name": "ABCD data",
         "project":  "ABCD",
-        "shares": [
+        "transfers": [
             {
-                "share_inst": "ELU_I_44",
-                "share_notes": "Melanie Silver"
+                "partner": "ELU_I_44",
+                "transfer_details": "Melanie Silver"
             }
         ],
         "contacts": [
             {
                 "first_name": "Igor",
                 "last_name": "Teal",
+                "email": "user@uni.edu",
                 "role": "Principal_Investigator",
                 "institution": "ELU_I_77"
             }
@@ -36,9 +37,9 @@
                 "Methylation_array"
             ],
             "de_identification": "anonymization",
-            "subject_categories": "controls",
+            "subjects_category": "controls",
             "has_special_subjects": true,
-            "special_subject_notes": "2 year old children",
+            "special_subjects_description": "2 year old children",
             "source_notes": "Data is from collaborator.",
             "use_restrictions": [
                 {
@@ -61,6 +62,7 @@
             {
                 "first_name": "Joanne",
                 "last_name": "Swift",
+                "email": "user@uni.edu",
                 "role": "Principal_Investigator",
                 "institution": "ELU_I_77"
             }
@@ -84,7 +86,7 @@
                     "Whole_genome_sequencing"
                 ],
                 "de_identification": "pseudonymization",
-                "subject_categories": "cases_and_controls",
+                "subjects_category": "cases_and_controls",
                 "has_special_subjects": false,
                 "source_collaboration": {
                     "collab_inst": "ELU_I_94",
@@ -113,19 +115,20 @@
             {
                 "first_name": "Rob",
                 "last_name": "Blue",
+                "email": "user@uni.edu",
                 "role": "Principal_Investigator",
                 "institution": "ELU_I_77"
             }
 
         ],
-        "shares": [
+        "transfers": [
             {
-                "share_inst": "ELU_I_79",
-                "share_notes": "Feng Xiao"
+                "partner": "ELU_I_79",
+                "transfer_details": "Feng Xiao"
             },
             {
-                "share_inst": "ELU_I_80",
-                "share_notes": "Max Ginger"
+                "partner": "ELU_I_80",
+                "transfer_details": "Max Ginger"
             }
         ],
         "storages": [
@@ -162,6 +165,7 @@
             {
                 "first_name": "Paul",
                 "last_name": "Mauve",
+                "email": "user@uni.edu",
                 "role": "Principal_Investigator",
                 "institution": "ELU_I_77"
             },            {
@@ -184,7 +188,7 @@
                     "Other_Phenotype_data"
                 ],
                 "de_identification": "pseudonymization",
-                "subject_categories": "cases_and_controls",
+                "subjects_category": "cases_and_controls",
                 "has_special_subjects": false,
                 "access_category": "controlled_access",
                 "use_restrictions": [
@@ -199,11 +203,12 @@
     {
         "name": "PD data",
         "project": "PD_Project",
-        "shares": [],
+        "transfers": [],
         "contacts": [
             {
                 "first_name": "Ali",
                 "last_name": "Gator",
+                "email": "user@uni.edu",
                 "role": "Principal_Investigator",
                 "institution": "ELU_I_77"
             }
@@ -299,7 +304,7 @@
             ],
             "de_identification": "pseudonymization",
             "ombudsman": "Biobank, Principle Investigator",
-            "subject_categories": "cases_and_controls",
+            "subjects_category": "cases_and_controls",
             "has_special_subjects": false,
             "consent_status": "homogeneous",
             "use_restrictions": [
@@ -324,7 +329,7 @@
                 "Samples"
             ],
             "de_identification": "pseudonymization",
-            "subject_categories": "cases_and_controls",
+            "subjects_category": "cases_and_controls",
             "has_special_subjects": false,
             "source_collaboration": {
                 "collab_inst": "ELU_I_8",

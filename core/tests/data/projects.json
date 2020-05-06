@@ -9,18 +9,21 @@
             {
                 "first_name": "Joanne",
                 "last_name": "Swift",
+                "email": "user@uni.edu",
                 "role": "Principal_Investigator",
                 "institution": "ELU_I_77"
             },
             {
                 "first_name": "Rebecca",
                 "last_name": "Kafe",
+                "email": "user@uni.edu",
                 "role": "Principal_Investigator",
                 "institution": "ELU_I_77"
             },
             {
                 "first_name": "Embury",
                 "last_name": "Bask",
+                "email": "user@uni.edu",
                 "role": "Researcher",
                 "institution": "ELU_I_77"
             }
@@ -47,24 +50,28 @@
             {
                 "first_name": "Colman",
                 "last_name": "Level",
+                "email": "user@uni.edu",
                 "role": "Principal_Investigator",
                 "institution": "ELU_I_77"
             },
             {
                 "first_name": "Colman",
                 "last_name": "Level",
+                "email": "user@uni.edu",
                 "role": "Researcher",
                 "institution": "ELU_I_77"
             },
             {
                 "first_name": "Nic",
                 "last_name": "Purple",
+                "email": "user@uni.edu",
                 "role": "Researcher",
                 "institution": "ELU_I_77"
             },
             {
                 "first_name": "James",
                 "last_name": "BK",
+                "email": "user@uni.edu",
                 "role": "Researcher",
                 "institution": "ELU_I_77"
             }

@@ -9,17 +9,33 @@
                 "data_types": [
                     "RNASeq",
                     "Samples",
-                    "ChIP-seq"
+                    "Whole_genome_sequencing"
                 ],
-                "access_category": null,
+                "data_type_notes": "Chip-seq  time series data",
+                "access_category": "controlled_access",
                 "subjects_category": "controls",
                 "de_identification": "pseudonymization",
                 "consent_status": "homogeneous",
-                "has_special_subjects": null,
                 "special_subjects_description": "",
                 "embargo_date": null,
                 "storage_end_date": "2021-04-05",
-                "storage_duration_criteria": "The project PI will assess whether data should be retained for further research at the storage end date."
+                "storage_duration_criteria": "The project PI will assess whether data should be retained for further research at the storage end date.",
+                "has_special_subjects": false,
+                "consent_status": "homogeneous",
+                "use_restrictions": [
+                    {
+                        "ga4gh_code": "COL-[XX]",
+                        "note": "Data is shared as part of the LUX-Epigen programme, a collaboration with CHL, IBBL, LCSB and LSRU."
+                    },
+                    {
+                        "ga4gh_code": "DS-[XX](CC)",
+                        "note": "Data is consented for cancer research studies only."
+                    },
+                    {
+                        "ga4gh_code": "GS-[XX]",
+                        "note": "Data is consented for sharing outside EU/EEA region."
+                    }
+                ]
             }
         ],
         "storages": [
