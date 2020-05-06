@@ -23,7 +23,7 @@ class BaseImporter:
         for contact_dict in project_dict.get('contacts', []):
             first_name = contact_dict.get('first_name').strip()
             last_name = contact_dict.get('last_name').strip()
-            email = contact_dict.get('email').strip()
+            email = contact_dict.get('email','').strip()
             full_name = "{} {}".format(first_name, last_name)
             role_name = contact_dict.get('role')
             if home_organisation.elu_accession == contact_dict.get('institution').strip():

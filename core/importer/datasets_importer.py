@@ -79,7 +79,7 @@ class DatasetsImporter(BaseImporter):
         # if 'storage_acl_notes' in storage_location_dict:
         #     dl.access_notes = storage_location_dict['storage_acl_notes']
 
-        shares = self.process_shares(dataset_dict, dataset)
+        shares = self.process_transfers(dataset_dict, dataset)
         if shares:
             dataset.shares.set(shares, bulk=False)
 
@@ -184,13 +184,13 @@ class DatasetsImporter(BaseImporter):
         return data_locations
 
 
-    def process_shares(self, dataset_dict, dataset):
+    def process_transfers(self, dataset_dict, dataset):
 
-        def process_share(share_dict, dataset):
+        def process_transfer(share_dict, dataset):
             share = Share()
-            share.access_notes = share_dict.get('share_notes')
+            share.share_notes = share_dict.get('transfer_details')
             share.dataset = dataset
-            share_institution_elu = share_dict.get('share_inst')
+            share_institution_elu = share_dict.get('partner')
             share_institution = Partner.objects.get(elu_accession=share_institution_elu.strip())
             share.partner = share_institution
             # project = dataset.project
@@ -212,8 +212,8 @@ class DatasetsImporter(BaseImporter):
             #         share.contract = contract
             return share
 
-        shares = dataset_dict.get('shares', [])
-        return [process_share(share_object, dataset) for share_object in shares]
+        transfers = dataset_dict.get('transfers', [])
+        return [process_transfer(transfer_dict, dataset) for transfer_dict in transfers]
 
     def process_category(self, storage_location_dict):
         category_str = storage_location_dict.get('category', '').strip().lower()
@@ -255,7 +255,7 @@ class DatasetsImporter(BaseImporter):
         datadec.data_types_notes = datadec_dict.get('data_type_notes', None)
         datadec.deidentification_method = self.process_deidentification_method(datadec_dict)
         datadec.subjects_category = self.process_subjects_category(datadec_dict)
-        datadec.special_subjects_description = datadec_dict.get('special_subject_notes', None)
+        datadec.special_subjects_description = datadec_dict.get('special_subjects_description', None)
         datadec.other_external_id = datadec_dict.get('other_external_id', None)
         datadec.share_category = self.process_access_category(datadec_dict)
         datadec.consent_status = self.process_constent_status(datadec_dict)
@@ -293,8 +293,8 @@ class DatasetsImporter(BaseImporter):
             return DeidentificationMethod.pseudonymization
 
     def process_subjects_category(self, datadec_dict):
-        if 'subject_categories' in datadec_dict:
-            sub_category_str = datadec_dict.get('subject_categories', '').strip()
+        if 'subjects_category' in datadec_dict:
+            sub_category_str = datadec_dict.get('subjects_category', '').strip()
             try:
                 return SubjectCategory[sub_category_str]
             except KeyError:
@@ -382,12 +382,13 @@ class DatasetsImporter(BaseImporter):
         return use_restrictions
 
     def process_access_category(self, datadec_dict):
-        share_category_str = datadec_dict.get('access_category', '').strip()
-        try:
-            return ShareCategory[share_category_str]
-        except KeyError:
-            return None
-
+        share_category_str = datadec_dict.get('access_category','')
+        if share_category_str:
+            try:
+                return ShareCategory[share_category_str]
+            except KeyError:
+                return None
+        return None
     def process_constent_status(self, datadec_dict):
         if 'consent_status' in datadec_dict:
             consent_status_str = datadec_dict.get('consent_status', '').strip()

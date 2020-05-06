@@ -70,7 +70,7 @@
       "data_size_category": "m",
       "metadata_exists": true,
       "has_special_subjects": true,
-      "special_subject_notes": "Subjects minors. mothers and babies",
+      "special_subjects_description": "Subjects minors. mothers and babies",
       "consent_status": "homogeneous",
       "consent_notes": "Consent is consistent among all subjects",
       "de_identification": "pseudonymized",
