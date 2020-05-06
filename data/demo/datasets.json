@@ -1,61 +1,54 @@
 [
     {
-        "title": "LCSB Human Data Survey v-1",
-        "local_custodian": [
-            "Alice White",
-            "Jane Doe"
-        ],
-        "project": "DAISY-Dev",
-        "shares": [
+        "project": "EPIC-DREM",
+        "name": "EPIC-DREM Sequencing data",
+        "description": null,
+        "data_declarations": [
             {
-                "share_inst": "ELU_I_96",
-                "share_notes": "Joe Bloggs"
+                "title": "ChIP-Seq, RNA-seq, ...",
+                "data_types": [
+                    "RNASeq",
+                    "Samples",
+                    "ChIP-seq"
+                ],
+                "access_category": null,
+                "subjects_category": "controls",
+                "de_identification": "pseudonymization",
+                "consent_status": "homogeneous",
+                "has_special_subjects": null,
+                "special_subjects_description": "",
+                "embargo_date": null,
+                "storage_end_date": "2021-04-05",
+                "storage_duration_criteria": "The project PI will assess whether data should be retained for further research at the storage end date."
             }
         ],
-        "storage_locations": [
+        "storages": [
             {
-                "storage_resource": "atlas_project",
+                "platform": "application",
                 "locations": [
-                    "smb://atlas.uni.lux/Data_Protection/Survey/XLS"
+                    "https://webdav-r3lab.uni.lu/"
                 ],
                 "category": "master",
-                "storage_acl_info": "Alice White and Jane Doe has access to folder."
+                "accesses": [
+                    "The data is available on the sequencing platform's webdav server."
+                ]
             }
-        ]
-    },
-    {
-        "title": "DAISY LCSB Deployment",
-        "local_custodian": [
-            "Alice White",
-            "Jane Doe"
         ],
-        "project": "DAISY-Dev",
-        "storage_locations": [
+        "transfers": [],
+        "contacts": [
             {
-                "storage_resource": "application",
-                "locations": [
-                    "https://daisy.lcsb.uni.lu"
-                ],
-                "category": "master",
-                "storage_acl_info": "All LCSB staff with an active LDAP account can access."
-            }
-        ]
-    },
-        {
-        "title": "DAISY Demo Deployment",
-        "local_custodian": [
-            "Alice White",
-            "Jane Doe"
-        ],
-        "project": "DAISY-Dev",
-        "storage_locations": [
+                "first_name": "Alice",
+                "last_name": "White",
+                "email": "alice.white@uni.lu",
+                "role": "Principal_Investigator",
+                "institution": "ELU_I_77"
+            },
             {
-                "storage_resource": "application",
-                "locations": [
-                    "https://daisy-demo.lcsb.uni.lu"
-                ],
-                "category": "master",
-                "storage_acl_info": "This is a demo deployment for external parties. IP Restricted access."
+                "first_name": "John",
+                "last_name": "Black",
+                "email": "john.black@uni.lu",
+                "role": "Principal_Investigator",
+                "institution": "ELU_I_77"
             }
         ]
     }

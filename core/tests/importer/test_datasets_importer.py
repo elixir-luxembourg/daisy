@@ -3,8 +3,14 @@ import os
 import pytest
 
 from core.importer.datasets_importer import DatasetsImporter
-from core.models import Dataset, Project
+from core.models import Dataset, Project, DataDeclaration
 from test import factories
+
+
+@pytest.mark.xfail
+@pytest.mark.django_db
+def test_dummy(celery_session_worker, storage_resources, can_defer_constraint_checks):
+    pass
 
 
 @pytest.mark.django_db
@@ -44,3 +50,6 @@ def test_import_datasets(celery_session_worker, storage_resources, partners, gdp
     d4 = Dataset.objects.filter(title='PD data').first()
     assert ["Ali Gator"] == [employee.full_name for employee in d4.local_custodians.all()]
     assert 7 == d4.data_locations.all().count()
+
+    ddecs = DataDeclaration.objects.all()
+    assert 5 == ddecs.count()
