@@ -180,12 +180,18 @@ class Project(CoreTrackedModel):
                  "role":  "Principal_Investigator" if lc.is_part_of(constants.Groups.VIP.name) else "Researcher",
                  "affiliations": [HomeOrganisation().name]})
 
+        pub_dicts = []
+        for pub in self.publications.all():
+            pub_dicts.append(
+                {"citation": pub.citation if pub.citation else None,
+                 "doi": pub.doi if pub.doi else None})
+
         base_dict = {
             "source": settings.SERVER_URL,
             "id_at_source": self.id.__str__(),
-            "name": self.acronym,
+            "acronym": self.acronym,
             "elu_accession": self.elu_accession if self.elu_accession else None,
-            "title": self.title if self.title else None,
+            "name": self.title if self.title else None,
             "description":  self.description if self.description else None,
             "has_institutional_ethics_approval": self.has_erp,
             "has_national_ethics_approval": self.has_cner,

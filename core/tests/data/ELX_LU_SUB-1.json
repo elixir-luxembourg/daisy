@@ -1,12 +1,28 @@
 {
   "elu_accession": "ELX_LU_SUB-1",
-  "title": "Test Submission to be exported.",
+  "name": "Test Submission to be exported.",
   "submitting_institution": "ELU_I_5",
   "created_on": "2018-10-15",
   "scope": "e",
-  "local_custodian": [
-    "Elgin Gray",
-    "Rob Blue"
+  "contacts": [
+    {
+      "first_name": "Elgin",
+      "last_name": "Gray",
+      "role": "Principal_Investigator",
+      "institution": "ELU_I_77"
+    },
+    {
+      "first_name": "Rob",
+      "last_name": "Blue",
+      "role": "Principal_Investigator",
+      "institution": "ELU_I_77"
+    },
+    {
+      "first_name": "Embury",
+      "last_name": "Bask",
+      "role": "Researcher",
+      "institution": "ELU_I_77"
+    }
   ],
   "local_project": "Submitting to NCER PD Diagnosis project",
   "data_providers": [
@@ -41,9 +57,9 @@
       ]
     }
   ],
-  "datadecs": [
+  "data_declarations": [
     {
-      "title": "Test datadec 1",
+      "name": "Test datadec 1",
       "source_study": "Test Study ABC",
       "legal_basis_data_collection": "Consent",
       "legal_basis_data_sharing": "Consent",
@@ -67,7 +83,7 @@
       ]
     },
     {
-      "title": "Test datadec 2",
+      "name": "Test datadec 2",
       "source_study": "Test Study ABC",
       "legal_basis_data_collection": "Consent",
       "legal_basis_data_sharing": "Consent",

@@ -1,7 +1,7 @@
 [
     {
         "acronym": "In vitro disease modeling",
-        "title": "Parkinson's disease in vitro disease modeling - Focus on genes ........., .",
+        "name": "Parkinson's disease in vitro disease modeling - Focus on genes ........., .",
         "description": "Generation of disease specific iPSCs; ...............",
         "start_date": "2014-01-01",
         "end_date": "",
@@ -31,16 +31,16 @@
         "institutional_ethics_approval_notes": "test notes 123",
         "publications": [
             {
-                "citation_string": "Paper 1 citation string...."
+                "citation": "Paper 1 citation string...."
             },
             {
-                "citation_string": " Paper 2 citation string..."
+                "citation": " Paper 2 citation string..."
             }
         ]
     },
     {
         "acronym": "CCCC deficiency",
-        "title": "CCCC deficiency",
+        "name": "CCCC deficiency",
         "description": "Analysis of CCCC function in human disease",
         "start_date": "2016-11-01",
         "contacts": [
@@ -75,7 +75,7 @@
         "national_ethics_approval_notes": "We analyse samples ........",
         "publications": [
             {
-                "citation_string": "CCCC deficiency: a novel method in ........ (in preparation)"
+                "citation": "CCCC deficiency: a novel method in ........ (in preparation)"
             }
         ]
     }
