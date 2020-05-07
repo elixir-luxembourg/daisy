@@ -395,3 +395,8 @@ body {
 form.col-md-12.nice-selects > .form-group.bmd-form-group {
   padding-top: 0.75rem;
 }
+
+/* Clickable button that resets edit-boxes */
+i.reset-form-button {
+  cursor: pointer;
+}
