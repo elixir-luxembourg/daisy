@@ -55,7 +55,24 @@
 
             <div class="card mt-4">
                 <div class="card-body">
-                    <h2 class="card-title">Upcoming events</h2>  
+                    <h2 class="card-title">Latest notifications</h2> 
+ 
+                    {% if notifications %}
+                        <ul>
+                        {% for n in notifications %}
+                            <li>
+                                <strong>{{n.verb}}</strong>: <a href="{{n.get_absolute_url}}">{{n.content_object}}</a>
+                            </li>
+                        </tr>
+                        {% endfor %}
+                        </ul>
+
+                        <p>
+                            <a href="{% url 'notifications' %}">See all notifications</a>
+                        </p>
+                    {% else %}
+                        <strong>No notifications</strong>
+                    {% endif %}
                 </div>
             </div>
         </div>
