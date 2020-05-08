@@ -18,6 +18,18 @@
             {% url 'project_add' as project_add_url %}
             {% include '_includes/card_list.html' with list=last_projects list_title='My projects' url_name='project' add_new_link=project_add_url %}
         </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Help</h2>
+                    <p>Please use the links at the top of the page to browse or submit 
+                        information about Projects, Datasets or other entities.</p>
+                    <p>
+                        For more information, refer to the <strong><a href="https://elixir.pages.uni.lu/daisy-doc/">User Guide</a></strong>
+                    </p>
+                </div>
+            </div>
+        </div>
         {% comment %}
         <div class="col">
             {% include '_includes/card_list.html' with list=recently_published_datasets list_title='Recently published datasets' url_name='dataset' %}
@@ -26,6 +38,8 @@
             {% include '_includes/card_list.html' with list=last_granted_accesses list_title='Last granted accesses' url_name='access' %}
         </div>
         {% endcomment %}
+
+        {% comment %}
         <div class="col-5">
             <div class="card">
                 <div class="card-body">
@@ -76,5 +90,6 @@
                 </div>
             </div>
         </div>
+        {% endcomment %}
     </div>
 {% endblock content %}

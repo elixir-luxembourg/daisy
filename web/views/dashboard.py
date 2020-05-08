@@ -21,12 +21,12 @@ def dashboard(request):
     last_datasets = Dataset.objects.filter(local_custodians=the_user).order_by('added')[:5]
 
     # Get the notifications
-    notifications = request.user.notifications.ordered()[:5]
+    # notifications = request.user.notifications.ordered()[:5]
 
     context = {
         "last_datasets": last_datasets,
         "last_projects": last_projects,
-        "notifications": notifications,
+        # "notifications": notifications,
     }
 
     return render(
