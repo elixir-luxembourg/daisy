@@ -20,8 +20,8 @@
                 <dd><a href="https://github.com/elixir-luxembourg/daisy/issues">https://github.com/elixir-luxembourg/daisy/issues</a>
                 </dd>
                 <dt>Notes</dt>
-                <!-- For demo deployments uncomment the following -->
-                {% comment %}
+                <!-- For demo deployments  -->
+                {% if demo_mode %}
                 <dd>This is a demo deployment. It contains fictitious user accounts, projects and datasets to help you
                     understand DAISY's information model.<br/>
                     Data in the demo deployment is cleaned periodically. Please refrain from recording information that
@@ -40,23 +40,18 @@
                             <td>VIP User (Principle Investigator)</td>
                         </tr>
                         <tr>
-                            <td>jane.doe</td>
-                            <td>demo</td>
-                            <td>Standard User (Researcher)</td>
-                        </tr>
-                        <tr>
-                            <td>john.doe</td>
+                            <td>john.black</td>
                             <td>demo</td>
                             <td>VIP User (Principle Investigator)</td>
                         </tr>
                         <tr>
-                            <td>admin</td>
+                            <td>roy.blue</td>
                             <td>demo</td>
-                            <td>Super User (Application Admin)</td>
+                            <td>Standard User (Researcher)</td>
                         </tr>
                     </table>
                 </dd>
-                {% endcomment %}
+                {% endif %}
             </div>
         </div>
     </div>

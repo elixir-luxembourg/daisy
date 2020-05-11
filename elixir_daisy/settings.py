@@ -15,7 +15,7 @@ import os
 import pytz
 
 COMPANY = 'LCSB'  # Used for generating some models' verbose names
-
+DEMO_MODE = False
 
 AUTH_USER_MODEL = 'core.User'
 

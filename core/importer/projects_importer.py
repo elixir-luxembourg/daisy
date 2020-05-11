@@ -1,23 +1,11 @@
-import logging
 import re
 from datetime import datetime
 from json import loads
 
-from core.models import Partner, Project, Publication, Contact, ContactType
-from core.models import User
+from core.importer.base_importer import BaseImporter
+from core.models import Partner, Project, Publication
 
-
-from django.conf import settings
-
-PRINCIPAL_INVESTIGATOR = 'Principal_Investigator'
-
-logger = logging.getLogger(__name__)
-
-
-from core.constants import Groups as GroupConstants
-from django.contrib.auth.models import Group
-
-class ProjectsImporter:
+class ProjectsImporter(BaseImporter):
     """
     `ProjectsImporter`, should be able to fill the database with projects' information, based on JSON file
     complying to the schema in:
@@ -36,17 +24,17 @@ class ProjectsImporter:
 
     def import_json(self, json_string, stop_on_error=False):
         try:
-            logger.info('Import started"')
+            self.logger.info('Import started"')
             all_information = loads(json_string)
-            logger.debug('Import started"')
+            self.logger.debug('Import started"')
             for project in all_information:
-                logger.debug(' * Importing project: "{}"...'.format(project.get('acronym', "N/A")))
+                self.logger.debug(' * Importing project: "{}"...'.format(project.get('acronym', "N/A")))
                 self.process_project(project)
-                logger.debug("   ... success!")
-            logger.info('Import succeeded"')
+                self.logger.debug("   ... success!")
+            self.logger.info('Import succeeded"')
         except Exception as e:
-            logger.error('Import failed"')
-            logger.error(str(e))
+            self.logger.error('Import failed"')
+            self.logger.error(str(e))
             if stop_on_error:
                 raise e
 
@@ -56,7 +44,7 @@ class ProjectsImporter:
                         for publication_dict
                         in project_dict.get('publications', [])]
 
-        title = project_dict.get('title', "N/A")
+        title = project_dict.get('name', "N/A")
         description = project_dict.get('description', None)
         has_cner = project_dict.get('has_national_ethics_approval', False)
         has_erp = project_dict.get('has_institutional_ethics_approval', False)
@@ -74,7 +62,7 @@ class ProjectsImporter:
                                              erp_notes=erp_notes
                                              )
         else:
-            logger.warning("Project with acronym '{}' already found. It will be updated.".format(acronym))
+            self.logger.warning("Project with acronym '{}' already found. It will be updated.".format(acronym))
             project.title = title
             project.description = description
             project.has_cner = has_cner
@@ -89,7 +77,7 @@ class ProjectsImporter:
             message = "\tCouldn't import the 'start_date'. Does it follow the '%Y-%m-%d' format?\n\t"
             message = message + 'Was: "{}". '.format(project_dict.get('start_date'))
             message = message + "Continuing with empty value."
-            logger.warning(message)
+            self.logger.warning(message)
 
         try:
             if 'end_date' in project_dict and len(project_dict.get('end_date')) > 0:
@@ -98,7 +86,7 @@ class ProjectsImporter:
             message = "\tCouldn't import the 'end_date'. Does it follow the '%Y-%m-%d' format?\n\t"
             message = message + 'Was: "{}". '.format(project_dict.get('end_date'))
             message = message + "Continuing with empty value."
-            logger.warning(message)
+            self.logger.warning(message)
 
         project.save()
 
@@ -110,6 +98,9 @@ class ProjectsImporter:
         if local_custodians:
             project.local_custodians.set(local_custodians, clear=True)
 
+        if external_contacts:
+            project.contacts.set(external_contacts, clear=True)
+
         for publication in publications:
             project.publications.add(publication)
 
@@ -117,57 +108,6 @@ class ProjectsImporter:
         project.save()
         for local_custodian in local_custodians:
             local_custodian.assign_permissions_to_dataset(project)
-
-
-    def process_contacts(self, project_dict):
-        local_custodians = []
-        local_personnel = []
-        external_contacts = []
-
-        home_organisation =  Partner.objects.get(acronym=settings.COMPANY)
-
-        for contact_dict in project_dict.get('contacts', []):
-            first_name = contact_dict.get('first_name').strip()
-            last_name = contact_dict.get('last_name').strip()
-            full_name = "{} {}".format(first_name, last_name)
-            role_name = contact_dict.get('role')
-            if home_organisation.elu_accession == contact_dict.get('institution').strip():
-                user = (User.objects.filter(first_name__icontains=first_name.lower(),
-                                                    last_name__icontains=last_name.lower()) | User.objects.filter(
-                            first_name__icontains=first_name.upper(), last_name__icontains=last_name.upper())).first()
-                if user is None:
-                    logger.warning('no user found for %s an inactive user will be created', full_name)
-
-                    usr_name = first_name.lower() + '.' + last_name.lower()
-                    user = User.objects.create(username=usr_name, password='', first_name=first_name, last_name=last_name, is_active=False,
-                                               email='inactive.user@uni.lu',
-                                               )
-                    user.staff = True
-
-                    if role_name == PRINCIPAL_INVESTIGATOR:
-                        g = Group.objects.get(name=GroupConstants.VIP.value)
-                        user.groups.add(g)
-
-                    user.save()
-                if role_name == PRINCIPAL_INVESTIGATOR:
-                    local_custodians.append(user)
-                else:
-                    local_personnel.append(user)
-
-            else:
-                contact = (Contact.objects.filter(first_name__icontains=first_name.lower(),
-                                            last_name__icontains=last_name.lower()) | Contact.objects.filter(
-                    first_name__icontains=first_name.upper(), last_name__icontains=last_name.upper())).first()
-                if contact is None:
-                    contact = Contact.objects.create(first_name=first_name, last_name=last_name )
-                    contact.type =  ContactType.objects.get_or_create(name=role_name)
-                    affiliation = Partner.objects.get(elu_accession=contact_dict.get('institution'))
-                    if affiliation:
-                        contact.partners.add(affiliation)
-                    contact.save()
-                    external_contacts.append(contact)
-
-        return local_custodians, local_personnel, external_contacts
 
 
 
@@ -181,7 +121,7 @@ class ProjectsImporter:
     @staticmethod
     def process_publication(publication_dict):
 
-        publication = Publication.objects.create(citation=publication_dict.get('citation_string'))
+        publication = Publication.objects.create(citation=publication_dict.get('citation'))
         if 'doi' in publication_dict:
             publication.doi = publication_dict.get('doi')
             publication.save()
