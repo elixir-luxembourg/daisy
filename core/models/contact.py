@@ -82,7 +82,7 @@ class Contact(CoreModel):
         d = self.to_dict()
 
         if len(d['partners']):
-            partners = map(lambda v: f"[{v['name']}", d['partners'])
+            partners = map(lambda v: f"[{v['name']}]", d['partners'])
             d['partners'] = ','.join(partners)
 
         return d
