@@ -67,5 +67,34 @@
                 "institution": "ELU_I_77"
             }
         ]
+    },
+    {
+        "project": "Iron-deficiency",
+        "name": "Iron-deficiency dataset",
+        "data_declarations": [{
+            "title": "PD, small scale integrity data (german cohort)",
+            "data_type_notes": "Small-scale protein, mRNA or mtDNA integrity data, cell and mitochondrial function data\n",
+            "data_types": [
+                "Other",
+                "Samples"
+            ],
+            "de_identification": "pseudonymization",
+            "subjects_category": "cases_and_controls",
+            "has_special_subjects": false,
+            "source_notes": "Data is from collaborator.",
+            "storage_end_date": "2022-02-28",
+            "storage_duration_criteria": "The project PI will assess whether data should be retained for further research at the storage end date.",
+            "use_restrictions": [
+                {
+                    "ga4gh_code": "PUB",
+                    "note": "Acknowledgement required."
+                },
+                {
+                    "ga4gh_code": "TS-[XX]",
+                    "note": "Data is obtained for a limited duration. 2022-02-28"
+                }
+            ]
+        }
+        ]
     }
 ]
