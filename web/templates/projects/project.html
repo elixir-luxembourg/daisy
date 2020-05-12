@@ -29,9 +29,19 @@
                         <dt>Funding resources</dt>
                         <dd>{{ project.funding_sources.all | join:", "  | default:'-'  }}</dd>
                         <dt>Sub projects</dt>
-                        <dd>{{ project.project.child_projects.all | join:", " | default:'-' }}</dd>
+                        <dd>
+                            {% if project.child_projects.all %}
+                                {% for prj in  project.child_projects.all %}
+                                <a href="{% url 'project' pk=prj.pk %}">{{ prj }}</a>
+                                {% endfor %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </dd>
                         <dt>Umbrella project</dt>
-                        <dd>{{ project.umbrella_project | default:'-'  }}</dd>
+                        <dd>
+                            {%if project.umbrella_project  %}<a href="{% url 'project' pk=project.umbrella_project.pk %}">{{project.umbrella_project  }}</a> {% else %}-{% endif %}
+                        </dd>
                     </dl>
                 </div>
                 <div class="col">
