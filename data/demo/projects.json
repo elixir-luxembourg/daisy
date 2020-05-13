@@ -73,5 +73,116 @@
                 "institution": "ELU_I_9"
             }
         ]
+    },
+    {
+        "acronym": "MolEp-TR",
+        "name": "Analysis of the transcriptome in molecular epidemiology studies.",
+        "description": "This is a demonstrator project.",
+        "start_date": "2019-01-01",
+        "end_date": "2020-12-01",
+        "contacts": [
+            {
+                "first_name": "Rebecca",
+                "last_name": "Kafe",
+                "email": "user@uni.edu",
+                "role": "Principal_Investigator",
+                "institution": "ELU_I_77"
+            },
+            {
+                "first_name": "Embury",
+                "last_name": "Bask",
+                "email": "user@uni.edu",
+                "role": "Researcher",
+                "institution": "ELU_I_77"
+            }
+
+        ],
+        "has_institutional_ethics_approval": true,
+        "institutional_ethics_approval_notes": "Project has ERP. Approval No 987654321",
+        "has_national_ethics_approval": false,
+        "institutional_ethics_approval_notes": "No CNER has been obtained.",
+        "publications": [
+            {
+                "citation": "R Kafe etal....",
+                "doi": "http://doi.org/10.5555/12345678"
+            },
+            {
+                "citation": " E Bask etal.",
+                "doi": "http://doi.org/10.5555/12345678"
+            }
+        ]
+    },
+    {
+        "acronym": "Iron-deficiency",
+        "name": "Iron deficiency in parkinsons disease",
+        "description": "Analysis of Iron function in neuro-degeneration. This is a demonstrator project.",
+        "start_date": "2017-11-01",
+        "end_date": "2019-11-01",
+        "contacts": [
+            {
+                "first_name": "Colman",
+                "last_name": "Level",
+                "email": "user@uni.edu",
+                "role": "Principal_Investigator",
+                "institution": "ELU_I_77"
+            },
+            {
+                "first_name": "Nic",
+                "last_name": "Purple",
+                "email": "user@uni.edu",
+                "role": "Researcher",
+                "institution": "ELU_I_77"
+            },
+            {
+                "first_name": "James",
+                "last_name": "Hue",
+                "email": "user@uni.edu",
+                "role": "Researcher",
+                "institution": "ELU_I_77"
+            }
+        ],
+        "has_institutional_ethics_approval": false,
+        "national_ethics_approval_notes": "Project has CNER. Approval No 123456",
+        "has_national_ethics_approval": true,
+        "publications": [
+            {
+                "citation": "Iron deficiency in Parkinson's Disease: a novel method in ........ (in preparation)",
+                "doi": "http://doi.org/10.5555/12345678"
+            }
+        ]
+    },
+    {
+        "acronym": "GGE-I",
+        "name": "Genomics, Genetics, and Epigenetics Program - Phase I",
+        "description": "This is an imaginary research project created to demonstrate features of DAISY. ",
+        "has_institutional_ethics_approval": true,
+        "has_national_ethics_approval": true,
+        "institutional_ethics_approval_notes": "See attached Uni-LU ERP approval. This is a dummy document for the imaginary GGE-I programme.",
+        "national_ethics_approval_notes": "See attached CNER approval. This is a dummy document for the imaginary GGE-I programme.",
+        "start_date": "2019-04-03",
+        "end_date": "2024-04-25",
+        "contacts": [
+            {
+                "first_name": "Alice",
+                "last_name": "White",
+                "email": "alice.white@uni.lu",
+                "role": "Principal_Investigator",
+                "institution": "ELU_I_77"
+            },
+            {
+                "first_name": "Colman",
+                "last_name": "Level",
+                "email": "user@uni.edu",
+                "role": "Principal_Investigator",
+                "institution": "ELU_I_77"
+            },
+            {
+                "first_name": "John",
+                "last_name": "Black",
+                "email": "john.black@uni.lu",
+                "role": "Principal_Investigator",
+                "institution": "ELU_I_77"
+            }
+        ]
     }
 ]
