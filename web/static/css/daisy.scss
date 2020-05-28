@@ -32,7 +32,13 @@ $spacer: 3px;
 }
 
 body {
-  margin-bottom: 100px;
+  margin-bottom: 20px;
+}
+
+footer {
+  background-color: $primary-color;
+  margin-top: 150px;
+  color:#6c757d;
 }
 
 .internal {
@@ -52,7 +58,7 @@ body {
   right: 24px;
   bottom: 24px;
   padding-top: 24px;
-  margin-bottom: 0;
+  margin-bottom: 50px;
   z-index: 998;
   width: 20px;
 
@@ -399,4 +405,12 @@ form.col-md-12.nice-selects > .form-group.bmd-form-group {
 /* Clickable button that resets edit-boxes */
 i.reset-form-button {
   cursor: pointer;
+}
+
+/* footer logo container */
+.logo-container {
+  background-color: #fff;
+  border-radius: 3px 3px 3px 3px;
+  padding: 0.25rem 0.5rem 0.25rem 0.5rem;
+  text-align: center;
 }
