@@ -158,7 +158,6 @@ class Project(CoreTrackedModel):
 
 
     def to_dict(self):
-
         contact_dicts = []
         for contact in self.contacts.all():
             affiliations = []
@@ -202,8 +201,14 @@ class Project(CoreTrackedModel):
             "contacts": contact_dicts
         }
 
-
         return base_dict
+
+    def serialize_to_export(self):
+        import functools
+        d = self.to_dict()
+        contacts = map(lambda v: f"[{v['first_name']} {v['last_name']}, {v['email']}]", d['contacts'])
+        d['contacts'] = ','.join(contacts)
+        return d
 
 # faster lookup for permissions
 # https://django-guardian.readthedocs.io/en/stable/userguide/performance.html#direct-foreign-keys

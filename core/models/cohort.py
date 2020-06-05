@@ -41,14 +41,29 @@ class Cohort(CoreTrackedModel):
         return self.title
 
     def to_dict(self):
+        owners_dicts = []
+        for owner in self.owners.all():
+            owners_dicts.append(owner.to_dict())
+                
         base_dict = {
             'id': self.id,
             'comments': self.comments,
-            'owners': [o.id for o in self.owners.all()],
+            'owners': owners_dicts,
             'title': self.title,
             'institutes': [i.id for i in self.institutes.all()],
             'ethics_confirmation': self.ethics_confirmation
         }
         return base_dict
 
-    
+    def serialize_to_export(self):
+        import functools
+
+        d = self.to_dict()
+
+        owners = map(lambda v: f"[{v['first_name']} {v['last_name']}, {v['email']}]", d['owners'])
+        d['owners'] = ','.join(owners)
+
+        institutes = map(lambda v: f"[{v.to_dict()['name']}]", self.institutes.all())
+        d['institutes'] = ','.join(institutes)
+
+        return d

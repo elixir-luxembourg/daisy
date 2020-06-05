@@ -14,6 +14,7 @@ from web.views.dashboard import dashboard
 from web.views.data_declarations import DatadeclarationDetailView, DatadeclarationEditView
 from web.views.datasets import DatasetDetailView, DatasetEditView, dataset_list, \
     DatasetCreateView, DatasetDelete
+from web.views.export import contacts_export, cohorts_export, contracts_export, datasets_export, partners_export, projects_export
 from web.views.partner import PartnerCreateView, PartnerDelete, partner_search_view, PartnerDetailView, PartnerEditView, publish_partner
 
 from web.views.projects import ProjectCreateView, ProjectEditView, ProjectDetailView, ProjectDelete
@@ -32,6 +33,7 @@ web_urls = [
     path('profile', profile.ProfileEditView.as_view(), name='profile'),
 
     path('definitions/cohorts/', cohort_list, name="cohorts"),
+    path('definitions/cohorts/export', cohorts_export, name="cohorts_export"),
     path('definitions/cohorts/add', CohortCreateView.as_view(), name='cohort_add'),
     path('definitions/cohorts/<int:pk>/edit', CohortEditView.as_view(), name="cohort_edit"),
     path('definitions/cohorts//<int:pk>/delete', CohortDelete.as_view(), name="cohort_delete"),
@@ -40,6 +42,7 @@ web_urls = [
     path('contracts/', contract_list, name="contracts"),
 
     path('contracts/add/', ContractCreateView.as_view(), name='contract_add'),
+    path('contracts/export/', contracts_export, name='contract_export'),
     path('contracts/<int:pk>/edit', ContractEditView.as_view(), name="contract_edit"),
     path('contracts/<int:pk>/delete', ContractDelete.as_view(), name="contract_delete"),
     path('contracts/<int:pk>/', ContractDetailView.as_view(), name="contract"),
@@ -52,7 +55,8 @@ web_urls = [
     path('definitions/contact/<int:pk>', ContactDetailView.as_view(), name='contact'),
     path('definitions/contact/<int:pk>/edit', ContactEditView.as_view(), name='contact_edit'),
     path('definitions/contacts/add/', ContactCreateView.as_view(), name='contact_add'),
-    path('definitions/contacts', contact_search_view, name='contacts'),
+    path('definitions/contacts/', contact_search_view, name='contacts'),
+    path('definitions/contacts/export', contacts_export, name='contacts_export'),
     path('definitions/contacts/<int:pk>/delete', ContactDelete.as_view(), name="contact_delete"),
 
     path('dataset/<int:pk>/add-data-declaration', data_declarations.data_declarations_add,
@@ -76,6 +80,7 @@ web_urls = [
          name="data_dec_paginated_search"),
 
     path('datasets/add/', DatasetCreateView.as_view(), name='dataset_add'),
+    path('datasets/export', datasets_export, name="datasets_export"),
     path('datasets/', dataset_list, name="datasets"),
     path('dataset/<int:pk>/', DatasetDetailView.as_view(), name="dataset"),
     path('dataset/<int:pk>/edit', DatasetEditView.as_view(), name="dataset_edit"),
@@ -117,7 +122,8 @@ web_urls = [
 
     path('definitions/partners/<int:pk>/edit/', PartnerEditView.as_view(), name='partner_edit'),
     path('definitions/partners/<int:pk>/', PartnerDetailView.as_view(), name="partner"),
-    path('definitions/partners', partner_search_view, name='partners'),
+    path('definitions/partners/', partner_search_view, name='partners'),
+    path('definitions/partners/export', partners_export, name="partners_export"),
     path('definitions/partners/add/', PartnerCreateView.as_view(), name='partner_add'),
     path('definitions/partners/<int:pk>/delete', PartnerDelete.as_view(), name="partner_delete"),
     path('definitions/partners/<int:pk>/publish_partner/', publish_partner, name='publish_partner'),
@@ -132,6 +138,7 @@ web_urls = [
 
     path('projects/', projects.project_list, name="projects"),
     path('projects/add/', ProjectCreateView.as_view(), name='project_add'),
+    path('projects/export', projects_export, name="projects_export"),
     path('project/<int:pk>/edit', ProjectEditView.as_view(), name="project_edit"),
     path('project/<int:pk>/delete', ProjectDelete.as_view(), name="project_delete"),
     path('project/<int:pk>/', ProjectDetailView.as_view(), name="project"),

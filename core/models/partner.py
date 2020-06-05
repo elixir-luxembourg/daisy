@@ -114,7 +114,9 @@ class Partner(CoreTrackedModel):
         }
         return base_dict
 
-
+    def serialize_to_export(self):
+        d = self.to_dict()
+        return d
 
 
 class HomeOrganisation():
