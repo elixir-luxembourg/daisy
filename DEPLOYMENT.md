@@ -250,8 +250,6 @@ sudo systemctl start celery_beat
 
 ### Install database server
 
-Documentation from: https://www.postgresql.org/download/linux/redhat/
-
 ```bash
 sudo yum install https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm
 sudo yum install postgresql10
@@ -260,6 +258,8 @@ sudo /usr/pgsql-10/bin/postgresql-10-setup initdb
 sudo systemctl enable postgresql-10
 sudo systemctl start postgresql-10
 ```
+
+In case the installation fails, follow steps in the [official documentation](https://www.postgresql.org/download/linux/redhat/) for installation of Postgresql 10 on your platform.
 
 ### Create database and roles
 
