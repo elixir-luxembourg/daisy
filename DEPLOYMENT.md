@@ -22,7 +22,7 @@ sudo useradd daisy
 sudo usermod -a -G users daisy
 sudo su - daisy
 mkdir config log
-git clone git@github.com:elixir-luxembourg/daisy.git
+git clone https://github.com/elixir-luxembourg/daisy.git
 exit
 sudo /usr/local/bin/pip install -e /home/daisy/daisy
 sudo /usr/local/bin/pip install gunicorn
