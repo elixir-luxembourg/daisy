@@ -306,6 +306,13 @@ cp /home/daisy/daisy/elixir_daisy/settings_local.template.py   /home/daisy/daisy
 vi /home/daisy/daisy/elixir_daisy/settings_local.py
 ```
 
+<span style="color:red;">Change SECRET_KEY variable:</span>
+
+```
+# SECURITY WARNING: change the secret key used in production and keep it secret !
+SECRET_KEY='<your-new-secret-key>'
+```
+
 Put in the following database configuration to the 'settings_local.py' file.
 
 ```

@@ -8,6 +8,9 @@ AUTHENTICATION_BACKENDS = [
     'guardian.backends.ObjectPermissionBackend',
 ]
 
+# SECURITY WARNING: change the secret key used in production and keep it secret !
+SECRET_KEY = 'qe1lmt43v1n%66vibs0&0s9qw7i!xjs^!i#f#$t_7-r8n&=+sp'
+
 COMPANY = 'LCSB'  # Used for generating some models' verbose names
 
 # Placeholders on login page
