@@ -10,6 +10,16 @@ AUTHENTICATION_BACKENDS = [
 
 COMPANY = 'LCSB'  # Used for generating some models' verbose names
 
+# Placeholders on login page
+# LOGIN_USERNAME_PLACEHOLDER = ''
+# LOGIN_PASSWORD_PLACEHOLDER = ''
+
+# Optional username suffixes
+# Setting this variable allows the user to login with a prefix only. Suffix is concatenated to create full user name)
+# LOGIN_USERNAME_SUFFIX = ''
+# This variable will be stripped from an entered user name and replaced by LOGIN_USERNAME_SUFFIX to create full user name
+# LOGIN_USERNAME_ALTERNATIVE_SUFFIX = ''
+
 # Uncomment the following lines if LDAP authentication will be used and user definitions will be bulk imported from LDAP
 # AUTHENTICATION_BACKENDS = ['django_auth_ldap.backend.LDAPBackend'] + AUTHENTICATION_BACKENDS
 # AUTH_LDAP_SERVER_URI = 'ldap://XXXXXXX:389'
