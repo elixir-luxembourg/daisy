@@ -69,6 +69,10 @@ You need configure the solr core 'daisy'. To do so you need to create 'schema.xm
 ```bash
 sudo cp /home/daisy/daisy/docker/solr/schema.xml /var/solr/data/daisy/conf/
 sudo cp /home/daisy/daisy/docker/solr/solrconfig.xml /var/solr/data/daisy/conf/
+```
+
+Grant ownership and change privileges of `/var/solr` folder
+```
 sudo chown -R solr:users /var/solr
 sudo chmod -R 775 /var/solr
 ```
