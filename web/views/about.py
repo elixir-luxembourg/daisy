@@ -2,16 +2,14 @@ from django.shortcuts import render
 from stronghold.decorators import public
 from django.conf import settings
 
+
 @public
 def about(request):
 
-    context = {
-        "app_version": pkg_resources.require("elixir-daisy")[0].version,
-        "demo_mode":settings.DEMO_MODE
+    context = {"demo_mode": getattr(settings, 'DEMO_MODE', False)}
 
-
-    }
     return render(
         request,
-        'about.html'
+        'about.html',
+        context
     )
