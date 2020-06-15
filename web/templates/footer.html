@@ -1,11 +1,9 @@
 {% load static %}
 <footer>
-        <div class="row justify-content-md-center">
-            <div class="col-md-4 col-xs-2 mx-1 text-left align-self-center">
-                <small>Daisy - Data Information SYstem for GDPR compliance</small>
-            </div>
-            <div class="col-md-auto col-xs-2 py-1 px-3 align-self-center">
-                <div class="logo-container">
+    <div class="fixed-bottom align-self-center">
+        <div class="container">
+            <div class="logo-container">
+                <p class="text-muted credit" style="color:#fff">Powered by:   &nbsp;&nbsp;
                     <a href="https://www.uni.lu">
                         <img src="{% static 'images/Uni-LU.svg' %}" alt="uni-lu logo" height="40px"/>
                     </a>
@@ -15,12 +13,10 @@
                     <a href="https://www.elixir-luxembourg.org">
                         <img src="{% static 'images/ELIXIR_LU_WB.svg' %}" alt="elixir luxembourg logo" height="40px"/>
                     </a>
-                </div>
-                <!--<small></small>Copyright © Université du Luxembourg 2019. All rights reserved.</small>-->
+                </p>
             </div>
-            <div class="col-md-4 col-xs-2 mx-1 text-right align-self-center">
-                <small>Version - {{ app_version }}</small>
-            </div>
+            <!--<small></small>Copyright © Université du Luxembourg 2019. All rights reserved.</small>-->
         </div>
-        <!-- Grid row-->
+    </div>
+    <!-- Grid row-->
 </footer>
