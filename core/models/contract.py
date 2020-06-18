@@ -140,7 +140,7 @@ class Contract(CoreModel):
             'project': self.project,
             'local_custodians': contact_dicts,
             'OTHER_DATA': 'See models/contract.py'
-            # TODO: Some fields are missing, this might need to be continuted
+            # TODO: Some fields are missing, this might need to be continued
         }
         return base_dict
 
@@ -150,7 +150,9 @@ class Contract(CoreModel):
         d = self.to_dict()
 
         local_custodians = map(lambda v: f"[{v['first_name']} {v['last_name']}, {v['email']}]", d['local_custodians'])
+
         d['local_custodians'] = ','.join(local_custodians)
 
-        d['project'] = d['project'].title
+        if 'project' in d and d['project']:
+            d['project'] = d['project'].title
         return d
