@@ -1,22 +1,21 @@
 {% for project in data.projects %}
     <div class="row">
-        <div class="col-md-9 mb-4 card-item card">
+        <div class="col-md-11 mb-4 card-item card">
             <div class="card-body">
                 <h2 class="card-title">
-                    {{project.acronym}} <small>{% if project.title %}- {{project.title}}{% endif %}</small>
+                    <a href="{% url 'project' pk=project.pk %}">{{project.acronym}}</a>
+                    {% if project.title %}<small>- {{project.title}}</small>{% endif %}
                 </h2>
                 <ul class="card-text">
                     {% if  project.project_web_page %}<li>Web: {{ project.project_web_page }}</li>{% endif %}
-                    <li>Publications: <span class="badge badge-pill badge-info">{{ project.publications|length }}</span></li>
-
+                    <li>
+                      <strong>Publications:</strong> <span class="badge badge-pill badge-info">{{ project.publications|length }}</span>
+                    </li>
                 </ul>
-                <a href="{% url 'project' pk=project.pk %}" class="btn btn-primary">Details</a>
+                <a href="{% url 'project' pk=project.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
             </div>
         </div>
     </div>
 {% empty %}
     <p>No results</p>
 {% endfor %}
-
-
-

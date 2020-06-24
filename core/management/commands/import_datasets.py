@@ -2,7 +2,7 @@ import os
 
 from django.core.management import BaseCommand, CommandError
 
-from core.importer.datadecs_importer import DatadecsImporter
+
 from core.importer.datasets_importer import DatasetsImporter
 
 JSON_SUFFIX = '.json'
@@ -29,20 +29,13 @@ class Command(BaseCommand):
             path_to_json_directory = options.get('d')
             verbose = options.get('verbose')
             exxit = options.get('exit')
-            importer = {"dataset": DatasetsImporter(), "datadec": DatadecsImporter()}
+            importer = DatasetsImporter()
 
             # We import all dataset files first
             for json_file_path in os.listdir(path_to_json_directory):
-                if json_file_path.startswith("dataset") and json_file_path.endswith(JSON_SUFFIX):
-                    self.import_file(importer['dataset'], os.path.join(path_to_json_directory, json_file_path), verbose,
+                if json_file_path.endswith(JSON_SUFFIX):
+                    self.import_file(importer, os.path.join(path_to_json_directory, json_file_path), verbose,
                                      exxit)
-
-            # Then we import all datadec files
-            for json_file_path in os.listdir(path_to_json_directory):
-                if json_file_path.startswith("datadec") and json_file_path.endswith(JSON_SUFFIX):
-                    self.import_file(importer['datadec'], os.path.join(path_to_json_directory, json_file_path), verbose,
-                                     exxit)
-
         except Exception as e:
             self.stderr.write(
                 self.style.ERROR("Something went wrong during the import! Is the path valid? Is the file valid?"))

@@ -39,13 +39,13 @@ def users(request):
 @public
 def cohorts(request):
     return JsonResponse({
-        "results": [cohort.to_dict() for cohort in Cohort.objects.all()]
+        "results": [cohort.to_dict() for cohort in Cohort.objects.filter(is_published=True)]
     })
 
 @public
 def partners(request):
     return JsonResponse({
-        "results": [partner.to_dict() for partner in Partner.objects.all()]
+        "results": [partner.to_dict() for partner in Partner.objects.filter(is_published=True)]
     })
 
 @public

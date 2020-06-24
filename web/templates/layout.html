@@ -6,6 +6,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="version" content="{{ app_version }}">
 
     <!-- Material Design for Bootstrap fonts and icons -->
     <link rel="stylesheet" href="{% static 'css/gfonts.css' %}">
@@ -53,7 +54,7 @@
 {% endblock %}
 <!-- Modal -->
 <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalLabel"></h5>
@@ -66,6 +67,7 @@
         </div>
     </div>
 </div>
+{% block footer %}{% include 'footer.html' %}{% endblock %}
 </body>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->

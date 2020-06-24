@@ -1,29 +1,27 @@
 {% for contact in data.contacts %}
     <div class="row">
-        <div class="col-md-9 mb-4 card-item card">
+        <div class="col-md-11 mb-4 card-item card">
             <div class="card-body">
                 <h2 class="card-title">
-                    {{ contact.first_name }} {{ contact.last_name }}
+                    <a href="{% url 'contact' pk=contact.pk %}">{{ contact.first_name }} {{ contact.last_name }}</a>
                 </h2>
                 <ul class="card-text">
-                    <li>Role: <span class="badge badge-pill badge-secondary">{{ contact.type }}</span>
+                    <li>
+                      <strong>Role:</strong> <span class="badge badge-pill badge-secondary">{{ contact.type }}</span>
                     </li>
-                    <li>Affiliation(s):
+                    <li><strong>Affiliation(s):</strong>
                         {% for partner in contact.partners %}
                             <span class="badge badge-pill badge-primary">{{ partner }}</span>
 
                         {% empty %}
-                            "-"
+                            -
                         {% endfor %}
                     </li>
                 </ul>
-                <a href="{% url 'contact' pk=contact.pk %}" class="btn btn-primary">Details</a>
+                <a href="{% url 'contact' pk=contact.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
             </div>
         </div>
     </div>
 {% empty %}
     <p>No results</p>
 {% endfor %}
-
-
-

@@ -14,6 +14,12 @@ class ProjectForm(ModelForm):
             # Date pickers
             'start_date': DateInput(attrs={'class': 'datepicker'}),
             'end_date': DateInput(attrs={'class': 'datepicker'}),
+            # Smaller text-areas
+            'description': forms.Textarea(attrs={'rows': 6, 'cols': 40}),
+            'cner_notes': forms.Textarea(attrs={'rows': 2, 'cols': 40}),
+            'erp_notes': forms.Textarea(attrs={'rows': 2, 'cols': 40}),
+            'comments': forms.Textarea(attrs={'rows': 2, 'cols': 40}),
+            'dpia': forms.Textarea(attrs={'rows': 2, 'cols': 40})
         }
         exclude = ['publications', 'contacts']
 
@@ -129,5 +135,3 @@ class DatasetSelection(forms.Form):
         heading_help = 'Select the the dataset the project uses.'
 
     dataset = forms.ModelChoiceField(queryset=Dataset.objects.all(), help_text='Select the dataset.')
-
-

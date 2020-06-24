@@ -26,7 +26,7 @@ def test_export_projects(celery_session_worker, contact_types, partners, gdpr_ro
     project_dicts = dict['items']
     assert 2 == len(project_dicts)
 
-    assert "Test_PRJ" ==  project_dicts[0]['name']
+    assert "Title of test project." ==  project_dicts[0]['name']
     assert 2 == len(project_dicts[0]['contacts'])
 
     #TODO add check of more fields and schema validation

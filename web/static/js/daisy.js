@@ -36,14 +36,25 @@ function initDatetimepickers(elements) {
 function initFormsets(elements) {
 
     elements.formset({
-        addText: 'add new',
-        deleteText: 'remove'
+        addText: '<h5><button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button"><i class="material-icons">add</i><div class="ripple-container"></div></button><span class="ml-1">Add new</span></h5>',
+        deleteText: '<i class="material-icons">delete</i>'
     });
 }
 
 $(document).ready(function () {
 
     csrftoken = Cookies.get("csrftoken");
+
+    $(".input-group-text>i.reset-form-button").click(function(){
+        var $t = $(this);  // get the element
+        var target_id = $t.data("resets");  // get the ID of element to reset
+        var submits = $t.data("submits");  // should the form be submitted after resetting?
+        var $el = $("#" + target_id);
+        $el.val('').focus();  // reset the contents of editbox
+        if (submits) {
+            $el.form().submit();  // submit the form
+        }
+    });
 
     $('#users_table').DataTable();
 

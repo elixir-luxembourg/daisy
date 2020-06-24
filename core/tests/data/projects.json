@@ -1,7 +1,7 @@
 [
     {
         "acronym": "In vitro disease modeling",
-        "title": "Parkinson's disease in vitro disease modeling - Focus on genes ........., .",
+        "name": "Parkinson's disease in vitro disease modeling - Focus on genes ........., .",
         "description": "Generation of disease specific iPSCs; ...............",
         "start_date": "2014-01-01",
         "end_date": "",
@@ -9,18 +9,21 @@
             {
                 "first_name": "Joanne",
                 "last_name": "Swift",
+                "email": "user@uni.edu",
                 "role": "Principal_Investigator",
                 "institution": "ELU_I_77"
             },
             {
                 "first_name": "Rebecca",
                 "last_name": "Kafe",
+                "email": "user@uni.edu",
                 "role": "Principal_Investigator",
                 "institution": "ELU_I_77"
             },
             {
                 "first_name": "Embury",
                 "last_name": "Bask",
+                "email": "user@uni.edu",
                 "role": "Researcher",
                 "institution": "ELU_I_77"
             }
@@ -31,40 +34,44 @@
         "institutional_ethics_approval_notes": "test notes 123",
         "publications": [
             {
-                "citation_string": "Paper 1 citation string...."
+                "citation": "Paper 1 citation string...."
             },
             {
-                "citation_string": " Paper 2 citation string..."
+                "citation": " Paper 2 citation string..."
             }
         ]
     },
     {
         "acronym": "CCCC deficiency",
-        "title": "CCCC deficiency",
+        "name": "CCCC deficiency",
         "description": "Analysis of CCCC function in human disease",
         "start_date": "2016-11-01",
         "contacts": [
             {
                 "first_name": "Colman",
                 "last_name": "Level",
+                "email": "user@uni.edu",
                 "role": "Principal_Investigator",
                 "institution": "ELU_I_77"
             },
             {
                 "first_name": "Colman",
                 "last_name": "Level",
+                "email": "user@uni.edu",
                 "role": "Researcher",
                 "institution": "ELU_I_77"
             },
             {
                 "first_name": "Nic",
                 "last_name": "Purple",
+                "email": "user@uni.edu",
                 "role": "Researcher",
                 "institution": "ELU_I_77"
             },
             {
                 "first_name": "James",
                 "last_name": "BK",
+                "email": "user@uni.edu",
                 "role": "Researcher",
                 "institution": "ELU_I_77"
             }
@@ -75,7 +82,7 @@
         "national_ethics_approval_notes": "We analyse samples ........",
         "publications": [
             {
-                "citation_string": "CCCC deficiency: a novel method in ........ (in preparation)"
+                "citation": "CCCC deficiency: a novel method in ........ (in preparation)"
             }
         ]
     }

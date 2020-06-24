@@ -158,7 +158,6 @@ class Project(CoreTrackedModel):
 
 
     def to_dict(self):
-
         contact_dicts = []
         for contact in self.contacts.all():
             affiliations = []
@@ -180,12 +179,18 @@ class Project(CoreTrackedModel):
                  "role":  "Principal_Investigator" if lc.is_part_of(constants.Groups.VIP.name) else "Researcher",
                  "affiliations": [HomeOrganisation().name]})
 
+        pub_dicts = []
+        for pub in self.publications.all():
+            pub_dicts.append(
+                {"citation": pub.citation if pub.citation else None,
+                 "doi": pub.doi if pub.doi else None})
+
         base_dict = {
             "source": settings.SERVER_URL,
             "id_at_source": self.id.__str__(),
-            "name": self.acronym,
+            "acronym": self.acronym,
             "elu_accession": self.elu_accession if self.elu_accession else None,
-            "title": self.title if self.title else None,
+            "name": self.title if self.title else None,
             "description":  self.description if self.description else None,
             "has_institutional_ethics_approval": self.has_erp,
             "has_national_ethics_approval": self.has_cner,
@@ -196,8 +201,14 @@ class Project(CoreTrackedModel):
             "contacts": contact_dicts
         }
 
-
         return base_dict
+
+    def serialize_to_export(self):
+        import functools
+        d = self.to_dict()
+        contacts = map(lambda v: f"[{v['first_name']} {v['last_name']}, {v['email']}]", d['contacts'])
+        d['contacts'] = ','.join(contacts)
+        return d
 
 # faster lookup for permissions
 # https://django-guardian.readthedocs.io/en/stable/userguide/performance.html#direct-foreign-keys

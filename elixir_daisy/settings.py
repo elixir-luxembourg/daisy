@@ -15,7 +15,7 @@ import os
 import pytz
 
 COMPANY = 'LCSB'  # Used for generating some models' verbose names
-
+DEMO_MODE = False
 
 AUTH_USER_MODEL = 'core.User'
 
@@ -85,6 +85,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'web.views.context_processors.daisy_version'
             ],
         },
     },

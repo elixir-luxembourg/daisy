@@ -1,5 +1,6 @@
 {% extends 'cohorts/cohort_form.html' %}
 
-{% block title %}Cohort - Edit{% endblock %}
-{% block card_title %}Edit cohort{% endblock %}
-{% block content_title %}Cohort "<strong>{{ cohort.title }}</strong>"{% endblock %}
+{% block title %}{% endblock %}
+{% block card_title %}Edit cohort - <strong>{{ cohort.title }}</strong>{% endblock %}
+{% block jumbotron_class %}d-none{% endblock %}
+{% block content_title %}Cohort {{ cohort.title }}{% endblock %}

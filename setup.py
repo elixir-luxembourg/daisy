@@ -7,13 +7,14 @@ except ImportError:
     from distutils.core import setup
 
 requirements = [
-    'Django==2.2.8',
+    'Django==2.2.10',
     'django-auth-ldap==1.7.0',
     'django-celery-beat==1.4.0',
     'django-celery-results==1.0.4',
     'django-compressor==2.2',
     'django-debug-toolbar==1.11',
     'django-enumchoicefield==1.1.0',
+    'django-excel-response==2.0.4',
     'django-formtools==2.1',
     'django-guardian==1.5.0',
     'django-haystack==2.8.1',
@@ -46,7 +47,7 @@ dev_requirements = [
 
 setup(
     name='elixir-daisy',
-    version='1.2.0',
+    version='1.4.0',
     description="Elixir-LU DAISY",
     author="Pinar Alper, Valentin Grouès, Yohan Jarosz, Jacek Lebioda, Kavita Rege",
     author_email='valentin.groues@uni.lu',

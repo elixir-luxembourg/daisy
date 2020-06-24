@@ -1,25 +1,52 @@
 <div class="row">
-    <h1 class="display-4">Search {{title}}</h1>
+    <div class="col-6">
+        <h1 class="display-4">
+            Browse {{title}}
+        </h1>
+    </div>
+    <div class="col-5">
+        {% if request.user.is_superuser %}
+            <a class="btn btn-secondary btn-outline float-right" href="export?{% if filters %}filters={{ filters }}&{% endif %}{% if order_by %}order_by={{ order_by | default:'' }}&{% endif %}{% if query %}query={{ query | default:'' }}{% endif %}">Save the results as xlsx</a>
+        {% endif %}
+    </div>
 </div>
 <div class="row">
-    <div class="col">
-        <form class="form-inline" method="get" action="{% url url %}">
-            <div class="form-group">
-                <label for="query" class="bmd-label-floating">Query</label>
-                <input type='text' class="form-control" name='query' value='{{ query }}'/>
+    <div class="col-md-12 col-lg-11">
+        <div class="row">
+            <div class="col-xl-5 col-lg-12">
+                <form class="form-inline" method="get" action="{% url url %}">
+                    <div class="form-group">
+                        <label for="query" class="bmd-label-floating">
+                            &nbsp;<i class="material-icons">search</i> Query
+                        </label>
+                        <input id="query_edit" type='text' class="form-control border border-top-0 bg-white" name='query' value='{{ query }}'/>
+
+                        {% if query %}
+                        <div class="input-group-append bg-white">
+                            <span class="input-group-text">
+                                 <i class="material-icons close reset-form-button" data-resets="query_edit" data-submits="yes">close</i>
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <span class="form-group bmd-form-group"> <!-- needed to match padding for floating labels -->
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </span>
+                </form>
             </div>
-            <span class="form-group bmd-form-group"> <!-- needed to match padding for floating labels -->
-            <button type="submit" class="btn btn-primary">Search</button>
-        </span>
-        </form>
-    </div>
-    {% if order_by_fields %}
-    <div class="col mr-auto">
-        <div class="btn-group" role="group">
-            {% for field in order_by_fields %}
-                {% orderbylink search_url field %}
-            {% endfor %}
+    
+            <div class="col-xl-7 col-lg-12 mt-4 mb-2">
+                {% if order_by_fields %}
+                <div class="mr-auto float-right">
+                    <div class="btn-group-sm" role="group">
+                        {% for field in order_by_fields %}
+                            {% orderbylink search_url field %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
         </div>
     </div>
-    {% endif %}
 </div>
