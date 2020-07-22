@@ -159,7 +159,7 @@ class DatasetsImporter(BaseImporter):
                     backend = StorageResource.objects.get(slug=backend_name)
                 except StorageResource.DoesNotExist:
                     raise DatasetImportError(data=f'Cannot find StorageResource with slug: "{backend_name}".')
-                category = self.process_category(storage_location_dict)
+                category = self.process_location_category(storage_location_dict)
 
 
                 location_delimeted = '\n'.join(storage_location_dict['locations'])
@@ -215,7 +215,7 @@ class DatasetsImporter(BaseImporter):
         transfers = dataset_dict.get('transfers', [])
         return [process_transfer(transfer_dict, dataset) for transfer_dict in transfers]
 
-    def process_category(self, storage_location_dict):
+    def process_location_category(self, storage_location_dict):
         category_str = storage_location_dict.get('category', '').strip().lower()
         try:
             return StorageLocationCategory[category_str]
