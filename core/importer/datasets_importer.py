@@ -1,6 +1,3 @@
-import json
-import sys
-
 from core.exceptions import DatasetImportError
 from core.importer.base_importer import BaseImporter
 from core.models import Dataset, DataDeclaration, Project, StorageResource, Partner, \
@@ -10,6 +7,7 @@ from core.models.data_declaration import ShareCategory, ConsentStatus, Deidentif
 from core.models.share import Share
 from core.models.storage_location import StorageLocationCategory, DataLocation
 
+
 class DatasetsImporter(BaseImporter):
     """
     `DatasetsImporter`, parse json representation of a set of datasets and store them in the database
@@ -18,29 +16,7 @@ class DatasetsImporter(BaseImporter):
     class DateImportException(Exception):
         pass
 
-    def import_json(self, json_string, stop_on_error=False, verbose=False):
-        self.logger.info('Import started for file')
-        result = True
-        dataset_list = json.loads(json_string)
-        for dataset in dataset_list:
-            self.logger.debug(' * Importing dataset: "{}"...'.format(dataset.get('name', 'N/A')))
-            try:
-                self.process_dataset(dataset)
-            except Exception as e:
-                self.logger.error('Import failed')
-                self.logger.error(str(e))
-                if verbose:
-                    import traceback
-                    ex = traceback.format_exception(*sys.exc_info())
-                    self.logger.error('\n'.join([e for e in ex]))
-                if stop_on_error:
-                    raise e
-                result = False
-            self.logger.info('... completed')
-        self.logger.info('Import result for file: {}'.format('success' if result else 'fail'))
-        return result
-
-    def process_dataset(self, dataset_dict):
+    def process_json(self, dataset_dict):
         try:
             title = dataset_dict['name']
         except KeyError:
