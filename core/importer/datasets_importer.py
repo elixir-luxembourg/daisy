@@ -236,7 +236,9 @@ class DatasetsImporter(BaseImporter):
         datadec.share_category = self.process_access_category(datadec_dict)
         datadec.consent_status = self.process_constent_status(datadec_dict)
         datadec.comments = datadec_dict.get('source_notes', None)
-
+        datadec.embargo_date = datadec_dict.get('embargo_date', None)
+        datadec.storage_duration_criteria = datadec_dict.get("storage_duration_criteria", None)
+        datadec.storage_end_date = datadec_dict.get("storage_end_date", None)
         if 'data_types' in datadec_dict:
             datadec.data_types_received.set(self.process_datatypes(datadec_dict))
 
