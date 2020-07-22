@@ -1,7 +1,6 @@
-from json import loads
-
 from core.importer.base_importer import BaseImporter
 from core.models import Partner, Project, Publication
+
 
 class ProjectsImporter(BaseImporter):
     """
@@ -16,23 +15,7 @@ class ProjectsImporter(BaseImporter):
                 importer.import_json(file_with_projects.read())
     """
 
-    def import_json(self, json_string, stop_on_error=False):
-        try:
-            self.logger.info('Import started"')
-            all_information = loads(json_string)
-            self.logger.debug('Import started"')
-            for project in all_information:
-                self.logger.debug(' * Importing project: "{}"...'.format(project.get('acronym', "N/A")))
-                self.process_project(project)
-                self.logger.debug("   ... success!")
-            self.logger.info('Import succeeded"')
-        except Exception as e:
-            self.logger.error('Import failed"')
-            self.logger.error(str(e))
-            if stop_on_error:
-                raise e
-
-    def process_project(self, project_dict):
+    def process_json(self, project_dict):
 
         publications = [self.process_publication(publication_dict)
                         for publication_dict

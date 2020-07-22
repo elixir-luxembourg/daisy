@@ -1,3 +1,5 @@
+import json
+import sys
 import re
 
 from core.models import Partner, Contact, ContactType
@@ -18,7 +20,33 @@ class BaseImporter:
 
     logger = DaisyLogger(__name__)
 
-    def process_contacts(self, project_dict):
+    def import_json(self, json_string, stop_on_error=False, verbose=False):
+        self.logger.info('Import started for file')
+        result = True
+        json_list = json.loads(json_string)
+        for item in json_list:
+            self.logger.debug(' * Importing item: "{}"...'.format(item.get('name', 'N/A')))
+            try:
+                self.process_json(item)
+            except Exception as e:
+                self.logger.error('Import failed')
+                self.logger.error(str(e))
+                if verbose:
+                    import traceback
+                    ex = traceback.format_exception(*sys.exc_info())
+                    self.logger.error('\n'.join([e for e in ex]))
+                if stop_on_error:
+                    raise e
+                result = False
+            self.logger.info('... completed')
+        self.logger.info('Import result for file: {}'.format('success' if result else 'fail'))
+        return result
+
+    def process_json(self, import_dict):
+        raise NotImplementedError("Abstract method: Implement this method in the child class.")
+
+
+    def process_contacts(self, contacts_list):
         local_custodians = []
         local_personnel = []
         external_contacts = []
