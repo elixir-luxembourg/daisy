@@ -50,19 +50,21 @@ class BaseImporter:
         local_custodians = []
         local_personnel = []
         external_contacts = []
-
-        home_organisation =  Partner.objects.get(acronym=settings.COMPANY)
-
-        for contact_dict in project_dict.get('contacts', []):
+        home_organisation = Partner.objects.get(acronym=settings.COMPANY)
+        for contact_dict in contacts_list:
             first_name = contact_dict.get('first_name').strip()
             last_name = contact_dict.get('last_name').strip()
             email = contact_dict.get('email','').strip()
             full_name = "{} {}".format(first_name, last_name)
             role_name = contact_dict.get('role')
-            if home_organisation.elu_accession == contact_dict.get('institution').strip():
-                user = (User.objects.filter(first_name__icontains=first_name.lower(),
-                                            last_name__icontains=last_name.lower()) | User.objects.filter(
-                    first_name__icontains=first_name.upper(), last_name__icontains=last_name.upper())).first()
+            is_local_contact = False
+            for affiliation in contact_dict.get("affiliations"):
+                if affiliation == home_organisation.name:
+                    is_local_contact = True
+                    break
+            if is_local_contact:
+                user = User.objects.filter(first_name__icontains=first_name.lower(),
+                                        last_name__icontains=last_name.lower()).first()
                 if user is None:
                     self.logger.warning('no user found for %s an inactive user will be created', full_name)
 
