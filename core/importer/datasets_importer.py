@@ -39,7 +39,7 @@ class DatasetsImporter(BaseImporter):
 
         dataset.sensitivity = dataset_dict.get('sensitivity', None)
 
-        local_custodians, local_personnel, external_contacts = self.process_contacts(dataset_dict)
+        local_custodians, local_personnel, external_contacts = self.process_contacts(dataset_dict.get("contacts", []))
 
         if local_custodians:
             dataset.local_custodians.set(local_custodians, clear=True)

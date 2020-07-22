@@ -67,7 +67,7 @@ class ProjectsImporter(BaseImporter):
 
         project.save()
 
-        local_custodians, local_personnel, external_contacts = self.process_contacts(project_dict)
+        local_custodians, local_personnel, external_contacts = self.process_contacts(project_dict.get('contacts', []))
 
         if local_personnel:
             project.company_personnel.set(local_personnel, clear=True)
