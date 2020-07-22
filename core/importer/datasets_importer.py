@@ -97,10 +97,10 @@ class DatasetsImporter(BaseImporter):
 
     def process_project(self, project_name):
         try:
-            project = Project.objects.get(acronym=project_name.strip())
+            project = Project.objects.get(title=project_name.strip())
         except Project.DoesNotExist:
             project = Project.objects.create(
-                acronym=project_name.strip()
+                title=project_name.strip()
             )
         return project
 
