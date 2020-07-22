@@ -1,5 +1,3 @@
-import re
-from datetime import datetime
 from json import loads
 
 from core.importer.base_importer import BaseImporter
@@ -17,10 +15,6 @@ class ProjectsImporter(BaseImporter):
                 importer = ProjectsImporter()
                 importer.import_json(file_with_projects.read())
     """
-
-
-    class DateImportException(Exception):
-        pass
 
     def import_json(self, json_string, stop_on_error=False):
         try:
@@ -73,7 +67,7 @@ class ProjectsImporter(BaseImporter):
         try:
             if 'start_date' in project_dict and len(project_dict.get('start_date')) > 0:
                 project.start_date = self.process_date(project_dict.get('start_date'))
-        except ProjectsImporter.DateImportException:
+        except BaseImporter.DateImportException:
             message = "\tCouldn't import the 'start_date'. Does it follow the '%Y-%m-%d' format?\n\t"
             message = message + 'Was: "{}". '.format(project_dict.get('start_date'))
             message = message + "Continuing with empty value."
@@ -110,14 +104,6 @@ class ProjectsImporter(BaseImporter):
             local_custodian.assign_permissions_to_dataset(project)
 
 
-
-
-    @staticmethod
-    def process_partner(partner_string):
-        partner, _ = Partner.objects.get_or_create(name=partner_string)
-        return partner
-
-
     @staticmethod
     def process_publication(publication_dict):
 
@@ -130,19 +116,3 @@ class ProjectsImporter(BaseImporter):
         return publication
 
 
-    @staticmethod
-    def process_date(date_string):
-        regex = r'([0-9]{4})-([0-9]{2})-([0-9]{2})'
-        match = re.match(regex, date_string, re.M | re.I)
-        if match:
-            year = match.group(1)
-            month = match.group(2)
-            day = match.group(3)
-            date_str = "{}-{}-{}".format(year, month, day)
-            try:
-                r = datetime.strptime(date_str, "%Y-%m-%d").date()
-                return r
-            except (TypeError, ValueError):
-                raise ProjectsImporter.DateImportException("Couldn't parse the following date: " + str(date_string))
-        else:
-            raise ProjectsImporter.DateImportException("Couldn't parse the following date: " + str(date_string))

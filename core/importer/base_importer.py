@@ -1,3 +1,4 @@
+import re
 
 from core.models import Partner, Contact, ContactType
 from core.models import User
@@ -5,11 +6,15 @@ from core.utils import DaisyLogger
 from django.conf import settings
 from core.constants import Groups as GroupConstants
 from django.contrib.auth.models import Group
-
+from datetime import datetime
 
 PRINCIPAL_INVESTIGATOR = 'Principal_Investigator'
 
 class BaseImporter:
+
+
+    class DateImportException(Exception):
+        pass
 
     logger = DaisyLogger(__name__)
 
@@ -68,4 +73,26 @@ class BaseImporter:
                     external_contacts.append(contact)
 
         return local_custodians, local_personnel, external_contacts
+
+    @staticmethod
+    def process_partner(partner_dict):
+        partner, _ = Partner.objects.get_or_create(name=partner_dict.get('name'))
+        return partner
+
+
+    def process_date(self, date_string):
+        regex = r'([0-9]{4})-([0-9]{2})-([0-9]{2})'
+        match = re.match(regex, date_string, re.M | re.I)
+        if match:
+            year = match.group(1)
+            month = match.group(2)
+            day = match.group(3)
+            date_str = "{}-{}-{}".format(year, month, day)
+            try:
+                r = datetime.strptime(date_str, "%Y-%m-%d").date()
+                return r
+            except (TypeError, ValueError):
+                raise self.DateImportException("Couldn't parse the following date: " + str(date_string))
+        else:
+            raise self.DateImportException("Couldn't parse the following date: " + str(date_string))
 

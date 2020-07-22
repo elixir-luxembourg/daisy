@@ -190,9 +190,8 @@ class DatasetsImporter(BaseImporter):
             share = Share()
             share.share_notes = share_dict.get('transfer_details')
             share.dataset = dataset
-            share_institution_elu = share_dict.get('partner')
-            share_institution = Partner.objects.get(elu_accession=share_institution_elu.strip())
-            share.partner = share_institution
+            share.partner = self.process_partner(share_dict.get('partner'))
+            share_dict.granted_on = share_dict.get('transfer_date', None)
             # project = dataset.project
             # if share_institution and project:
             #     contracts = project.contracts.all()
