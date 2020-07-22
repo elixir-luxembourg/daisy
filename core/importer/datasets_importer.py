@@ -60,6 +60,7 @@ class DatasetsImporter(BaseImporter):
             dataset.shares.set(shares, bulk=False)
 
         dataset.save()
+        dataset.updated = True
         for local_custodian in local_custodians:
             local_custodian.assign_permissions_to_dataset(dataset)
 
@@ -249,7 +250,7 @@ class DatasetsImporter(BaseImporter):
         self.process_use_restrictions(datadec, datadec_dict)
         datadec.dataset = dataset
         datadec.save()
-
+        datadec.updated = True
 
     def process_datatypes(self, datadec_dict):
         datatypes = []
