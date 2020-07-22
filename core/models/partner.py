@@ -102,7 +102,7 @@ class Partner(CoreTrackedModel):
 
     def to_dict(self):
         base_dict = {
-            "pk": self.id.__str__(),
+            "source": settings.SERVER_URL,
             "name": self.name,
             "elu_accession": self.elu_accession if self.elu_accession else None,
             "acronym": self.acronym if self.acronym else None,
