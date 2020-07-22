@@ -47,7 +47,7 @@ class PartnersExporter:
                         raise e
                 logger.debug("   ... complete!")
             json.dump({
-                "$schema": "https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/elu-partner.json",
+                "$schema": "https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/elu-institution.json",
                 "items": partner_dicts}, buffer , indent=4)
             return buffer
 
