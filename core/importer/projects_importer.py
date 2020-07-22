@@ -28,7 +28,7 @@ class ProjectsImporter(BaseImporter):
         cner_notes = project_dict.get('national_ethics_approval_notes', None)
         erp_notes = project_dict.get('institutional_ethics_approval_notes', None)
         acronym = project_dict.get('acronym')
-        project = Project.objects.filter(acronym=acronym).first()
+        project = Project.objects.filter(title=title).first()
         if project is None:
             project = Project.objects.create(acronym=acronym,
                                              title=title,
