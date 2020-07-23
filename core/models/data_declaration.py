@@ -189,6 +189,9 @@ class DataDeclaration(CoreModel):
 
 
     def to_dict(self):
+        use_restrictions_list = []
+        for restriction in self.data_use_restrictions.all():
+            use_restrictions_list.append(restriction.to_dict())
 
         base_dict = {
             "title": self.title,
@@ -201,7 +204,8 @@ class DataDeclaration(CoreModel):
             "special_subjects_description": self.special_subjects_description,
             "embargo_date": self.embargo_date.strftime('%Y-%m-%d') if self.embargo_date else None,
             "storage_end_date": self.end_of_storage_duration.strftime('%Y-%m-%d') if self.end_of_storage_duration else None,
-            "storage_duration_criteria": self.storage_duration_criteria if self.storage_duration_criteria else None
+            "storage_duration_criteria": self.storage_duration_criteria if self.storage_duration_criteria else None,
+            "use_restrictions": use_restrictions_list
         }
 
 
