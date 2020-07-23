@@ -34,7 +34,7 @@ class DatasetsImporter(BaseImporter):
         else:
             dataset = Dataset.objects.create(title=title)
 
-        if 'project' in dataset_dict:
+        if 'project' in dataset_dict and dataset_dict['project']:
             dataset.project = self.process_project(dataset_dict['project'])
 
         dataset.sensitivity = dataset_dict.get('sensitivity', None)
