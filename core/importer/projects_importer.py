@@ -48,7 +48,7 @@ class ProjectsImporter(BaseImporter):
             project.erp_notes = erp_notes
 
         try:
-            if 'start_date' in project_dict and len(project_dict.get('start_date')) > 0:
+            if 'start_date' in project_dict and project_dict.get('start_date') and len(project_dict.get('start_date')) > 0:
                 project.start_date = self.process_date(project_dict.get('start_date'))
         except BaseImporter.DateImportException:
             message = "\tCouldn't import the 'start_date'. Does it follow the '%Y-%m-%d' format?\n\t"
@@ -57,7 +57,7 @@ class ProjectsImporter(BaseImporter):
             self.logger.warning(message)
 
         try:
-            if 'end_date' in project_dict and len(project_dict.get('end_date')) > 0:
+            if 'end_date' in project_dict and project_dict.get('end_date') and len(project_dict.get('end_date')) > 0:
                 project.end_date = self.process_date(project_dict.get('end_date'))
         except ProjectsImporter.DateImportException:
             message = "\tCouldn't import the 'end_date'. Does it follow the '%Y-%m-%d' format?\n\t"
