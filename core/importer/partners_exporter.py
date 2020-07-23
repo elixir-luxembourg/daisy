@@ -37,7 +37,7 @@ class PartnersExporter:
                     partner_dicts.append(pd)
 
                 except Exception as e:
-                    logger.error('Import failed')
+                    logger.error('Export failed')
                     logger.error(str(e))
                     if verbose:
                         import traceback
