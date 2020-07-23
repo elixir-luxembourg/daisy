@@ -39,3 +39,6 @@ class UseRestriction(CoreModel):
 
     def __str__(self):
         return "{} - {}".format(self.restriction_class, self.notes)
+
+    def to_dict(self):
+        return {"ga4gh_code": self.restriction_class, "note": self.notes}
