@@ -96,8 +96,8 @@ class BaseImporter:
                         email=email,
                         type=contact_type_pi
                     )
-                    affiliation = Partner.objects.get(elu_accession=contact_dict.get('institution'))
-                    if affiliation:
+                    affiliations = contact_dict.get('affiliations')
+                    for affiliation in affiliations:
                         contact.partners.add(affiliation)
                     contact.save()
                     external_contacts.append(contact)
