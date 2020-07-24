@@ -167,7 +167,7 @@ class DatasetsImporter(BaseImporter):
             share.share_notes = share_dict.get('transfer_details')
             share.dataset = dataset
             share.partner = self.process_partner(share_dict.get('partner'))
-            share_dict.granted_on = share_dict.get('transfer_date', None)
+            share.granted_on = share_dict.get('transfer_date', None)
             # project = dataset.project
             # if share_institution and project:
             #     contracts = project.contracts.all()
@@ -258,7 +258,7 @@ class DatasetsImporter(BaseImporter):
         for datatype_str in datadec_dict.get('data_types', []):
             datatype_str = datatype_str.strip()
             try:
-                datatype, _ = DataType.objects.get(name=datatype_str)
+                datatype = DataType.objects.get(name=datatype_str)
             except DataType.DoesNotExist:
                 self.logger.error('Import failed')
                 raise DatasetImportError(data=f'Cannot find data type: "{datatype_str}".')
