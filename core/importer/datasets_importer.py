@@ -99,7 +99,8 @@ class DatasetsImporter(BaseImporter):
             project = Project.objects.get(title=project_name.strip())
         except Project.DoesNotExist:
             project = Project.objects.create(
-                title=project_name.strip()
+                title=project_name.strip(),
+                acronym=project_name.strip()
             )
         return project
 
