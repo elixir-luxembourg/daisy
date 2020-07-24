@@ -55,19 +55,14 @@ class BaseImporter:
         local_custodians = []
         local_personnel = []
         external_contacts = []
-        home_organisation = Partner.objects.get(acronym=settings.COMPANY)
         for contact_dict in contacts_list:
             first_name = contact_dict.get('first_name').strip()
             last_name = contact_dict.get('last_name').strip()
             email = contact_dict.get('email','').strip()
             full_name = "{} {}".format(first_name, last_name)
             role_name = contact_dict.get('role')
-            is_local_contact = False
-            for affiliation in contact_dict.get("affiliations"):
-                if affiliation == home_organisation.name:
-                    is_local_contact = True
-                    break
-            if is_local_contact:
+            _is_local_contact = self.is_local_contact(contact_dict)
+            if _is_local_contact:
                 user = User.objects.filter(first_name__icontains=first_name.lower(),
                                         last_name__icontains=last_name.lower()).first()
                 if user is None:
@@ -131,3 +126,8 @@ class BaseImporter:
         else:
             raise self.DateImportException("Couldn't parse the following date: " + str(date_string))
 
+    @staticmethod
+    def is_local_contact(contact_dict):
+        home_organisation = Partner.objects.get(acronym=settings.COMPANY)
+        _is_local_contact = home_organisation.name in contact_dict.get("affiliations")
+        return _is_local_contact
