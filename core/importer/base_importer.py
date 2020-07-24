@@ -105,8 +105,8 @@ class BaseImporter:
         return local_custodians, local_personnel, external_contacts
 
     @staticmethod
-    def process_partner(partner_dict):
-        partner, _ = Partner.objects.get_or_create(name=partner_dict.get('name'))
+    def process_partner(partner_name):
+        partner, _ = Partner.objects.get_or_create(name=partner_name)
         return partner
 
 
