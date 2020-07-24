@@ -20,10 +20,15 @@ class BaseImporter:
 
     logger = DaisyLogger(__name__)
 
+    @property
+    def json_schema_validator(self):
+        raise NotImplementedError
+
     def import_json(self, json_string, stop_on_error=False, verbose=False):
         self.logger.info('Import started for file')
         result = True
-        json_list = json.loads(json_string)
+        json_list = json.loads(json_string)['items']
+        self.json_schema_validator.validate_items(json_list, self.logger)
         for item in json_list:
             self.logger.debug(' * Importing item: "{}"...'.format(item.get('name', 'N/A')))
             try:

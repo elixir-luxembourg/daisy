@@ -1,5 +1,7 @@
 from core.importer.base_importer import BaseImporter
 from core.models.partner import Partner, SECTOR_CATEGORY
+from core.importer.JSONSchemaValidator import InstitutionJSONSchemaValidator
+
 
 class PartnersImporter(BaseImporter):
     """
@@ -13,6 +15,8 @@ class PartnersImporter(BaseImporter):
                    importer = PartnersImporter()
                    importer.import_json(file_with_partners.read())
        """
+
+    json_schema_validator = InstitutionJSONSchemaValidator()
 
     def process_json(self, partner_dict):
         try:

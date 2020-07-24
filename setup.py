@@ -35,7 +35,8 @@ requirements = [
     'celery-haystack==0.10',
     'setuptools-scm==3.3.3',
     'django-model-utils==3.1.2',
-    'django-sequences==2.2'
+    'django-sequences==2.2',
+    'jsonschema==3.2.0'
 ]
 
 test_requirements = [
