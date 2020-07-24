@@ -1,5 +1,6 @@
 from core.importer.base_importer import BaseImporter
 from core.models import Partner, Project, Publication
+from core.importer.JSONSchemaValidator import ProjectJSONSchemaValidator
 
 
 class ProjectsImporter(BaseImporter):
@@ -14,6 +15,8 @@ class ProjectsImporter(BaseImporter):
                 importer = ProjectsImporter()
                 importer.import_json(file_with_projects.read())
     """
+
+    json_schema_validator = ProjectJSONSchemaValidator()
 
     def process_json(self, project_dict):
 

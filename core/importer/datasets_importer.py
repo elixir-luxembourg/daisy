@@ -6,15 +6,14 @@ from core.models.access import Access
 from core.models.data_declaration import ShareCategory, ConsentStatus, DeidentificationMethod, SubjectCategory
 from core.models.share import Share
 from core.models.storage_location import StorageLocationCategory, DataLocation
-
+from core.importer.JSONSchemaValidator import DatasetJSONSchemaValidator
 
 class DatasetsImporter(BaseImporter):
     """
     `DatasetsImporter`, parse json representation of a set of datasets and store them in the database
     """
 
-    class DateImportException(Exception):
-        pass
+    json_schema_validator = DatasetJSONSchemaValidator()
 
     def process_json(self, dataset_dict):
         try:

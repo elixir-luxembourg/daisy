@@ -37,3 +37,13 @@ class FixtureImportError(DaisyError):
     def __init__(self, data, msg=None):
         self.data = data
         super().__init__(msg=msg)
+
+
+class JSONSchemaValidationError(DaisyError):
+    """Error when validating data to be imported."""
+
+    default_message = "Error when validating data:' {data}'"
+
+    def __init__(self, data, msg=None):
+        self.data = data
+        super().__init__(msg=msg)
