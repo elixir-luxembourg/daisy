@@ -17,12 +17,12 @@ def test_dummy(celery_session_worker, storage_resources, can_defer_constraint_ch
 def test_import_datasets(celery_session_worker, storage_resources, data_types, partners, gdpr_roles, can_defer_constraint_checks):
     VIP = factories.VIPGroup()
 
-    factories.UserFactory.create(first_name='Igor', last_name='Teal', groups=[VIP])
-    factories.UserFactory.create(first_name='Joanne', last_name='Swift', groups=[VIP])
-    factories.UserFactory.create(first_name='Elgin', last_name='Gray', groups=[VIP])
-    factories.UserFactory.create(first_name='Paul', last_name='Mauve', groups=[VIP])
-    factories.UserFactory.create(first_name='Rob', last_name='Blue', groups=[VIP])
-    factories.UserFactory.create(first_name='Ali', last_name='Gator', groups=[VIP])
+    factories.UserFactory.create(first_name='Igor', last_name='Teal', groups=[VIP], email="user@uni.edu")
+    factories.UserFactory.create(first_name='Joanne', last_name='Swift', groups=[VIP], email="user@uni.edu")
+    factories.UserFactory.create(first_name='Elgin', last_name='Gray', groups=[VIP], email="user@uni.edu")
+    factories.UserFactory.create(first_name='Paul', last_name='Mauve', groups=[VIP], email="user@uni.edu")
+    factories.UserFactory.create(first_name='Rob', last_name='Blue', groups=[VIP], email="user@uni.edu")
+    factories.UserFactory.create(first_name='Ali', last_name='Gator', groups=[VIP], email="user@uni.edu")
 
     data_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../data/datasets.json")
     with open(data_file, "r") as f:
