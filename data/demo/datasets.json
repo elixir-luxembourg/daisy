@@ -1,100 +1,103 @@
-[
-    {
-        "project": "EPIC-DREM",
-        "name": "EPIC-DREM Sequencing data",
-        "description": null,
-        "data_declarations": [
-            {
-                "title": "ChIP-Seq, RNA-seq, ...",
-                "data_types": [
-                    "RNASeq",
-                    "Samples",
-                    "Whole_genome_sequencing"
-                ],
-                "data_type_notes": "Chip-seq  time series data",
-                "access_category": "controlled_access",
-                "subjects_category": "controls",
-                "de_identification": "pseudonymization",
-                "consent_status": "homogeneous",
-                "special_subjects_description": "",
-                "embargo_date": null,
-                "storage_end_date": "2021-04-05",
-                "storage_duration_criteria": "The project PI will assess whether data should be retained for further research at the storage end date.",
-                "has_special_subjects": false,
-                "consent_status": "homogeneous",
-                "use_restrictions": [
-                    {
-                        "ga4gh_code": "COL-[XX]",
-                        "note": "Data is shared as part of the LUX-Epigen programme, a collaboration with CHL, IBBL, LCSB and LSRU."
-                    },
-                    {
-                        "ga4gh_code": "DS-[XX](CC)",
-                        "note": "Data is consented for cancer research studies only."
-                    },
-                    {
-                        "ga4gh_code": "GS-[XX]",
-                        "note": "Data is consented for sharing outside EU/EEA region."
-                    }
-                ]
-            }
-        ],
-        "storages": [
-            {
-                "platform": "application",
-                "locations": [
-                    "https://webdav-r3lab.uni.lu/"
-                ],
-                "category": "master",
-                "accesses": [
-                    "The data is available on the sequencing platform's webdav server."
-                ]
-            }
-        ],
-        "transfers": [],
-        "contacts": [
-            {
-                "first_name": "Alice",
-                "last_name": "White",
-                "email": "alice.white@uni.lu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            },
-            {
-                "first_name": "John",
-                "last_name": "Black",
-                "email": "john.black@uni.lu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            }
-        ]
-    },
-    {
-        "project": "Iron-deficiency",
-        "name": "Iron-deficiency dataset",
-        "data_declarations": [{
-            "title": "PD, small scale integrity data (german cohort)",
-            "data_type_notes": "Small-scale protein, mRNA or mtDNA integrity data, cell and mitochondrial function data\n",
-            "data_types": [
-                "Other",
-                "Samples"
-            ],
-            "de_identification": "pseudonymization",
-            "subjects_category": "cases_and_controls",
-            "has_special_subjects": false,
-            "source_notes": "Data is from collaborator.",
-            "storage_end_date": "2022-02-28",
-            "storage_duration_criteria": "The project PI will assess whether data should be retained for further research at the storage end date.",
-            "use_restrictions": [
+{
+    "items": [
+        {
+            "project": "EPIC-DREM",
+            "name": "EPIC-DREM Sequencing data",
+            "description": "Understanding the gene regulatory interactions underlying cell differentiation and identity",
+            "data_declarations": [
                 {
-                    "ga4gh_code": "PUB",
-                    "note": "Acknowledgement required."
+                    "title": "ChIP-Seq, RNA-seq, ...",
+                    "data_types": [
+                        "RNASeq",
+                        "Samples",
+                        "Whole_genome_sequencing"
+                    ],
+                    "data_type_notes": "Chip-seq  time series data",
+                    "access_category": "controlled_access",
+                    "subjects_category": "controls",
+                    "de_identification": "pseudonymization",
+                    "consent_status": "homogeneous",
+                    "special_subjects_description": "",
+                    "embargo_date": null,
+                    "storage_end_date": "2021-04-05",
+                    "storage_duration_criteria": "The project PI will assess whether data should be retained for further research at the storage end date.",
+                    "has_special_subjects": false,
+                    "consent_status": "homogeneous",
+                    "use_restrictions": [
+                        {
+                            "ga4gh_code": "COL-[XX]",
+                            "note": "Data is shared as part of the LUX-Epigen programme, a collaboration with CHL, IBBL, LCSB and LSRU."
+                        },
+                        {
+                            "ga4gh_code": "DS-[XX](CC)",
+                            "note": "Data is consented for cancer research studies only."
+                        },
+                        {
+                            "ga4gh_code": "GS-[XX]",
+                            "note": "Data is consented for sharing outside EU/EEA region."
+                        }
+                    ]
+                }
+            ],
+            "storages": [
+                {
+                    "platform": "application",
+                    "locations": [
+                        "https://webdav-r3lab.uni.lu/"
+                    ],
+                    "category": "master",
+                    "accesses": [
+                        "The data is available on the sequencing platform's webdav server."
+                    ]
+                }
+            ],
+            "transfers": [],
+            "contacts": [
+                {
+                    "first_name": "Alice",
+                    "last_name": "White",
+                    "email": "alice.white@uni.lu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
                 },
                 {
-                    "ga4gh_code": "TS-[XX]",
-                    "note": "Data is obtained for a limited duration. 2022-02-28"
+                    "first_name": "John",
+                    "last_name": "Black",
+                    "email": "john.black@uni.lu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                }
+            ]
+        },
+        {
+            "project": "Iron-deficiency",
+            "name": "Iron-deficiency dataset",
+            "data_declarations": [
+                {
+                    "title": "PD, small scale integrity data (german cohort)",
+                    "data_type_notes": "Small-scale protein, mRNA or mtDNA integrity data, cell and mitochondrial function data\n",
+                    "data_types": [
+                        "Other",
+                        "Samples"
+                    ],
+                    "de_identification": "pseudonymization",
+                    "subjects_category": "cases_and_controls",
+                    "has_special_subjects": false,
+                    "source_notes": "Data is from collaborator.",
+                    "storage_end_date": "2022-02-28",
+                    "storage_duration_criteria": "The project PI will assess whether data should be retained for further research at the storage end date.",
+                    "use_restrictions": [
+                        {
+                            "ga4gh_code": "PUB",
+                            "note": "Acknowledgement required."
+                        },
+                        {
+                            "ga4gh_code": "TS-[XX]",
+                            "note": "Data is obtained for a limited duration. 2022-02-28"
+                        }
+                    ]
                 }
             ]
         }
-        ]
-    }
-]
+    ]
+}
