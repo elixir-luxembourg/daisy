@@ -25,7 +25,7 @@ COMPANY = 'LCSB'  # Used for generating some models' verbose names
 
 # Uncomment the following lines if LDAP authentication will be used and user definitions will be bulk imported from LDAP
 # import ldap
-# from django_auth_ldap.config import LDAPSearch)
+# from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 # AUTHENTICATION_BACKENDS = ['django_auth_ldap.backend.LDAPBackend'] + AUTHENTICATION_BACKENDS
 # AUTH_LDAP_SERVER_URI = 'ldap://XXXXXXX:389'
 # AUTH_LDAP_BIND_DN = ""
