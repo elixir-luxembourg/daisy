@@ -1,0 +1,37 @@
+{
+  "description": "ELIXIR Luxembourg Projects Schema",
+  "title": "A JSON Schema for describing biomedical research Projects.",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{
+    "$ref": "#/definitions/elu:project"
+  }],
+  "definitions": {
+    "elu:project": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/elu-study.json"
+        }
+      ],
+      "properties": {
+        "has_institutional_ethics_approval": {
+          "type": "boolean"
+        },
+        "institutional_ethics_approval_notes": {
+          "type": ["string", "null"]
+        },
+        "has_national_ethics_approval": {
+          "type": "boolean"
+        },
+        "national_ethics_approval_notes": {
+          "type": ["string", "null"]
+        }
+      }
+    }
+  }
+}
+
+
+
+
