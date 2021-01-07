@@ -4,6 +4,7 @@
             "project": "EPIC-DREM",
             "name": "EPIC-DREM Sequencing data",
             "description": "Understanding the gene regulatory interactions underlying cell differentiation and identity",
+            "source": "https://example.com",
             "data_declarations": [
                 {
                     "title": "ChIP-Seq, RNA-seq, ...",
@@ -16,6 +17,7 @@
                     "access_category": "controlled_access",
                     "subjects_category": "controls",
                     "de_identification": "pseudonymization",
+                    "source": "https://example.com",
                     "consent_status": "homogeneous",
                     "special_subjects_description": "",
                     "embargo_date": null,
@@ -25,16 +27,19 @@
                     "consent_status": "homogeneous",
                     "use_restrictions": [
                         {
-                            "ga4gh_code": "COL-[XX]",
-                            "note": "Data is shared as part of the LUX-Epigen programme, a collaboration with CHL, IBBL, LCSB and LSRU."
+                            "use_class": "COL-[XX]",
+                            "use_class_note": "Data is shared as part of the LUX-Epigen programme, a collaboration with CHL, IBBL, LCSB and LSRU.",
+                            "use_restriction_rule": "CONSTRAINTS"
                         },
                         {
-                            "ga4gh_code": "DS-[XX](CC)",
-                            "note": "Data is consented for cancer research studies only."
+                            "use_class": "DS-[XX](CC)",
+                            "use_class_note": "Data is consented for cancer research studies only.",
+                            "use_restriction_rule": "CONSTRAINTS"
                         },
                         {
-                            "ga4gh_code": "GS-[XX]",
-                            "note": "Data is consented for sharing outside EU/EEA region."
+                            "use_class": "GS-[XX]",
+                            "use_class_note": "Data is consented for sharing outside EU/EEA region.",
+                            "use_restriction_rule": "CONSTRAINTS"
                         }
                     ]
                 }
@@ -72,6 +77,7 @@
         {
             "project": "Iron-deficiency",
             "name": "Iron-deficiency dataset",
+            "source": "https://example.com",
             "data_declarations": [
                 {
                     "title": "PD, small scale integrity data (german cohort)",
@@ -88,12 +94,14 @@
                     "storage_duration_criteria": "The project PI will assess whether data should be retained for further research at the storage end date.",
                     "use_restrictions": [
                         {
-                            "ga4gh_code": "PUB",
-                            "note": "Acknowledgement required."
+                            "use_class": "PUB",
+                            "use_class_note": "Acknowledgement required.",
+                            "use_restriction_rule": "CONSTRAINTS"
                         },
                         {
-                            "ga4gh_code": "TS-[XX]",
-                            "note": "Data is obtained for a limited duration. 2022-02-28"
+                            "use_class": "TS-[XX]",
+                            "use_class_note": "Data is obtained for a limited duration. 2022-02-28",
+                            "use_restriction_rule": "CONSTRAINTS"
                         }
                     ]
                 }

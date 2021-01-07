@@ -10,6 +10,7 @@
             "national_ethics_approval_notes": "The umbrella project LUX-Epigen has an institutional and a national ethics approval.",
             "start_date": "2020-03-02",
             "end_date": "2021-04-30",
+            "source": "https://example.com",
             "contacts": [
                 {
                     "first_name": "Alice",
@@ -35,7 +36,7 @@
             ],
             "publications": [
                 {
-                    "citation": "Gérard D, Schmidt F, Ginolhac A, Schmitz M, Halder R, Ebert P, Schulz MH,\nSauter T, Sinkkonen L. Temporal enhancer profiling of parallel lineages\nidentifies AHR and GLIS1 as regulators of mesenchymal multipotency. Nucleic Acids\nRes. 2019 Feb 20;47(3):1141-1163. PubMed PMID:\n30544251; PubMed Central PMCID: PMC6380961.",
+                    "citation_string": "Gérard D, Schmidt F, Ginolhac A, Schmitz M, Halder R, Ebert P, Schulz MH,\nSauter T, Sinkkonen L. Temporal enhancer profiling of parallel lineages\nidentifies AHR and GLIS1 as regulators of mesenchymal multipotency. Nucleic Acids\nRes. 2019 Feb 20;47(3):1141-1163. PubMed PMID:\n30544251; PubMed Central PMCID: PMC6380961.",
                     "doi": "doi: 10.1093/nar/gky1240"
                 }
             ]
@@ -50,6 +51,7 @@
             "national_ethics_approval_notes": "See attached CNER approval. This is a dummy document for the imaginary  LUX-Epigen programme.",
             "start_date": "2017-04-03",
             "end_date": "2022-04-25",
+            "source": "https://example.com",
             "contacts": [
                 {
                     "first_name": "Alice",
@@ -80,6 +82,7 @@
             "description": "This is a demonstrator project.",
             "start_date": "2019-01-01",
             "end_date": "2020-12-01",
+            "source": "https://example.com",
             "contacts": [
                 {
                     "first_name": "Rebecca",
@@ -102,11 +105,11 @@
             "institutional_ethics_approval_notes": "No CNER has been obtained.",
             "publications": [
                 {
-                    "citation": "R Kafe etal....",
+                    "citation_string": "R Kafe etal....",
                     "doi": "http://doi.org/10.5555/12345678"
                 },
                 {
-                    "citation": " E Bask etal.",
+                    "citation_string": " E Bask etal.",
                     "doi": "http://doi.org/10.5555/12345678"
                 }
             ]
@@ -117,6 +120,7 @@
             "description": "Analysis of Iron function in neuro-degeneration. This is a demonstrator project.",
             "start_date": "2017-11-01",
             "end_date": "2019-11-01",
+            "source": "https://example.com",
             "contacts": [
                 {
                     "first_name": "Colman",
@@ -145,7 +149,7 @@
             "has_national_ethics_approval": true,
             "publications": [
                 {
-                    "citation": "Iron deficiency in Parkinson's Disease: a novel method in ........ (in preparation)",
+                    "citation_string": "Iron deficiency in Parkinson's Disease: a novel method in ........ (in preparation)",
                     "doi": "http://doi.org/10.5555/12345678"
                 }
             ]
@@ -159,6 +163,7 @@
             "institutional_ethics_approval_notes": "See attached Uni-LU ERP approval. This is a dummy document for the imaginary GGE-I programme.",
             "national_ethics_approval_notes": "See attached CNER approval. This is a dummy document for the imaginary GGE-I programme.",
             "start_date": "2019-04-03",
+            "source": "https://example.com",
             "end_date": "2024-04-25",
             "contacts": [
                 {
