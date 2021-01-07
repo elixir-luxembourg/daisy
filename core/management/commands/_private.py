@@ -52,8 +52,9 @@ class ImportBaseCommand(BaseCommand):
             self.stdout.write(self.style.SUCCESS("Import was successful!"))
 
         except Exception as e:
+            msg = f"Something went wrong during the import ({__file__}:class {self.__class__.__name__})! Is the path valid? Is the file valid? Details:"
             self.stderr.write(
-                self.style.ERROR("Something went wrong during the import! Is the path valid? Is the file valid?"))
+                self.style.ERROR(msg))
             self.stderr.write(self.style.ERROR(str(e)))
 
     def get_importer(self):
@@ -94,8 +95,9 @@ class ExportBaseCommand(BaseCommand):
                 self.stdout.write(self.style.SUCCESS("Export complete!"))
 
         except Exception as e:
+            msg = f"Something went wrong during the import ({__file__}:class {self.__class__.__name__})! Is the path valid? Is the file valid? Details:"
             self.stderr.write(
-                self.style.ERROR("Something went wrong during the export! Is the path valid? Is the file valid?"))
+                self.style.ERROR(msg))
             self.stderr.write(self.style.ERROR(str(e)))
 
     def get_exporter(self):

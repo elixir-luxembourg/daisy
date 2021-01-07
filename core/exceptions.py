@@ -1,7 +1,7 @@
 class DaisyError(Exception):
     """Base error class for the module."""
 
-    default_message = "Unspecified daisy error"
+    default_message = "Unspecified DAISY error"
 
     def __init__(self, msg=None):
         self._msg = msg or self.default_message
@@ -42,7 +42,7 @@ class FixtureImportError(DaisyError):
 class JSONSchemaValidationError(DaisyError):
     """Error when validating data to be imported."""
 
-    default_message = "Error when validating data:' {data}'"
+    default_message = "Error when validating data against JSON schema:' {data}'"
 
     def __init__(self, data, msg=None):
         self.data = data

@@ -23,8 +23,8 @@ class BaseJSONSchemaValidator:
         for item in item_list:
             try:
                 jsonschema.validate(item, self.schema)
-            except jsonschema.ValidationError:
-                raise JSONSchemaValidationError(item)
+            except jsonschema.ValidationError as e:
+                raise JSONSchemaValidationError(str(e))
         return True
     
     def __init__(self):
