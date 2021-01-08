@@ -1,13 +1,13 @@
 from core.importer.base_importer import BaseImporter
-from core.models import Partner, Project, Publication
 from core.importer.JSONSchemaValidator import ProjectJSONSchemaValidator
+from core.models import Partner, Project, Publication
 
 
 class ProjectsImporter(BaseImporter):
     """
     `ProjectsImporter`, should be able to fill the database with projects' information, based on JSON file
     complying to the schema in:
-     https://git-r3lab.uni.lu/pinar.alper/metadata-tools/blob/master/metadata_tools/resources/elu-study.json
+     https://git-r3lab.uni.lu/pinar.alper/metadata-tools/blob/master/metadata_tools/resources/elu-project.json
 
     Usage example:
         def import_projects():
@@ -19,7 +19,6 @@ class ProjectsImporter(BaseImporter):
     json_schema_validator = ProjectJSONSchemaValidator()
 
     def process_json(self, project_dict):
-
         publications = [self.process_publication(publication_dict)
                         for publication_dict
                         in project_dict.get('publications', [])]
@@ -89,16 +88,30 @@ class ProjectsImporter(BaseImporter):
         for local_custodian in local_custodians:
             local_custodian.assign_permissions_to_dataset(project)
 
-
     @staticmethod
     def process_publication(publication_dict):
+        # First, try to find if the publication is already in our database
+        publication = None
 
-        publication = Publication.objects.create(citation=publication_dict.get('citation'))
+        # Search by DOI
+        if 'doi' in publication_dict and len(publication_dict.get('doi')) > 0:
+            publication = Publication.objects.filter(doi=publication_dict.get('doi'))
+            if len(publication):
+                publication = publication[0]
+        
+        # Search by citation string
+        if publication is None and 'citation_string' in publication_dict and len(publication_dict.get('citation_string')) > 0:
+            publication = Publication.objects.filter(citation_string=publication_dict.get('citation_string'))
+            if len(publication):
+                publication = publication[0]
+
+        # Create a new one if it does not exist
+        if publication is None:
+            publication = Publication.objects.create(citation=publication_dict.get('citation_string'))
+
+        # Then proceed to filling the fields
         if 'doi' in publication_dict:
             publication.doi = publication_dict.get('doi')
-            publication.save()
-
-
+        
+        publication.save()
         return publication
-
-

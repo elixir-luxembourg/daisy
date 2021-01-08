@@ -1,12 +1,12 @@
 from core.exceptions import DatasetImportError
 from core.importer.base_importer import BaseImporter
-from core.models import Dataset, DataDeclaration, Project, StorageResource, Partner, \
-    UseRestriction, DataType
-from core.models.access import Access
-from core.models.data_declaration import ShareCategory, ConsentStatus, DeidentificationMethod, SubjectCategory
-from core.models.share import Share
-from core.models.storage_location import StorageLocationCategory, DataLocation
 from core.importer.JSONSchemaValidator import DatasetJSONSchemaValidator
+from core.models import Access, DataDeclaration, Dataset, DataType, Partner, \
+    Project, StorageResource, Share, UseRestriction
+from core.models.data_declaration import ConsentStatus, DeidentificationMethod, \
+    ShareCategory, SubjectCategory
+from core.models.storage_location import StorageLocationCategory, DataLocation
+
 
 class DatasetsImporter(BaseImporter):
     """
@@ -97,7 +97,15 @@ class DatasetsImporter(BaseImporter):
     def process_project(self, project_name):
         try:
             project = Project.objects.get(title=project_name.strip())
+            return project
         except Project.DoesNotExist:
+            self.logger.warning("Tried to find project with title ='{}'; it was not found. Will try to look for the acronym...".format(project_name))
+
+        try:
+            project = Project.objects.get(acronym=project_name.strip())
+            return project
+        except Project.DoesNotExist:
+            self.logger.warning("Tried to find project with acronym ='{}'; it was not found. Will create a new one.".format(project_name.strip()))
             project = Project.objects.create(
                 title=project_name.strip(),
                 acronym=project_name.strip()
@@ -355,8 +363,8 @@ class DatasetsImporter(BaseImporter):
     def process_use_restrictions(self, data_dec, datadec_dict):
         use_restrictions = []
         for user_restriction_dict in datadec_dict['use_restrictions']:
-            ga4gh_code = user_restriction_dict['ga4gh_code']
-            notes = user_restriction_dict['note']
+            ga4gh_code = user_restriction_dict['use_class']
+            notes = user_restriction_dict['use_class_note']
 
             use_restriction = UseRestriction.objects.create(data_declaration=data_dec, restriction_class=ga4gh_code, notes=notes)
             use_restrictions.append(use_restriction)
