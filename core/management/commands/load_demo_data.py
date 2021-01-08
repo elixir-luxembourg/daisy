@@ -30,7 +30,7 @@ class Command(BaseCommand):
             importer.import_json(json_file_contents)
             self.stdout.write(self.style.SUCCESS("Dataset import successful!"))
 
-    def _load_demo_superuser(self):
+    def _create_demo_superuser(self):
         if User.objects.filter(username='admin').count() == 0:
             admin_usr = User.objects.create_user(username='admin', password='', email='demo.admin@uni.lu')
             admin_usr.is_superuser =True
