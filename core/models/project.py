@@ -163,14 +163,13 @@ class Project(CoreTrackedModel):
             affiliations = []
             for aff in contact.partners.all():
                 affiliations.append(aff.name)
-            contact_dicts.append(
-                {
-                    "first_name": contact.first_name,
-                    "last_name": contact.last_name,
-                    "role": contact.type.name,
-                    "email": contact.email if contact.email else None,
-                    "affiliations": affiliations,
-                })
+            contact_dicts.append({
+                "first_name": contact.first_name,
+                "last_name": contact.last_name,
+                "role": contact.type.name,
+                "email": contact.email if contact.email else None,
+                "affiliations": affiliations,
+            })
         for lc in self.local_custodians.all():
             contact_dicts.append(
                 {"first_name": lc.first_name,
