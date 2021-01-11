@@ -48,12 +48,14 @@
                     "source_notes": "Data is from collaborator.",
                     "use_restrictions": [
                         {
-                            "ga4gh_code": "PS",
-                            "note": "Use is restricted to projects: ABCD"
+                            "use_class": "PS",
+                            "use_class_note": "Use is restricted to projects: ABCD",
+                            "use_restriction_rule": "CONSTRAINTS"
                         },
                         {
-                            "ga4gh_code": "PUB",
-                            "note": "Acknowledgement required."
+                            "use_class": "PUB",
+                            "use_class_note": "Acknowledgement required.",
+                            "use_restriction_rule": "CONSTRAINTS"
                         }
                     ]
                 }
@@ -104,12 +106,14 @@
                     "source_notes": "Data is from collaborator.",
                     "use_restrictions": [
                         {
-                            "ga4gh_code": "PS",
-                            "note": "Use is restricted to projects: Hypertension"
+                            "use_class": "PS",
+                            "use_class_note": "Use is restricted to projects: Hypertension",
+                            "use_restriction_rule": "CONSTRAINTS"
                         },
                         {
-                            "ga4gh_code": "RS-[XX]",
-                            "note": "Use is restricted to research areas: Hypertension-ABC disease"
+                            "use_class": "RS-[XX]",
+                            "use_class_note": "Use is restricted to research areas: Hypertension-ABC disease",
+                            "use_restriction_rule": "CONSTRAINTS"
                         }
                     ]
                 }
@@ -209,8 +213,9 @@
                     "access_category": "controlled_access",
                     "use_restrictions": [
                         {
-                            "ga4gh_code": "PUB",
-                            "note": "Acknowledgement required."
+                            "use_class": "PUB",
+                            "use_class_note": "Acknowledgement required.",
+                            "use_restriction_rule": "CONSTRAINTS"
                         }
                     ]
                 }
@@ -327,16 +332,19 @@
                     "consent_status": "homogeneous",
                     "use_restrictions": [
                         {
-                            "ga4gh_code": "PS",
-                            "note": "Consent form restricts data use to projects XYZ"
+                            "use_class": "PS",
+                            "use_class_note": "Consent form restricts data use to projects XYZ",
+                            "use_restriction_rule": "CONSTRAINTS"
                         },
                         {
-                            "ga4gh_code": "RS-[XX]",
-                            "note": "Data is consented for research onParkinson's disease"
+                            "use_class": "RS-[XX]",
+                            "use_class_note": "Data is consented for research onParkinson's disease",
+                            "use_restriction_rule": "CONSTRAINTS"
                         },
                         {
-                            "ga4gh_code": "GS-[XX]",
-                            "note": "Data is consented for sharing outside institute (Within Luxembourg)"
+                            "use_class": "GS-[XX]",
+                            "use_class_note": "Data is consented for sharing outside institute (Within Luxembourg)",
+                            "use_restriction_rule": "CONSTRAINTS"
                         }
                     ]
                 },
@@ -359,12 +367,14 @@
                     "source_notes": "Data is from collaborator.",
                     "use_restrictions": [
                         {
-                            "ga4gh_code": "PUB",
-                            "note": "Acknowledgement required."
+                            "use_class": "PUB",
+                            "use_class_note": "Acknowledgement required.",
+                            "use_restriction_rule": "CONSTRAINTS"
                         },
                         {
-                            "ga4gh_code": "TS-[XX]",
-                            "note": "Data is obtained for a limited duration. 2021-02-28"
+                            "use_class": "TS-[XX]",
+                            "use_class_note": "Data is obtained for a limited duration. 2021-02-28",
+                            "use_restriction_rule": "CONSTRAINTS"
                         }
                     ]
                 }

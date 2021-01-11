@@ -22,3 +22,9 @@ class PersonalDataType(CoreModel):
 
     def __str__(self):
         return self.name
+
+    def to_dict(self):
+        return {
+            'code': self.code,
+            'name': self.name
+        }

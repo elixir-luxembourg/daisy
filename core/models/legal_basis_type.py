@@ -21,3 +21,9 @@ class LegalBasisType(CoreModel):
 
     def __str__(self):
         return "{} [{}]".format(self.name, self.code)
+
+    def to_dict(self):
+        return {
+            'code': self.code,
+            'name': self.name
+        }
