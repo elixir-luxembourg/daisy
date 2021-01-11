@@ -196,6 +196,7 @@ class DataDeclaration(CoreModel):
         base_dict = {
             "title": self.title,
             "data_types":[ dt.name for dt in list(self.data_types)],
+            "data_types_notes": self.data_types_notes if self.data_types_notes else None,
             "access_category": self.share_category.name if self.share_category else None,
             "subjects_category": self.subjects_category.name if self.subjects_category else None,
             "de_identification":  self.deidentification_method.name  if self.deidentification_method else None,
@@ -205,9 +206,8 @@ class DataDeclaration(CoreModel):
             "embargo_date": self.embargo_date.strftime('%Y-%m-%d') if self.embargo_date else None,
             "storage_end_date": self.end_of_storage_duration.strftime('%Y-%m-%d') if self.end_of_storage_duration else None,
             "storage_duration_criteria": self.storage_duration_criteria if self.storage_duration_criteria else None,
-            "use_restrictions": use_restrictions_list
+            "use_restrictions": use_restrictions_list,
         }
-
 
         return base_dict
 

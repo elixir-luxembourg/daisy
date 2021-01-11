@@ -65,7 +65,19 @@ class BaseImporter:
             _is_local_contact = self.is_local_contact(contact_dict)
             if _is_local_contact:
                 user = User.objects.filter(first_name__icontains=first_name.lower(),
-                                           last_name__icontains=last_name.lower()).first()
+                                           last_name__icontains=last_name.lower())
+                if len(user) > 1:
+                    users = User.objects.filter(first_name__icontains=first_name.lower(),
+                                                last_name__icontains=last_name.lower(),
+                                                email=email)
+                    if len(users) != 1:
+                        msg = 'Something went wrong - there are two contacts with the same first and last name, and it''s impossible to differentiate them'
+                        self.logger.warning(msg, full_name)
+                    user = users.first()
+                elif len(user) == 1:
+                    user = user.first()
+                else:
+                    user = None
                 if user is None:
                     self.logger.warning('No user found for %s - hence an inactive user will be created', full_name)
 

@@ -175,14 +175,22 @@ class Project(CoreTrackedModel):
                 {"first_name": lc.first_name,
                  "last_name": lc.last_name,
                  "email": lc.email,
-                 "role":  "Principal_Investigator" if lc.is_part_of(constants.Groups.VIP.name) else "Researcher",
+                 "role":  "Principal_Investigator" if lc.is_part_of(constants.Groups.VIP.value) else "Researcher",
+                 "affiliations": [HomeOrganisation().name]})
+        for cp in self.company_personnel.all():
+            contact_dicts.append(
+                {"first_name": cp.first_name,
+                 "last_name": cp.last_name,
+                 "email": cp.email,
+                 "role":  "Researcher",
                  "affiliations": [HomeOrganisation().name]})
 
         pub_dicts = []
         for pub in self.publications.all():
-            pub_dicts.append(
-                {"citation": pub.citation if pub.citation else None,
-                 "doi": pub.doi if pub.doi else None})
+            pub_dicts.append({
+                "citation": pub.citation if pub.citation else None,
+                 "doi": pub.doi if pub.doi else None
+            })
 
         base_dict = {
             "source": settings.SERVER_URL,
@@ -196,7 +204,8 @@ class Project(CoreTrackedModel):
             "national_ethics_approval_notes": self.cner_notes if self.cner_notes else None,
             "start_date": self.start_date.strftime('%Y-%m-%d') if self.start_date else None,
             "end_date": self.end_date.strftime('%Y-%m-%d') if self.end_date else None,
-            "contacts": contact_dicts
+            "contacts": contact_dicts,
+            "publications": pub_dicts,
         }
 
         return base_dict

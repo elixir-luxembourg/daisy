@@ -25,6 +25,7 @@ class ProjectsImporter(BaseImporter):
 
         title = project_dict.get('name', "N/A")
         description = project_dict.get('description', None)
+        elu_accession = project_dict.get('elu_accession', None)
         has_cner = project_dict.get('has_national_ethics_approval', False)
         has_erp = project_dict.get('has_institutional_ethics_approval', False)
         cner_notes = project_dict.get('national_ethics_approval_notes', None)
@@ -38,7 +39,8 @@ class ProjectsImporter(BaseImporter):
                                              has_cner=has_cner,
                                              has_erp=has_erp,
                                              cner_notes=cner_notes,
-                                             erp_notes=erp_notes
+                                             erp_notes=erp_notes,
+                                             elu_accession=elu_accession
                                              )
         else:
             self.logger.warning("Project with acronym '{}' already found. It will be updated.".format(acronym))
@@ -48,6 +50,7 @@ class ProjectsImporter(BaseImporter):
             project.has_erp = has_erp
             project.cner_notes = cner_notes
             project.erp_notes = erp_notes
+            project.elu_accession = elu_accession
 
         try:
             if 'start_date' in project_dict and project_dict.get('start_date') and len(project_dict.get('start_date')) > 0:
