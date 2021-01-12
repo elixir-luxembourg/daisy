@@ -25,7 +25,7 @@ class ProjectsImporter(BaseImporter):
 
         title = project_dict.get('name', "N/A")
         description = project_dict.get('description', None)
-        elu_accession = project_dict.get('elu_accession', None)
+        elu_accession = project_dict.get('elu_accession', '-')
         has_cner = project_dict.get('has_national_ethics_approval', False)
         has_erp = project_dict.get('has_institutional_ethics_approval', False)
         cner_notes = project_dict.get('national_ethics_approval_notes', None)
@@ -104,9 +104,11 @@ class ProjectsImporter(BaseImporter):
         
         # Search by citation string
         if publication is None and 'citation_string' in publication_dict and len(publication_dict.get('citation_string')) > 0:
-            publication = Publication.objects.filter(citation_string=publication_dict.get('citation_string'))
+            publication = Publication.objects.filter(citation=publication_dict.get('citation_string'))
             if len(publication):
                 publication = publication[0]
+            else:
+                publication = None
 
         # Create a new one if it does not exist
         if publication is None:
