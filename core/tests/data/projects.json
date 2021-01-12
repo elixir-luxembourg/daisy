@@ -35,10 +35,10 @@
             "institutional_ethics_approval_notes": "test notes 123",
             "publications": [
                 {
-                    "citation": "Paper 1 citation string...."
+                    "citation_string": "Paper 1 citation string...."
                 },
                 {
-                    "citation": " Paper 2 citation string..."
+                    "citation_string": " Paper 2 citation string..."
                 }
             ]
         },
@@ -84,7 +84,7 @@
             "national_ethics_approval_notes": "We analyse samples ........",
             "publications": [
                 {
-                    "citation": "CCCC deficiency: a novel method in ........ (in preparation)"
+                    "citation_string": "CCCC deficiency: a novel method in ........ (in preparation)"
                 }
             ]
         }
