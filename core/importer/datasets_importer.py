@@ -2,7 +2,7 @@ from core.exceptions import DatasetImportError
 from core.importer.base_importer import BaseImporter
 from core.importer.JSONSchemaValidator import DatasetJSONSchemaValidator
 from core.models import Access, DataDeclaration, Dataset, DataType, Partner, \
-    Project, StorageResource, Share, UseRestriction
+    Project, StorageResource, Share, UseRestriction, PersonalDataType, LegalBasisType, LegalBasis
 from core.models.data_declaration import ConsentStatus, DeidentificationMethod, \
     ShareCategory, SubjectCategory
 from core.models.storage_location import StorageLocationCategory, DataLocation
@@ -43,7 +43,6 @@ class DatasetsImporter(BaseImporter):
         if local_custodians:
             dataset.local_custodians.set(local_custodians, clear=True)
 
-
         data_locations = self.process_data_locations(dataset, dataset_dict)
         if data_locations:
             dataset.data_locations.set(data_locations, bulk=False)
@@ -64,6 +63,12 @@ class DatasetsImporter(BaseImporter):
             local_custodian.assign_permissions_to_dataset(dataset)
 
         self.process_datadeclarations(dataset_dict, dataset)
+
+        legal_bases = self.process_legal_bases(dataset_dict, dataset)
+        if legal_bases:
+            dataset.legal_basis_definitions.set(legal_bases, bulk=False)
+
+        dataset.save()
 
     # @staticmethod
     # def process_local_custodians(dataset_dict):
@@ -94,21 +99,21 @@ class DatasetsImporter(BaseImporter):
     #             result.append(user)
     #     return result
 
-    def process_project(self, project_name):
+    def process_project(self, project_acronym):
         try:
-            project = Project.objects.get(title=project_name.strip())
+            project = Project.objects.get(acronym=project_acronym.strip())
             return project
         except Project.DoesNotExist:
-            self.logger.warning("Tried to find project with title ='{}'; it was not found. Will try to look for the acronym...".format(project_name))
+            self.logger.warning("Tried to find project with acronym ='{}'; it was not found. Will try to look for the acronym...".format(project_name))
 
         try:
-            project = Project.objects.get(acronym=project_name.strip())
+            project = Project.objects.get(name=project_acronym.strip())
             return project
         except Project.DoesNotExist:
-            self.logger.warning("Tried to find project with acronym ='{}'; it was not found. Will create a new one.".format(project_name.strip()))
+            self.logger.warning("Tried to find project with name ='{}'; it was not found. Will create a new one.".format(project_acronym.strip()))
             project = Project.objects.create(
-                title=project_name.strip(),
-                acronym=project_name.strip()
+                acronym=project_acronym.strip(),
+                title=project_acronym.strip()
             )
         return project
 
@@ -378,12 +383,72 @@ class DatasetsImporter(BaseImporter):
             except KeyError:
                 return None
         return None
+
     def process_constent_status(self, datadec_dict):
-        if 'consent_status' in datadec_dict:
-            consent_status_str = datadec_dict.get('consent_status', '').strip()
-            try:
-                return ConsentStatus[consent_status_str]
-            except KeyError:
-                return ConsentStatus.unknown
-        else:
+        if 'consent_status' not in datadec_dict:
             return ConsentStatus.unknown
+        consent_status_str = datadec_dict.get('consent_status', '').strip()
+        try:
+            return ConsentStatus[consent_status_str]
+        except KeyError:
+            return ConsentStatus.unknown
+            
+
+    def process_legal_bases(self, dataset_dict, dataset_object):
+        """
+        This should be called after data-declarations have been processed
+        (they rely on data-declaration's acronyms to be properly imported)
+        """
+        if 'legal_bases' not in dataset_dict:
+            return
+        
+        return [self.process_legal_basis(legal_basis, dataset_object) for legal_basis in dataset_dict.get('legal_bases')]
+
+    def process_legal_basis(self, legal_basis, dataset_object):
+        """
+        This should be called after data-declarations have been processed
+        (they rely on data-declaration's acronyms to be properly imported)
+        """
+        legal_basis_obj = LegalBasis.objects.filter(
+            dataset=dataset_object,
+            remarks=legal_basis.get('legal_basis_notes', '')
+        )  # Note: at this point we can have 0, 1 or more LegalBasis objects
+
+        data_declaration_titles = legal_basis.get('data_declarations', [])
+        data_declarations = [DataDeclaration.objects.get(title=title, dataset=dataset_object) for title in data_declaration_titles]
+
+        legal_basis_types_titles = legal_basis.get('legal_basis_codes', [])
+        legal_basis_types = [LegalBasisType.objects.get(code=code) for code in legal_basis_types_titles]
+
+        personal_data_types_titles = legal_basis.get('personal_data_codes', [])
+        personal_data_types = [PersonalDataType.objects.get(code=code) for code in personal_data_types_titles]
+
+        if len(legal_basis_obj) == 0:
+            legal_basis_obj = LegalBasis.objects.create(
+                dataset=dataset_object,
+                remarks=legal_basis.get('legal_basis_notes', '')
+            )
+        elif len(legal_basis_obj) == 1:
+            legal_basis_obj = legal_basis_obj[0]
+        else:
+            # Try looking for the correct LegalBasis
+            legal_basis_obj = LegalBasis.objects.filter(
+                dataset=dataset_object,
+                remarks=legal_basis.get('legal_basis_notes', ''),
+                data_declarations=data_declarations
+            )
+
+            if len(legal_basis_obj) == 1:
+                legal_basis_obj = legal_basis_obj[0]
+            else:
+                legal_basis_obj = LegalBasis.objects.create(
+                    dataset=dataset_object,
+                    remarks=legal_basis.get('legal_basis_notes', '')
+                )
+
+        legal_basis_obj.data_declarations.set(data_declarations)
+        legal_basis_obj.legal_basis_types.set(legal_basis_types)
+        legal_basis_obj.personal_data_types.set(personal_data_types)
+        legal_basis_obj.save()
+
+        return legal_basis_obj
