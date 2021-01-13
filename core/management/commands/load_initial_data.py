@@ -151,7 +151,7 @@ class Command(BaseCommand):
                 _current.update({'is_published': True})
                 try:
                     p = Partner.objects.get(elu_accession=_current['elu_accession'])
-                    Partner.objects.filter(pk=p.pk).update(**_current)
+                    p.update(**_current)
                 except Partner.DoesNotExist:
                     Partner.objects.create(**_current)
 

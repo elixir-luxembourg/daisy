@@ -23,28 +23,29 @@ class ProjectsImporter(BaseImporter):
                         for publication_dict
                         in project_dict.get('publications', [])]
 
-        title = project_dict.get('name', "N/A")
+        acronym = project_dict.get('acronym')
+        name = project_dict.get('name', "N/A")
         description = project_dict.get('description', None)
         elu_accession = project_dict.get('elu_accession', '-')
         has_cner = project_dict.get('has_national_ethics_approval', False)
         has_erp = project_dict.get('has_institutional_ethics_approval', False)
         cner_notes = project_dict.get('national_ethics_approval_notes', None)
         erp_notes = project_dict.get('institutional_ethics_approval_notes', None)
-        acronym = project_dict.get('acronym')
-        project = Project.objects.filter(title=title).first()
+
+        project = Project.objects.filter(acronym=acronym).first()
         if project is None:
-            project = Project.objects.create(acronym=acronym,
-                                             title=title,
-                                             description=description,
-                                             has_cner=has_cner,
-                                             has_erp=has_erp,
-                                             cner_notes=cner_notes,
-                                             erp_notes=erp_notes,
-                                             elu_accession=elu_accession
-                                             )
+            project, _ = Project.objects.get_or_create(acronym=acronym,
+                                                       title=name,
+                                                       description=description,
+                                                       has_cner=has_cner,
+                                                       has_erp=has_erp,
+                                                       cner_notes=cner_notes,
+                                                       erp_notes=erp_notes,
+                                                       elu_accession=elu_accession
+            )
         else:
             self.logger.warning("Project with acronym '{}' already found. It will be updated.".format(acronym))
-            project.title = title
+            project.title = name
             project.description = description
             project.has_cner = has_cner
             project.has_erp = has_erp
