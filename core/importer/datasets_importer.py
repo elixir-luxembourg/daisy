@@ -435,7 +435,7 @@ class DatasetsImporter(BaseImporter):
             legal_basis_obj = LegalBasis.objects.filter(
                 dataset=dataset_object,
                 remarks=legal_basis.get('legal_basis_notes', ''),
-                data_declarations=data_declarations
+                data_declarations__in=data_declarations
             )
 
             if len(legal_basis_obj) == 1:
