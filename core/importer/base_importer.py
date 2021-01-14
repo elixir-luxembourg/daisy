@@ -114,7 +114,7 @@ class BaseImporter:
                     )
                     affiliations = contact_dict.get('affiliations')
                     for affiliation in affiliations:
-                        partner = Partners.objects.filter(name=affiliation)
+                        partner = Partner.objects.filter(name=affiliation)
                         if len(partner):
                             contact.partners.add(partner[0])
                         else:

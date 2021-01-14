@@ -104,13 +104,13 @@ class DatasetsImporter(BaseImporter):
             project = Project.objects.get(acronym=project_acronym.strip())
             return project
         except Project.DoesNotExist:
-            self.logger.warning("Tried to find project with acronym ='{}'; it was not found. Will try to look for the acronym...".format(project_name))
+            self.logger.warning("Tried to find project with acronym ='{}'; it was not found. Will try to look for the acronym...".format(project_acronym))
 
         try:
-            project = Project.objects.get(name=project_acronym.strip())
+            project = Project.objects.get(title=project_acronym.strip())
             return project
         except Project.DoesNotExist:
-            self.logger.warning("Tried to find project with name ='{}'; it was not found. Will create a new one.".format(project_acronym.strip()))
+            self.logger.warning("Tried to find project with title ='{}'; it was not found. Will create a new one.".format(project_acronym.strip()))
             project = Project.objects.create(
                 acronym=project_acronym.strip(),
                 title=project_acronym.strip()

@@ -23,8 +23,11 @@ class ProjectsImporter(BaseImporter):
                         for publication_dict
                         in project_dict.get('publications', [])]
 
-        acronym = project_dict.get('acronym')
         name = project_dict.get('name', "N/A")
+        if 'acronym' in project_dict:
+            acronym = project_dict.get('acronym')
+        else:
+            acronym = name
         description = project_dict.get('description', None)
         elu_accession = project_dict.get('elu_accession', '-')
         has_cner = project_dict.get('has_national_ethics_approval', False)
