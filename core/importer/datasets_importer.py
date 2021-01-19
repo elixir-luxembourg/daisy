@@ -387,6 +387,8 @@ class DatasetsImporter(BaseImporter):
     def process_constent_status(self, datadec_dict):
         if 'consent_status' not in datadec_dict:
             return ConsentStatus.unknown
+        if datadec_dict['consent_status'] is None:
+            return ConsentStatus.unknown
         consent_status_str = datadec_dict.get('consent_status', '').strip()
         try:
             return ConsentStatus[consent_status_str]

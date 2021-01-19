@@ -215,7 +215,9 @@ Batch mode:
 ./manage.py import_projects -f path/to/dir/with/json/files/
 ```
 
-Available commands: `import_projects`, `import_datasets`, `import_partners`
+Available commands: `import_projects`, `import_datasets`, `import_partners`.
+
+In case of problems, add `--verbose` flag to the command, and take a look inside `./log/daisy.log`. 
 
 ### Install js and css dependencies
 
