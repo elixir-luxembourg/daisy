@@ -21,6 +21,7 @@ class DeidentificationMethod(ChoiceEnum):
 
 class ShareCategory(ChoiceEnum):
     open_access = "open-access"
+    registered_access = "registered-access"
     controlled_access = "controlled-access"
 
 
@@ -52,6 +53,8 @@ class DataDeclaration(CoreModel):
         on_delete=models.SET_NULL,
         help_text='The Partner/Institute that have provided this data.'
     )
+
+    access_procedure = models.TextField(verbose_name='Remarks on the access procedure', blank=True, null=True, help_text='In case the access type is "open" or "controlled", you can elaborate on that')
 
     contract = models.ForeignKey(
         "core.Contract",
@@ -198,6 +201,7 @@ class DataDeclaration(CoreModel):
             "data_types":[ dt.name for dt in list(self.data_types)],
             "data_types_notes": self.data_types_notes if self.data_types_notes else None,
             "access_category": self.share_category.name if self.share_category else None,
+            "access_procedure": self.access_procedure if self.access_procedure else None,
             "subjects_category": self.subjects_category.name if self.subjects_category else None,
             "de_identification":  self.deidentification_method.name  if self.deidentification_method else None,
             "consent_status":  self.consent_status.name if self.consent_status else None,

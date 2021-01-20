@@ -1,7 +1,7 @@
 from core.exceptions import DatasetImportError
 from core.importer.base_importer import BaseImporter
 from core.importer.JSONSchemaValidator import DatasetJSONSchemaValidator
-from core.models import Access, DataDeclaration, Dataset, DataType, Partner, \
+from core.models import Access, Cohort, DataDeclaration, Dataset, DataType, Partner, \
     Project, StorageResource, Share, UseRestriction, PersonalDataType, LegalBasisType, LegalBasis
 from core.models.data_declaration import ConsentStatus, DeidentificationMethod, \
     ShareCategory, SubjectCategory
@@ -67,6 +67,8 @@ class DatasetsImporter(BaseImporter):
         legal_bases = self.process_legal_bases(dataset_dict, dataset)
         if legal_bases:
             dataset.legal_basis_definitions.set(legal_bases, bulk=False)
+
+        # self.process_studies(dataset_dict, dataset)
 
         dataset.save()
 
@@ -247,6 +249,7 @@ class DatasetsImporter(BaseImporter):
         datadec.special_subjects_description = datadec_dict.get('special_subjects_description', None)
         datadec.other_external_id = datadec_dict.get('other_external_id', None)
         datadec.share_category = self.process_access_category(datadec_dict)
+        datadec.access_procedure = datadec_dict.get('access_procedure', '')
         datadec.consent_status = self.process_constent_status(datadec_dict)
         datadec.comments = datadec_dict.get('source_notes', None)
         datadec.embargo_date = datadec_dict.get('embargo_date', None)
@@ -376,7 +379,7 @@ class DatasetsImporter(BaseImporter):
         return use_restrictions
 
     def process_access_category(self, datadec_dict):
-        share_category_str = datadec_dict.get('access_category','')
+        share_category_str = datadec_dict.get('access_category', '')
         if share_category_str:
             try:
                 return ShareCategory[share_category_str]
@@ -395,7 +398,6 @@ class DatasetsImporter(BaseImporter):
         except KeyError:
             return ConsentStatus.unknown
             
-
     def process_legal_bases(self, dataset_dict, dataset_object):
         """
         This should be called after data-declarations have been processed
@@ -454,3 +456,27 @@ class DatasetsImporter(BaseImporter):
         legal_basis_obj.save()
 
         return legal_basis_obj
+
+    def process_studies(self, dataset_object):
+        def _process_study(study):
+            name = study.get('name', '')
+            description = study.get('description', '')
+            has_ethics_approval = study.get('has_ethics_approval', False)
+            ethics_approval_notes = study.get('ethics_approval_notes', '')
+            url = study.get('url', '')  # TODO: Currently this is lost
+            local_custodians, local_personnel, external_contacts = self.process_contacts(study.get("contacts", []))
+
+            cohort = Cohort(
+                ethics_confirmation=has_ethics_approval,
+                comments=description,
+                title=name,
+            )
+
+            cohort.owners.set(external_contacts)
+            cohort.save()
+
+        if 'studies' not in dataset_dict:
+            return
+
+        for study in dataset_dict.get('studies'):
+            _process_study(study)
