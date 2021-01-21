@@ -4,17 +4,18 @@ from model_utils import Choices
 from .utils import CoreModel, TextFieldWithInputWidget
 
 
+USE_RESTRICTION_CHOICES = Choices(
+        ('CONSTRAINTS', 'CONSTRAINTS'),
+        ('NO_CONSTRAINTS', 'NO_CONSTRAINTS'),
+        ('FORBIDDEN', 'FORBIDDEN')
+)
+
+
 class UseRestriction(CoreModel):
     class Meta:
         app_label = 'core'
         get_latest_by = "added"
         ordering = ['added']
-
-    USE_RESTRICTION_CHOICES = Choices(
-        ('CONSTRAINTS', 'CONSTRAINTS'),
-        ('NO_CONSTRAINTS', 'NO_CONSTRAINTS'),
-        ('FORBIDDEN', 'FORBIDDEN')
-    )
 
     data_declaration = models.ForeignKey("core.DataDeclaration",
                                          related_name="data_use_restrictions",

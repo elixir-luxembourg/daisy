@@ -6,6 +6,7 @@ from core.models import Access, Cohort, DataDeclaration, Dataset, DataType, Part
 from core.models.data_declaration import ConsentStatus, DeidentificationMethod, \
     ShareCategory, SubjectCategory
 from core.models.storage_location import StorageLocationCategory, DataLocation
+from core.models.use_restriction import USE_RESTRICTION_CHOICES
 
 
 class DatasetsImporter(BaseImporter):
@@ -371,15 +372,21 @@ class DatasetsImporter(BaseImporter):
     def process_use_restrictions(self, data_dec, datadec_dict):
         use_restrictions = []
         for user_restriction_dict in datadec_dict['use_restrictions']:
-            ga4gh_code = user_restriction_dict['use_class']
-            notes = user_restriction_dict['use_restriction_note']
-            use_class_note = user_restriction_dict['use_class_note']
+            ga4gh_code = user_restriction_dict.get('use_class', '')
+            notes = user_restriction_dict.get('use_restriction_note', '')
+            use_class_note = user_restriction_dict.get('use_class_note', '')
+            use_restriction_rule_str = user_restriction_dict.get('use_restriction_rule', '')
+            try:
+                use_restriction_rule = USE_RESTRICTION_CHOICES[use_restriction_rule_str]
+            except KeyError:
+                use_restriction_rule = '-'
 
             use_restriction, _ = UseRestriction.objects.get_or_create(
                 data_declaration=data_dec,
                 restriction_class=ga4gh_code,
                 notes=notes,
-                use_class_note=use_class_note
+                use_class_note=use_class_note,
+                use_restriction_rule=use_restriction_rule
             )
             use_restrictions.append(use_restriction)
         return use_restrictions
