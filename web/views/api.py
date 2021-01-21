@@ -1,6 +1,7 @@
 import json
 import os
 
+from django.conf import settings
 from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 
@@ -95,6 +96,17 @@ def termsearch(request, category):
     })
 
 def datasets(request):
+    if 'API_KEY' not in request.GET:
+        return JsonResponse({
+            'status': 'Error',
+            'description': 'API_KEY missing or invalid'
+        }, status=403)
+    elif request.GET.get('API_KEY') != getattr(settings, 'GLOBAL_API_KEY'):
+        return JsonResponse({
+            'status': 'Error',
+            'description': 'API_KEY missing or invalid'
+        }, status=403)
+
     if 'project_title' in request.GET:
         project_title = request.GET.get('project_title', '')
         datasets = Dataset.objects.filter(project__title__iexact=project_title, is_published=True)
@@ -115,6 +127,17 @@ def datasets(request):
         })
 
 def projects(request):
+    if 'API_KEY' not in request.GET:
+        return JsonResponse({
+            'status': 'Error',
+            'description': 'API_KEY missing or invalid'
+        }, status=403)
+    elif request.GET.get('API_KEY') != getattr(settings, 'GLOBAL_API_KEY'):
+        return JsonResponse({
+            'status': 'Error',
+            'description': 'API_KEY missing or invalid'
+        }, status=403)
+        
     if 'title' in request.GET:
         title = request.GET.get('title', '')
         projects = Project.objects.filter(title__iexact=title, is_published=True)

@@ -36,6 +36,12 @@ class UseRestriction(CoreModel):
                              null=True,
                              help_text='Provide a free text description of the restriction.')
 
+    use_class_note = models.TextField(verbose_name='Use restriction class note',
+                                      max_length=255,
+                                      blank=True,
+                                      null=True,
+                                      help_text='A question asked when collecting the restriction class')
+
     use_restriction_rule = models.TextField(verbose_name='Does the rule forbid (FORBIDDEN), constraint (CONSTRAINTS) or have no constraints (NO_CONSTRAINTS)?',
                                             choices=USE_RESTRICTION_CHOICES,
                                             default=USE_RESTRICTION_CHOICES.NO_CONSTRAINTS,
@@ -55,6 +61,7 @@ class UseRestriction(CoreModel):
     def to_dict(self):
         return {
             "use_class": self.restriction_class, 
-            "use_class_note": self.notes,
+            "use_class_note": self.use_class_note,
+            "use_restriction_note": self.notes,
             "use_restriction_rule": self.use_restriction_rule
         }

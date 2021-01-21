@@ -372,9 +372,15 @@ class DatasetsImporter(BaseImporter):
         use_restrictions = []
         for user_restriction_dict in datadec_dict['use_restrictions']:
             ga4gh_code = user_restriction_dict['use_class']
-            notes = user_restriction_dict['use_class_note']
+            notes = user_restriction_dict['use_restriction_note']
+            use_class_note = user_restriction_dict['use_class_note']
 
-            use_restriction, _ = UseRestriction.objects.get_or_create(data_declaration=data_dec, restriction_class=ga4gh_code, notes=notes)
+            use_restriction, _ = UseRestriction.objects.get_or_create(
+                data_declaration=data_dec,
+                restriction_class=ga4gh_code,
+                notes=notes,
+                use_class_note=use_class_note
+            )
             use_restrictions.append(use_restriction)
         return use_restrictions
 
