@@ -19,7 +19,7 @@ class Command(BaseCommand):
         with open(projects_json_file, encoding='utf-8') as json_file:
             json_file_contents = json_file.read()
             importer = ProjectsImporter()
-            importer.import_json(json_file_contents)
+            importer.import_json(json_file_contents, False, True)
             self.stdout.write(self.style.SUCCESS("Project import successful!"))
 
     def _load_demo_datasets(self):
@@ -27,7 +27,7 @@ class Command(BaseCommand):
         with open(dataset_json_file, encoding='utf-8') as json_file:
             json_file_contents = json_file.read()
             importer = DatasetsImporter()
-            importer.import_json(json_file_contents)
+            importer.import_json(json_file_contents, False, True)
             self.stdout.write(self.style.SUCCESS("Dataset import successful!"))
 
     def _create_demo_superuser(self):
