@@ -1,188 +1,194 @@
+{
+    "items": [
+        {
+            "acronym": "EPIC-DREM",
+            "name": "Understanding the gene regulatory interactions underlying cell differentiation and identity",
+            "description": "\"Temporal data on gene expression and context-specific open chromatin states can improve identification of key transcription factors (TFs) and the gene regulatory networks (GRNs) controlling cellular differentiation. However, their integration remains challenging. Here, we delineate a general approach for data-driven and unbiased identification of key TFs and dynamic GRNs, called EPIC-DREM. We generated time-series transcriptomic and epigenomic profiles during differentiation of mouse multipotent bone marrow stromal cell line (ST2) toward adipocytes and osteoblasts. Using our novel approach we constructed time-resolved GRNs for both lineages and identifed the shared TFs involved in both differentiation processes. To take an alternative approach to prioritize the identified shared regulators, we mapped dynamic super-enhancers in both lineages and associated them to target genes with correlated expression profiles. The combination of the two approaches identified aryl hydrocarbon receptor (AHR) and Glis family zinc finger 1 (GLIS1) as mesenchymal key TFs controlled by dynamic cell type-specific super-enhancers that become repressed in both lineages. AHR and GLIS1 control differentiation-induced genes and their overexpression can inhibit the lineage commitment of the multipotent bone marrow-derived ST2 cells..\" \r\n\r\n...taken from D G\u00e9rard, et.al. Nucleic Acids Research, Volume 47, Issue 3, 20 February 2019, Pages 1141\u20131163, https://doi.org/10.1093/nar/gky1240",
+            "has_institutional_ethics_approval": true,
+            "has_national_ethics_approval": true,
+            "institutional_ethics_approval_notes": "The umbrella project LUX-Epigen has an institutional and a national ethics approval.",
+            "national_ethics_approval_notes": "The umbrella project LUX-Epigen has an institutional and a national ethics approval.",
+            "start_date": "2020-03-02",
+            "end_date": "2021-04-30",
+            "source": "https://example.com",
+            "contacts": [
+                {
+                    "first_name": "Alice",
+                    "last_name": "White",
+                    "email": "alice.white@uni.lu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                },
+                {
+                    "first_name": "John",
+                    "last_name": "Black",
+                    "email": "john.black@uni.lu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                },
+                {
+                    "first_name": "Roy",
+                    "last_name": "Blue",
+                    "email": "roy.blue@uni.lu",
+                    "role": "Researcher",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                }
+            ],
+            "publications": [
+                {
+                    "citation_string": "Gérard D, Schmidt F, Ginolhac A, Schmitz M, Halder R, Ebert P, Schulz MH,\nSauter T, Sinkkonen L. Temporal enhancer profiling of parallel lineages\nidentifies AHR and GLIS1 as regulators of mesenchymal multipotency. Nucleic Acids\nRes. 2019 Feb 20;47(3):1141-1163. PubMed PMID:\n30544251; PubMed Central PMCID: PMC6380961.",
+                    "doi": "doi: 10.1093/nar/gky1240"
+                }
+            ]
+        },
+        {
+            "acronym": "LUX-Epigen",
+            "name": "LUX-Epigen Research Programme - Phase1",
+            "description": "This is an imaginary research project created to demonstrate features of DAISY. LUX-Epigen is created as an umbrella project, which holds an ethics approval and contract among the participant institutes. There can be several PhD and Postdoc sub-projects cover under the umbrella  of Lux-Epigen.",
+            "has_institutional_ethics_approval": true,
+            "has_national_ethics_approval": true,
+            "institutional_ethics_approval_notes": "See attached Uni-LU ERP approval. This is a dummy document for the imaginary  LUX-Epigen programme.",
+            "national_ethics_approval_notes": "See attached CNER approval. This is a dummy document for the imaginary  LUX-Epigen programme.",
+            "start_date": "2017-04-03",
+            "end_date": "2022-04-25",
+            "source": "https://example.com",
+            "contacts": [
+                {
+                    "first_name": "Alice",
+                    "last_name": "White",
+                    "email": "alice.white@uni.lu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                },
+                {
+                    "first_name": "John",
+                    "last_name": "Black",
+                    "email": "john.black@uni.lu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                },
+                {
+                    "first_name": "Igor",
+                    "last_name": "Green",
+                    "email": "igor.green@chl.lu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Hummingbird Diagnostics Heidelberg"]
+                }
+            ]
+        },
+        {
+            "acronym": "MolEp-TR",
+            "name": "Analysis of the transcriptome in molecular epidemiology studies.",
+            "description": "This is a demonstrator project.",
+            "start_date": "2019-01-01",
+            "end_date": "2020-12-01",
+            "source": "https://example.com",
+            "contacts": [
+                {
+                    "first_name": "Rebecca",
+                    "last_name": "Kafe",
+                    "email": "user@uni.edu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                },
+                {
+                    "first_name": "Embury",
+                    "last_name": "Bask",
+                    "email": "user@uni.edu",
+                    "role": "Researcher",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                }
+            ],
+            "has_institutional_ethics_approval": true,
+            "institutional_ethics_approval_notes": "Project has ERP. Approval No 987654321",
+            "has_national_ethics_approval": false,
+            "institutional_ethics_approval_notes": "No CNER has been obtained.",
+            "publications": [
+                {
+                    "citation_string": "R Kafe etal....",
+                    "doi": "http://doi.org/10.5555/12345678"
+                },
+                {
+                    "citation_string": " E Bask etal.",
+                    "doi": "http://doi.org/10.5555/12345678"
+                }
+            ]
+        },
+        {
+            "acronym": "Iron-deficiency",
+            "name": "Iron deficiency in parkinsons disease",
+            "description": "Analysis of Iron function in neuro-degeneration. This is a demonstrator project.",
+            "start_date": "2017-11-01",
+            "end_date": "2019-11-01",
+            "source": "https://example.com",
+            "contacts": [
+                {
+                    "first_name": "Colman",
+                    "last_name": "Level",
+                    "email": "user@uni.edu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                },
+                {
+                    "first_name": "Nic",
+                    "last_name": "Purple",
+                    "email": "user@uni.edu",
+                    "role": "Researcher",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                },
+                {
+                    "first_name": "James",
+                    "last_name": "Hue",
+                    "email": "user@uni.edu",
+                    "role": "Researcher",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                }
+            ],
+            "has_institutional_ethics_approval": false,
+            "national_ethics_approval_notes": "Project has CNER. Approval No 123456",
+            "has_national_ethics_approval": true,
+            "publications": [
+                {
+                    "citation_string": "Iron deficiency in Parkinson's Disease: a novel method in ........ (in preparation)",
+                    "doi": "http://doi.org/10.5555/12345678"
+                }
+            ]
+        },
+        {
+            "acronym": "GGE-I",
+            "name": "Genomics, Genetics, and Epigenetics Program - Phase I",
+            "description": "This is an imaginary research project created to demonstrate features of DAISY. ",
+            "has_institutional_ethics_approval": true,
+            "has_national_ethics_approval": true,
+            "institutional_ethics_approval_notes": "See attached Uni-LU ERP approval. This is a dummy document for the imaginary GGE-I programme.",
+            "national_ethics_approval_notes": "See attached CNER approval. This is a dummy document for the imaginary GGE-I programme.",
+            "start_date": "2019-04-03",
+            "source": "https://example.com",
+            "end_date": "2024-04-25",
+            "contacts": [
+                {
+                    "first_name": "Alice",
+                    "last_name": "White",
+                    "email": "alice.white@uni.lu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
 
-[
-    {
-        "acronym": "EPIC-DREM",
-        "name": "Understanding the gene regulatory interactions underlying cell differentiation and identity",
-        "description": "\"Temporal data on gene expression and context-specific open chromatin states can improve identification of key transcription factors (TFs) and the gene regulatory networks (GRNs) controlling cellular differentiation. However, their integration remains challenging. Here, we delineate a general approach for data-driven and unbiased identification of key TFs and dynamic GRNs, called EPIC-DREM. We generated time-series transcriptomic and epigenomic profiles during differentiation of mouse multipotent bone marrow stromal cell line (ST2) toward adipocytes and osteoblasts. Using our novel approach we constructed time-resolved GRNs for both lineages and identifed the shared TFs involved in both differentiation processes. To take an alternative approach to prioritize the identified shared regulators, we mapped dynamic super-enhancers in both lineages and associated them to target genes with correlated expression profiles. The combination of the two approaches identified aryl hydrocarbon receptor (AHR) and Glis family zinc finger 1 (GLIS1) as mesenchymal key TFs controlled by dynamic cell type-specific super-enhancers that become repressed in both lineages. AHR and GLIS1 control differentiation-induced genes and their overexpression can inhibit the lineage commitment of the multipotent bone marrow-derived ST2 cells..\" \r\n\r\n...taken from D G\u00e9rard, et.al. Nucleic Acids Research, Volume 47, Issue 3, 20 February 2019, Pages 1141\u20131163, https://doi.org/10.1093/nar/gky1240",
-        "has_institutional_ethics_approval": true,
-        "has_national_ethics_approval": true,
-        "institutional_ethics_approval_notes": "The umbrella project LUX-Epigen has an institutional and a national ethics approval.",
-        "national_ethics_approval_notes": "The umbrella project LUX-Epigen has an institutional and a national ethics approval.",
-        "start_date": "2020-03-02",
-        "end_date": "2021-04-30",
-        "contacts": [
-            {
-                "first_name": "Alice",
-                "last_name": "White",
-                "email": "alice.white@uni.lu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            },
-            {
-                "first_name": "John",
-                "last_name": "Black",
-                "email": "john.black@uni.lu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            },
-            {
-                "first_name": "Roy",
-                "last_name": "Blue",
-                "email": "roy.blue@uni.lu",
-                "role": "Researcher",
-                "institution": "ELU_I_77"
-            }
-        ],
-        "publications": [
-            {
-                "citation": "Gérard D, Schmidt F, Ginolhac A, Schmitz M, Halder R, Ebert P, Schulz MH,\nSauter T, Sinkkonen L. Temporal enhancer profiling of parallel lineages\nidentifies AHR and GLIS1 as regulators of mesenchymal multipotency. Nucleic Acids\nRes. 2019 Feb 20;47(3):1141-1163. PubMed PMID:\n30544251; PubMed Central PMCID: PMC6380961.",
-                "doi": "doi: 10.1093/nar/gky1240"
-            }
-        ]
-    },
-    {
-        "acronym": "LUX-Epigen",
-        "name": "LUX-Epigen Research Programme - Phase1",
-        "description": "This is an imaginary research project created to demonstrate features of DAISY. LUX-Epigen is created as an umbrella project, which holds an ethics approval and contract among the participant institutes. There can be several PhD and Postdoc sub-projects cover under the umbrella  of Lux-Epigen.",
-        "has_institutional_ethics_approval": true,
-        "has_national_ethics_approval": true,
-        "institutional_ethics_approval_notes": "See attached Uni-LU ERP approval. This is a dummy document for the imaginary  LUX-Epigen programme.",
-        "national_ethics_approval_notes": "See attached CNER approval. This is a dummy document for the imaginary  LUX-Epigen programme.",
-        "start_date": "2017-04-03",
-        "end_date": "2022-04-25",
-        "contacts": [
-            {
-                "first_name": "Alice",
-                "last_name": "White",
-                "email": "alice.white@uni.lu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            },
-            {
-                "first_name": "John",
-                "last_name": "Black",
-                "email": "john.black@uni.lu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            },
-            {
-                "first_name": "Igor",
-                "last_name": "Green",
-                "email": "igor.green@chl.lu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_9"
-            }
-        ]
-    },
-    {
-        "acronym": "MolEp-TR",
-        "name": "Analysis of the transcriptome in molecular epidemiology studies.",
-        "description": "This is a demonstrator project.",
-        "start_date": "2019-01-01",
-        "end_date": "2020-12-01",
-        "contacts": [
-            {
-                "first_name": "Rebecca",
-                "last_name": "Kafe",
-                "email": "user@uni.edu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            },
-            {
-                "first_name": "Embury",
-                "last_name": "Bask",
-                "email": "user@uni.edu",
-                "role": "Researcher",
-                "institution": "ELU_I_77"
-            }
-
-        ],
-        "has_institutional_ethics_approval": true,
-        "institutional_ethics_approval_notes": "Project has ERP. Approval No 987654321",
-        "has_national_ethics_approval": false,
-        "institutional_ethics_approval_notes": "No CNER has been obtained.",
-        "publications": [
-            {
-                "citation": "R Kafe etal....",
-                "doi": "http://doi.org/10.5555/12345678"
-            },
-            {
-                "citation": " E Bask etal.",
-                "doi": "http://doi.org/10.5555/12345678"
-            }
-        ]
-    },
-    {
-        "acronym": "Iron-deficiency",
-        "name": "Iron deficiency in parkinsons disease",
-        "description": "Analysis of Iron function in neuro-degeneration. This is a demonstrator project.",
-        "start_date": "2017-11-01",
-        "end_date": "2019-11-01",
-        "contacts": [
-            {
-                "first_name": "Colman",
-                "last_name": "Level",
-                "email": "user@uni.edu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            },
-            {
-                "first_name": "Nic",
-                "last_name": "Purple",
-                "email": "user@uni.edu",
-                "role": "Researcher",
-                "institution": "ELU_I_77"
-            },
-            {
-                "first_name": "James",
-                "last_name": "Hue",
-                "email": "user@uni.edu",
-                "role": "Researcher",
-                "institution": "ELU_I_77"
-            }
-        ],
-        "has_institutional_ethics_approval": false,
-        "national_ethics_approval_notes": "Project has CNER. Approval No 123456",
-        "has_national_ethics_approval": true,
-        "publications": [
-            {
-                "citation": "Iron deficiency in Parkinson's Disease: a novel method in ........ (in preparation)",
-                "doi": "http://doi.org/10.5555/12345678"
-            }
-        ]
-    },
-    {
-        "acronym": "GGE-I",
-        "name": "Genomics, Genetics, and Epigenetics Program - Phase I",
-        "description": "This is an imaginary research project created to demonstrate features of DAISY. ",
-        "has_institutional_ethics_approval": true,
-        "has_national_ethics_approval": true,
-        "institutional_ethics_approval_notes": "See attached Uni-LU ERP approval. This is a dummy document for the imaginary GGE-I programme.",
-        "national_ethics_approval_notes": "See attached CNER approval. This is a dummy document for the imaginary GGE-I programme.",
-        "start_date": "2019-04-03",
-        "end_date": "2024-04-25",
-        "contacts": [
-            {
-                "first_name": "Alice",
-                "last_name": "White",
-                "email": "alice.white@uni.lu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            },
-            {
-                "first_name": "Colman",
-                "last_name": "Level",
-                "email": "user@uni.edu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            },
-            {
-                "first_name": "John",
-                "last_name": "Black",
-                "email": "john.black@uni.lu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            }
-        ]
-    }
-]
+                },
+                {
+                    "first_name": "Colman",
+                    "last_name": "Level",
+                    "email": "user@uni.edu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                },
+                {
+                    "first_name": "John",
+                    "last_name": "Black",
+                    "email": "john.black@uni.lu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                }
+            ]
+        }
+    ]
+}

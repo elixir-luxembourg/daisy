@@ -176,6 +176,8 @@ web_urls = [
     path('api/cohorts', api.cohorts, name="api_cohorts"),
     path('api/partners', api.partners, name="api_partners"),
     path('api/termsearch/<slug:category>', api.termsearch, name="api_termsearch"),
+    path('api/datasets', api.datasets, name="api_datasets"),
+    path('api/projects', api.projects, name="api_projects"),
 
     # User Management
     path('definitions/users', UsersListView.as_view(), name="users"),

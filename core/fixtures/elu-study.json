@@ -1,0 +1,125 @@
+{
+  "description": "Study-Project Schema",
+  "title": "A JSON Schema for describing Studies-Projects within the ELIXIR Data Submission System.",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/definitions/elu:study"
+    }
+  ],
+  "definitions": {
+    "elu:study": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/elu-core.json"
+        }
+      ],
+      "properties": {
+        "has_ethics_approval": {
+          "type": "boolean"
+        },
+        "ethics_approval_notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "start_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "end_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "feature_terms": {
+          "$ref": "#/definitions/term_set"
+        },
+        "disease_terms": {
+          "$ref": "#/definitions/term_set"
+        },
+        "gene_id_terms": {
+          "$ref": "#/definitions/term_set"
+        },
+        "phenotype_terms": {
+          "$ref": "#/definitions/term_set"
+        },
+        "funding_sources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "IMI",
+              "H2020",
+              "FP7",
+              "NIH",
+              "OTHER"
+            ]
+          }
+        },
+        "funding_source_description": {
+          "type": "string"
+        },
+        "web_page": {
+          "type": "string",
+          "format": "uri"
+        },
+        "publications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "doi": {
+                "type": "string"
+              },
+              "citation_string": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "citation_string"
+            ]
+          }
+        }
+      },
+      "definitions": {
+        "term_set": {
+          "type": "object",
+          "properties": {
+            "vocabularyUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "vocabularyDescription": {
+              "type": "string"
+            },
+            "terms": {
+              "type": "array",
+              "minItems": 1,
+              "items": [
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "required": [
+            "terms"
+          ]
+        }
+      }
+    }
+  }
+}
+
+
+
+

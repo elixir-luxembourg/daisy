@@ -93,21 +93,19 @@ You are encouraged to try Daisy for yourself using our [DEMO deployment](https:/
 
 #### Importing 
 
-In addition to loading of initial data, DAISY database can be populated by importing Project and Dataset records from JSON files.
- The commands for import are given below: </br>
+In addition to loading of initial data, DAISY database can be populated by importing Project, Dataset and Partners records from JSON files using commands `import_projects`, `import_datasets` and `import_partners` respectively.
+ The commands for import are accepting one JSON file (flag `-f`): </br>
 
 ```bash
-docker-compose exec web python manage.py import_projects -f ${PROJECTS_JSON}
+docker-compose exec web python manage.py <COMMAND> -f ${PATH_TO_JSON_FILE}
 ```
-where ${PROJECTS_JSON} is the path to a json file containing the projects definitions.  
-See file daisy/data/projects.json as an example.
+where ${PATH_TO_JSON_FILE} is the path to a json file containing the records definitions.
+See file daisy/data/demo/projects.json as an example.
  
-
+Alternatively, you can specify directory containing multiple JSON files to be imported with `-d` flag:
 ```bash
-docker-compose exec web python manage.py import_datasets -d ${DATASETS_FOLDER}
+docker-compose exec web python manage.py <COMMAND> -d ${PATH_TO_DIR}
 ```
-where ${DATASETS_FOLDER} is the path to a folder containing datasets and data declarations definitions.  
-See folder daisy/data/datasets as an example.
 
 #### Exporting  
 
@@ -206,15 +204,20 @@ To be completed.
 ./manage.py import_users
 ```
 
-### Import projects from external system
+### Import projects, datasets or partners from external system
+Single file mode:
 ```bash
 ./manage.py import_projects -f path/to/json_file.json
 ```
 
-### Import datasets from external system
+Batch mode:
 ```bash
-./manage.py import_datasets -d path/to/folder_with_json
+./manage.py import_projects -f path/to/dir/with/json/files/
 ```
+
+Available commands: `import_projects`, `import_datasets`, `import_partners`.
+
+In case of problems, add `--verbose` flag to the command, and take a look inside `./log/daisy.log`. 
 
 ### Install js and css dependencies
 

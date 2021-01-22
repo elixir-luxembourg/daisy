@@ -5,6 +5,7 @@ from io import StringIO
 from core.importer.datasets_exporter import DatasetsExporter
 from core.importer.partners_exporter import PartnersExporter
 from core.importer.projects_exporter import ProjectsExporter
+from core.importer.JSONSchemaValidator import ProjectJSONSchemaValidator, DatasetJSONSchemaValidator,  InstitutionJSONSchemaValidator
 from test import factories
 
 
@@ -29,7 +30,10 @@ def test_export_projects(celery_session_worker, contact_types, partners, gdpr_ro
     assert "Title of test project." ==  project_dicts[0]['name']
     assert 2 == len(project_dicts[0]['contacts'])
 
-    #TODO add check of more fields and schema validation
+    #TODO add check of more fields
+
+    schema = ProjectJSONSchemaValidator()
+    assert schema.validate_items(project_dicts)
 
 
 @pytest.mark.django_db
@@ -43,7 +47,11 @@ def test_export_partners(celery_session_worker, contact_types, partners, gdpr_ro
     partner_dicts = dict['items']
     assert 96 == len(partner_dicts) # initial data has 96 partners
 
-    #TODO add check of more fields and schema validation
+    #TODO add check of more fields
+
+    schema = InstitutionJSONSchemaValidator()
+    assert schema.validate_items(partner_dicts)
+
 
 @pytest.mark.django_db
 def test_export_datasets(celery_session_worker, contact_types, partners, gdpr_roles, storage_resources, can_defer_constraint_checks):
@@ -66,4 +74,7 @@ def test_export_datasets(celery_session_worker, contact_types, partners, gdpr_ro
     assert "A test dataset" == dataset_dicts[0]['name']
     assert "Test_PRJ" == dataset_dicts[0]['project']
 
-    #TODO add check of more fields and schema validation
+    #TODO add check of more fields
+
+    schema = DatasetJSONSchemaValidator()
+    assert schema.validate_items(dataset_dicts)

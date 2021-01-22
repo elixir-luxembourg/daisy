@@ -46,5 +46,17 @@ class LegalBasis(CoreModel):
 
 
     def __str__(self):
-
         return 'Legal Bases for dataset {}:  {}.'.format(self.dataset.title, ",".join(str(lbt.code) for lbt in self.legal_basis_types.all()))
+
+    def to_dict(self):
+        return {
+            'legal_basis_codes': [x.code for x in self.legal_basis_types.all()],
+            'personal_data_codes': [x.code for x in self.personal_data_types.all()],
+            'legal_basis_notes': self.remarks if self.remarks else None,
+            'data_declarations': [x.title for x in self.data_declarations.all()]
+        }
+
+    def serialize(self):
+        result = self.to_dict()
+        result['dataset'] = self.dataset.id
+        return result

@@ -10,6 +10,20 @@ logger = DaisyLogger(__name__)
 
 
 class DatasetsExporter:
+    def __init__(self, objects=None):
+        """
+        objects would be Django obejct manager containing datasets to export,
+        i.e.:
+        objects = Dataset.objects.all()
+        objects = Dataset.objects.filter(acronym='test')
+        """
+        if objects is not None:
+            self.objects = objects
+        else:
+            self.objects = None
+
+    def set_objects(objects):
+        self.objects = objects
 
     def export_to_file(self, file_handle, stop_on_error=False, verbose=False):
         result = True
@@ -23,12 +37,13 @@ class DatasetsExporter:
         logger.info('Dataset export complete see file: {}'.format(file_handle))
         return result
 
-
-
     def export_to_buffer(self, buffer, stop_on_error=False, verbose=False):
         dataset_dicts = []
-        datasets = Dataset.objects.all()
-        for dataset in datasets:
+        if self.objects is not None:
+            objects = self.objects
+        else:
+            objects = Dataset.objects.all()
+        for dataset in objects:
             logger.debug(' * Exporting dataset: "{}"...'.format(dataset.__str__()))
             try:
                 pd = dataset.to_dict()

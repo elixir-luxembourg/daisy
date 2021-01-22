@@ -1,3 +1,5 @@
+GLOBAL_API_KEY = 'insert something random here'
+
 # Authentication backend
 # https://django-guardian.readthedocs.io/en/stable/configuration.html
 

@@ -1,11 +1,12 @@
-from django.core.management import BaseCommand
-from django.conf import settings
 import os
 
+from django.conf import settings
+from django.core.management import BaseCommand
 
 from core.importer.datasets_importer import DatasetsImporter
 from core.importer.projects_importer import ProjectsImporter
 from core.models import User
+
 
 DEMO_DATA_DIR = os.path.join(settings.BASE_DIR, 'data', 'demo')
 
@@ -13,34 +14,52 @@ DEMO_DATA_DIR = os.path.join(settings.BASE_DIR, 'data', 'demo')
 class Command(BaseCommand):
     help = 'load demo data into the database'
 
+    def _load_demo_projects(self):
+        projects_json_file = os.path.join(DEMO_DATA_DIR, 'projects.json')
+        with open(projects_json_file, encoding='utf-8') as json_file:
+            json_file_contents = json_file.read()
+            importer = ProjectsImporter()
+            importer.import_json(json_file_contents)
+            self.stdout.write(self.style.SUCCESS("Project import successful!"))
 
-    def handle(self, *args, **options):
-        try:
-            projects_json_file = os.path.join(DEMO_DATA_DIR, 'projects.json')
-            with open(projects_json_file, encoding='utf-8') as json_file:
-                json_file_contents = json_file.read()
-                importer = ProjectsImporter()
-                importer.import_json(json_file_contents)
-                self.stdout.write(self.style.SUCCESS("Project import  successful!"))
-            dataset_json_file = os.path.join(DEMO_DATA_DIR, 'datasets.json')
-            with open(dataset_json_file, encoding='utf-8') as json_file:
-                json_file_contents = json_file.read()
-                importer = DatasetsImporter()
-                importer.import_json(json_file_contents)
-                self.stdout.write(self.style.SUCCESS("Dataset import  successful!"))
+    def _load_demo_datasets(self):
+        dataset_json_file = os.path.join(DEMO_DATA_DIR, 'datasets.json')
+        with open(dataset_json_file, encoding='utf-8') as json_file:
+            json_file_contents = json_file.read()
+            importer = DatasetsImporter()
+            importer.import_json(json_file_contents)
+            self.stdout.write(self.style.SUCCESS("Dataset import successful!"))
+
+    def _create_demo_superuser(self):
+        if User.objects.filter(username='admin').count() == 0:
             admin_usr = User.objects.create_user(username='admin', password='', email='demo.admin@uni.lu')
             admin_usr.is_superuser =True
             admin_usr.save()
+            self.stdout.write(self.style.SUCCESS("Added the `admin` superuser!"))
+        else:
+            self.stdout.write(self.style.SUCCESS("The `admin` superuser already existed."))
 
-            users = User.objects.all()
-            for user in users:
-                if not user.username == 'AnonymousUser':
-                    user.is_active = True
-                    user.is_staff = True
-                    user.set_password('demo')
-                    user.save()
+    def _reset_passwords(self):
+        users = User.objects.all()
+        for user in users:
+            if not user.username == 'AnonymousUser':
+                user.is_active = True
+                user.is_staff = True
+                user.set_password('demo')
+                user.save()
+        self.stdout.write(self.style.SUCCESS("The passwords have been reset to `demo`!"))
+
+    def handle(self, *args, **options):
+        try:
+            self._load_demo_projects()
+            self._load_demo_datasets()
+            self._create_demo_superuser()
+            self._reset_passwords()
 
         except Exception as e:
+            msg = f"""Something went wrong during loading demo data ({__file__}: class {self.__class__.__name__})!
+Is the path valid? Are the files (/data/demo) valid? More details:
+"""
             self.stderr.write(
-                self.style.ERROR("Something went wrong during the import! Is the path valid? Is the file valid?"))
+                self.style.ERROR(msg))
             self.stderr.write(self.style.ERROR(str(e)))

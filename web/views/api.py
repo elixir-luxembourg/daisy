@@ -1,15 +1,24 @@
 import json
 import os
 
+from django.conf import settings
 from django.core.paginator import Paginator
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 
 from stronghold.decorators import public
 
-from core.models import User, Cohort, Partner, DiseaseTerm
+from core.importer.datasets_exporter import DatasetsExporter
+from core.importer.projects_exporter import ProjectsExporter
+
+from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm
 from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneTerm
 from elixir_daisy import settings
 from ontobio import obograph_util, Ontology
+
+from core.utils import DaisyLogger
+from io import StringIO
+
+logger = DaisyLogger(__name__)
 
 
 """
@@ -85,3 +94,65 @@ def termsearch(request, category):
             "more": int(page) < paginator.num_pages
         }
     })
+
+def datasets(request):
+    if 'API_KEY' not in request.GET:
+        return JsonResponse({
+            'status': 'Error',
+            'description': 'API_KEY missing or invalid'
+        }, status=403)
+    elif request.GET.get('API_KEY') != getattr(settings, 'GLOBAL_API_KEY'):
+        return JsonResponse({
+            'status': 'Error',
+            'description': 'API_KEY missing or invalid'
+        }, status=403)
+
+    if 'project_title' in request.GET:
+        project_title = request.GET.get('project_title', '')
+        datasets = Dataset.objects.filter(project__title__iexact=project_title, is_published=True)
+        exporter = DatasetsExporter(datasets)
+    else:
+        datasets = Dataset.objects.filter(is_published=True)
+        exporter = DatasetsExporter(datasets)
+
+    try:
+        buffer = exporter.export_to_buffer(StringIO())
+
+        return HttpResponse(buffer.getvalue())
+    except Exception as e:
+        return JsonResponse({
+            'status': 'Error',
+            'description': 'Something went wrong during exporting the datasets',
+            'more': str(e)
+        })
+
+def projects(request):
+    if 'API_KEY' not in request.GET:
+        return JsonResponse({
+            'status': 'Error',
+            'description': 'API_KEY missing or invalid'
+        }, status=403)
+    elif request.GET.get('API_KEY') != getattr(settings, 'GLOBAL_API_KEY'):
+        return JsonResponse({
+            'status': 'Error',
+            'description': 'API_KEY missing or invalid'
+        }, status=403)
+        
+    if 'title' in request.GET:
+        title = request.GET.get('title', '')
+        projects = Project.objects.filter(title__iexact=title, is_published=True)
+        exporter = ProjectsExporter(projects)
+    else:
+        projects = Project.objects.filter(is_published=True)
+        exporter = ProjectsExporter(projects)
+
+    try:
+        buffer = exporter.export_to_buffer(StringIO())
+
+        return HttpResponse(buffer.getvalue())
+    except Exception as e:
+        return JsonResponse({
+            'status': 'Error',
+            'description': 'Something went wrong during exporting the projects',
+            'more': str(e)
+        })

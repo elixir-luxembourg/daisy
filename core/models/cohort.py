@@ -10,7 +10,7 @@ class Cohort(CoreTrackedModel):
         ordering = ['added']
 
     class AppMeta:
-        help_text = "Cohorts are  studies that collect data and/or biosamples from a group of participants. " \
+        help_text = "Cohorts are studies that collect data and/or biosamples from a group of participants. " \
                     "Longitudinal, case-control, family studies are typical examples of cohorts."
 
 
