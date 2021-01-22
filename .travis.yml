@@ -12,6 +12,7 @@ before_install:
   - cp elixir_daisy/settings_compose_ci.py elixir_daisy/settings_compose.py
 
 install:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker-compose build
   - docker-compose up -d
   - sleep 60
