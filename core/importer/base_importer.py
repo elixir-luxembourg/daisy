@@ -118,7 +118,7 @@ class BaseImporter:
                         if len(partner):
                             contact.partners.add(partner[0])
                         else:
-                            self.logger.warning('no partner found for the affiliation: %s', affiliation)
+                            self.logger.warning('no partner found for the affiliation: ' + affiliation)
                     contact.save()
                     external_contacts.append(contact)
 
