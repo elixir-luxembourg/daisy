@@ -102,17 +102,13 @@ class ProjectsImporter(BaseImporter):
 
         # Search by DOI
         if 'doi' in publication_dict and len(publication_dict.get('doi')) > 0:
-            publication = Publication.objects.filter(doi=publication_dict.get('doi'))
-            if len(publication):
-                publication = publication[0]
+            if Publication.objects.filter(doi=publication_dict.get('doi')).count() == 1:
+                publication = Publication.objects.get(doi=publication_dict.get('doi'))
         
         # Search by citation string
         if publication is None and 'citation_string' in publication_dict and len(publication_dict.get('citation_string')) > 0:
-            publication = Publication.objects.filter(citation=publication_dict.get('citation_string'))
-            if len(publication):
-                publication = publication[0]
-            else:
-                publication = None
+            if Publication.objects.filter(citation=publication_dict.get('citation_string')).count() == 1:
+                publication = Publication.objects.get(citation=publication_dict.get('citation_string'))
 
         # Create a new one if it does not exist
         if publication is None:
