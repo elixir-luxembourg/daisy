@@ -32,7 +32,8 @@ class BaseImporter:
         json_list = json.loads(json_string)['items']
         self.json_schema_validator.validate_items(json_list, self.logger)
         for item in json_list:
-            self.logger.debug(' * Importing item: "{}"...'.format(item.get('name', 'N/A')))
+            item_name = item.get('name', 'N/A').encode('utf8')
+            self.logger.debug(' * Importing item: "{}"...'.format(item_name))
             try:
                 self.process_json(item)
             except Exception as e:

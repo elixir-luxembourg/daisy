@@ -30,7 +30,8 @@ class DatasetsImporter(BaseImporter):
             dataset = None
 
         if dataset:
-            self.logger.warning("Dataset with title '{}' already found. It will be updated.".format(title))
+            title_to_show = title.encode('utf8')
+            self.logger.warning("Dataset with title '{}' already found. It will be updated.".format(title_to_show))
         else:
             dataset = Dataset.objects.create(title=title)
 

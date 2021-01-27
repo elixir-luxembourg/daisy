@@ -47,7 +47,8 @@ class ProjectsImporter(BaseImporter):
                                                        elu_accession=elu_accession
             )
         else:
-            self.logger.warning("Project with acronym '{}' already found. It will be updated.".format(acronym))
+            acronym_to_show = acronym.encode('utf8')
+            self.logger.warning("Project with acronym '{}' already found. It will be updated.".format(acronym_to_show))
             project.title = name
             project.description = description
             project.has_cner = has_cner
