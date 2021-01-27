@@ -66,7 +66,7 @@ class ImportBaseCommand(BaseCommand):
                 self.import_file(importer,json_file_path, verbose, exxit)
 
     def import_file(self, importer, full_path, verbose, exxit):
-        with open(full_path) as json_file:
+        with open(full_path, encoding='utf-8') as json_file:
             json_file_contents = json_file.read()
             self.stdout.write("Importing file %s" % full_path)
             result = importer.import_json(json_file_contents, verbose=verbose)
