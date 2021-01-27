@@ -277,7 +277,7 @@ class DatasetsImporter(BaseImporter):
         for datatype_str in datadec_dict.get('data_types', []):
             datatype_str = datatype_str.strip()
             try:
-                datatype = DataType.objects.get(name=datatype_str)
+                datatype, _ = DataType.objects.get_or_create(name=datatype_str)
             except DataType.DoesNotExist:
                 self.logger.error('Import failed')
                 raise DatasetImportError(data=f'Cannot find data type: "{datatype_str}".')
