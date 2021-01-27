@@ -63,7 +63,8 @@ class ImportBaseCommand(BaseCommand):
     def import_directory(self, importer, dir_path, verbose, should_exit_on_error):
         for json_file_path in os.listdir(dir_path):
             if json_file_path.endswith(JSON_SUFFIX):
-                self.import_file(importer, dir_path + json_file_path, verbose, should_exit_on_error)
+                correct_path = os.path.join(dir_path, json_file_path)
+                self.import_file(importer, correct_path, verbose, should_exit_on_error)
 
     def import_file(self, importer, full_path, verbose, should_exit_on_error):
         with open(full_path, encoding='utf-8') as json_file:
