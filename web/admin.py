@@ -45,6 +45,10 @@ class StorageResourceAdmin(admin.ModelAdmin):
     form = StorageResourceForm
 
 
+class ProjectAdmin(admin.ModelAdmin):
+    exclude = ('gene_terms', 'disease_terms', 'phenotype_terms', 'study_terms')
+
+
 # DAISY core models
 admin.site.site_header = 'DAISY administration'
 admin.site.register(Access)
@@ -65,7 +69,7 @@ admin.site.register(LegalBasisType)
 admin.site.register(Partner)
 admin.site.register(PartnerRole)  # contract.py
 admin.site.register(PersonalDataType)
-admin.site.register(Project)
+admin.site.register(Project, ProjectAdmin)
 admin.site.register(Publication)
 admin.site.register(RestrictionClass)
 admin.site.register(SensitivityClass)
