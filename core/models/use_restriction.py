@@ -59,7 +59,8 @@ class UseRestriction(CoreModel):
         return clone
 
     def __str__(self):
-        return "{} - {}".format(self.restriction_class, self.notes)
+        title = self.data_declaration.title or '(Data Declaration with no title)'
+        return "{} - on {} - {}".format(self.restriction_class, title, self.notes)
 
     def to_dict(self):
         return {
