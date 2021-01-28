@@ -1,7 +1,10 @@
 import json
 import jsonschema
+import os
 import sys
 import urllib.request
+
+from django.conf import settings
 
 from core.exceptions import JSONSchemaValidationError
 from core.utils import DaisyLogger
@@ -9,7 +12,7 @@ from core.utils import DaisyLogger
 
 logger = DaisyLogger(__name__)
 
-JSONSCHEMA_BASE_LOCAL_PATH = './core/fixtures/'
+JSONSCHEMA_BASE_LOCAL_PATH = os.path.join(settings.BASE_DIR, 'core', 'fixtures')
 JSONSCHEMA_BASE_REMOTE_URL = "https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/"
 
 
@@ -43,7 +46,7 @@ class BaseJSONSchemaValidator:
             import os
             logger.warn("Error (1/2) loading schema from disk for JSON validation...: " + str(e))
             logger.warn("Working directory = " + os.getcwd()) 
-            logger.warn("File path = " + self.base_path + self.schema_name)
+            logger.warn("File path = " + os.path.join(self.base_path, self.schema_name))
             logger.warn("Will try to load the schema from URL...")
 
         try:
@@ -51,16 +54,18 @@ class BaseJSONSchemaValidator:
             return
         except:
             logger.error("Error (2/2) loading schema from URI for JSON validation...: " + str(e))
-            logger.error("URL = " + self.base_url + self.schema_name) 
+            logger.error("URL = " + os.path.join(self.base_url, self.schema_name))
 
         raise Exception('Cannot load schema for JSON validation')
 
     def _load_schema_from_disk(self):
-        with open(self.base_path + self.schema_name, 'r') as opened_file:
+        file_path = os.path.join(self.base_path, self.schema_name)
+        with open(file_path, 'r') as opened_file:
             return json.load(opened_file)
 
     def _load_schema_from_url(self):
-        with urllib.request.urlopen(self.base_url + self.schema_name) as url:
+        file_path = os.path.join(self.base_url, self.schema_name)
+        with urllib.request.urlopen(file_path) as url:
             return json.loads(url.read().decode())
 
 class DatasetJSONSchemaValidator(BaseJSONSchemaValidator):
