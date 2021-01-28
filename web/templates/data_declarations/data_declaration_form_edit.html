@@ -80,10 +80,12 @@
                                     <tr class="formset-row">
                                             <td>
                                                 {% include '_includes/field.html' with field=restriction_form.restriction_class %}
+                                                {% include '_includes/field.html' with field=restriction_form.use_restriction_rule %}
                                             </td>
-                                            <td> {% include '_includes/field.html' with field=restriction_form.notes %}</td>
-                                            <td></td>
-                                        <!-- Needed an empty column to prevent jquery formset from placing the remove below the row   -->
+                                            <td> {% include '_includes/field.html' with field=restriction_form.notes %}
+                                                {% include '_includes/field.html' with field=restriction_form.use_class_note %}
+                                            </td>
+                                            <td></td>{% comment %}<!-- Needed an empty column to prevent jquery formset from placing the remove below the row   --> {% endcomment %}
                                     </tr>
                                     {% endfor %}
                                     </tbody>

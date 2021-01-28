@@ -54,6 +54,8 @@ class UseRestriction(CoreModel):
         clone = UseRestriction()
         clone.restriction_class = self.restriction_class
         clone.notes = self.notes
+        clone.use_class_note = self.use_class_note
+        clone.use_restriction_rule = self.use_restriction_rule
         return clone
 
     def __str__(self):

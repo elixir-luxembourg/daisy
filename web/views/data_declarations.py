@@ -1,24 +1,29 @@
 import json
+import operator
+
+from functools import reduce
 
 from django.contrib import messages
-from django.http import HttpResponse
+from django.core.paginator import Paginator
+from django.db import IntegrityError, transaction
+from django.db.models import Q
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
-from functools import reduce
-from django.urls import reverse_lazy
 from django.views.generic import DetailView, UpdateView
+from django.urls import reverse_lazy
+
 from haystack.query import SearchQuerySet
-from django.db import IntegrityError, transaction
+
 from core.constants import Permissions
-from core.forms import DataDeclarationForm, DataDeclarationSubFormOther, DataDeclarationSubFormNew, \
-    DataDeclarationSubFormFromExisting, DataDeclarationEditForm
+from core.forms import DataDeclarationForm, DataDeclarationSubFormOther, DataDeclarationSubFormNew
+from core.forms import DataDeclarationSubFormFromExisting, DataDeclarationEditForm
 from core.forms.data_declaration import RestrictionFormset
 from core.models import Dataset, Partner, DataDeclaration, UseRestriction
-from core.utils import DaisyLogger
 from core.permissions import permission_required, CheckerMixin, constants
-from django.core.paginator import Paginator
-from django.http import JsonResponse, HttpResponseBadRequest
-from django.db.models import Q
+from core.utils import DaisyLogger
+
+
 
 log = DaisyLogger(__name__)
 
@@ -211,7 +216,6 @@ class DatadeclarationEditView(CheckerMixin, UpdateView):
         declaration_form = DataDeclarationEditForm(request.POST, instance=data_declaration)
         restriction_formset = RestrictionFormset(request.POST)
 
-        import operator
         formset_valid = reduce(operator.and_, [res_form.is_valid() for res_form in restriction_formset], True)
 
         if declaration_form.is_valid() and formset_valid:
