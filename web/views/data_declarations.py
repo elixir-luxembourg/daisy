@@ -196,12 +196,10 @@ class DatadeclarationEditView(CheckerMixin, UpdateView):
 
     
     def get(self, request, *args, **kwargs):
-
         data_declaration = self.get_object()
 
         declaration_form = DataDeclarationEditForm(instance=data_declaration)
-        restriction_data = [{'restriction_class': l.restriction_class, 'notes': l.notes}
-                            for l in data_declaration.data_use_restrictions.all()]
+        restriction_data = [restriction.serialize() for restriction in data_declaration.data_use_restrictions.all()]
         restriction_formset = RestrictionFormset(initial=restriction_data)
         return render(request, self.template_name, {
             'form': declaration_form,

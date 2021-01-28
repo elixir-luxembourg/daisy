@@ -82,8 +82,9 @@
                                                 {% include '_includes/field.html' with field=restriction_form.restriction_class %}
                                                 {% include '_includes/field.html' with field=restriction_form.use_restriction_rule %}
                                             </td>
-                                            <td> {% include '_includes/field.html' with field=restriction_form.notes %}
+                                            <td> 
                                                 {% include '_includes/field.html' with field=restriction_form.use_class_note %}
+                                                {% include '_includes/field.html' with field=restriction_form.notes %}
                                             </td>
                                             <td></td>{% comment %}<!-- Needed an empty column to prevent jquery formset from placing the remove below the row   --> {% endcomment %}
                                     </tr>

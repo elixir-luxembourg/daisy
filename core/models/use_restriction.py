@@ -59,13 +59,30 @@ class UseRestriction(CoreModel):
         return clone
 
     def __str__(self):
-        title = self.data_declaration.title or '(Data Declaration with no title)'
+        if self.data_declaration_id is None:
+            title = '(no DataDeclaration coupled'
+        else:
+            title = self.data_declaration.title or '(DataDeclaration with no title)'
         return "{} - on {} - {}".format(self.restriction_class, title, self.notes)
 
     def to_dict(self):
+        """
+        Used for import/export - the keys are conformant to the schema
+        """
         return {
             "use_class": self.restriction_class, 
             "use_class_note": self.use_class_note,
             "use_restriction_note": self.notes,
+            "use_restriction_rule": self.use_restriction_rule
+        }
+
+    def serialize(self):
+        """
+        Used for forms - the keys are conformant to the django model
+        """
+        return {
+            "restriction_class": self.restriction_class, 
+            "use_class_note": self.use_class_note,
+            "notes": self.notes,
             "use_restriction_rule": self.use_restriction_rule
         }
