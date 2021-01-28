@@ -1,6 +1,9 @@
 import json
 import os
 
+from functools import wraps
+from io import StringIO
+
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
@@ -9,14 +12,14 @@ from stronghold.decorators import public
 
 from core.importer.datasets_exporter import DatasetsExporter
 from core.importer.projects_exporter import ProjectsExporter
-
 from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm
 from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneTerm
+from core.utils import DaisyLogger
+
 from elixir_daisy import settings
+
 from ontobio import obograph_util, Ontology
 
-from core.utils import DaisyLogger
-from io import StringIO
 
 logger = DaisyLogger(__name__)
 
@@ -24,8 +27,6 @@ logger = DaisyLogger(__name__)
 """
 Rapido API method, we should probably use django rest framework if we want to develop API further.
 """
-
-
 def users(request):
     #     "results": [
     #     {
@@ -59,7 +60,6 @@ def partners(request):
 
 @public
 def termsearch(request, category):
-
     search = request.GET.get('search')
     page = request.GET.get('page')
 
@@ -95,18 +95,29 @@ def termsearch(request, category):
         }
     })
 
-def datasets(request):
-    if 'API_KEY' not in request.GET:
-        return JsonResponse({
-            'status': 'Error',
-            'description': 'API_KEY missing or invalid'
-        }, status=403)
-    elif request.GET.get('API_KEY') != getattr(settings, 'GLOBAL_API_KEY'):
-        return JsonResponse({
-            'status': 'Error',
-            'description': 'API_KEY missing or invalid'
-        }, status=403)
+def requires_apikey(view_func):
+    """
+    A decorator that checks if the API_KEY is present
+    and the value is valid
+    """
+    def _wrapped_view(request, *args, **kwargs):
+        if 'API_KEY' not in request.GET:
+            return JsonResponse({
+                'status': 'Error',
+                'description': 'API_KEY missing or invalid'
+            }, status=403)
+        elif request.GET.get('API_KEY') != getattr(settings, 'GLOBAL_API_KEY'):
+            return JsonResponse({
+                'status': 'Error',
+                'description': 'API_KEY missing or invalid'
+            }, status=403)
+        return view_func(request, *args, **kwargs)
 
+    return _wrapped_view
+
+@public
+@requires_apikey
+def datasets(request):
     if 'project_title' in request.GET:
         project_title = request.GET.get('project_title', '')
         datasets = Dataset.objects.filter(project__title__iexact=project_title, is_published=True)
@@ -126,18 +137,9 @@ def datasets(request):
             'more': str(e)
         })
 
+@public
+@requires_apikey
 def projects(request):
-    if 'API_KEY' not in request.GET:
-        return JsonResponse({
-            'status': 'Error',
-            'description': 'API_KEY missing or invalid'
-        }, status=403)
-    elif request.GET.get('API_KEY') != getattr(settings, 'GLOBAL_API_KEY'):
-        return JsonResponse({
-            'status': 'Error',
-            'description': 'API_KEY missing or invalid'
-        }, status=403)
-        
     if 'title' in request.GET:
         title = request.GET.get('title', '')
         projects = Project.objects.filter(title__iexact=title, is_published=True)
