@@ -19,10 +19,10 @@ class UseRestrictionForm(ModelForm):
         super().__init__(*args, **kwargs)
         class_choices = [(None, "-----------------------")]
         class_choices.extend([(d.code, d.name) for d in RestrictionClass.objects.all()])
-        self.fields['restriction_class'] = CharField(label='Category', help_text= 'Select the category of restrictions. These are \'GA4GH Consent Codes\'', required=True, widget=Select(choices=class_choices, attrs={'class': 'dummy-select'}))
+        self.fields['restriction_class'] = CharField(label='Use category', help_text= 'Select the category of restrictions. These are \'GA4GH Consent Codes\'', required=True, widget=Select(choices=class_choices, attrs={'class': 'dummy-select'}))
         self.fields['notes'].widget.attrs['cols'] = '70'
         self.fields['notes'].widget.attrs['rows'] = '5'
-        self.fields['use_restriction_rule'] = CharField(label='Rule', help_text= 'Does the rule constraints or forbids?', required=False, widget=Select(choices=USE_RESTRICTION_CHOICES, attrs={'class': 'dummy-select'}))
+        self.fields['use_restriction_rule'] = CharField(label='Use Restriction Rule', help_text= 'Does the rule constraints or forbids?', required=False, widget=Select(choices=USE_RESTRICTION_CHOICES, attrs={'class': 'dummy-select'}))
         self.fields['use_class_note'].widget.attrs['cols'] = '70'
         self.fields['use_class_note'].widget.attrs['rows'] = '3'
 

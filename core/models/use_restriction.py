@@ -24,26 +24,26 @@ class UseRestriction(CoreModel):
                                          help_text='The data declaration to which this restriction applies.')
                                          
     # use_class after renaming
-    restriction_class = models.CharField(verbose_name='Restriction class',
+    restriction_class = models.CharField(verbose_name='Use Category',
                                          max_length=20,
                                          blank=True,
                                          null=True,
                                          help_text='Select the GA4GH code for the restriction.  Refer to \'GA4GH Consent Codes\' for a detailed explanation of each.')
 
     # use_class_note after renaming
-    notes = models.TextField(verbose_name='Description',
+    notes = models.TextField(verbose_name='Use Restriction note',
                              max_length=255,
                              blank=True,
                              null=True,
                              help_text='Provide a free text description of the restriction.')
 
-    use_class_note = models.TextField(verbose_name='Use restriction class note',
+    use_class_note = models.TextField(verbose_name='Use Category note',
                                       max_length=255,
                                       blank=True,
                                       null=True,
                                       help_text='A question asked when collecting the restriction class')
 
-    use_restriction_rule = models.TextField(verbose_name='Does the rule forbid (FORBIDDEN), constraint (CONSTRAINTS) or have no constraints (NO_CONSTRAINTS)?',
+    use_restriction_rule = models.TextField(verbose_name='Use Restriction Rule',
                                             choices=USE_RESTRICTION_CHOICES,
                                             default=USE_RESTRICTION_CHOICES.NO_CONSTRAINTS,
                                             blank=False, 
