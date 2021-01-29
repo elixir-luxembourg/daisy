@@ -54,6 +54,10 @@ class BaseImporter:
         raise NotImplementedError("Abstract method: Implement this method in the child class.")
 
     def process_contacts(self, contacts_list):
+        if not isinstance(contacts_list, list):
+            self.logger.info('Contact list is not a list... Please check the imported file.')
+            return [], [], []
+        
         local_custodians = []
         local_personnel = []
         external_contacts = []

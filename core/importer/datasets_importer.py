@@ -495,9 +495,10 @@ class DatasetsImporter(BaseImporter):
                 comments=description,
                 title=name,
             )
+            cohort.save()
             
-            # local_custodians, local_personnel, external_contacts = self.process_contacts(study.get("contacts", []))
-            # cohort.owners.set(external_contacts)
+            local_custodians, local_personnel, external_contacts = self.process_contacts(study.get("contacts", []))
+            cohort.owners.set(external_contacts)
 
             cohort.save()
             self.logger.info("Cohort '{}' imported successfully. Will try to link it to the data declaration...".format(name))
