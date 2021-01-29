@@ -64,13 +64,15 @@ class DatasetsImporter(BaseImporter):
         for local_custodian in local_custodians:
             local_custodian.assign_permissions_to_dataset(dataset)
 
-        self.process_datadeclarations(dataset_dict, dataset)
+        studies_map = self.process_datadeclarations(dataset_dict, dataset)
 
+        # Must be run after processing data declarations
+        self.process_studies(dataset_dict, studies_map)
+
+        # Must be run after processing data declarations
         legal_bases = self.process_legal_bases(dataset_dict, dataset)
         if legal_bases:
             dataset.legal_basis_definitions.set(legal_bases, bulk=False)
-
-        # self.process_studies(dataset_dict, dataset)
 
         dataset.save()
 
@@ -222,15 +224,19 @@ class DatasetsImporter(BaseImporter):
             return None
 
     def process_datadeclarations(self, dataset_dict, dataset):
-
+        studies_map = {}
         datadec_dicts = dataset_dict.get('data_declarations', [])
 
         for ddec_dict in datadec_dicts:
-            self.process_datadeclaration(ddec_dict, dataset)
+            data_declaration, studies_map_key = self.process_datadeclaration(ddec_dict, dataset)
+            studies_map[studies_map_key] = data_declaration
+
+        return studies_map
 
     def process_datadeclaration(self, datadec_dict, dataset):
         try:
             title = datadec_dict['title']
+            title_to_show = title.encode('utf-8')
         except KeyError:
             raise DatasetImportError(data='Data declaration title missing')
 
@@ -240,9 +246,12 @@ class DatasetsImporter(BaseImporter):
             datadec = None
 
         if datadec:
-            self.logger.warning("Data declaration with title '{}' already found. It will be updated.".format(title))
+            self.logger.warning("Data declaration with title '{}' already found. It will be updated.".format(title_to_show))
         else:
             datadec = DataDeclaration.objects.create(title=title, dataset=dataset)
+
+        if 'source_study' not in datadec_dict or len(datadec_dict.get('source_study')) == 0:
+            self.logger.warning("Data declaration with has no `source_study` set - there will be a problem processing study/cohort data.")
 
         datadec.has_special_subjects = datadec_dict.get('has_special_subjects', False)
         datadec.data_types_notes = datadec_dict.get('data_type_notes', None)
@@ -271,6 +280,8 @@ class DatasetsImporter(BaseImporter):
         datadec.dataset = dataset
         datadec.save()
         datadec.updated = True
+
+        return datadec, datadec_dict.get('source_study')
 
     def process_datatypes(self, datadec_dict):
         datatypes = []
@@ -471,23 +482,37 @@ class DatasetsImporter(BaseImporter):
 
         return legal_basis_obj
 
-    def process_studies(self, dataset_object):
+    def process_studies(self, dataset_dict, studies_map):
         def _process_study(study):
             name = study.get('name', '')
             description = study.get('description', '')
             has_ethics_approval = study.get('has_ethics_approval', False)
             ethics_approval_notes = study.get('ethics_approval_notes', '')
             url = study.get('url', '')  # TODO: Currently this is lost
-            local_custodians, local_personnel, external_contacts = self.process_contacts(study.get("contacts", []))
 
-            cohort = Cohort(
+            cohort, _ = Cohort.objects.get_or_create(
                 ethics_confirmation=has_ethics_approval,
                 comments=description,
                 title=name,
             )
+            
+            # local_custodians, local_personnel, external_contacts = self.process_contacts(study.get("contacts", []))
+            # cohort.owners.set(external_contacts)
 
-            cohort.owners.set(external_contacts)
             cohort.save()
+            self.logger.info("Cohort '{}' imported successfully. Will try to link it to the data declaration...".format(name))
+
+            try:
+                data_declaration = studies_map.get(name)
+                if data_declaration is None:
+                    raise KeyError()
+                if not isinstance(data_declaration, DataDeclaration):
+                    raise KeyError()
+                data_declaration.cohorts.add(cohort)
+                data_declaration.save()
+                self.logger.info("Cohort '{}' linked successfully to data declaration '{}'".format(name, data_declaration.title))
+            except:
+                self.logger.warning("The data declaration for the study '{}' not found: ".format(name))
 
         if 'studies' not in dataset_dict:
             return

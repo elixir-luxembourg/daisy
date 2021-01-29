@@ -72,7 +72,7 @@ class ImportBaseCommand(BaseCommand):
     def import_file(self, importer, full_path, verbose, should_exit_on_error):
         with open(full_path, encoding='utf-8') as json_file:
             json_file_contents = json_file.read()
-            self.stdout.write("Importing file %s" % full_path)
+            self.stdout.write("\n\nImporting file: \"%s\"" % full_path)
             result = importer.import_json(json_file_contents, verbose=verbose)
             if not result:
                 self.stdout.write(self.style.ERROR("Import failed"))
