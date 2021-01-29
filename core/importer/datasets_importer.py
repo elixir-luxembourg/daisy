@@ -485,6 +485,7 @@ class DatasetsImporter(BaseImporter):
     def process_studies(self, dataset_dict, studies_map):
         def _process_study(study):
             name = study.get('name', '')
+            safe_name = name.encode('utf-8')
             description = study.get('description', '')
             has_ethics_approval = study.get('has_ethics_approval', False)
             ethics_approval_notes = study.get('ethics_approval_notes', '')
@@ -501,7 +502,7 @@ class DatasetsImporter(BaseImporter):
             cohort.owners.set(external_contacts)
 
             cohort.save()
-            self.logger.info("Cohort '{}' imported successfully. Will try to link it to the data declaration...".format(name))
+            self.logger.info("Cohort '{}' imported successfully. Will try to link it to the data declaration...".format(safe_name))
 
             try:
                 data_declaration = studies_map.get(name)
@@ -511,9 +512,10 @@ class DatasetsImporter(BaseImporter):
                     raise KeyError()
                 data_declaration.cohorts.add(cohort)
                 data_declaration.save()
-                self.logger.info("Cohort '{}' linked successfully to data declaration '{}'".format(name, data_declaration.title))
+                safe_title = data_declaration.title.encode('utf8')
+                self.logger.info("Cohort '{}' linked successfully to data declaration '{}'".format(safe_name, safe_title))
             except:
-                self.logger.warning("The data declaration for the study '{}' not found: ".format(name))
+                self.logger.warning("The data declaration for the study '{}' not found: ".format(safe_name))
 
         if 'studies' not in dataset_dict:
             return
