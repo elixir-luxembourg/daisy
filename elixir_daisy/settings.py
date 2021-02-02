@@ -197,13 +197,13 @@ LOGGING = {
             'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
-            'encoding':'utf8'
+            'encoding': 'utf8'
         },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler',,
-            'encoding':'utf8'
+            'class': 'django.utils.log.AdminEmailHandler',
+            'encoding': 'utf8'
         },
         'sql': {
             'level': 'DEBUG',
@@ -213,7 +213,7 @@ LOGGING = {
             'filters': ['require_debug_true'],
             'filename': os.path.join(LOG_DIR, 'daisy.sql.log'),
             'formatter': 'verbose',
-            'encoding':'utf8'
+            'encoding': 'utf8'
         },
         'logfile': {
             'level': 'DEBUG',
@@ -222,7 +222,7 @@ LOGGING = {
             'backupCount': 10,
             'filename': os.path.join(LOG_DIR, 'daisy.log'),
             'formatter': 'verbose',
-            'encoding':'utf8'
+            'encoding': 'utf8'
         },
         'templates': {
             'level': 'DEBUG',
@@ -232,7 +232,7 @@ LOGGING = {
             'filters': ['require_debug_true'],
             'filename': os.path.join(LOG_DIR, 'daisy.template_errors.log'),
             'formatter': 'verbose',
-            'encoding':'utf8'
+            'encoding': 'utf8'
         },
     },
     'loggers': {
