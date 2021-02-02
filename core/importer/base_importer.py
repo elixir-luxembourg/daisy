@@ -3,6 +3,7 @@ import sys
 import re
 
 from datetime import datetime
+from typing import Dict, List
 
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -16,6 +17,14 @@ PRINCIPAL_INVESTIGATOR = 'Principal_Investigator'
 
 
 class BaseImporter:
+    """
+    Abstract base class for an importer. 
+    Provides common functions for opening/parsing/validating JSON files.
+    
+    Take a look on `ProjectsImporter` or `DatasetsImporter` for information
+    how an implementation should look like.
+    """
+
     class DateImportException(Exception):
         pass
 
@@ -35,7 +44,7 @@ class BaseImporter:
         """
         raise NotImplementedError('You must implement `json_schema_uri` in your importer class')
 
-    def can_process_json(self, json_string):
+    def can_process_json(self, json_string: str) -> bool:
         """
         Checks whether the imported JSON has the same "$schema" URI as the importer class (in `json_schema_uri` property)
         """
@@ -43,11 +52,11 @@ class BaseImporter:
             object = json.loads(json_string)
             return self.can_process_object(object)
         except:
-            message = 'Couldn\'t check if the imported object has same "$schema" as the importer ({}: {}) - something went wrong while parsing the file'.format(self.__class__.__name__, self.json_schema_uri)
+            message = f'Couldn\'t check if the imported object has same "$schema" as the importer ({self.__class__.__name__}: {self.json_schema_uri}) - something went wrong while parsing the file'
             self.logger.warn(message)
             return False
 
-    def can_process_object(self, json_object):
+    def can_process_object(self, json_object: Dict) -> bool:
         """
         Checks whether the object has the same "$schema" URI as the importer class (in `json_schema_uri` property)
         """
@@ -55,14 +64,15 @@ class BaseImporter:
             self.logger.debug('The imported object has no "$schema" attribute')
             return False
         if self.json_schema_uri == json_object.get('$schema'):
-            message = 'The imported object has the same "$schema" ({}) as the importer ({}).'.format(self.json_schema_uri, self.__class__.__name__)
+            message = f'The imported object has the same "$schema" ({self.json_schema_uri}) as the importer ({self.__class__.__name__})'
             self.logger.debug(message)
             return True
-        message = 'The imported object has different "$schema" ({}) than the importer ({}: {}).'.format(json_object.get('$schema'), self.__class__.__name__, self.json_schema_uri)
+        schema_name = json_object.get('$schema')
+        message = f'The imported object has different "$schema" ({schema_name}) than the importer ({self.__class__.__name__}: {self.json_schema_uri})'
         self.logger.debug(message)
         return False
 
-    def import_json_file(self, path_to_the_file, stop_on_error=False, verbose=False):
+    def import_json_file(self, path_to_the_file: str, stop_on_error=False, verbose=False, validate=True) -> bool:
         """
         Opens, loads and imports a JSON file.
         """
@@ -73,36 +83,46 @@ class BaseImporter:
             self.logger.info(f'Successfully completed import for the file: {path_to_the_file}')
             return result
 
-    def import_json(self, json_string, stop_on_error=False, verbose=False):
+    def import_json(self, json_string: str, stop_on_error=False, verbose=False, validate=True) -> bool:
         result = True
         importer_class_name = self.__class__.__name__
-        self.logger.info(f'Attempting to use ({importer_class_name}) to parse and import the JSON')
+        self.logger.info(f'Attempting to use "{importer_class_name}" to parse and import the JSON')
         json_list = json.loads(json_string)['items']
-        result = import_objects(json_list, stop_on_error, verbose)
+        result = self.import_object_list(json_list, stop_on_error, verbose)
         status = 'success' if result else 'failed'
         self.logger.info(f'Import ({importer_class_name}) result: {status}')
         return result
 
-    def import_objects(self, json_list, stop_on_error=False, verbose=False):
+    def import_object_list(self, json_list: List[Dict], stop_on_error=False, verbose=False, validate=True) -> bool:
         """
         Validates and imports a list of objects.
         """
-        validator_name = self.json_schema_validator.__class__.__name__
-        self.logger.debug(f'Validating the file with {validator_name} against JSON schema')
-        self.json_schema_validator.validate_items(json_list, self.logger)
-        self.logger.debug('JSON schema is OK')
-        self.logger.debug(f'There are {len(json_list)} objects to be imported. Starting the process...')
+        result = True
+        if validate:
+            validator_name = self.json_schema_validator.__class__.__name__
+            self.logger.debug(f'Validating the file with "{validator_name}" against JSON schema...')
+            self.json_schema_validator.validate_items(json_list, self.logger)
+            self.logger.debug('...JSON schema is OK!')
+        else:
+            self.logger.debug(f'Proceeding without using the validation')
+        count = len(json_list)
+        verb = 'are' if count > 1 else 'is'
+        self.logger.debug(f'There {verb} {count} object(s) to be imported. Starting the process...')
         for item in json_list:
-            self.import_object(item, stop_on_error, verbose)
-        self.logger.debug('Finished importing the objects')
+            result = self.import_object(item, stop_on_error, verbose) and result
+        self.logger.debug('Finished importing the object(s)')
+        return result
 
-    def import_object(self, item, stop_on_error=False, verbose=False):
-        item_name = item.get('name', 'N/A').encode('utf8')
-        self.logger.debug(f'Trying to importing item: {item_name}')
+    def import_object(self, item: Dict, stop_on_error=False, verbose=False):
+        """
+        Tries to import a single object
+        """
+        item_name = item.get('name', 'N/A')
+        self.logger.debug(f'Trying to importing item: "{item_name}"')
         try:
-            self.process_json(item)
+            result = self.process_json(item)
         except Exception as e:
-            self.logger.error('Import failed')
+            self.logger.error('Import failed: ')
             self.logger.error(str(e))
             if verbose:
                 import traceback
@@ -112,13 +132,14 @@ class BaseImporter:
                 raise e
             result = False
         self.logger.debug(f'Successfully imported item: {item_name}')
+        return result
 
     def process_json(self, import_dict):
         raise NotImplementedError("Abstract method: Implement this method in the child class.")
 
-    def process_contacts(self, contacts_list):
+    def process_contacts(self, contacts_list: List[Dict]):
         if not isinstance(contacts_list, list):
-            self.logger.info('Contact list is not a list... Please check the imported file.')
+            self.logger.warn('Contact list is not a list... Please check the imported file.')
             return [], [], []
         
         local_custodians = []
@@ -140,14 +161,14 @@ class BaseImporter:
                                                 email=email)
                     if len(users) != 1:
                         msg = 'Something went wrong - there are two contacts with the same first and last name, and it''s impossible to differentiate them'
-                        self.logger.warning(msg, full_name)
+                        self.logger.warning(msg)
                     user = users.first()
                 elif len(user) == 1:
                     user = user.first()
                 else:
                     user = None
                 if user is None:
-                    self.logger.warning('No user found for %s - hence an inactive user will be created', full_name)
+                    self.logger.warning(f'No user found for {full_name} - hence an inactive user will be created')
 
                     usr_name = first_name.lower() + '.' + last_name.lower()
                     user = User.objects.create(username=usr_name, 
@@ -186,7 +207,7 @@ class BaseImporter:
                         if len(partner):
                             contact.partners.add(partner[0])
                         else:
-                            self.logger.warning('no partner found for the affiliation: ' + affiliation)
+                            self.logger.warning(f'no partner found for the affiliation: {affiliation}')
                     contact.save()
                     external_contacts.append(contact)
 
@@ -204,14 +225,14 @@ class BaseImporter:
             year = match.group(1)
             month = match.group(2)
             day = match.group(3)
-            date_str = "{}-{}-{}".format(year, month, day)
+            date_str = f"{year}-{month}-{day}"
             try:
                 r = datetime.strptime(date_str, "%Y-%m-%d").date()
                 return r
             except (TypeError, ValueError):
-                raise self.DateImportException("Couldn't parse the following date: " + str(date_string))
+                raise self.DateImportException(f"Couldn't parse the following date: {str(date_string)}")
         else:
-            raise self.DateImportException("Couldn't parse the following date: " + str(date_string))
+            raise self.DateImportException(f"Couldn't parse the following date: {str(date_string)}")
 
     @staticmethod
     def is_local_contact(contact_dict):

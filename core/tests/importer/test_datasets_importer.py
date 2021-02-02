@@ -25,9 +25,9 @@ def test_import_datasets(celery_session_worker, storage_resources, data_types, p
     factories.UserFactory.create(first_name='Ali', last_name='Gator', groups=[VIP], email="user@uni.edu")
 
     data_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../data/datasets.json")
-    with open(data_file, "r") as f:
-        importer = DatasetsImporter()
-        importer.import_json(f.read(), True)
+    importer = DatasetsImporter()
+    importer.import_json_file(data_file, True)
+
     assert 5 == Dataset.objects.all().count()
     assert 4 == Project.objects.all().count()
 

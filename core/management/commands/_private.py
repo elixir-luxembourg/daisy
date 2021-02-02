@@ -70,14 +70,11 @@ class ImportBaseCommand(BaseCommand):
                 self.import_file(importer, correct_path, verbose, should_exit_on_error)
 
     def import_file(self, importer, full_path, verbose, should_exit_on_error):
-        with open(full_path, encoding='utf-8') as json_file:
-            json_file_contents = json_file.read()
-            self.stdout.write("\n\nImporting file: \"%s\"" % full_path)
-            result = importer.import_json(json_file_contents, verbose=verbose)
-            if not result:
-                self.stdout.write(self.style.ERROR("Import failed"))
-                if should_exit_on_error:
-                    raise CommandError('Exited after error.')
+        if importer.import_json_file(full_path, should_exit_on_error, verbose=verbose):
+            return
+        self.stdout.write(self.style.ERROR("Import failed"))
+        if should_exit_on_error:
+            raise CommandError('Exited after error.')
 
 
 class ExportBaseCommand(BaseCommand):
