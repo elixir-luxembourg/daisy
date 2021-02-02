@@ -177,10 +177,10 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            'format': u'%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
         'simple': {
-            'format': '%(levelname)s %(message)s'
+            'format': u'%(levelname)s %(message)s'
         },
     },
     'filters': {
@@ -196,12 +196,14 @@ LOGGING = {
             'level': 'DEBUG',
             'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'formatter': 'simple',
+            'encoding':'utf8'
         },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler',
+            'class': 'django.utils.log.AdminEmailHandler',,
+            'encoding':'utf8'
         },
         'sql': {
             'level': 'DEBUG',
@@ -210,7 +212,8 @@ LOGGING = {
             'backupCount': 10,
             'filters': ['require_debug_true'],
             'filename': os.path.join(LOG_DIR, 'daisy.sql.log'),
-            'formatter': 'verbose'
+            'formatter': 'verbose',
+            'encoding':'utf8'
         },
         'logfile': {
             'level': 'DEBUG',
@@ -218,7 +221,8 @@ LOGGING = {
             'maxBytes': LOGFILE_MAX_BYTES,
             'backupCount': 10,
             'filename': os.path.join(LOG_DIR, 'daisy.log'),
-            'formatter': 'verbose'
+            'formatter': 'verbose',
+            'encoding':'utf8'
         },
         'templates': {
             'level': 'DEBUG',
@@ -227,7 +231,8 @@ LOGGING = {
             'backupCount': 1,
             'filters': ['require_debug_true'],
             'filename': os.path.join(LOG_DIR, 'daisy.template_errors.log'),
-            'formatter': 'verbose'
+            'formatter': 'verbose',
+            'encoding':'utf8'
         },
     },
     'loggers': {
