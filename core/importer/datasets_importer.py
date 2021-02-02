@@ -15,6 +15,7 @@ class DatasetsImporter(BaseImporter):
     """
 
     json_schema_validator = DatasetJSONSchemaValidator()
+    json_schema_uri = 'https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/elu-dataset.json'
 
     def process_json(self, dataset_dict):
         try:

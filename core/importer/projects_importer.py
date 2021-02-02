@@ -17,6 +17,7 @@ class ProjectsImporter(BaseImporter):
     """
 
     json_schema_validator = ProjectJSONSchemaValidator()
+    json_schema_uri = 'https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/elu-project.json'
 
     def process_json(self, project_dict):
         publications = [self.process_publication(publication_dict)

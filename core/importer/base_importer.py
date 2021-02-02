@@ -8,8 +8,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 
 from core.constants import Groups as GroupConstants
-from core.models import Partner, Contact, ContactType
-from core.models import User
+from core.models import Partner, Contact, ContactType, User
 from core.utils import DaisyLogger
 
 
@@ -24,31 +23,95 @@ class BaseImporter:
 
     @property
     def json_schema_validator(self):
-        raise NotImplementedError
+        """
+        This validator will be used against the imported data
+        """
+        raise NotImplementedError('You must implement `json_schema_validator` in your importer class')
+
+    @property
+    def json_schema_uri(self):
+        """
+        This attribute is used for detecting whether the importer can handle given json
+        """
+        raise NotImplementedError('You must implement `json_schema_uri` in your importer class')
+
+    def can_process_json(self, json_string):
+        """
+        Checks whether the imported JSON has the same "$schema" URI as the importer class (in `json_schema_uri` property)
+        """
+        try:
+            object = json.loads(json_string)
+            return self.can_process_object(object)
+        except:
+            message = 'Couldn\'t check if the imported object has same "$schema" as the importer ({}: {}) - something went wrong while parsing the file'.format(self.__class__.__name__, self.json_schema_uri)
+            self.logger.warn(message)
+            return False
+
+    def can_process_object(self, json_object):
+        """
+        Checks whether the object has the same "$schema" URI as the importer class (in `json_schema_uri` property)
+        """
+        if not json_object.get('$schema', False):
+            self.logger.debug('The imported object has no "$schema" attribute')
+            return False
+        if self.json_schema_uri == json_object.get('$schema'):
+            message = 'The imported object has the same "$schema" ({}) as the importer ({}).'.format(self.json_schema_uri, self.__class__.__name__)
+            self.logger.debug(message)
+            return True
+        message = 'The imported object has different "$schema" ({}) than the importer ({}: {}).'.format(json_object.get('$schema'), self.__class__.__name__, self.json_schema_uri)
+        self.logger.debug(message)
+        return False
+
+    def import_json_file(self, path_to_the_file, stop_on_error=False, verbose=False):
+        """
+        Opens, loads and imports a JSON file.
+        """
+        self.logger.info(f'Opening the file: {path_to_the_file}')
+        with open(path_to_the_file, encoding='utf-8') as json_file:
+            json_file_contents = json_file.read()
+            result = self.import_json(json_file_contents, stop_on_error, verbose)
+            self.logger.info(f'Successfully completed import for the file: {path_to_the_file}')
+            return result
 
     def import_json(self, json_string, stop_on_error=False, verbose=False):
-        self.logger.info(f'Import ({self.__class__.__name__}) started for file')
         result = True
+        importer_class_name = self.__class__.__name__
+        self.logger.info(f'Attempting to use ({importer_class_name}) to parse and import the JSON')
         json_list = json.loads(json_string)['items']
-        self.json_schema_validator.validate_items(json_list, self.logger)
-        for item in json_list:
-            item_name = item.get('name', 'N/A').encode('utf8')
-            self.logger.debug(' * Importing item: "{}"...'.format(item_name))
-            try:
-                self.process_json(item)
-            except Exception as e:
-                self.logger.error('Import failed')
-                self.logger.error(str(e))
-                if verbose:
-                    import traceback
-                    ex = traceback.format_exception(*sys.exc_info())
-                    self.logger.error('\n'.join([e for e in ex]))
-                if stop_on_error:
-                    raise e
-                result = False
-            self.logger.info('... completed')
-        self.logger.info('Import ({}) result for file: {}'.format(self.__class__.__name__, 'success' if result else 'failed'))
+        result = import_objects(json_list, stop_on_error, verbose)
+        status = 'success' if result else 'failed'
+        self.logger.info(f'Import ({importer_class_name}) result: {status}')
         return result
+
+    def import_objects(self, json_list, stop_on_error=False, verbose=False):
+        """
+        Validates and imports a list of objects.
+        """
+        validator_name = self.json_schema_validator.__class__.__name__
+        self.logger.debug(f'Validating the file with {validator_name} against JSON schema')
+        self.json_schema_validator.validate_items(json_list, self.logger)
+        self.logger.debug('JSON schema is OK')
+        self.logger.debug(f'There are {len(json_list)} objects to be imported. Starting the process...')
+        for item in json_list:
+            self.import_object(item, stop_on_error, verbose)
+        self.logger.debug('Finished importing the objects')
+
+    def import_object(self, item, stop_on_error=False, verbose=False):
+        item_name = item.get('name', 'N/A').encode('utf8')
+        self.logger.debug(f'Trying to importing item: {item_name}')
+        try:
+            self.process_json(item)
+        except Exception as e:
+            self.logger.error('Import failed')
+            self.logger.error(str(e))
+            if verbose:
+                import traceback
+                ex = traceback.format_exception(*sys.exc_info())
+                self.logger.error('\n'.join([e for e in ex]))
+            if stop_on_error:
+                raise e
+            result = False
+        self.logger.debug(f'Successfully imported item: {item_name}')
 
     def process_json(self, import_dict):
         raise NotImplementedError("Abstract method: Implement this method in the child class.")
