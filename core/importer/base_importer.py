@@ -117,8 +117,8 @@ class BaseImporter:
         """
         Tries to import a single object
         """
-        item_name = item.get('name', 'N/A')
-        self.logger.debug(f'Trying to importing item: "{item_name}"')
+        item_name = item.get('name', 'N/A').encode('utf-8')
+        self.logger.debug(f'Trying to import item: "{item_name}"')
         try:
             result = self.process_json(item)
         except Exception as e:
