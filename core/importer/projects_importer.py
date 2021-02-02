@@ -61,8 +61,9 @@ class ProjectsImporter(BaseImporter):
             if 'start_date' in project_dict and project_dict.get('start_date') and len(project_dict.get('start_date')) > 0:
                 project.start_date = self.process_date(project_dict.get('start_date'))
         except self.DateImportException:
+            date_str = project_dict.get('start_date')
             message = "\tCouldn't import the 'start_date'. Does it follow the '%Y-%m-%d' format?\n\t"
-            message = message + f'Was: "{project_dict.get('start_date')}". '
+            message = message + f'Was: "{date_str}". '
             message = message + "Continuing with empty value."
             self.logger.warning(message)
 
@@ -70,8 +71,9 @@ class ProjectsImporter(BaseImporter):
             if 'end_date' in project_dict and project_dict.get('end_date') and len(project_dict.get('end_date')) > 0:
                 project.end_date = self.process_date(project_dict.get('end_date'))
         except self.DateImportException:
+            date_str = project_dict.get('end_date')
             message = "\tCouldn't import the 'end_date'. Does it follow the '%Y-%m-%d' format?\n\t"
-            message = message + f'Was: "{project_dict.get('end_date')}". '
+            message = message + f'Was: "{date_str}". '
             message = message + "Continuing with empty value."
             self.logger.warning(message)
 

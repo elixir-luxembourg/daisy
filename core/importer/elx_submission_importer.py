@@ -26,7 +26,8 @@ class DishSubmissionImporter(BaseImporter):
         try:
             logger.info('Import started')
             submission_dict = json.loads(json_string)
-            logger.debug(f' * Importing Data Declaration: "{submission_dict['name']}"...')
+            submission_name = submission_dict['name'].encode('utf8')
+            logger.debug(f' * Importing Data Declaration: "{submission_name}"...')
 
             if self.is_elixir_submission(submission_dict):
                 project = Project.objects.filter(acronym=self.elixir_project_name).first()
