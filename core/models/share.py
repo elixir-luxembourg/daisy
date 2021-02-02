@@ -63,4 +63,4 @@ class Share(CoreModel):
     )
 
     def __str__(self):
-        return 'Share/Transfer of {} with {}.'.format(self.dataset.title, self.partner.name)
+        return f'Share/Transfer of {self.dataset.title} with {self.partner.name}'

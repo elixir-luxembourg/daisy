@@ -10,10 +10,9 @@ class PartnersImporter(BaseImporter):
         https://git-r3lab.uni.lu/pinar.alper/metadata-tools/blob/master/metadata_tools/resources/elu-institution.json
 
        Usage example:
-           def import_partner():
-               with open("partners.json", "r") as file_with_partners:
-                   importer = PartnersImporter()
-                   importer.import_json(file_with_partners.read())
+           def import_partners():
+               importer = PartnersImporter()
+               importer.import_json_file("partners.json")
        """
 
     json_schema_validator = InstitutionJSONSchemaValidator()

@@ -35,7 +35,7 @@ class ProjectsExporter:
             logger.error('Project export failed')
             logger.error(str(e))
             result = False
-        logger.info('Project export complete see file: {}'.format(file_handle))
+        logger.info(f'Project export complete see file: {file_handle}')
         return result
 
 
@@ -48,13 +48,14 @@ class ProjectsExporter:
             objects = Project.objects.all()
 
         for project in objects:
-            logger.debug(' * Exporting project: "{}"...'.format(project.acronym))
+            logger.debug(f' * Exporting project: "{project.acronym}"...')
             try:
                 pd = project.to_dict()
                 pd["source"] = settings.SERVER_URL
                 project_dicts.append(pd)
             except Exception as e:
-                logger.error('Export failed for project {}'.format(project.__str__()))
+                project_repr = str(project)
+                logger.error(f'Export failed for project f{project_repr}')
                 logger.error(str(e))
                 if verbose:
                     import traceback

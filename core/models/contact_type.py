@@ -18,4 +18,4 @@ class ContactType(CoreModel):
                                     verbose_name='Name of the contact type', unique=True)
 
     def __str__(self):
-        return "{}".format(self.name)
+        return f"{self.name}"

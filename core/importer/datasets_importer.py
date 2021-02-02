@@ -32,7 +32,7 @@ class DatasetsImporter(BaseImporter):
 
         if dataset:
             title_to_show = title.encode('utf8')
-            self.logger.warning("Dataset with title '{}' already found. It will be updated.".format(title_to_show))
+            self.logger.warning(f"Dataset with title '{title_to_show}' already found. It will be updated.")
         else:
             dataset = Dataset.objects.create(title=title)
 
@@ -77,6 +77,8 @@ class DatasetsImporter(BaseImporter):
 
         dataset.save()
 
+        return True
+
     # @staticmethod
     # def process_local_custodians(dataset_dict):
     #     result = []
@@ -108,19 +110,22 @@ class DatasetsImporter(BaseImporter):
 
     def process_project(self, project_acronym):
         try:
-            project = Project.objects.get(acronym=project_acronym.strip())
+            acronym = project_acronym.strip()
+            project = Project.objects.get(acronym=acronym)
             return project
         except Project.DoesNotExist:
-            self.logger.warning("Tried to find project with acronym ='{}'; it was not found. Will try to look for the acronym...".format(project_acronym))
+            msg = f"Tried to find project with acronym ='{acronym}'; it was not found. Will try to look for the acronym..."
+            self.logger.warning(msg)
 
         try:
-            project = Project.objects.get(title=project_acronym.strip())
+            project = Project.objects.get(title=acronym)
             return project
         except Project.DoesNotExist:
-            self.logger.warning("Tried to find project with title ='{}'; it was not found. Will create a new one.".format(project_acronym.strip()))
+            msg = f"Tried to find project with title ='{acronym}'; it was not found. Will create a new one."
+            self.logger.warning(msg)
             project = Project.objects.create(
-                acronym=project_acronym.strip(),
-                title=project_acronym.strip()
+                acronym=acronym,
+                title=acronym
             )
         return project
 
@@ -247,7 +252,8 @@ class DatasetsImporter(BaseImporter):
             datadec = None
 
         if datadec:
-            self.logger.warning("Data declaration with title '{}' already found. It will be updated.".format(title_to_show))
+            msg = f"Data declaration with title '{title_to_show}' already found. It will be updated."
+            self.logger.warning(msg)
         else:
             datadec = DataDeclaration.objects.create(title=title, dataset=dataset)
 
@@ -503,7 +509,8 @@ class DatasetsImporter(BaseImporter):
             cohort.owners.set(external_contacts)
 
             cohort.save()
-            self.logger.info("Cohort '{}' imported successfully. Will try to link it to the data declaration...".format(safe_name))
+            msg = f"Cohort '{safe_name}' imported successfully. Will try to link it to the data declaration..."
+            self.logger.info(msg)
 
             try:
                 data_declaration = studies_map.get(name)
@@ -514,9 +521,9 @@ class DatasetsImporter(BaseImporter):
                 data_declaration.cohorts.add(cohort)
                 data_declaration.save()
                 safe_title = data_declaration.title.encode('utf8')
-                self.logger.info("Cohort '{}' linked successfully to data declaration '{}'".format(safe_name, safe_title))
+                self.logger.info(f"Cohort '{safe_name}' linked successfully to data declaration '{safe_title}'")
             except:
-                self.logger.warning("The data declaration for the study '{}' not found: ".format(safe_name))
+                self.logger.warning(f"The data declaration for the study '{safe_name}' not found. ")
 
         if 'studies' not in dataset_dict:
             return

@@ -46,7 +46,8 @@ class DatasetForm(forms.ModelForm):
                 if contract.project:
                     if str(contract.project.id) != proj:
                         project_inconsistency = True
-                        self.add_error('project', "Dataset has existing link to Project {} via {}. Please remove link before updating this field.".format(contract.project.acronym, obj))
+                        error_msg = f"Dataset has existing link to Project {contract.project.acronym} via {obj}. Please remove link before updating this field."
+                        self.add_error('project', error_msg)
             if project_inconsistency:
                 errors.append("Unable to update project information.")
 

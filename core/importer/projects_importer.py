@@ -11,9 +11,8 @@ class ProjectsImporter(BaseImporter):
 
     Usage example:
         def import_projects():
-            with open("projects.json", "r") as file_with_projects:
-                importer = ProjectsImporter()
-                importer.import_json(file_with_projects.read())
+            importer = ProjectsImporter()
+            importer.import_json_file("projects.json")
     """
 
     json_schema_validator = ProjectJSONSchemaValidator()
@@ -49,7 +48,7 @@ class ProjectsImporter(BaseImporter):
             )
         else:
             acronym_to_show = acronym.encode('utf8')
-            self.logger.warning("Project with acronym '{}' already found. It will be updated.".format(acronym_to_show))
+            self.logger.warning(f"Project with acronym '{acronym_to_show}' already found. It will be updated.")
             project.title = name
             project.description = description
             project.has_cner = has_cner
@@ -63,7 +62,7 @@ class ProjectsImporter(BaseImporter):
                 project.start_date = self.process_date(project_dict.get('start_date'))
         except self.DateImportException:
             message = "\tCouldn't import the 'start_date'. Does it follow the '%Y-%m-%d' format?\n\t"
-            message = message + 'Was: "{}". '.format(project_dict.get('start_date'))
+            message = message + f'Was: "{project_dict.get('start_date')}". '
             message = message + "Continuing with empty value."
             self.logger.warning(message)
 
@@ -72,7 +71,7 @@ class ProjectsImporter(BaseImporter):
                 project.end_date = self.process_date(project_dict.get('end_date'))
         except self.DateImportException:
             message = "\tCouldn't import the 'end_date'. Does it follow the '%Y-%m-%d' format?\n\t"
-            message = message + 'Was: "{}". '.format(project_dict.get('end_date'))
+            message = message + f'Was: "{project_dict.get('end_date')}". '
             message = message + "Continuing with empty value."
             self.logger.warning(message)
 
@@ -96,6 +95,8 @@ class ProjectsImporter(BaseImporter):
         project.save()
         for local_custodian in local_custodians:
             local_custodian.assign_permissions_to_dataset(project)
+
+        return True
 
     @staticmethod
     def process_publication(publication_dict):

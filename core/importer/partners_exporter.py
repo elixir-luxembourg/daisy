@@ -21,7 +21,7 @@ class PartnersExporter:
             logger.error(str(e))
             result = False
 
-        logger.info('Partner export complete see file: {}'.format(file_handle))
+        logger.info(f'Partner export complete see file: {file_handle}')
         return result
 
 
@@ -30,7 +30,7 @@ class PartnersExporter:
             partner_dicts = []
             partners = Partner.objects.all()
             for partner in partners:
-                logger.debug(' * Exporting partner: "{}"...'.format(partner.name))
+                logger.debug(f' * Exporting partner: "{partner.name}"...')
                 try:
                     pd = partner.to_dict()
                     pd["source"] = settings.SERVER_URL

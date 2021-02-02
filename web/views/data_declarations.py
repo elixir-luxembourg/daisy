@@ -227,7 +227,7 @@ class DatadeclarationEditView(CheckerMixin, UpdateView):
                             restriction = restriction_form.save(commit=False)
                             restriction.data_declaration = data_declaration
                             restriction.save()
-                    messages.add_message(request, messages.SUCCESS, "data declaration {} edited".format(data_declaration.title))
+                    messages.add_message(request, messages.SUCCESS, f"data declaration {data_declaration.title} edited")
             except IntegrityError:
                 #If the transaction failed
                 messages.add_message(request, messages.ERROR, "An error occurred when saving data declaration")

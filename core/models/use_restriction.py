@@ -63,7 +63,7 @@ class UseRestriction(CoreModel):
             title = '(no DataDeclaration coupled'
         else:
             title = self.data_declaration.title or '(DataDeclaration with no title)'
-        return "{} - on {} - {}".format(self.restriction_class, title, self.notes)
+        return f"{self.restriction_class} - on {title} - {self.notes}"
 
     def to_dict(self):
         """

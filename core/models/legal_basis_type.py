@@ -20,7 +20,7 @@ class LegalBasisType(CoreModel):
                                     verbose_name='Name', unique=True)
 
     def __str__(self):
-        return "{} [{}]".format(self.name, self.code)
+        return f"{self.name} [{self.code}]"
 
     def to_dict(self):
         return {

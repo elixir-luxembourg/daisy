@@ -95,7 +95,7 @@ class User(AbstractUser):
         return fullname or self.username
 
     def save(self, *args, **kw):
-        self.full_name = '{0} {1}'.format(self.first_name, self.last_name)
+        self.full_name = f'{self.first_name} {self.last_name}'
         super(User, self).save(*args, **kw)
 
     def is_part_of(self, *args):

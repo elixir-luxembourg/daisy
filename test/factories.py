@@ -47,8 +47,8 @@ class UserFactory(factory.django.DjangoModelFactory):
     first_name = factory.Faker('first_name')
     last_name = factory.Faker('last_name')
     last_name = factory.Faker('email')
-    full_name = factory.LazyAttribute(lambda x: '{0}.{1}'.format(x.first_name, x.last_name).lower())
-    username = factory.LazyAttribute(lambda x: '{0}.{1}@uni.lux'.format(x.first_name, x.last_name).lower())
+    full_name = factory.LazyAttribute(lambda x: f'{x.first_name}.{x.last_name}'.lower())
+    username = factory.LazyAttribute(lambda x: f'{x.first_name}.{x.last_name}@uni.lux'.lower())
 
     @factory.post_generation
     def groups(self, create, extracted, **kwargs):
