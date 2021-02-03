@@ -23,7 +23,7 @@ def test_import_projects(celery_session_worker, partners):
 
     projects_json = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../data/projects.json")
     importer = ProjectsImporter()
-    importer.import_json_files(projects_json, True)
+    importer.import_json_file(projects_json, True)
     
     projects = Project.objects.all()
     assert 2 == projects.count()
