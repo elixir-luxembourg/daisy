@@ -209,7 +209,7 @@ class BaseImporter:
                         else:
                             self.logger.warning(f'no partner found for the affiliation: {affiliation}')
                     contact.save()
-                    external_contacts.append(contact)
+                external_contacts.append(contact)
 
         return local_custodians, local_personnel, external_contacts
 
