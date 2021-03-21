@@ -8,8 +8,12 @@ AUTHENTICATION_BACKENDS = [
     'guardian.backends.ObjectPermissionBackend',
 ]
 
-# SECURITY WARNING: change the secret key used in production and keep it secret !
-SECRET_KEY = 'qe1lmt43v1n%66vibs0&0s9qw7i!xjs^!i#f#$t_7-r8n&=+sp'
+
+#SECURITY WARNING: change the secret key used in production and keep it secret !
+SECRET_KEY = None  # Generate a secret key by e.g. django.core.management.utils.get_random_secret_key()
+if SECRET_KEY is None: raise NotImplementedError('You must specify SECRET_KEY in settings_local.py')
+
+
 
 COMPANY = 'LCSB'  # Used for generating some models' verbose names
 
