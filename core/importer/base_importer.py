@@ -240,5 +240,5 @@ class BaseImporter:
     @staticmethod
     def is_local_contact(contact_dict):
         home_organisation = Partner.objects.get(acronym=settings.COMPANY)
-        _is_local_contact = home_organisation.name in contact_dict.get("affiliations")
+        _is_local_contact = home_organisation.name in contact_dict.get("affiliations") or home_organisation.acronym in contact_dict.get("affiliations")
         return _is_local_contact
