@@ -150,7 +150,7 @@ class BaseImporter:
             last_name = contact_dict.get('last_name').strip()
             email = contact_dict.get('email', '').strip()
             full_name = f"{first_name} {last_name}"
-            role_name = contact_dict.get('role')
+            role_name = validate_contact_type(contact_dict.get('role'))
             _is_local_contact = self.is_local_contact(contact_dict)
             if _is_local_contact:
                 user = User.objects.filter(first_name__icontains=first_name,
@@ -193,10 +193,6 @@ class BaseImporter:
                 contact = (Contact.objects.filter(first_name__icontains=first_name,
                                                   last_name__icontains=last_name)).first()
                 if contact is None:
-                    contact_type_pi = ContactType.objects.get(name=role_name)
-                    if contact_type_pi is None:
-                        self.logger.warning(f'Unknown contact type: {contact_type_pi}. Setting to "Other".')
-                        contact_type_pi = 'Other'
                     contact = Contact.objects.create(
                         first_name=first_name,
                         last_name=last_name,
@@ -241,3 +237,12 @@ class BaseImporter:
         home_organisation = Partner.objects.get(acronym=settings.COMPANY)
         _is_local_contact = home_organisation.name in contact_dict.get("affiliations") or home_organisation.acronym in contact_dict.get("affiliations")
         return _is_local_contact
+
+    def validate_contact_type(self, contact_type):
+        try:
+            contact_type_obj = ContactType.objects.get(name=contact_type)
+        except ContactType.DoesNotExist:
+            self.logger.warning(f'Unknown contact type: {contact_type}. Setting to "Other".')
+            contact_type = 'Other'
+        return contact_type
+
