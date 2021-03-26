@@ -194,8 +194,11 @@ class BaseImporter:
                                                   last_name__icontains=last_name.lower()) | Contact.objects.filter(
                     first_name__icontains=first_name.upper(), last_name__icontains=last_name.upper())).first()
                 if contact is None:
-                    contact_type_pi, _ = ContactType.objects.get_or_create(name=role_name)
-                    contact, _ = Contact.objects.get_or_create(
+                    contact_type_pi = ContactType.objects.get(name=role_name)
+                    if contact_type_pi is None:
+                        self.logger.warning(f'Unknown contact type: {contact_type_pi}. Setting to "Other".')
+                        contact_type_pi = 'Other'
+                    contact = Contact.objects.create(
                         first_name=first_name,
                         last_name=last_name,
                         email=email,
