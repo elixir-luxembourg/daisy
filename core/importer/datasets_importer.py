@@ -258,7 +258,7 @@ class DatasetsImporter(BaseImporter):
             datadec = DataDeclaration.objects.create(title=title, dataset=dataset)
 
         if 'source_study' not in datadec_dict or len(datadec_dict.get('source_study')) == 0:
-            self.logger.warning("Data declaration with has no `source_study` set - there will be a problem processing study/cohort data.")
+            self.logger.warning(f"Data declaration with title '{title_to_show}' has no `source_study` set - there will be a problem processing study/cohort data.")
 
         datadec.has_special_subjects = datadec_dict.get('has_special_subjects', False)
         datadec.data_types_notes = datadec_dict.get('data_type_notes', None)
