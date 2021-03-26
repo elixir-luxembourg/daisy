@@ -153,11 +153,11 @@ class BaseImporter:
             role_name = contact_dict.get('role')
             _is_local_contact = self.is_local_contact(contact_dict)
             if _is_local_contact:
-                user = User.objects.filter(first_name__icontains=first_name.lower(),
-                                           last_name__icontains=last_name.lower())
+                user = User.objects.filter(first_name__icontains=first_name,
+                                           last_name__icontains=last_name)
                 if len(user) > 1:
-                    users = User.objects.filter(first_name__icontains=first_name.lower(),
-                                                last_name__icontains=last_name.lower(),
+                    users = User.objects.filter(first_name__icontains=first_name,
+                                                last_name__icontains=last_name,
                                                 email=email)
                     if len(users) != 1:
                         msg = 'Something went wrong - there are two contacts with the same first and last name, and it''s impossible to differentiate them'
@@ -190,9 +190,8 @@ class BaseImporter:
                     local_personnel.append(user)
 
             else:
-                contact = (Contact.objects.filter(first_name__icontains=first_name.lower(),
-                                                  last_name__icontains=last_name.lower()) | Contact.objects.filter(
-                    first_name__icontains=first_name.upper(), last_name__icontains=last_name.upper())).first()
+                contact = (Contact.objects.filter(first_name__icontains=first_name,
+                                                  last_name__icontains=last_name)).first()
                 if contact is None:
                     contact_type_pi = ContactType.objects.get(name=role_name)
                     if contact_type_pi is None:
