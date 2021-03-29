@@ -498,17 +498,29 @@ class DatasetsImporter(BaseImporter):
             ethics_approval_notes = study.get('ethics_approval_notes', '')
             url = study.get('url', '')
 
-            cohort, _ = Cohort.objects.get_or_create(
-                ethics_confirmation=has_ethics_approval,
-                comments=description,
-                title=name,
-            )
+            try:
+                cohort = Cohort.objects.get(title=name)
+            except Cohort.DoesNotExist:
+                cohort = None
+            
+            if cohort:
+                msg = f"Cohort with title '{safe_name}' already found. All fields are going to be updated."
+                self.logger.warning(msg)
+            else:
+                cohort = Cohort.objects.create(title=name)
+
+            cohort.description = description
+            cohort.ethics_confirmation = has_ethics_approval
+            cohort.ethics_notes = ethics_approval_notes
+            cohort.cohort_web_page = url
             cohort.save()
+            cohort.updated = True
             
             local_custodians, local_personnel, external_contacts = self.process_contacts(study.get("contacts", []))
             cohort.owners.set(external_contacts)
 
             cohort.save()
+            cohort.updated = True
             msg = f"Cohort '{safe_name}' imported successfully. Will try to link it to the data declaration..."
             self.logger.info(msg)
 
