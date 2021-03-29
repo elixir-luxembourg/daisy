@@ -496,7 +496,7 @@ class DatasetsImporter(BaseImporter):
             description = study.get('description', '')
             has_ethics_approval = study.get('has_ethics_approval', False)
             ethics_approval_notes = study.get('ethics_approval_notes', '')
-            url = study.get('url', '')  # TODO: Currently this is lost
+            url = study.get('url', '')
 
             cohort, _ = Cohort.objects.get_or_create(
                 ethics_confirmation=has_ethics_approval,

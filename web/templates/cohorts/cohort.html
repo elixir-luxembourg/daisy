@@ -27,8 +27,12 @@
                             {% endfor %}
                         </dl>
                     </dl>
+                    <dt>URL</dt>
+                    <dd>{{ cohort.cohort_web_page | default:'-' }}</dd>
                     <dt>Ethics confirmation</dt>
                     <dd>{{ cohort.ethics_confirmation | yesno }}</dd>
+                    <dt>Ethics confirmation notes</dt>
+                    <dd>{{ cohort.ethics_notes | default:'-' }}</dd>
                     <dt>Accession number</dt>
                     <dd>{{ cohort.elu_accession | default:'-'}}</dd>
                     <dt>Remarks</dt>
