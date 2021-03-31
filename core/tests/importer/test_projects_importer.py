@@ -8,7 +8,7 @@ from test import factories
 
 
 @pytest.mark.django_db
-def test_import_projects(celery_session_worker, partners):
+def test_import_projects(celery_session_worker, contact_types, partners):
 
     VIP = factories.VIPGroup()
 
