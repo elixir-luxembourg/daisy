@@ -18,6 +18,16 @@ class Cohort(CoreTrackedModel):
                                                verbose_name='Confirmation of Ethics Approval?',
                                    help_text='Is the existence of the study\'s ethics approval confirmed by the cohort owner.')
 
+    ethics_notes = models.TextField(verbose_name='Ethics Approval notes',
+                                 default='',
+                                 help_text='Provide notes on ethics approval. If it does not exist, please state justifications here.',
+                                 blank=True,
+                                 null=True)
+
+    cohort_web_page = models.URLField(verbose_name='Cohort''s URL page',
+                                       help_text='If the cohort has a webpage, please provide its URL link here.',
+                                       blank=True)
+
     comments = models.TextField(verbose_name='Comments', blank=True, null=True,
                                 help_text='Any additional remarks on this cohort.')
 
@@ -51,7 +61,9 @@ class Cohort(CoreTrackedModel):
             'owners': owners_dicts,
             'title': self.title,
             'institutes': [i.id for i in self.institutes.all()],
-            'ethics_confirmation': self.ethics_confirmation
+            'ethics_confirmation': self.ethics_confirmation,
+            'ethics_approval_notes': self.ethics_notes,
+            'url': self.cohort_web_page
         }
         return base_dict
 

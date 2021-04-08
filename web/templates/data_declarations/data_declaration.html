@@ -41,7 +41,7 @@
                             <dd>{{ object.comments | default:"" }}</dd>
                         {% endif %}
                         <dt>Source Cohort(s)</dt>
-                        <dd>{{ data_declaration.cohorts.all | join:', ' }}</dd>
+                        <dd>{{ object.cohorts.all | join:', ' }}</dd>
 
                     </dl>
                 </div>

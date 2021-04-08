@@ -212,7 +212,7 @@ Single file mode:
 
 Batch mode:
 ```bash
-./manage.py import_projects -f path/to/dir/with/json/files/
+./manage.py import_projects -d path/to/dir/with/json/files/
 ```
 
 Available commands: `import_projects`, `import_datasets`, `import_partners`.

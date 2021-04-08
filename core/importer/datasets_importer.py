@@ -258,7 +258,7 @@ class DatasetsImporter(BaseImporter):
             datadec = DataDeclaration.objects.create(title=title, dataset=dataset)
 
         if 'source_study' not in datadec_dict or len(datadec_dict.get('source_study')) == 0:
-            self.logger.warning("Data declaration with has no `source_study` set - there will be a problem processing study/cohort data.")
+            self.logger.warning(f"Data declaration with title '{title_to_show}' has no `source_study` set - there will be a problem processing study/cohort data.")
 
         datadec.has_special_subjects = datadec_dict.get('has_special_subjects', False)
         datadec.data_types_notes = datadec_dict.get('data_type_notes', None)
@@ -496,19 +496,31 @@ class DatasetsImporter(BaseImporter):
             description = study.get('description', '')
             has_ethics_approval = study.get('has_ethics_approval', False)
             ethics_approval_notes = study.get('ethics_approval_notes', '')
-            url = study.get('url', '')  # TODO: Currently this is lost
+            url = study.get('url', '')
 
-            cohort, _ = Cohort.objects.get_or_create(
-                ethics_confirmation=has_ethics_approval,
-                comments=description,
-                title=name,
-            )
+            try:
+                cohort = Cohort.objects.get(title=name)
+            except Cohort.DoesNotExist:
+                cohort = None
+            
+            if cohort:
+                msg = f"Cohort with title '{safe_name}' already found. All fields are going to be updated."
+                self.logger.warning(msg)
+            else:
+                cohort = Cohort.objects.create(title=name)
+
+            cohort.description = description
+            cohort.ethics_confirmation = has_ethics_approval
+            cohort.ethics_notes = ethics_approval_notes
+            cohort.cohort_web_page = url
             cohort.save()
+            cohort.updated = True
             
             local_custodians, local_personnel, external_contacts = self.process_contacts(study.get("contacts", []))
             cohort.owners.set(external_contacts)
 
             cohort.save()
+            cohort.updated = True
             msg = f"Cohort '{safe_name}' imported successfully. Will try to link it to the data declaration..."
             self.logger.info(msg)
 

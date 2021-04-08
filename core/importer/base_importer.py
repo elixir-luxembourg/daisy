@@ -149,67 +149,18 @@ class BaseImporter:
             first_name = contact_dict.get('first_name').strip()
             last_name = contact_dict.get('last_name').strip()
             email = contact_dict.get('email', '').strip()
-            full_name = f"{first_name} {last_name}"
-            role_name = contact_dict.get('role')
-            _is_local_contact = self.is_local_contact(contact_dict)
-            if _is_local_contact:
-                user = User.objects.filter(first_name__icontains=first_name.lower(),
-                                           last_name__icontains=last_name.lower())
-                if len(user) > 1:
-                    users = User.objects.filter(first_name__icontains=first_name.lower(),
-                                                last_name__icontains=last_name.lower(),
-                                                email=email)
-                    if len(users) != 1:
-                        msg = 'Something went wrong - there are two contacts with the same first and last name, and it''s impossible to differentiate them'
-                        self.logger.warning(msg)
-                    user = users.first()
-                elif len(user) == 1:
-                    user = user.first()
-                else:
-                    user = None
-                if user is None:
-                    self.logger.warning(f'No user found for {full_name} - hence an inactive user will be created')
-
-                    usr_name = first_name.lower() + '.' + last_name.lower()
-                    user = User.objects.create(username=usr_name, 
-                                              password='', 
-                                              first_name=first_name, 
-                                              last_name=last_name, 
-                                              is_active=False,
-                                              email=email)
-                    user.staff = True
-
-                    if role_name == PRINCIPAL_INVESTIGATOR:
-                        g = Group.objects.get(name=GroupConstants.VIP.value)
-                        user.groups.add(g)
-
-                    user.save()
+            role_name = self.validate_contact_type(contact_dict.get('role'))
+            affiliations = contact_dict.get('affiliations', [])
+            if self.is_local_contact(contact_dict):
+                user = self.process_local_contact(first_name, last_name, email, role_name, affiliations)
                 if role_name == PRINCIPAL_INVESTIGATOR:
                     local_custodians.append(user)
                 else:
                     local_personnel.append(user)
 
             else:
-                contact = (Contact.objects.filter(first_name__icontains=first_name.lower(),
-                                                  last_name__icontains=last_name.lower()) | Contact.objects.filter(
-                    first_name__icontains=first_name.upper(), last_name__icontains=last_name.upper())).first()
-                if contact is None:
-                    contact_type_pi, _ = ContactType.objects.get_or_create(name=role_name)
-                    contact, _ = Contact.objects.get_or_create(
-                        first_name=first_name,
-                        last_name=last_name,
-                        email=email,
-                        type=contact_type_pi
-                    )
-                    affiliations = contact_dict.get('affiliations')
-                    for affiliation in affiliations:
-                        partner = Partner.objects.filter(name=affiliation)
-                        if len(partner):
-                            contact.partners.add(partner[0])
-                        else:
-                            self.logger.warning(f'no partner found for the affiliation: {affiliation}')
-                    contact.save()
-                    external_contacts.append(contact)
+                contact = self.process_external_contact(first_name, last_name, email, role_name, affiliations)
+                external_contacts.append(contact)
 
         return local_custodians, local_personnel, external_contacts
 
@@ -237,5 +188,73 @@ class BaseImporter:
     @staticmethod
     def is_local_contact(contact_dict):
         home_organisation = Partner.objects.get(acronym=settings.COMPANY)
-        _is_local_contact = home_organisation.name in contact_dict.get("affiliations")
+        _is_local_contact = home_organisation.name in contact_dict.get("affiliations") or home_organisation.acronym in contact_dict.get("affiliations")
         return _is_local_contact
+
+    def validate_contact_type(self, contact_type):
+        try:
+            contact_type_obj = ContactType.objects.get(name=contact_type)
+        except ContactType.DoesNotExist:
+            self.logger.warning(f'Unknown contact type: {contact_type}. Setting to "Other".')
+            contact_type = 'Other'
+        return contact_type
+
+    def process_local_contact(self, first_name, last_name, email, role_name, affiliations):
+        user = User.objects.filter(first_name__icontains=first_name,last_name__icontains=last_name)
+        if len(user) > 1:
+            users = User.objects.filter(first_name__icontains=first_name,
+                                        last_name__icontains=last_name,
+                                        email=email)
+            if len(users) != 1:
+                msg = 'Something went wrong - there are two contacts with the same first and last name, and it''s impossible to differentiate them'
+                self.logger.warning(msg)
+            user = users.first()
+        elif len(user) == 1:
+            user = user.first()
+        else:
+            user = None
+        if user is None:
+            self.logger.warning(f"No user found for '{first_name} {last_name}' - hence an inactive user will be created")
+
+            usr_name = first_name.lower() + '.' + last_name.lower()
+            user = User.objects.create(username=usr_name,
+                                        password='',
+                                        first_name=first_name,
+                                        last_name=last_name,
+                                        is_active=False,
+                                        email=email)
+            user.staff = True
+
+            if role_name == PRINCIPAL_INVESTIGATOR:
+                g = Group.objects.get(name=GroupConstants.VIP.value)
+                user.groups.add(g)
+            user.save()
+        return user
+
+    def process_external_contact(self, first_name, last_name, email, role_name, affiliations):
+        contact = (
+            Contact.objects.filter(
+                first_name__icontains=first_name,
+                last_name__icontains=last_name,
+                partners__name__in=affiliations) |
+            Contact.objects.filter(
+                first_name__icontains=first_name,
+                last_name__icontains=last_name,
+                partners__acronym__in=affiliations)
+                ).first()
+        if contact is None:
+            contact = Contact.objects.create(
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                type=ContactType.objects.get(name=role_name)
+            )
+            for affiliation in affiliations:
+                partner = Partner.objects.filter(name=affiliation)
+                if len(partner):
+                    contact.partners.add(partner[0])
+                else:
+                    self.logger.warning(f"Cannot link contact '{first_name} {last_name}' to partner. No partner found for the affiliation: {affiliation}")
+            contact.save()
+        return contact
+
