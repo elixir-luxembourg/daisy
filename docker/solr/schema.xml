@@ -287,6 +287,8 @@
     
     <field name="publications" type="text_en" indexed="true" stored="true" multiValued="true" />
     
+    <field name="start_date" type="date" indexed="true" stored="true" multiValued="false" />
+    
     <field name="start_year" type="long" indexed="true" stored="true" multiValued="false" />
     
     <field name="start_year_exact" type="long" indexed="true" stored="true" multiValued="false" />
