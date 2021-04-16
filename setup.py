@@ -12,7 +12,7 @@ requirements = [
     'django-celery-beat==1.4.0',
     'django-celery-results==1.0.4',
     'django-compressor==2.2',
-    'django-debug-toolbar==1.11',
+    'django-debug-toolbar==1.11.1',
     'django-enumchoicefield==1.1.0',
     'django-excel-response==2.0.4',
     'xlsxwriter==1.2.9',
