@@ -65,7 +65,7 @@ class ProjectsExporter:
                     raise e
             logger.debug("   ... complete!")
         json.dump({
-            "$schema": "https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/elu-project.json",
+            "$schema": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-project.json",
             "items": project_dicts}, buffer , indent=4)
         return buffer
 

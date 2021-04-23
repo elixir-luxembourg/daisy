@@ -5,7 +5,7 @@
   "type": "object",
   "allOf": [
     {
-      "$ref": "https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/elu-core.json"
+      "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-core.json"
     }
   ],
   "properties": {

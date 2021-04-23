@@ -61,7 +61,7 @@ class DatasetsExporter:
                     raise e
             logger.debug("   ... complete!")
         json.dump({
-            "$schema": "https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/elu-dataset.json",
+            "$schema": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-dataset.json",
             "items": dataset_dicts}, buffer, indent=4)
         return buffer
 

@@ -13,7 +13,7 @@ from core.utils import DaisyLogger
 logger = DaisyLogger(__name__)
 
 JSONSCHEMA_BASE_LOCAL_PATH = os.path.join(settings.BASE_DIR, 'core', 'fixtures')
-JSONSCHEMA_BASE_REMOTE_URL = "https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/"
+JSONSCHEMA_BASE_REMOTE_URL = "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/"
 
 
 class BaseJSONSchemaValidator:

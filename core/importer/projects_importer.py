@@ -7,7 +7,7 @@ class ProjectsImporter(BaseImporter):
     """
     `ProjectsImporter`, should be able to fill the database with projects' information, based on JSON file
     complying to the schema in:
-     https://git-r3lab.uni.lu/pinar.alper/metadata-tools/blob/master/metadata_tools/resources/elu-project.json
+     https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-project.json
 
     Usage example:
         def import_projects():
@@ -16,7 +16,7 @@ class ProjectsImporter(BaseImporter):
     """
 
     json_schema_validator = ProjectJSONSchemaValidator()
-    json_schema_uri = 'https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/elu-project.json'
+    json_schema_uri = 'https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-project.json'
 
     def process_json(self, project_dict):
         publications = [self.process_publication(publication_dict)
