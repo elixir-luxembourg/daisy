@@ -53,3 +53,6 @@ def test_import_datasets(celery_session_worker, storage_resources, contact_types
 
     ddecs = DataDeclaration.objects.all()
     assert 5 == ddecs.count()
+
+    ddec = DataDeclaration.objects.get(title='XYZ')
+    assert "2030-05-10" == ddec.end_of_storage_duration.strftime("%Y-%m-%d")
