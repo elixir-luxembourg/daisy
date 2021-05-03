@@ -24,7 +24,7 @@ from core.forms.user import UserAuthForm
 from web.urls import web_urls
 
 urlpatterns = [
-    url(r'^login/$', auth_views.LoginView.as_view(), name='login', kwargs={"authentication_form": UserAuthForm}),
+    url(r'^login/$', auth_views.LoginView.as_view(authentication_form=UserAuthForm), name='login'),
     url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
     url(r'^admin/', admin.site.urls),
     url(r'', include(web_urls)),
