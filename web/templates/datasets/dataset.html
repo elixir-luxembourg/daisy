@@ -127,7 +127,7 @@
                                 <td>{{ data_declaration.cohorts.all | join:', ' }}</td>
                                 <td>{{ data_declaration.partner }}</td>
                                 <td>{%if data_declaration.data_types  %}{{ data_declaration.data_types | join:', ' }} {% else %}<p class="alert-error"> missing </p>{% endif %}</td>
-                                <td>{{ data_declaration.special_subjects | yesno:"yes,no,unknown" }}</td>
+                                <td>{{ data_declaration.has_special_subjects | yesno:"yes,no,unknown" }}</td>
                                 <td>{{ data_declaration.end_of_storage_duration  | default:"" }}</td>
                                 {% if can_edit %}
                                     <td>
