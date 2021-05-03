@@ -1,9 +1,13 @@
 import json
 import os
 
+from io import StringIO
+
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
+
+from ontobio import obograph_util, Ontology
 
 from stronghold.decorators import public
 
@@ -12,11 +16,10 @@ from core.importer.projects_exporter import ProjectsExporter
 
 from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm
 from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneTerm
-from elixir_daisy import settings
-from ontobio import obograph_util, Ontology
-
 from core.utils import DaisyLogger
-from io import StringIO
+
+from elixir_daisy import settings
+
 
 logger = DaisyLogger(__name__)
 
@@ -24,8 +27,6 @@ logger = DaisyLogger(__name__)
 """
 Rapido API method, we should probably use django rest framework if we want to develop API further.
 """
-
-
 def users(request):
     #     "results": [
     #     {
@@ -59,7 +60,6 @@ def partners(request):
 
 @public
 def termsearch(request, category):
-
     search = request.GET.get('search')
     page = request.GET.get('page')
 
@@ -95,6 +95,7 @@ def termsearch(request, category):
         }
     })
 
+@public
 def datasets(request):
     if 'API_KEY' not in request.GET:
         return JsonResponse({
@@ -124,8 +125,9 @@ def datasets(request):
             'status': 'Error',
             'description': 'Something went wrong during exporting the datasets',
             'more': str(e)
-        })
+        }, status=500)
 
+@public
 def projects(request):
     if 'API_KEY' not in request.GET:
         return JsonResponse({
@@ -155,4 +157,4 @@ def projects(request):
             'status': 'Error',
             'description': 'Something went wrong during exporting the projects',
             'more': str(e)
-        })
+        }, status=500)
