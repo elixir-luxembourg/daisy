@@ -176,7 +176,7 @@ class Command(BaseCommand):
                             i = Partner.objects.get(elu_accession=ins)
                             institutes.append(i)
                         except Partner.DoesNotExist:
-                            raise FixtureImportError(data="unknown partner institute {}".format(ins))
+                            raise FixtureImportError(data=f"unknown partner institute {ins}")
                     c.institutes.set(institutes)
                 if 'owners' in cohort:
                     owners = []

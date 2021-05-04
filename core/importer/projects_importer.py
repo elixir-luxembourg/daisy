@@ -7,16 +7,16 @@ class ProjectsImporter(BaseImporter):
     """
     `ProjectsImporter`, should be able to fill the database with projects' information, based on JSON file
     complying to the schema in:
-     https://git-r3lab.uni.lu/pinar.alper/metadata-tools/blob/master/metadata_tools/resources/elu-project.json
+     https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-project.json
 
     Usage example:
         def import_projects():
-            with open("projects.json", "r") as file_with_projects:
-                importer = ProjectsImporter()
-                importer.import_json(file_with_projects.read())
+            importer = ProjectsImporter()
+            importer.import_json_file("projects.json")
     """
 
     json_schema_validator = ProjectJSONSchemaValidator()
+    json_schema_uri = 'https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-project.json'
 
     def process_json(self, project_dict):
         publications = [self.process_publication(publication_dict)
@@ -47,7 +47,8 @@ class ProjectsImporter(BaseImporter):
                                                        elu_accession=elu_accession
             )
         else:
-            self.logger.warning("Project with acronym '{}' already found. It will be updated.".format(acronym))
+            acronym_to_show = acronym.encode('utf8')
+            self.logger.warning(f"Project with acronym '{acronym_to_show}' already found. It will be updated.")
             project.title = name
             project.description = description
             project.has_cner = has_cner
@@ -60,8 +61,9 @@ class ProjectsImporter(BaseImporter):
             if 'start_date' in project_dict and project_dict.get('start_date') and len(project_dict.get('start_date')) > 0:
                 project.start_date = self.process_date(project_dict.get('start_date'))
         except self.DateImportException:
+            date_str = project_dict.get('start_date')
             message = "\tCouldn't import the 'start_date'. Does it follow the '%Y-%m-%d' format?\n\t"
-            message = message + 'Was: "{}". '.format(project_dict.get('start_date'))
+            message = message + f'Was: "{date_str}". '
             message = message + "Continuing with empty value."
             self.logger.warning(message)
 
@@ -69,8 +71,9 @@ class ProjectsImporter(BaseImporter):
             if 'end_date' in project_dict and project_dict.get('end_date') and len(project_dict.get('end_date')) > 0:
                 project.end_date = self.process_date(project_dict.get('end_date'))
         except self.DateImportException:
+            date_str = project_dict.get('end_date')
             message = "\tCouldn't import the 'end_date'. Does it follow the '%Y-%m-%d' format?\n\t"
-            message = message + 'Was: "{}". '.format(project_dict.get('end_date'))
+            message = message + f'Was: "{date_str}". '
             message = message + "Continuing with empty value."
             self.logger.warning(message)
 
@@ -95,6 +98,8 @@ class ProjectsImporter(BaseImporter):
         for local_custodian in local_custodians:
             local_custodian.assign_permissions_to_dataset(project)
 
+        return True
+
     @staticmethod
     def process_publication(publication_dict):
         # First, try to find if the publication is already in our database
@@ -102,17 +107,13 @@ class ProjectsImporter(BaseImporter):
 
         # Search by DOI
         if 'doi' in publication_dict and len(publication_dict.get('doi')) > 0:
-            publication = Publication.objects.filter(doi=publication_dict.get('doi'))
-            if len(publication):
-                publication = publication[0]
+            if Publication.objects.filter(doi=publication_dict.get('doi')).count() == 1:
+                publication = Publication.objects.get(doi=publication_dict.get('doi'))
         
         # Search by citation string
         if publication is None and 'citation_string' in publication_dict and len(publication_dict.get('citation_string')) > 0:
-            publication = Publication.objects.filter(citation=publication_dict.get('citation_string'))
-            if len(publication):
-                publication = publication[0]
-            else:
-                publication = None
+            if Publication.objects.filter(citation=publication_dict.get('citation_string')).count() == 1:
+                publication = Publication.objects.get(citation=publication_dict.get('citation_string'))
 
         # Create a new one if it does not exist
         if publication is None:

@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction, IntegrityError
 from django.http import HttpResponse
@@ -265,3 +266,18 @@ class ProjectDelete(CheckerMixin, DeleteView):
         context['id'] = self.object.id
         return context
 
+
+@staff_member_required
+def publish_project(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    project.is_published = False
+    project.save()
+    return redirect(reverse_lazy('project', kwargs={'pk': project.id}))
+
+
+@staff_member_required
+def unpublish_project(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    project.is_published = True
+    project.save()
+    return redirect(reverse_lazy('project', kwargs={'pk': project.id}))

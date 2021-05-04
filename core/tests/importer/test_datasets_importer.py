@@ -14,7 +14,7 @@ def test_dummy(celery_session_worker, storage_resources, can_defer_constraint_ch
 
 
 @pytest.mark.django_db
-def test_import_datasets(celery_session_worker, storage_resources, data_types, partners, gdpr_roles, can_defer_constraint_checks):
+def test_import_datasets(celery_session_worker, storage_resources, contact_types, data_types, partners, gdpr_roles, can_defer_constraint_checks):
     VIP = factories.VIPGroup()
 
     factories.UserFactory.create(first_name='Igor', last_name='Teal', groups=[VIP], email="user@uni.edu")
@@ -25,9 +25,9 @@ def test_import_datasets(celery_session_worker, storage_resources, data_types, p
     factories.UserFactory.create(first_name='Ali', last_name='Gator', groups=[VIP], email="user@uni.edu")
 
     data_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../data/datasets.json")
-    with open(data_file, "r") as f:
-        importer = DatasetsImporter()
-        importer.import_json(f.read(), True)
+    importer = DatasetsImporter()
+    importer.import_json_file(data_file, True)
+
     assert 5 == Dataset.objects.all().count()
     assert 4 == Project.objects.all().count()
 
@@ -53,3 +53,6 @@ def test_import_datasets(celery_session_worker, storage_resources, data_types, p
 
     ddecs = DataDeclaration.objects.all()
     assert 5 == ddecs.count()
+
+    ddec = DataDeclaration.objects.get(title='XYZ')
+    assert "2030-05-10" == ddec.end_of_storage_duration.strftime("%Y-%m-%d")

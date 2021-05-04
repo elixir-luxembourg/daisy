@@ -7,13 +7,12 @@ class PartnersImporter(BaseImporter):
     """
        `PartersImporter`, should be able to fill the database with institutions information, based on JSON file
        complying to the schema in:
-        https://git-r3lab.uni.lu/pinar.alper/metadata-tools/blob/master/metadata_tools/resources/elu-institution.json
+        https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-institution.json
 
        Usage example:
-           def import_partner():
-               with open("partners.json", "r") as file_with_partners:
-                   importer = PartnersImporter()
-                   importer.import_json(file_with_partners.read())
+           def import_partners():
+               importer = PartnersImporter()
+               importer.import_json_file("partners.json")
        """
 
     json_schema_validator = InstitutionJSONSchemaValidator()

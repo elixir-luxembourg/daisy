@@ -329,6 +329,7 @@
                     "ombudsman": "Biobank, Principle Investigator",
                     "subjects_category": "cases_and_controls",
                     "has_special_subjects": false,
+                    "storage_end_date": "2030-05-10",
                     "consent_status": "homogeneous",
                     "use_restrictions": [
                         {

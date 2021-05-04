@@ -46,7 +46,8 @@ class LegalBasis(CoreModel):
 
 
     def __str__(self):
-        return 'Legal Bases for dataset {}:  {}.'.format(self.dataset.title, ",".join(str(lbt.code) for lbt in self.legal_basis_types.all()))
+        legal_basis_types = ",".join(str(lbt.code) for lbt in self.legal_basis_types.all())
+        return f'Legal Basis for dataset {self.dataset.title}: {legal_basis_types}.'
 
     def to_dict(self):
         return {

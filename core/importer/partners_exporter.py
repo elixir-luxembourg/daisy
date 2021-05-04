@@ -21,7 +21,7 @@ class PartnersExporter:
             logger.error(str(e))
             result = False
 
-        logger.info('Partner export complete see file: {}'.format(file_handle))
+        logger.info(f'Partner export complete see file: {file_handle}')
         return result
 
 
@@ -30,7 +30,7 @@ class PartnersExporter:
             partner_dicts = []
             partners = Partner.objects.all()
             for partner in partners:
-                logger.debug(' * Exporting partner: "{}"...'.format(partner.name))
+                logger.debug(f' * Exporting partner: "{partner.name}"...')
                 try:
                     pd = partner.to_dict()
                     pd["source"] = settings.SERVER_URL
@@ -47,7 +47,7 @@ class PartnersExporter:
                         raise e
                 logger.debug("   ... complete!")
             json.dump({
-                "$schema": "https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/elu-institution.json",
+                "$schema": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-institution.json",
                 "items": partner_dicts}, buffer , indent=4)
             return buffer
 

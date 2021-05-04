@@ -15,6 +15,7 @@ class DatasetsImporter(BaseImporter):
     """
 
     json_schema_validator = DatasetJSONSchemaValidator()
+    json_schema_uri = 'https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-dataset.json'
 
     def process_json(self, dataset_dict):
         try:
@@ -30,7 +31,8 @@ class DatasetsImporter(BaseImporter):
             dataset = None
 
         if dataset:
-            self.logger.warning("Dataset with title '{}' already found. It will be updated.".format(title))
+            title_to_show = title.encode('utf8')
+            self.logger.warning(f"Dataset with title '{title_to_show}' already found. It will be updated.")
         else:
             dataset = Dataset.objects.create(title=title)
 
@@ -63,15 +65,19 @@ class DatasetsImporter(BaseImporter):
         for local_custodian in local_custodians:
             local_custodian.assign_permissions_to_dataset(dataset)
 
-        self.process_datadeclarations(dataset_dict, dataset)
+        studies_map = self.process_datadeclarations(dataset_dict, dataset)
 
+        # Must be run after processing data declarations
+        self.process_studies(dataset_dict, studies_map)
+
+        # Must be run after processing data declarations
         legal_bases = self.process_legal_bases(dataset_dict, dataset)
         if legal_bases:
             dataset.legal_basis_definitions.set(legal_bases, bulk=False)
 
-        # self.process_studies(dataset_dict, dataset)
-
         dataset.save()
+
+        return True
 
     # @staticmethod
     # def process_local_custodians(dataset_dict):
@@ -104,19 +110,22 @@ class DatasetsImporter(BaseImporter):
 
     def process_project(self, project_acronym):
         try:
-            project = Project.objects.get(acronym=project_acronym.strip())
+            acronym = project_acronym.strip()
+            project = Project.objects.get(acronym=acronym)
             return project
         except Project.DoesNotExist:
-            self.logger.warning("Tried to find project with acronym ='{}'; it was not found. Will try to look for the acronym...".format(project_acronym))
+            msg = f"Tried to find project with acronym ='{acronym}'; it was not found. Will try to look for the acronym..."
+            self.logger.warning(msg)
 
         try:
-            project = Project.objects.get(title=project_acronym.strip())
+            project = Project.objects.get(title=acronym)
             return project
         except Project.DoesNotExist:
-            self.logger.warning("Tried to find project with title ='{}'; it was not found. Will create a new one.".format(project_acronym.strip()))
+            msg = f"Tried to find project with title ='{acronym}'; it was not found. Will create a new one."
+            self.logger.warning(msg)
             project = Project.objects.create(
-                acronym=project_acronym.strip(),
-                title=project_acronym.strip()
+                acronym=acronym,
+                title=acronym
             )
         return project
 
@@ -221,15 +230,19 @@ class DatasetsImporter(BaseImporter):
             return None
 
     def process_datadeclarations(self, dataset_dict, dataset):
-
+        studies_map = {}
         datadec_dicts = dataset_dict.get('data_declarations', [])
 
         for ddec_dict in datadec_dicts:
-            self.process_datadeclaration(ddec_dict, dataset)
+            data_declaration, studies_map_key = self.process_datadeclaration(ddec_dict, dataset)
+            studies_map[studies_map_key] = data_declaration
+
+        return studies_map
 
     def process_datadeclaration(self, datadec_dict, dataset):
         try:
             title = datadec_dict['title']
+            title_to_show = title.encode('utf-8')
         except KeyError:
             raise DatasetImportError(data='Data declaration title missing')
 
@@ -239,9 +252,13 @@ class DatasetsImporter(BaseImporter):
             datadec = None
 
         if datadec:
-            self.logger.warning("Data declaration with title '{}' already found. It will be updated.".format(title))
+            msg = f"Data declaration with title '{title_to_show}' already found. It will be updated."
+            self.logger.warning(msg)
         else:
             datadec = DataDeclaration.objects.create(title=title, dataset=dataset)
+
+        if 'source_study' not in datadec_dict or len(datadec_dict.get('source_study')) == 0:
+            self.logger.warning(f"Data declaration with title '{title_to_show}' has no `source_study` set - there will be a problem processing study/cohort data.")
 
         datadec.has_special_subjects = datadec_dict.get('has_special_subjects', False)
         datadec.data_types_notes = datadec_dict.get('data_type_notes', None)
@@ -255,7 +272,7 @@ class DatasetsImporter(BaseImporter):
         datadec.comments = datadec_dict.get('source_notes', None)
         datadec.embargo_date = datadec_dict.get('embargo_date', None)
         datadec.storage_duration_criteria = datadec_dict.get("storage_duration_criteria", None)
-        datadec.storage_end_date = datadec_dict.get("storage_end_date", None)
+        datadec.end_of_storage_duration = datadec_dict.get("storage_end_date", None)
         if 'data_types' in datadec_dict:
             datadec.data_types_received.set(self.process_datatypes(datadec_dict))
 
@@ -271,12 +288,14 @@ class DatasetsImporter(BaseImporter):
         datadec.save()
         datadec.updated = True
 
+        return datadec, datadec_dict.get('source_study')
+
     def process_datatypes(self, datadec_dict):
         datatypes = []
         for datatype_str in datadec_dict.get('data_types', []):
             datatype_str = datatype_str.strip()
             try:
-                datatype = DataType.objects.get(name=datatype_str)
+                datatype, _ = DataType.objects.get_or_create(name=datatype_str)
             except DataType.DoesNotExist:
                 self.logger.error('Import failed')
                 raise DatasetImportError(data=f'Cannot find data type: "{datatype_str}".')
@@ -470,23 +489,53 @@ class DatasetsImporter(BaseImporter):
 
         return legal_basis_obj
 
-    def process_studies(self, dataset_object):
+    def process_studies(self, dataset_dict, studies_map):
         def _process_study(study):
             name = study.get('name', '')
+            safe_name = name.encode('utf-8')
             description = study.get('description', '')
             has_ethics_approval = study.get('has_ethics_approval', False)
             ethics_approval_notes = study.get('ethics_approval_notes', '')
-            url = study.get('url', '')  # TODO: Currently this is lost
-            local_custodians, local_personnel, external_contacts = self.process_contacts(study.get("contacts", []))
+            url = study.get('url', '')
 
-            cohort = Cohort(
-                ethics_confirmation=has_ethics_approval,
-                comments=description,
-                title=name,
-            )
+            try:
+                cohort = Cohort.objects.get(title=name)
+            except Cohort.DoesNotExist:
+                cohort = None
+            
+            if cohort:
+                msg = f"Cohort with title '{safe_name}' already found. All fields are going to be updated."
+                self.logger.warning(msg)
+            else:
+                cohort = Cohort.objects.create(title=name)
 
-            cohort.owners.set(external_contacts)
+            cohort.description = description
+            cohort.ethics_confirmation = has_ethics_approval
+            cohort.ethics_notes = ethics_approval_notes
+            cohort.cohort_web_page = url
             cohort.save()
+            cohort.updated = True
+            
+            local_custodians, local_personnel, external_contacts = self.process_contacts(study.get("contacts", []))
+            cohort.owners.set(external_contacts)
+
+            cohort.save()
+            cohort.updated = True
+            msg = f"Cohort '{safe_name}' imported successfully. Will try to link it to the data declaration..."
+            self.logger.info(msg)
+
+            try:
+                data_declaration = studies_map.get(name)
+                if data_declaration is None:
+                    raise KeyError()
+                if not isinstance(data_declaration, DataDeclaration):
+                    raise KeyError()
+                data_declaration.cohorts.add(cohort)
+                data_declaration.save()
+                safe_title = data_declaration.title.encode('utf8')
+                self.logger.info(f"Cohort '{safe_name}' linked successfully to data declaration '{safe_title}'")
+            except:
+                self.logger.warning(f"The data declaration for the study '{safe_name}' not found. ")
 
         if 'studies' not in dataset_dict:
             return

@@ -13,12 +13,14 @@ class ImportBaseCommand(BaseCommand):
             '-d',
             '--directory',
             help='Directory with JSON files',
-            default=False)
+            default=False
+        )
         parser.add_argument(
             '-f',
             '--file',
             help='Path to JSON file',
-            default=False)
+            default=False
+        )
         parser.add_argument(
             '--verbose',
             action='store_true',
@@ -32,22 +34,23 @@ class ImportBaseCommand(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            verbose = options.get('verbose')
-            exxit = options.get('exit')
             importer = self.get_importer()
+
+            verbose = options.get('verbose')
+            should_exit_on_error = options.get('exit')
             path_to_json_file = options.get('file')
             path_to_json_directory = options.get('directory')
 
             if not(path_to_json_directory or path_to_json_file):
-                raise CommandError('Either directory or file must be specified!')
+                raise CommandError('Either directory (--directory) or file (--file) argument must be specified!')
 
             # Import files from directory
             if path_to_json_directory:
-                self.import_directory(importer, path_to_json_directory, verbose, exxit)
+                self.import_directory(importer, path_to_json_directory, verbose, should_exit_on_error)
 
             # Import records from file
             if path_to_json_file:
-                self.import_file(importer, path_to_json_file, verbose, exxit)
+                self.import_file(importer, path_to_json_file, verbose, should_exit_on_error)
 
             self.stdout.write(self.style.SUCCESS("Import was successful!"))
 
@@ -60,20 +63,18 @@ class ImportBaseCommand(BaseCommand):
     def get_importer(self):
         raise NotImplementedError("Abstract method: Implement this method in the child class.")
 
-    def import_directory(self, importer, dir_path, verbose, exxit):
+    def import_directory(self, importer, dir_path, verbose, should_exit_on_error):
         for json_file_path in os.listdir(dir_path):
             if json_file_path.endswith(JSON_SUFFIX):
-                self.import_file(importer,json_file_path, verbose, exxit)
+                correct_path = os.path.join(dir_path, json_file_path)
+                self.import_file(importer, correct_path, verbose, should_exit_on_error)
 
-    def import_file(self, importer, full_path, verbose, exxit):
-        with open(full_path) as json_file:
-            json_file_contents = json_file.read()
-            self.stdout.write("Importing file %s" % full_path)
-            result = importer.import_json(json_file_contents, verbose=verbose)
-            if not result:
-                self.stdout.write(self.style.ERROR("Import failed"))
-                if exxit:
-                    raise CommandError('Exited after error.')
+    def import_file(self, importer, full_path, verbose, should_exit_on_error):
+        if importer.import_json_file(full_path, should_exit_on_error, verbose=verbose):
+            return
+        self.stdout.write(self.style.ERROR("Import failed"))
+        if should_exit_on_error:
+            raise CommandError('Exited after error.')
 
 
 class ExportBaseCommand(BaseCommand):
@@ -84,9 +85,13 @@ class ExportBaseCommand(BaseCommand):
             '-f',
             '--file',
             help='Path to JSON file',
-            default=False)
+            default=False
+        )
 
     def handle(self, *args, **options):
+        if not(options.get('file')):
+            raise CommandError('File (--file) argument must be specified!')
+
         try:
             path_to_json_file = options.get('file')
             with open(path_to_json_file,  mode="w+", encoding='utf-8') as json_file:
@@ -95,7 +100,7 @@ class ExportBaseCommand(BaseCommand):
                 self.stdout.write(self.style.SUCCESS("Export complete!"))
 
         except Exception as e:
-            msg = f"Something went wrong during the import ({__file__}:class {self.__class__.__name__})! Is the path valid? Is the file valid? Details:"
+            msg = f"Something went wrong during the export ({__file__}:class {self.__class__.__name__})! Details:"
             self.stderr.write(
                 self.style.ERROR(msg))
             self.stderr.write(self.style.ERROR(str(e)))
