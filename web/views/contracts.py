@@ -16,7 +16,7 @@ from core.permissions import permission_required
 from . import facet_view_utils
 
 FACET_FIELDS = settings.FACET_FIELDS['contract']
-from core.models.utils import COMPANY
+
 
 
 class ContractCreateView(CreateView):
@@ -48,7 +48,6 @@ class ContractDetailView(DetailView):
         the_user = self.request.user
         can_edit = the_user.can_edit_contract(self.object)
         context['can_edit'] = can_edit
-        context['company_name'] = COMPANY
         pk = ContentType.objects.get(model='contract').pk
         context['content_type'] = pk
         context['object_id'] = self.object.pk
@@ -103,7 +102,6 @@ def contract_list(request):
         'add_url': 'contract_add',
         'data': {'contracts': contracts},
         'results_template_name': 'search/_items/contracts.html',
-        'company_name': COMPANY,
         'order_by_fields': [
             ('Contact', 'contact'),
             ('Project', 'project')

@@ -126,7 +126,6 @@ class DataDeclarationSubFormNew(BaseDataDeclarationSubForm):
             contract.project = data_declaration.dataset.project
             contract.save()
             contract.local_custodians.set(data_declaration.dataset.local_custodians.all())
-            contract.company_roles.set([GDPRRole["processor"]])
             contract.save()
             partner_role = PartnerRole()
             partner_role.partner_id = partner_id

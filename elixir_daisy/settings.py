@@ -269,7 +269,6 @@ FACET_FIELDS = {
         'is_published',
     ),
     'contract': (
-        'company_roles',
         'contacts',
         'partners',
         'project',

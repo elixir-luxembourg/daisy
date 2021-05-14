@@ -200,7 +200,7 @@ class ContractFactory(factory.DjangoModelFactory):
     class Meta:
         model = 'core.Contract'
 
-    company_roles = factory.SubFactory(GDPRRoleFactory)
+    # company_roles = factory.SubFactory(GDPRRoleFactory)
     project = factory.SubFactory(ProjectFactory)
 
     @factory.post_generation
@@ -225,13 +225,13 @@ class ContractFactory(factory.DjangoModelFactory):
             for partner_roles in extracted:
                 self.partners_roles.add(partner_roles)
 
-    @factory.post_generation
-    def company_roles(self, create, extracted, **kwargs):
-        if not create:
-            return
-        if extracted:
-            for company_role in extracted:
-                self.company_roles.add(company_role)
+    # @factory.post_generation
+    # def company_roles(self, create, extracted, **kwargs):
+    #     if not create:
+    #         return
+    #     if extracted:
+    #         for company_role in extracted:
+    #             self.company_roles.add(company_role)
                 
 ## NOTIFICATIONS
 class AbstractNotificationFactory(factory.django.DjangoModelFactory):
