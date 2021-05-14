@@ -131,10 +131,6 @@
     
     <field name="has_legal_documents_exact" type="boolean" indexed="true" stored="true" multiValued="false" />
     
-    <field name="company_roles" type="text_en" indexed="true" stored="true" multiValued="true" />
-    
-    <field name="company_roles_exact" type="string" indexed="true" stored="true" multiValued="true" />
-    
     <field name="partners_roles" type="text_en" indexed="true" stored="true" multiValued="true" />
     
     <field name="partners_roles_exact" type="string" indexed="true" stored="true" multiValued="true" />

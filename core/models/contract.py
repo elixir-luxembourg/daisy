@@ -4,7 +4,7 @@ from django.db import models
 from core import constants
 from .contact import Contact
 from .partner import Partner, HomeOrganisation
-from .utils import CoreModel, COMPANY
+from .utils import CoreModel
 
 
 class PartnerRole(CoreModel):
@@ -32,6 +32,9 @@ class PartnerRole(CoreModel):
                                  on_delete=models.CASCADE,
                                  blank=False,
                                  null=False)
+
+    comments = models.TextField(verbose_name='Comments', blank=True, null=True,
+                                help_text='Provide remarks on this partner involvement.')
 
     def __str__(self):
         return self.short_name()
@@ -91,10 +94,6 @@ class Contract(CoreModel):
         help_text='If this Contract is signed within the scope of particular Project, then it should be denoted here.'
     )
 
-    company_roles = models.ManyToManyField("core.GDPRRole", verbose_name='{}''s roles'.format(COMPANY),
-                                           related_name="contracts",
-                                           help_text='Please select the GDPR roles assumed by {} as per this contract.'.format(
-                                               COMPANY))
 
     # metadata = JSONField(null=True, blank=True, default=dict)
 
