@@ -5,7 +5,7 @@ from .utils import CoreModel
 
 class Share(CoreModel):
     """
-    Represents the share of  dataset with an external (non-LCSB) entity.
+    Represents the events concerning a dataset.
     """
 
     class Meta:
@@ -13,29 +13,30 @@ class Share(CoreModel):
         get_latest_by = "added"
         ordering = ['added']
 
+    data_log_type = models.ForeignKey('core.DataLogType',
+                                                null=True,
+                                               verbose_name='Logbook entry category.',
+                                                blank=False,
+                                               on_delete=models.SET_NULL)
+
     partner = models.ForeignKey('core.Partner',
-                                verbose_name='Share partner',
+                                verbose_name='Involved partner',
                                 related_name='shares',
                                 null=True,
                                 on_delete=models.SET_NULL,
                                 blank=False,
-                                help_text   = 'The Partner with which the data is shared.')
+                                help_text = 'The Partner involved in the data event.')
 
     share_notes = models.TextField(null=True,
                                     blank=True,
                                     max_length=255,
                                     verbose_name='Remarks',
-                                   help_text   = 'Please state here the safeguards taken for the share, also any other remarks.')
+                                   help_text   = 'Please state here any remarks e.g. safeguards, technical measures.')
 
-    granted_on = models.DateField(verbose_name='Granted on',
+    granted_on = models.DateField(verbose_name='Date',
                                   blank=True,
                                   null=True,
-                                  help_text   = 'The date on which data sharing started.')
-
-    grant_expires_on = models.DateField(verbose_name='Grant expires on',
-                                  blank=True,
-                                  null=True,
-                                   help_text   = 'The date on which data sharing will be terminated.')
+                                  help_text   = 'The date on which the data event occured.')
 
     dataset = models.ForeignKey('core.Dataset',
                               verbose_name='Dataset',
@@ -59,8 +60,8 @@ class Share(CoreModel):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        help_text   = 'The contract that provides the legal basis for this data share.'
+        help_text  = 'The contract that provides the legal basis for this event.'
     )
 
     def __str__(self):
-        return f'Share/Transfer of {self.dataset.title} with {self.partner.name}'
+        return f'Logbook entry for {self.dataset.title}'

@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Transfer"
+  },
+  {
+    "name": "Receipt"
+  },
+  {
+    "name":  "Deletion"
+  },
+  {
+    "name": "Selective Deletion"
+  },
+  {
+    "name": "Archival"
+  },
+  {
+    "name": "Other"
+  }
+]
