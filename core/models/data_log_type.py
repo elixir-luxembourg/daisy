@@ -13,7 +13,7 @@ class DataLogType(CoreModel):
 
     name = TextFieldWithInputWidget(max_length=128,
                                     blank=False,
-                                    verbose_name='Name of the type of the document')
+                                    verbose_name='Name of the type of the event')
 
     def __str__(self):
         return f"{self.name}"

@@ -24,7 +24,7 @@ class Share(CoreModel):
                                 related_name='shares',
                                 null=True,
                                 on_delete=models.SET_NULL,
-                                blank=False,
+                                blank=True,
                                 help_text = 'The Partner involved in the data event.')
 
     share_notes = models.TextField(null=True,
