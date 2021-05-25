@@ -336,6 +336,7 @@ class ProjectIndex(CelerySearchIndex, indexes.Indexable):
     phenotype_terms = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
     project_web_page = indexes.CharField(indexed=True, stored=True, faceted=True)
     publications = indexes.MultiValueField(indexed=True, stored=True)
+    start_date = indexes.DateField(indexed=True, stored=True)
     start_year = indexes.IntegerField(indexed=True, stored=True, faceted=True)
     study_terms = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
     title = indexes.CharField(indexed=True, stored=True, faceted=True)
@@ -411,6 +412,12 @@ class ProjectIndex(CelerySearchIndex, indexes.Indexable):
         if obj.start_date:
             return obj.start_date.year
         else:
+            return None
+
+    def prepare_start_date(self, obj):
+        if obj.start_date:
+            return obj.start_date
+        else: 
             return None
 
     def prepare_study_terms(self, obj):
