@@ -26,6 +26,7 @@ from core.models import Access, \
                         Share, \
                         StorageResource, \
                         UseRestriction, \
+                        DataLogType, \
                         User
 from core.models.contract import PartnerRole
 from core.models.storage_location import DataLocation
@@ -76,6 +77,7 @@ admin.site.register(SensitivityClass)
 admin.site.register(Share)
 admin.site.register(StorageResource, StorageResourceAdmin)
 admin.site.register(UseRestriction)
+admin.site.register(DataLogType)
 
 # Term models (term_model.py)
 admin.site.register(DiseaseTerm)
