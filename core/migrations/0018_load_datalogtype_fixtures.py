@@ -3,17 +3,25 @@
 from django.db import migrations
 from core.management.commands.load_initial_data import Command as load_init_data_cmd
 
-
 class Migration(migrations.Migration):
     
     def create_log_types(apps, schema_editor):
         load_command = load_init_data_cmd()
         load_command.create_log_types()
-
+    
+    def set_null_datalogs_to_transfer(apps, schema_editor):
+        Shares = apps.get_model('core', 'Share')
+        DataLogType = apps.get_model('core', 'DataLogType')
+        for share in Shares.objects.all():
+            if share.data_log_type is None:
+                share.data_log_type = DataLogType.objects.get(name="Transfer")
+                share.save()
+    
     dependencies = [
         ('core', '0017_auto_20210518_1458'),
     ]
 
     operations = [
         migrations.RunPython(create_log_types),
+        migrations.RunPython(set_null_datalogs_to_transfer)
     ]
