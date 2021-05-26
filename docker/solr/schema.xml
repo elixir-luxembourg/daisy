@@ -167,10 +167,6 @@
     
     <field name="deidentification_method_exact" type="string" indexed="true" stored="true" multiValued="false" />
     
-    <field name="dpia" type="text_en" indexed="true" stored="true" multiValued="false" />
-    
-    <field name="dpia_exact" type="string" indexed="true" stored="true" multiValued="false" />
-    
     <field name="embargo_date" type="date" indexed="true" stored="true" multiValued="false" />
     
     <field name="end_of_storage_duration" type="date" indexed="true" stored="true" multiValued="false" />

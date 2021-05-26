@@ -23,6 +23,7 @@ from .sensitivity_class import SensitivityClass
 from .restriction_class import RestrictionClass
 from .use_restriction import UseRestriction
 from .term_model import StudyTerm, GeneTerm, PhenotypeTerm, DiseaseTerm
+from .data_log_type import DataLogType
 # They need to be after User because of the inner references
 from .user import User
 
@@ -46,14 +47,14 @@ __all__ = ['GDPRRole',
            'Partner',
            'Project',
            'Publication',
-           'Restriction',
            'SensitivityClass',
            'Share',
            'Access',
            'StorageResource',
-           'UseRestriction'
+           'UseRestriction',
            'StudyTerm',
            'GeneTerm',
            'PhenotypeTerm',
            'DiseaseTerm',
+           'DataLogType',
            'User']

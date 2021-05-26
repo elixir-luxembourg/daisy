@@ -11,7 +11,7 @@ from ontobio import obograph_util, Ontology
 from django.db import connection
 from core.exceptions import FixtureImportError
 from core.models import ContactType, DataType, DocumentType, StorageResource, FundingSource, RestrictionClass, \
-    SensitivityClass, Cohort, Contact, GDPRRole, LegalBasisType, PersonalDataType
+    SensitivityClass, Cohort, Contact, GDPRRole, LegalBasisType, PersonalDataType, DataLogType
 from core.models.partner import Partner
 from core.models.term_model import GeneTerm, StudyTerm, DiseaseTerm, PhenotypeTerm
 from core.permissions import PERMISSION_MAPPING
@@ -54,6 +54,17 @@ class Command(BaseCommand):
             for contact_type in data:
                 ContactType.objects.get_or_create(
                     **contact_type
+                )
+
+    @staticmethod
+    def create_log_types():
+        print('Creating data log event types')
+        DataLogType.objects.all().delete()
+        with open(os.path.join(FIXTURE_DIR, 'data-log-types.json'), 'r') as handler:
+            data = json.load(handler)
+            for data_log_type in data:
+                DataLogType.objects.get_or_create(
+                    **data_log_type
                 )
 
     @staticmethod
@@ -308,4 +319,5 @@ class Command(BaseCommand):
         self.create_elu_institutions()
         self.create_elu_cohorts()
         self.create_gdpr_roles()
+        self.create_log_types()
         print('done')
