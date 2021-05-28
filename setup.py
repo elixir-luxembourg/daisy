@@ -50,7 +50,7 @@ dev_requirements = [
 
 setup(
     name='elixir-daisy',
-    version='1.4.1',
+    version='1.5.0',
     description="Elixir-LU DAISY",
     author="Pinar Alper, Valentin Grouès, Yohan Jarosz, Jacek Lebioda, Kavita Rege",
     author_email='valentin.groues@uni.lu',
