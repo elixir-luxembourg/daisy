@@ -43,7 +43,7 @@ def project_list(request):
         'reset': True,
         'facets': facet_view_utils.filter_empty_facets(projects.facet_counts()),
         'query': query or '',
-        'filters': request.GET.get('filters') or '',
+        'filters': request.GET.get('filters', ''),
         'order_by': order_by or '',
         'title': 'Projects',
         'help_text': Project.AppMeta.help_text,
