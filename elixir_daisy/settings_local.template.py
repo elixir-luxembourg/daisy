@@ -1,4 +1,6 @@
-GLOBAL_API_KEY = 'insert something random here'
+#SECURITY WARNING: change the key used in production and keep it secret !
+GLOBAL_API_KEY = None  # Generate a global api key by e.g. django.core.management.utils.get_random_secret_key()
+if GLOBAL_API_KEY is None: raise NotImplementedError('You must specify GLOBAL_API_KEY in settings_local.py')
 
 # Authentication backend
 # https://django-guardian.readthedocs.io/en/stable/configuration.html
