@@ -24,7 +24,7 @@ def add_personnel_to_project(request, pk):
         else:
             error_messages = []
             for field, error in form.errors.items():
-                error_message = "{}: {}".format(field, error[0])
+                error_message = f"{field}: {error[0]}"
                 error_messages.append(error_message)
             add_message(request, messages.ERROR, "\n".join(error_messages))
         return redirect(to='project', pk=pk)

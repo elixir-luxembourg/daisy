@@ -28,7 +28,6 @@ class ContractForm(ModelForm):
 
     field_order = [
         'project',
-        'company_roles',
         'type',
         'legal_documents',
         'comments'

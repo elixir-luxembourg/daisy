@@ -16,9 +16,7 @@ def get_file_name(instance, filename):
     Return the path of the final path of the document on the filsystem.
     """
     now = timezone.now().strftime('%Y/%m/%d')
-    return 'documents/{}/{}/{}_{}'.format(
-        instance.content_type.name, now, instance.object_id, filename
-    )
+    return f'documents/{instance.content_type.name}/{now}/{instance.object_id}_{filename}'
 
 
 class Document(CoreModel):
@@ -59,7 +57,7 @@ class Document(CoreModel):
                                 null=True)
 
     def __str__(self):
-        return "{} ({})".format(self.content.name, self.content_object)
+        return f"{self.content.name} ({self.content_object})"
 
     @property
     def shortname(self):

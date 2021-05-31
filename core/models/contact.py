@@ -51,9 +51,38 @@ class Contact(CoreModel):
 
 
     def __str__(self):
-        return "{} {} ({})".format(self.first_name, self.last_name, self.type.name)
-
-
+        return f"{self.first_name} {self.last_name} ({self.type.name})"
 
     def full_name(self):
-        return "{} {}".format(self.first_name, self.last_name)
+        return f"{self.first_name} {self.last_name}"
+
+    def to_dict(self):
+        partners_dict = []
+        for partner in self.partners.all():
+            partners_dict.append({
+                'acronym': partner.acronym,
+                'name': partner.name
+            })
+
+        base_dict = {
+            "pk": self.id.__str__(),
+            "address": self.address,
+            "email": self.email,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "phone": self.phone,
+            "type": self.type.name if self.type else '',
+            "partners": partners_dict if len(partners_dict) else ''
+        }
+        return base_dict
+
+    def serialize_to_export(self):
+        import functools
+
+        d = self.to_dict()
+
+        if len(d['partners']):
+            partners = map(lambda v: f"[{v['name']}]", d['partners'])
+            d['partners'] = ','.join(partners)
+
+        return d

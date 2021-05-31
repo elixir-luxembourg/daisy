@@ -48,7 +48,7 @@ class Access(CoreModel):
     )
 
     def __str__(self):
-        return 'Access given to dataset {}: {}'.format(self.dataset.title, self.access_notes)
+        return f'Access given to dataset {self.dataset.title}: {self.access_notes}'
 
     @property
     def display_locations(self):

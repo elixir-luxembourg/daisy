@@ -51,8 +51,6 @@ class Partner(CoreTrackedModel):
         help_text='The acronym for the partner institutes name e.g. EMBL for European Molecular Biology Laboratory.'
     )
 
-
-
     address = TextFieldWithInputWidget(verbose_name='Address', help_text='The contact address of the partner.')
 
     country = CountryField(blank_label='select country', blank=True, null=True)
@@ -68,8 +66,6 @@ class Partner(CoreTrackedModel):
     is_clinical = models.BooleanField(default=False, blank=False, null=False, verbose_name='Is clinical?',
                                       help_text='Please select if this is a clinical partner.')
 
-
-
     name = TextFieldWithInputWidget(
         blank=False,
         null=False,
@@ -78,31 +74,27 @@ class Partner(CoreTrackedModel):
         unique=True
     )
 
-
     @property
     def contracts(self):
         # retrieve model dynamically to prevent circular dependencies
         contract_model = apps.get_model('core', 'Contract')
         return contract_model.objects.filter(partners_roles__partner=self)
 
-
     def __str__(self):
         return self.name
-
 
     @property
     def geo_category_display(self):
         return GEO_CATEGORY[self.geo_category]
 
-
     @property
     def sector_category_display(self):
         return SECTOR_CATEGORY[self.sector_category]
 
-
     def to_dict(self):
         base_dict = {
             "pk": self.id.__str__(),
+            "source": settings.SERVER_URL,
             "name": self.name,
             "elu_accession": self.elu_accession if self.elu_accession else None,
             "acronym": self.acronym if self.acronym else None,
@@ -114,7 +106,9 @@ class Partner(CoreTrackedModel):
         }
         return base_dict
 
-
+    def serialize_to_export(self):
+        d = self.to_dict()
+        return d
 
 
 class HomeOrganisation():

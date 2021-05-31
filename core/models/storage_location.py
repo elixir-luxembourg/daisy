@@ -58,6 +58,6 @@ class DataLocation(CoreModel):
     )
 
     def __str__(self):
-        return '{} - {} - {}'.format(self.category, self.backend.name, self.location_description)
+        return f'{self.category} - {self.backend.name} - {self.location_description}'
 
 

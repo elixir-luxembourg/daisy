@@ -158,37 +158,42 @@ class Project(CoreTrackedModel):
 
 
     def to_dict(self):
-
         contact_dicts = []
         for contact in self.contacts.all():
             affiliations = []
             for aff in contact.partners.all():
                 affiliations.append(aff.name)
-            contact_dicts.append(
-                {
-                    "first_name": contact.first_name,
-                    "last_name": contact.last_name,
-                    "role": contact.type.name,
-                    "email": contact.email if contact.email else None,
-                    "affiliations": affiliations,
-                })
+            contact_dicts.append({
+                "first_name": contact.first_name,
+                "last_name": contact.last_name,
+                "role": contact.type.name,
+                "email": contact.email if contact.email else None,
+                "affiliations": affiliations,
+            })
         for lc in self.local_custodians.all():
             contact_dicts.append(
                 {"first_name": lc.first_name,
                  "last_name": lc.last_name,
                  "email": lc.email,
-                 "role":  "Principal_Investigator" if lc.is_part_of(constants.Groups.VIP.name) else "Researcher",
+                 "role":  "Principal_Investigator" if lc.is_part_of(constants.Groups.VIP.value) else "Researcher",
+                 "affiliations": [HomeOrganisation().name]})
+        for cp in self.company_personnel.all():
+            contact_dicts.append(
+                {"first_name": cp.first_name,
+                 "last_name": cp.last_name,
+                 "email": cp.email,
+                 "role":  "Researcher",
                  "affiliations": [HomeOrganisation().name]})
 
         pub_dicts = []
         for pub in self.publications.all():
-            pub_dicts.append(
-                {"citation": pub.citation if pub.citation else None,
-                 "doi": pub.doi if pub.doi else None})
+            pub_dicts.append({
+                "citation": pub.citation if pub.citation else None,
+                 "doi": pub.doi if pub.doi else None
+            })
 
         base_dict = {
             "source": settings.SERVER_URL,
-            "id_at_source": self.id.__str__(),
             "acronym": self.acronym,
             "elu_accession": self.elu_accession if self.elu_accession else None,
             "name": self.title if self.title else None,
@@ -199,11 +204,18 @@ class Project(CoreTrackedModel):
             "national_ethics_approval_notes": self.cner_notes if self.cner_notes else None,
             "start_date": self.start_date.strftime('%Y-%m-%d') if self.start_date else None,
             "end_date": self.end_date.strftime('%Y-%m-%d') if self.end_date else None,
-            "contacts": contact_dicts
+            "contacts": contact_dicts,
+            "publications": pub_dicts,
         }
 
-
         return base_dict
+
+    def serialize_to_export(self):
+        import functools
+        d = self.to_dict()
+        contacts = map(lambda v: f"[{v['first_name']} {v['last_name']}, {v['email']}]", d['contacts'])
+        d['contacts'] = ','.join(contacts)
+        return d
 
 # faster lookup for permissions
 # https://django-guardian.readthedocs.io/en/stable/userguide/performance.html#direct-foreign-keys

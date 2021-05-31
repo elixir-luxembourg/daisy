@@ -1,354 +1,385 @@
-[
-    {
-        "name": "ABCD data",
-        "project":  "ABCD",
-        "transfers": [
-            {
-                "partner": "ELU_I_44",
-                "transfer_details": "Melanie Silver"
-            }
-        ],
-        "contacts": [
-            {
-                "first_name": "Igor",
-                "last_name": "Teal",
-                "email": "user@uni.edu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            }
-
-        ],
-        "storages": [
-            {
-                "accesses": [
-                    "Igor Teal"
-                ],
-                "platform": "Other",
-                "locations": [ "https://someserver.edu/Studies/Gambia", "https://someserver.edu/Studies/Gambia_additional"],
-                "category": "master"
-            }
-        ],
-        "data_declarations": [  {
-            "title": "ABCD",
-            "data_type_notes": "..\n",
-            "data_types": [
-                "Metabolomics",
-                "Clinical_data",
-                "Methylation_array"
+{
+    "items": [
+        {
+            "source": "daisy.lcsb.uni.lu",
+            "name": "ABCD data",
+            "project": "ABCD",
+            "transfers": [
+                {
+                    "partner": "ELU_I_44",
+                    "transfer_details": "Melanie Silver"
+                }
             ],
-            "de_identification": "anonymization",
-            "subjects_category": "controls",
-            "has_special_subjects": true,
-            "special_subjects_description": "2 year old children",
-            "source_notes": "Data is from collaborator.",
-            "use_restrictions": [
+            "contacts": [
                 {
-                    "ga4gh_code": "PS",
-                    "note": "Use is restricted to projects: ABCD"
-                },
+                    "first_name": "Igor",
+                    "last_name": "Teal",
+                    "email": "user@uni.edu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                }
+            ],
+            "storages": [
                 {
-                    "ga4gh_code": "PUB",
-                    "note": "Acknowledgement required."
+                    "accesses": [
+                        "Igor Teal"
+                    ],
+                    "platform": "Other",
+                    "locations": [
+                        "https://someserver.edu/Studies/Gambia",
+                        "https://someserver.edu/Studies/Gambia_additional"
+                    ],
+                    "category": "master"
+                }
+            ],
+            "data_declarations": [
+                {
+                    "title": "ABCD",
+                    "data_type_notes": "..\n",
+                    "data_types": [
+                        "Metabolomics",
+                        "Clinical_data",
+                        "Methylation_array"
+                    ],
+                    "de_identification": "anonymization",
+                    "subjects_category": "controls",
+                    "has_special_subjects": true,
+                    "special_subjects_description": "2 year old children",
+                    "source_notes": "Data is from collaborator.",
+                    "use_restrictions": [
+                        {
+                            "use_class": "PS",
+                            "use_class_note": "Use is restricted to projects: ABCD",
+                            "use_restriction_rule": "CONSTRAINTS"
+                        },
+                        {
+                            "use_class": "PUB",
+                            "use_class_note": "Acknowledgement required.",
+                            "use_restriction_rule": "CONSTRAINTS"
+                        }
+                    ]
                 }
             ]
-        }
-        ]
-    },
-    {
-
-        "name": "Hypertension data",
-        "project": "Hypertension",
-        "contacts": [
-            {
-                "first_name": "Joanne",
-                "last_name": "Swift",
-                "email": "user@uni.edu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            }
-
-        ],
-        "storages": [
-            {
-                "accesses": [
-                    "Elgin Gray", "Paul Mauve"
-                ],
-                "platform": "application",
-                "locations": ["RedCap sevrver at http://address"],
-                "category": "master"
-            }
-        ],
-        "data_declarations": [
-            {
-                "title": "Hypertension-ABC disease",
-                "data_types": [
-                    "Genotype_data",
-                    "Whole_genome_sequencing"
-                ],
-                "de_identification": "pseudonymization",
-                "subjects_category": "cases_and_controls",
-                "has_special_subjects": false,
-                "source_collaboration": {
-                    "collab_inst": "ELU_I_94",
-                    "collab_pi": "Alberto Pico",
-                    "collab_project": "Hypertension",
-                    "collab_role": "joint_controller"
-                },
-                "source_notes": "Data is from collaborator.",
-                "use_restrictions": [
-                    {
-                        "ga4gh_code": "PS",
-                        "note": "Use is restricted to projects: Hypertension"
+        },
+        {
+            "source": "elixir.test.data.bo",
+            "name": "Hypertension data",
+            "project": "Hypertension",
+            "contacts": [
+                {
+                    "first_name": "Joanne",
+                    "last_name": "Swift",
+                    "email": "user@uni.edu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                }
+            ],
+            "storages": [
+                {
+                    "accesses": [
+                        "Elgin Gray",
+                        "Paul Mauve"
+                    ],
+                    "platform": "application",
+                    "locations": [
+                        "RedCap sevrver at http://address"
+                    ],
+                    "category": "master"
+                }
+            ],
+            "data_declarations": [
+                {
+                    "title": "Hypertension-ABC disease",
+                    "data_types": [
+                        "Genotype_data",
+                        "Whole_genome_sequencing"
+                    ],
+                    "de_identification": "pseudonymization",
+                    "subjects_category": "cases_and_controls",
+                    "has_special_subjects": false,
+                    "source_collaboration": {
+                        "collab_inst": "ELU_I_94",
+                        "collab_pi": "Alberto Pico",
+                        "collab_project": "Hypertension",
+                        "collab_role": "joint_controller"
                     },
-                    {
-                        "ga4gh_code": "RS-[XX]",
-                        "note": "Use is restricted to research areas: Hypertension-ABC disease"
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "name": "MDPDP data",
-        "project": "MDPDP",
-        "contacts": [
-            {
-                "first_name": "Rob",
-                "last_name": "Blue",
-                "email": "user@uni.edu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            }
-
-        ],
-        "transfers": [
-            {
-                "partner": "ELU_I_79",
-                "transfer_details": "Feng Xiao"
-            },
-            {
-                "partner": "ELU_I_80",
-                "transfer_details": "Max Ginger"
-            }
-        ],
-        "storages": [
-            {
-                "accesses": [
-                    "Paul Antony"
-                ],
-                "platform": "Other",
-                "locations": [ "\\\\someserver.edu\\LCSB_HCS\\OperaQEHS", "\\\\someserver.edu\\users\\PA\\PrecisionMedicine","\\\\someserver.edu\\Images\\groups"],
-                "category": "master"
-            },
-            {
-                "platform": "sample-storage",
-                "locations": ["Hospital ABCDFE"],
-                "category": "master"
-            }
-        ]
-    },
-    {
-        "name": "REPO data",
-        "storages": [
-            {
-                "accesses": [
-                    "Paul Mauve", "John Doe"
-                ],
-                "platform": "lcsb_group_server",
-                "locations": [
-                    "some_server_directory:/work/projects/wgs/cohort"
-                ],
-                "category": "master"
-            }
-        ],
-        "contacts": [
-            {
-                "first_name": "Paul",
-                "last_name": "Mauve",
-                "email": "user@uni.edu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            },            {
-                "first_name": "Rene",
-                "last_name": "Sahoo",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            }
-
-        ],
-        "data_declarations": [
-            {
-                "title": "ZZZZ",
-                "source_collaboration": {
-                    "collab_inst": "ELU_I_84"
-                },
-                "source_notes": "Data is obtained from repository.",
-                "data_types": [
-                    "Whole_genome_sequencing",
-                    "Other_Phenotype_data"
-                ],
-                "de_identification": "pseudonymization",
-                "subjects_category": "cases_and_controls",
-                "has_special_subjects": false,
-                "access_category": "controlled_access",
-                "use_restrictions": [
-                    {
-                        "ga4gh_code": "PUB",
-                        "note": "Acknowledgement required."
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "name": "PD data",
-        "project": "PD_Project",
-        "transfers": [],
-        "contacts": [
-            {
-                "first_name": "Ali",
-                "last_name": "Gator",
-                "email": "user@uni.edu",
-                "role": "Principal_Investigator",
-                "institution": "ELU_I_77"
-            }
-        ],
-        "storages": [
-            {
-                "platform": "lcsb_group_server",
-                "locations": [
-                    "\\\\some_server\\GROUP\\Projects\\SUB_FOLDER",
-                    "\\\\some_server\\GROUP\\General"
-                ],
-                "category": "master"
-            },
-            {
-                "platform": "Other",
-                "locations": [
-                    "this server is backed-up by IT"
-                ],
-                "category": "backup"
-            },
-            {
-                "platform": "atlas_personal",
-                "locations": [
-                    "\\\\some_server\\users\\first.user",
-                    "\\\\some_server\\users\\second.user ",
-                    "\\\\some_server\\users\\third.user",
-                    "\\\\some_server\\users\\fourth.user",
-                    "\\\\some_server\\users\\fifth.user",
-                    "\\\\some_server\\users\\sixth.user",
-                    "\\\\some_server\\users\\seventh.user",
-                    "\\\\some_server\\users\\eighth.user"
-                ],
-                "category": "copy"
-            },
-            {
-                "platform": "lcsb_laptop",
-                "locations": [
-                    "first.user",
-                    "second.user",
-                    "third.user",
-                    "fourth.user",
-                    "fifth.user",
-                    "sixth.user",
-                    "seventh.user",
-                    "eighth.user"
-                ],
-                "category": "copy"
-            },
-            {
-                "platform": "External Storage  (e.g. Hard disk, DVD)",
-                "locations": [
-                    "first.user",
-                    "second.user",
-                    "third.user",
-                    "fourth.user",
-                    "fifth.user",
-                    "sixth.user",
-                    "seventh.user",
-                    "eighth.user"
-                ],
-                "category": "copy"
-            },
-            {
-                "platform": "Owncloud",
-                "locations": [
-                    "first.user",
-                    "second.user",
-                    "third.user",
-                    "fourth.user",
-                    "fifth.user",
-                    "sixth.user",
-                    "seventh.user",
-                    "eighth.user"
-                ],
-                "category": "copy"
-            },
-            {
-                "platform": "sample-storage",
-                "locations": [
-                    "Hospital/Institute Floor X Cabinet Y"
-                ],
-                "category": "master"
-            }
-        ],
-        "data_declarations": [{
-            "title": "XYZ",
-            "source_notes": "Data is from own cohort.",
-            "data_types": [
-                "Cell_Imaging",
-                "Clinical_data",
-                "Other_Phenotype_data",
-                "Samples"
-            ],
-            "de_identification": "pseudonymization",
-            "ombudsman": "Biobank, Principle Investigator",
-            "subjects_category": "cases_and_controls",
-            "has_special_subjects": false,
-            "consent_status": "homogeneous",
-            "use_restrictions": [
-                {
-                    "ga4gh_code": "PS",
-                    "note": "Consent form restricts data use to projects XYZ"
-                },
-                {
-                    "ga4gh_code": "RS-[XX]",
-                    "note": "Data is consented for research onParkinson's disease"
-                },
-                {
-                    "ga4gh_code": "GS-[XX]",
-                    "note": "Data is consented for sharing outside institute (Within Luxembourg)"
+                    "source_notes": "Data is from collaborator.",
+                    "use_restrictions": [
+                        {
+                            "use_class": "PS",
+                            "use_class_note": "Use is restricted to projects: Hypertension",
+                            "use_restriction_rule": "CONSTRAINTS"
+                        },
+                        {
+                            "use_class": "RS-[XX]",
+                            "use_class_note": "Use is restricted to research areas: Hypertension-ABC disease",
+                            "use_restriction_rule": "CONSTRAINTS"
+                        }
+                    ]
                 }
             ]
-        },  {
-            "title": "PD data (german cohort)",
-            "data_type_notes": "Small-scale protein, mRNA or mtDNA integrity data, cell and mitochondrial function data\n",
-            "data_types": [
-                "Other",
-                "Samples"
-            ],
-            "de_identification": "pseudonymization",
-            "subjects_category": "cases_and_controls",
-            "has_special_subjects": false,
-            "source_collaboration": {
-                "collab_inst": "ELU_I_8",
-                "collab_pi": "Manuela Swift",
-                "collab_project": "PD_Project",
-                "collab_role": "joint_controller"
-            },
-            "source_notes": "Data is from collaborator.",
-            "use_restrictions": [
+        },
+        {
+            "source": "daisy.lcsb.uni.lu",
+            "name": "MDPDP data",
+            "project": "MDPDP",
+            "contacts": [
                 {
-                    "ga4gh_code": "PUB",
-                    "note": "Acknowledgement required."
+                    "first_name": "Rob",
+                    "last_name": "Blue",
+                    "email": "user@uni.edu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                }
+            ],
+            "transfers": [
+                {
+                    "partner": "ELU_I_79",
+                    "transfer_details": "Feng Xiao"
                 },
                 {
-                    "ga4gh_code": "TS-[XX]",
-                    "note": "Data is obtained for a limited duration. 2021-02-28"
+                    "partner": "ELU_I_80",
+                    "transfer_details": "Max Ginger"
+                }
+            ],
+            "storages": [
+                {
+                    "accesses": [
+                        "Paul Antony"
+                    ],
+                    "platform": "Other",
+                    "locations": [
+                        "\\\\someserver.edu\\LCSB_HCS\\OperaQEHS",
+                        "\\\\someserver.edu\\users\\PA\\PrecisionMedicine",
+                        "\\\\someserver.edu\\Images\\groups"
+                    ],
+                    "category": "master"
+                },
+                {
+                    "platform": "sample-storage",
+                    "locations": [
+                        "Hospital ABCDFE"
+                    ],
+                    "category": "master"
+                }
+            ]
+        },
+        {
+            "source": "daisy.lcsb.uni.lu",
+            "name": "REPO data",
+            "storages": [
+                {
+                    "accesses": [
+                        "Paul Mauve",
+                        "John Doe"
+                    ],
+                    "platform": "lcsb_group_server",
+                    "locations": [
+                        "some_server_directory:/work/projects/wgs/cohort"
+                    ],
+                    "category": "master"
+                }
+            ],
+            "contacts": [
+                {
+                    "first_name": "Paul",
+                    "last_name": "Mauve",
+                    "email": "user@uni.edu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                },
+                {
+                    "first_name": "Rene",
+                    "last_name": "Sahoo",
+                    "email": "user@uni.edu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                }
+            ],
+            "data_declarations": [
+                {
+                    "title": "ZZZZ",
+                    "source_collaboration": {
+                        "collab_inst": "ELU_I_84"
+                    },
+                    "source_notes": "Data is obtained from repository.",
+                    "data_types": [
+                        "Whole_genome_sequencing",
+                        "Other_Phenotype_data"
+                    ],
+                    "de_identification": "pseudonymization",
+                    "subjects_category": "cases_and_controls",
+                    "has_special_subjects": false,
+                    "access_category": "controlled_access",
+                    "use_restrictions": [
+                        {
+                            "use_class": "PUB",
+                            "use_class_note": "Acknowledgement required.",
+                            "use_restriction_rule": "CONSTRAINTS"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "source": "daisy.lcsb.uni.lu",
+            "name": "PD data",
+            "project": "PD_Project",
+            "transfers": [],
+            "contacts": [
+                {
+                    "first_name": "Ali",
+                    "last_name": "Gator",
+                    "email": "user@uni.edu",
+                    "role": "Principal_Investigator",
+                    "affiliations": ["Luxembourg Centre for Systems Biomedicine"]
+                }
+            ],
+            "storages": [
+                {
+                    "platform": "lcsb_group_server",
+                    "locations": [
+                        "\\\\some_server\\GROUP\\Projects\\SUB_FOLDER",
+                        "\\\\some_server\\GROUP\\General"
+                    ],
+                    "category": "master"
+                },
+                {
+                    "platform": "Other",
+                    "locations": [
+                        "this server is backed-up by IT"
+                    ],
+                    "category": "backup"
+                },
+                {
+                    "platform": "atlas_personal",
+                    "locations": [
+                        "\\\\some_server\\users\\first.user",
+                        "\\\\some_server\\users\\second.user ",
+                        "\\\\some_server\\users\\third.user",
+                        "\\\\some_server\\users\\fourth.user",
+                        "\\\\some_server\\users\\fifth.user",
+                        "\\\\some_server\\users\\sixth.user",
+                        "\\\\some_server\\users\\seventh.user",
+                        "\\\\some_server\\users\\eighth.user"
+                    ],
+                    "category": "copy"
+                },
+                {
+                    "platform": "lcsb_laptop",
+                    "locations": [
+                        "first.user",
+                        "second.user",
+                        "third.user",
+                        "fourth.user",
+                        "fifth.user",
+                        "sixth.user",
+                        "seventh.user",
+                        "eighth.user"
+                    ],
+                    "category": "copy"
+                },
+                {
+                    "platform": "External Storage  (e.g. Hard disk, DVD)",
+                    "locations": [
+                        "first.user",
+                        "second.user",
+                        "third.user",
+                        "fourth.user",
+                        "fifth.user",
+                        "sixth.user",
+                        "seventh.user",
+                        "eighth.user"
+                    ],
+                    "category": "copy"
+                },
+                {
+                    "platform": "Owncloud",
+                    "locations": [
+                        "first.user",
+                        "second.user",
+                        "third.user",
+                        "fourth.user",
+                        "fifth.user",
+                        "sixth.user",
+                        "seventh.user",
+                        "eighth.user"
+                    ],
+                    "category": "copy"
+                },
+                {
+                    "platform": "sample-storage",
+                    "locations": [
+                        "Hospital/Institute Floor X Cabinet Y"
+                    ],
+                    "category": "master"
+                }
+            ],
+            "data_declarations": [
+                {
+                    "title": "XYZ",
+                    "source_notes": "Data is from own cohort.",
+                    "data_types": [
+                        "Cell_Imaging",
+                        "Clinical_data",
+                        "Other_Phenotype_data",
+                        "Samples"
+                    ],
+                    "de_identification": "pseudonymization",
+                    "ombudsman": "Biobank, Principle Investigator",
+                    "subjects_category": "cases_and_controls",
+                    "has_special_subjects": false,
+                    "storage_end_date": "2030-05-10",
+                    "consent_status": "homogeneous",
+                    "use_restrictions": [
+                        {
+                            "use_class": "PS",
+                            "use_class_note": "Consent form restricts data use to projects XYZ",
+                            "use_restriction_rule": "CONSTRAINTS"
+                        },
+                        {
+                            "use_class": "RS-[XX]",
+                            "use_class_note": "Data is consented for research onParkinson's disease",
+                            "use_restriction_rule": "CONSTRAINTS"
+                        },
+                        {
+                            "use_class": "GS-[XX]",
+                            "use_class_note": "Data is consented for sharing outside institute (Within Luxembourg)",
+                            "use_restriction_rule": "CONSTRAINTS"
+                        }
+                    ]
+                },
+                {
+                    "title": "PD data (german cohort)",
+                    "data_type_notes": "Small-scale protein, mRNA or mtDNA integrity data, cell and mitochondrial function data\n",
+                    "data_types": [
+                        "Other",
+                        "Samples"
+                    ],
+                    "de_identification": "pseudonymization",
+                    "subjects_category": "cases_and_controls",
+                    "has_special_subjects": false,
+                    "source_collaboration": {
+                        "collab_inst": "ELU_I_8",
+                        "collab_pi": "Manuela Swift",
+                        "collab_project": "PD_Project",
+                        "collab_role": "joint_controller"
+                    },
+                    "source_notes": "Data is from collaborator.",
+                    "use_restrictions": [
+                        {
+                            "use_class": "PUB",
+                            "use_class_note": "Acknowledgement required.",
+                            "use_restriction_rule": "CONSTRAINTS"
+                        },
+                        {
+                            "use_class": "TS-[XX]",
+                            "use_class_note": "Data is obtained for a limited duration. 2021-02-28",
+                            "use_restriction_rule": "CONSTRAINTS"
+                        }
+                    ]
                 }
             ]
         }
-        ]
-    }
-]
+    ]
+}

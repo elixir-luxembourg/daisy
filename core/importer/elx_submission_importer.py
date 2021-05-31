@@ -1,15 +1,12 @@
 import json
 import sys
 
-
-
 from core.exceptions import DatasetImportError
-
+from core.importer.base_importer import BaseImporter
+from core.importer.projects_importer import ProjectsImporter
 from core.models import Contact, Dataset, Project, ContactType
-
 from core.utils import DaisyLogger
-from .base_importer import BaseImporter
-from .projects_importer import ProjectsImporter
+
 
 logger = DaisyLogger(__name__)
 
@@ -20,8 +17,7 @@ class DishSubmissionImporter(BaseImporter):
     and create relevant  Dataset, Collaboration, (external Project) and DataDeclaration records in DAISY
     """
 
-    class DateImportException(Exception):
-        pass
+    schema_name = ''
 
     def __init__(self, elixir_project_name):
         self.elixir_project_name = elixir_project_name
@@ -30,7 +26,8 @@ class DishSubmissionImporter(BaseImporter):
         try:
             logger.info('Import started')
             submission_dict = json.loads(json_string)
-            logger.debug(' * Importing Data Declaration: "{}"...'.format(submission_dict['name']))
+            submission_name = submission_dict['name'].encode('utf8')
+            logger.debug(f' * Importing Data Declaration: "{submission_name}"...')
 
             if self.is_elixir_submission(submission_dict):
                 project = Project.objects.filter(acronym=self.elixir_project_name).first()
@@ -158,8 +155,8 @@ class DishSubmissionImporter(BaseImporter):
 
         dataset = Dataset.objects.filter(title=elu_accession.strip()).first()
         if dataset is not None:
-            logger.warning(
-                "Dataset with title '{}' already found. It will be updated.".format(elu_accession.strip()))
+            msg = f"Dataset with title '{elu_accession.strip()}' already found. It will be updated."
+            logger.warning(msg)
         else:
 
             dataset = Dataset.objects.create(title=elu_accession.strip())
@@ -170,8 +167,7 @@ class DishSubmissionImporter(BaseImporter):
         title = submission_dict['name']
         scope_str = 'Elixir' if submission_dict['scope'] == 'e' else 'LCSB Collaboration'
         local_project_str = submission_dict.get('local_project', '')
-        dataset.comments = "ELU Accession: {}\nTitle: {}\nCreated On: {}\nScope: {}\nSubmitted to Project: {}".format(
-            elu_accession, title, created_on_str, scope_str, local_project_str)
+        dataset.comments = f"ELU Accession: {elu_accession}\nTitle: {title}\nCreated On: {created_on_str}\nScope: {scope_str}\nSubmitted to Project: {local_project_str}"
 
         local_custodians, local_personnel, external_contacts = self.process_contacts(submission_dict)
 

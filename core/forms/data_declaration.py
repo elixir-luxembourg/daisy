@@ -1,11 +1,12 @@
 from django import forms
+from django.forms import  ValidationError
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 
+from core.forms.use_restriction import UseRestrictionForm
 from core.models import DataDeclaration, Partner, Contract, GDPRRole
 from core.models.contract import PartnerRole
-from django.forms import  ValidationError
-from core.forms.use_restriction import UseRestrictionForm
+
 
 class DataDeclarationEditForm(forms.ModelForm):
 
@@ -125,7 +126,6 @@ class DataDeclarationSubFormNew(BaseDataDeclarationSubForm):
             contract.project = data_declaration.dataset.project
             contract.save()
             contract.local_custodians.set(data_declaration.dataset.local_custodians.all())
-            contract.company_roles.set([GDPRRole["processor"]])
             contract.save()
             partner_role = PartnerRole()
             partner_role.partner_id = partner_id

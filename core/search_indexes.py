@@ -20,7 +20,6 @@ class DataDeclarationIndex(CelerySearchIndex, indexes.Indexable):
     data_types_generated = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
     data_types_received = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
     deidentification_method = indexes.CharField(indexed=True, stored=True, faceted=True)
-    dpia = indexes.CharField(indexed=True, stored=True, faceted=True)
     embargo_date = indexes.DateField(indexed=True, stored=True)
     end_of_storage_duration = indexes.DateField(indexed=True, stored=True)
     has_special_subjects = indexes.BooleanField(indexed=True, stored=True, faceted=True)
@@ -178,8 +177,6 @@ class ContractIndex(CelerySearchIndex, indexes.Indexable):
 
     has_legal_documents = indexes.BooleanField(indexed=True, stored=True, faceted=True)
 
-    company_roles = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
-
     partners_roles = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
 
     project = indexes.CharField(indexed=True, stored=True, faceted=True)
@@ -188,9 +185,6 @@ class ContractIndex(CelerySearchIndex, indexes.Indexable):
 
     def prepare_local_custodians(self, obj):
         return [u.full_name for u in obj.local_custodians.all()]
-
-    def prepare_company_roles(self, obj):
-        return [str(r) for r in obj.company_roles.all()]
 
     def prepare_partners_roles(self, obj):
         roles = GDPRRole.objects.filter(partners_roles__contract=obj).distinct()
@@ -342,6 +336,7 @@ class ProjectIndex(CelerySearchIndex, indexes.Indexable):
     phenotype_terms = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
     project_web_page = indexes.CharField(indexed=True, stored=True, faceted=True)
     publications = indexes.MultiValueField(indexed=True, stored=True)
+    start_date = indexes.DateField(indexed=True, stored=True)
     start_year = indexes.IntegerField(indexed=True, stored=True, faceted=True)
     study_terms = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
     title = indexes.CharField(indexed=True, stored=True, faceted=True)
@@ -417,6 +412,12 @@ class ProjectIndex(CelerySearchIndex, indexes.Indexable):
         if obj.start_date:
             return obj.start_date.year
         else:
+            return None
+
+    def prepare_start_date(self, obj):
+        if obj.start_date:
+            return obj.start_date
+        else: 
             return None
 
     def prepare_study_terms(self, obj):

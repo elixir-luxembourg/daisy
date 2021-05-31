@@ -1,0 +1,286 @@
+{
+  "description": "ELIXIR Luxembourg Projects Schema",
+  "title": "A JSON Schema for describing biomedical research Projects.",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-core.json"
+    }
+  ],
+  "properties": {
+    "project": {
+      "description": "Name of the project the dataset belongs to.",
+      "type": ["string", "null"]
+    },
+    "data_declarations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/elu:data"
+      }
+    },
+    "storages": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/elu:storage"
+      }
+    },
+    "legal_bases": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/elu:legal_basis"
+      }
+    },
+    "transfers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/elu:transfer"
+      }
+    }
+  },
+  "definitions": {
+    "elu:storage": {
+      "type": "object",
+      "properties": {
+        "platform": {"type": "string"},
+        "location": {"type": "string"},
+        "accesses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "elu:transfer": {
+      "type": "object",
+      "properties": {
+        "partner": {"type": "string"},
+        "transfer_details": {"type": ["string", "null"]},
+        "transfer_date": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        }
+      }
+    },
+    "elu:legal_basis": {
+      "type": "object",
+      "properties": {
+        "data_declarations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "legal_basis_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "6.1(a)",
+              "6.1(b)",
+              "6.1(c)",
+              "6.1(d)",
+              "6.1(e)",
+              "6.1(f)"
+            ]
+          }},
+        "personal_data_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Standard",
+              "Special",
+              "Race",
+              "Genetic",
+              "Biometric",
+              "Health",
+              "Sexual orientation",
+              "Convictions",
+              "Other"
+            ]
+          }
+        },
+        "legal_basis_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "legal_basis_codes",
+        "personal_data_codes"
+      ]
+    },
+    "elu:data": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "use_restrictions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "use_class": {
+                "type": "string",
+                "enum": [
+                  "NRES",
+                  "GRU(CC)",
+                  "HMB(CC)",
+                  "DS-[XX](CC)",
+                  "POA",
+                  "RS-[XX]",
+                  "RUO",
+                  "NMDS",
+                  "GSO",
+                  "NPU",
+                  "PUB",
+                  "COL-[XX]",
+                  "RTN",
+                  "IRB",
+                  "GS-[XX]",
+                  "MOR-[XX]",
+                  "TS-[XX]",
+                  "US",
+                  "PS",
+                  "IS",
+                  "IP",
+                  "Other"
+                ]
+              },
+              "use_class_note": {
+                "type": "string"
+              },
+              "use_restriction_rule": {
+                "type": "string",
+                "enum": [
+                  "CONSTRAINTS",
+                  "NO_CONSTRAINTS",
+                  "FORBIDDEN"
+                ]
+              },
+              "use_restriction_objects": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "use_restriction_note": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "use_class_note",
+              "use_restriction_rule"
+            ]
+          }
+        },
+        "data_types": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ATAC-seq",
+              "Biometric_data",
+              "ChIP-seq",
+              "Samples",
+              "Disease status",
+              "Ethnic_origin",
+              "Imaging",
+              "Omics_data",
+              "Genotype_data",
+              "Whole_genome_sequencing",
+              "Exome_sequencing",
+              "Genomics_variant_array",
+              "RNASeq",
+              "Genetic_and_derived_genetic_data",
+              "Transcriptome_array",
+              "Methylation_array",
+              "MicroRNA_array",
+              "Metabolomics",
+              "Metagenomics",
+              "Metatranscriptomics",
+              "Metaproteomics",
+              "Single_Cell_RNAseq",
+              "Proteomics",
+              "Other_omics_data",
+              "Clinical_Imaging",
+              "Cell_Imaging",
+              "Human_subject_data",
+              "Clinical_data",
+              "Lifestyle_data",
+              "Socio_Economic_Data",
+              "Environmental_Data",
+              "Other_Phenotype_data",
+              "Other"
+            ]
+          },
+          "data_type_notes": {
+            "type": "string"
+          },
+          "access_category": {
+            "type": "string",
+            "enum": [
+              "open-access",
+              "controlled-access",
+              "registered-access"
+            ]
+          },
+          "subjects_category": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "cases",
+                "controls",
+                "cases_and_controls"
+              ]
+            }
+          },
+          "de_identification": {
+            "type": "string",
+            "enum": [
+              "anonymized",
+              "pseudonymized"
+            ]
+          },
+          "consent_status": {
+            "type": "string",
+            "enum": [
+              "heterogeneous",
+              "homogeneous"
+            ]
+          },
+          "consent_status_description": {
+            "type": "string"
+          },
+          "has_special_subjects": {
+            "type": "boolean"
+          },
+          "special_subjects_description": {
+            "type": "string"
+          },
+          "embargo_date": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "storage_end_date": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "storage_duration_criteria": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
+
+
+

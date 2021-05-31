@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_celery_beat',
     'celery_haystack',
-    'sequences.apps.SequencesConfig'
+    'sequences.apps.SequencesConfig',
+    'explorer'
 ]
 
 MIDDLEWARE = [
@@ -176,10 +177,10 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            'format': u'%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
         'simple': {
-            'format': '%(levelname)s %(message)s'
+            'format': u'%(levelname)s %(message)s'
         },
     },
     'filters': {
@@ -200,7 +201,7 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler',
+            'class': 'django.utils.log.AdminEmailHandler'
         },
         'sql': {
             'level': 'DEBUG',
@@ -268,7 +269,6 @@ FACET_FIELDS = {
         'is_published',
     ),
     'contract': (
-        'company_roles',
         'contacts',
         'partners',
         'project',
@@ -310,6 +310,11 @@ NOTIFICATIONS_DISABLED = True
 
 LOGIN_USERNAME_PLACEHOLDER = ''
 LOGIN_PASSWORD_PLACEHOLDER = ''
+
+# See: https://github.com/groveco/django-sql-explorer
+
+EXPLORER_CONNECTIONS = { 'Default': 'default' } 
+EXPLORER_DEFAULT_CONNECTION = 'default'
 
 # Import local settings to override those values based on the deployment environment
 try:

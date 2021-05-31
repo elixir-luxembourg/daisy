@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
@@ -96,6 +97,8 @@ def dataset_list(request):
     )
     return render(request, 'search/search_page.html', {
         'reset': True,
+        'filters': request.GET.get('filters', ''),
+        'order_by': order_by or '',
         'facets': facet_view_utils.filter_empty_facets(datasets.facet_counts()),
         'query': query or '',
         'title': 'Datasets',
@@ -128,3 +131,17 @@ class DatasetDelete(CheckerMixin, DeleteView):
 
 
 
+@staff_member_required
+def publish_dataset(request, pk):
+    dataset = get_object_or_404(Dataset, pk=pk)
+    dataset.is_published = False
+    dataset.save()
+    return redirect(reverse_lazy('dataset', kwargs={'pk': dataset.id}))
+
+
+@staff_member_required
+def unpublish_dataset(request, pk):
+    dataset = get_object_or_404(Dataset, pk=pk)
+    dataset.is_published = True
+    dataset.save()
+    return redirect(reverse_lazy('dataset', kwargs={'pk': dataset.id}))

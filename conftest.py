@@ -180,6 +180,14 @@ def storage_resources():
 
 
 @pytest.fixture
+def data_types():
+    """
+    Create data types
+    """
+    CommandLoadInitialData.create_datatypes()
+
+
+@pytest.fixture
 def partners():
     """
     Create partners

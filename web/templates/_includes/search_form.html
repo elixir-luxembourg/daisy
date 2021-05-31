@@ -1,7 +1,14 @@
 <div class="row">
-    <h1 class="display-4">
-        Browse {{title}}
-    </h1>
+    <div class="col-6">
+        <h1 class="display-4">
+            Browse {{title}}
+        </h1>
+    </div>
+    <div class="col-5">
+        {% if request.user.is_superuser %}
+            <a class="btn btn-secondary btn-outline float-right" href="export?{% if filters %}filters={{ filters }}&{% endif %}{% if order_by %}order_by={{ order_by | default:'' }}&{% endif %}{% if query %}query={{ query | default:'' }}{% endif %}">Save the results as xlsx</a>
+        {% endif %}
+    </div>
 </div>
 <div class="row">
     <div class="col-md-12 col-lg-11">
