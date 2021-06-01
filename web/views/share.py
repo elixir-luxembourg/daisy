@@ -25,7 +25,7 @@ def edit_share(request, pk, dataset_pk):
         if form.is_valid():
             # data = form.cleaned_data
             form.save()
-            messages.add_message(request, messages.SUCCESS, "Share updated")
+            messages.add_message(request, messages.SUCCESS, "Logbook entry updated")
             redirecturl = reverse_lazy('dataset', kwargs={'pk': dataset_pk})
             return redirect(to=redirecturl, pk=share.id)
         else:
@@ -64,7 +64,7 @@ class ShareCreateView(CreateView, AjaxViewMixin):
             self.object.dataset = self.dataset
 
         self.object.save()
-        messages.add_message(self.request, messages.SUCCESS, "Share created")
+        messages.add_message(self.request, messages.SUCCESS, "Data logbook entry created")
         return super().form_valid(form)
 
     def get_form(self, form_class=None):

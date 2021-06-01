@@ -6,6 +6,7 @@ from django.urls import reverse
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from core import constants
 
+from core.models.legal_basis import LegalBasis
 from .utils import CoreTrackedModel, TextFieldWithInputWidget
 from .partner import HomeOrganisation
 
@@ -104,29 +105,29 @@ class Dataset(CoreTrackedModel):
         # p = HomeOrganisation()
 
         for lc in self.local_custodians.all():
-            contact_dicts.append(
-                {"first_name": lc.first_name,
+            contact_dicts.append({
+                "first_name": lc.first_name,
                  "last_name": lc.last_name,
                  "email": lc.email,
                  "role":  "Principal_Investigator" if lc.is_part_of(constants.Groups.VIP.name) else "Researcher",
-                 "affiliations": [HomeOrganisation().name]})
+                 "affiliations": [HomeOrganisation().name]
+            })
 
         storage_dicts = []
         for dl in self.data_locations.all():
-            storage_dicts.append(
-                {"platform": dl.category.name,
+            storage_dicts.append({
+                "platform": dl.category.name,
                  "location": dl.location_description,
                  "accesses": [ acc.access_notes for acc in dl.accesses.all()]
-                 })
+            })
 
         transfer_dicts = []
         for trf in self.shares.all():
-            transfer_dicts.append(
-                {"partner": trf.partner.name,
+            transfer_dicts.append({
+                "partner": trf.partner.name,
                  "transfer_details": trf.share_notes,
                  "transfer_date":  trf.granted_on.strftime('%Y-%m-%d') if trf.granted_on else None
-                 })
-
+            })
 
         base_dict = {
             "source": settings.SERVER_URL,
@@ -138,6 +139,7 @@ class Dataset(CoreTrackedModel):
             "elu_uuid": self.unique_id.__str__() if self.unique_id else None,
             "other_external_id": self.other_external_id if self.other_external_id else None,
             "data_declarations": [ddec.to_dict() for ddec in self.data_declarations.all()],
+            "legal_bases": [x.to_dict() for x in self.legal_basis_definitions.all()],
             "storages": storage_dicts,
             "transfers": transfer_dicts,
             "contacts": contact_dicts

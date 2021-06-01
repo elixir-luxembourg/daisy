@@ -49,10 +49,10 @@
                     {% if request.user.is_superuser %}
                 <p class="text-center mt-5">
                     {% if dataset.is_published %}
-                        <a id="unpublish" title="Unpublish dataset" class="btn btn-primary bmd-btn-fab float-right"><i
-                                class="material-icons">unpublish</i></a>
+                        <a href="{% url 'dataset_publish' pk=dataset.pk %}" id="unpublish" title="Unpublish dataset" class="btn btn-primary bmd-btn-fab float-right"><i
+                                class="material-icons">undo</i></a>
                     {% else %}
-                        <a id="publish" title="Publish dataset"  class="btn btn-primary bmd-btn-fab float-right"><i
+                        <a href="{% url 'dataset_unpublish' pk=dataset.pk %}" id="publish" title="Publish dataset"  class="btn btn-primary bmd-btn-fab float-right"><i
                                 class="material-icons">publish</i></a>
                     {% endif %}
                 </p>
@@ -127,7 +127,7 @@
                                 <td>{{ data_declaration.cohorts.all | join:', ' }}</td>
                                 <td>{{ data_declaration.partner }}</td>
                                 <td>{%if data_declaration.data_types  %}{{ data_declaration.data_types | join:', ' }} {% else %}<p class="alert-error"> missing </p>{% endif %}</td>
-                                <td>{{ data_declaration.special_subjects | yesno:"yes,no,unknown" }}</td>
+                                <td>{{ data_declaration.has_special_subjects | yesno:"yes,no,unknown" }}</td>
                                 <td>{{ data_declaration.end_of_storage_duration  | default:"" }}</td>
                                 {% if can_edit %}
                                     <td>
@@ -350,17 +350,17 @@
     </div>
 
     <div class="row  mt-4">
-        {#    EXTERNAL SHARES OF DATASET     #}
+        {#    LOGBOOK ENTRIES FOR THE DATASET     #}
         <div class="card col-md-12 mr-0">
             <div class="card-body">
                 {% if can_edit %}
                     <div class="ml-1 float-right btn-group">
                         <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button"
                                 id="addshare"
-                                title="Add new transfer to dataset"
+                                title="Add logbook entry for dataset"
                                 data-toggle="modal"
                                 data-target="#modal"
-                                data-modal-title="Add new transfer"
+                                data-modal-title="Add new logbook entry"
                                 data-ajax-url="{% url 'dataset_share_add' dataset_pk=dataset.id %}"
                                 data-ajax-refresh-selector="#partner-select"
                                 data-ajax-refresh-param='partner'
@@ -371,16 +371,16 @@
                         </button>
                     </div>
                 {% endif %}
-                <h2 class="card-title">Transfers</h2>
+                <h2 class="card-title">Logbook</h2>
 
                 <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                     <tr>
                         <th>Scope</th>
+                        <th>Category</th>
                         <th>Partner</th>
-                        <th>Contract</th>
-                        <th>Granted on</th>
+                        <th>Date</th>
                         <th>Remarks</th>
                         <th></th>
                     </tr>
@@ -389,22 +389,22 @@
                     {% for share in dataset.shares.all %}
                         <tr>
                             <td><p>{% for ddec in share.data_declarations.all  %}{{ ddec.title}} <br/> {% empty %}Entire dataset{% endfor %}</p></td>
+                            <td>{%if share.data_log_type  %} {{ share.data_log_type.name }} {% else %}<p class="alert-error"> missing </p>{% endif %}</td>
                             <td>{{ share.partner }}</td>
-                            <td>{%if share.contract  %} {{ share.contract }} {% else %}<p class="alert-error"> missing </p>{% endif %}</td>
                             <td>{{ share.granted_on | default:"-" }}</td>
                             <td>{{ share.share_notes  | default:"-" }}</td>
                             <td>
                                 {% if can_edit %}
                                     <i class="material-icons clickable"
                                        id="editshare"
-                                       title="Edit transfer"
+                                       title="Edit logbook entry"
                                        data-toggle="modal"
                                        data-target="#modal"
-                                       data-modal-title="Edit transfer"
+                                       data-modal-title="Edit logbook entry"
                                        data-ajax-url="{% url 'dataset_share_edit' pk=share.id dataset_pk=dataset.id %}">edit</i>
                                     <i class="red material-icons clickable"
                                        data-method="delete"
-                                       title="Delete transfer"
+                                       title="Delete logbook entry"
                                        data-parent-to-remove="tr"
                                        data-url="{% url 'dataset_share_remove' dataset_pk=dataset.id share_pk=share.id %}">delete_forever</i>
                                 {% endif %}

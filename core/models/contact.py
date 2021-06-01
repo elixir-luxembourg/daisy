@@ -51,10 +51,10 @@ class Contact(CoreModel):
 
 
     def __str__(self):
-        return "{} {} ({})".format(self.first_name, self.last_name, self.type.name)
+        return f"{self.first_name} {self.last_name} ({self.type.name})"
 
     def full_name(self):
-        return "{} {}".format(self.first_name, self.last_name)
+        return f"{self.first_name} {self.last_name}"
 
     def to_dict(self):
         partners_dict = []

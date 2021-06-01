@@ -26,6 +26,7 @@ from core.models import Access, \
                         Share, \
                         StorageResource, \
                         UseRestriction, \
+                        DataLogType, \
                         User
 from core.models.contract import PartnerRole
 from core.models.storage_location import DataLocation
@@ -43,6 +44,10 @@ class StorageResourceForm(forms.ModelForm):
 
 class StorageResourceAdmin(admin.ModelAdmin):
     form = StorageResourceForm
+
+
+class ProjectAdmin(admin.ModelAdmin):
+    exclude = ('gene_terms', 'disease_terms', 'phenotype_terms', 'study_terms')
 
 
 # DAISY core models
@@ -65,13 +70,14 @@ admin.site.register(LegalBasisType)
 admin.site.register(Partner)
 admin.site.register(PartnerRole)  # contract.py
 admin.site.register(PersonalDataType)
-admin.site.register(Project)
+admin.site.register(Project, ProjectAdmin)
 admin.site.register(Publication)
 admin.site.register(RestrictionClass)
 admin.site.register(SensitivityClass)
 admin.site.register(Share)
 admin.site.register(StorageResource, StorageResourceAdmin)
 admin.site.register(UseRestriction)
+admin.site.register(DataLogType)
 
 # Term models (term_model.py)
 admin.site.register(DiseaseTerm)

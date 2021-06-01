@@ -412,3 +412,8 @@ i.reset-form-button {
   padding: 0.25rem 0.5rem 0.25rem 0.5rem;
   text-align: center;
 }
+
+/* "Add new" button visual fix - no underline under the button */
+a.no-underline:hover {
+  text-decoration: none;
+}

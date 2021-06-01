@@ -4,8 +4,7 @@
             <div class="card m-2">
                 <div class="card-body">
                     <h4 class="card-title">
-                        {% if field == 'company_role' or field == 'company_roles' %}{{ company_name }} Role{% else %}
-                            {{ field|title|un_underscore }}{% endif %}</h4>
+                            {{ field|title|un_underscore }}</h4>
                     <ul class="facets card-text">
                         {% for facet in values %}
                             {% if facet.1 > 0 %}

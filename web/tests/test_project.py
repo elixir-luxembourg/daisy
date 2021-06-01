@@ -83,7 +83,6 @@ def test_project_create_post_invalid(client, user_normal, user_vip, is_vip):
         'title': 'title',
         'description': 'description',
         'local_custodians': is_vip and [] or [user_vip.pk],
-        'company_roles': 'controller',
         'start_date': '2018-10',
         'end_date': '2018-12-30',
         'company_personnel': [],

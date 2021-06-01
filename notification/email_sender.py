@@ -23,7 +23,7 @@ def send_the_email(sender_email, recipients, subject, template, context):
         context['profile_url'] = reverse('profile')
 
     # prepare email
-    subject = "{p} {s}".format(p=SUBJECT_PREFIX, s=subject)
+    subject = f"{SUBJECT_PREFIX} {subject}"
     text_message = render_to_string('%s.txt' % template, context)
     html_message = render_to_string('%s.html' % template, context)
     msg = EmailMultiAlternatives(

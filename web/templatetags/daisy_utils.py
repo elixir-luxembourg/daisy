@@ -117,14 +117,7 @@ class FacetLinkNode(Node):
             icon = 'radio_button_checked'
             clazz = 'active'
 
-        # return html
-        return """<li class="{clazz}"><a href="{url}"><i class="material-icons">{icon}</i><span>{facet_name} ({facet_count})</span></a></li>""".format(
-            url=url,
-            icon=icon,
-            clazz=clazz,
-            facet_name=current_facet[0],
-            facet_count=current_facet[1],
-        )
+        return f'<li class="{clazz}"><a href="{url}"><i class="material-icons">{icon}</i><span>{current_facet[0]} ({current_facet[1]})</span></a></li>'
 
 
 @register.tag

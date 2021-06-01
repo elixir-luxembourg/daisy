@@ -12,7 +12,6 @@ class ShareForm(ModelForm):
         widgets = {
             # Date pickers
             'granted_on': DateInput(attrs={'class': 'datepicker'}),
-            'grant_expires_on': DateInput(attrs={'class': 'datepicker'}),
             'share_notes': Textarea(attrs={'rows': 2, 'cols': 40}),
         }
         help_texts = {
@@ -30,12 +29,12 @@ class ShareForm(ModelForm):
         self.fields.pop('dataset')
 
     field_order = [
+        'data_log_type',
         'partner',
         'contract',
         'data_declarations',
         'share_notes',
-        'granted_on',
-        'grant_expires_on'
+        'granted_on'
     ]
 
 
