@@ -95,7 +95,7 @@ def contract_list(request):
         'facets': facet_view_utils.filter_empty_facets(contracts.facet_counts()),
         'query': query or '',
         'order_by': order_by or '',
-        'filters': request.GET.get('filters', ''),
+        'filters': request.GET.get('filters') or '',
         'title': 'Contracts',
         'help_text' : Contract.AppMeta.help_text,
         'search_url': 'contracts',
