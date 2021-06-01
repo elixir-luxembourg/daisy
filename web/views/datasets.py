@@ -97,7 +97,7 @@ def dataset_list(request):
     )
     return render(request, 'search/search_page.html', {
         'reset': True,
-        'filters': request.GET.get('filters', ''),
+        'filters': request.GET.get('filters') or '',
         'order_by': order_by or '',
         'facets': facet_view_utils.filter_empty_facets(datasets.facet_counts()),
         'query': query or '',
