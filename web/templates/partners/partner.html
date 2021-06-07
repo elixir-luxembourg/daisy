@@ -47,8 +47,12 @@
 
                             {% if not partner.is_published %}
                                 <a id="publish" class="btn btn-primary bmd-btn-fab float-right"
-                                   href="{% url 'publish_partner' pk=partner.id %}"><i
+                                   href="{% url 'partner_publish' pk=partner.id %}"><i
                                 class="material-icons">publish</i></a>
+                            {% else %}
+                            <a id="unpublish" class="btn btn-primary bmd-btn-fab float-right"
+                                    href="{% url 'partner_unpublish' pk=partner.id %}"><i
+                                    class="material-icons">undo</i></a>
                             {% endif %}
                     {% endif %}
                     {% if can_edit %}

@@ -65,6 +65,18 @@
                     </dl>
                 </div>
                 <div class="floating-buttons-absolute">
+                    {% if request.user.is_superuser %}
+                        <p class="text-center mt-5">
+                            {% if project.is_published %}
+                                <a href="{% url 'project_unpublish' pk=project.pk %}" id="unpublish" title="Unpublish project" class="btn btn-primary bmd-btn-fab float-right">
+                                    <i class="material-icons">undo</i></a>
+                            {% else %}
+                                <a href="{% url 'project_publish' pk=project.pk %}" id="publish" title="Publish project"  class="btn btn-primary bmd-btn-fab float-right">
+                                    <i class="material-icons">publish</i></a>
+                            {% endif %}
+                        </p>
+                    {% endif %}
+
                     {% if is_admin %}
                         <a class="btn btn-default bmd-btn-fab float-right"
                            title="Manage project permissions"

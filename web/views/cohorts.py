@@ -1,6 +1,7 @@
 from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseForbidden
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 
@@ -102,3 +103,19 @@ class CohortDelete(DeleteView):
         context['action_url'] = 'cohort_delete'
         context['id'] = self.object.id
         return context
+
+
+@staff_member_required
+def publish_cohort(request, pk):
+    cohort = get_object_or_404(Cohort, pk=pk)
+    cohort.is_published = True
+    cohort.save()
+    return redirect(reverse_lazy('cohort', kwargs={'pk': cohort.id}))
+
+
+@staff_member_required
+def unpublish_cohort(request, pk):
+    cohort = get_object_or_404(Cohort, pk=pk)
+    cohort.is_published = False
+    cohort.save()
+    return redirect(reverse_lazy('cohort', kwargs={'pk': cohort.id}))

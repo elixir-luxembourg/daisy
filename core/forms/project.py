@@ -26,6 +26,7 @@ class ProjectForm(ModelForm):
     field_order = [
         'acronym',
         'title',
+        'elu_accession',
 
         'legal_documents',
         'description',

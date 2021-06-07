@@ -270,7 +270,7 @@ class ProjectDelete(CheckerMixin, DeleteView):
 @staff_member_required
 def publish_project(request, pk):
     project = get_object_or_404(Project, pk=pk)
-    project.is_published = False
+    project.is_published = True
     project.save()
     return redirect(reverse_lazy('project', kwargs={'pk': project.id}))
 
@@ -278,6 +278,6 @@ def publish_project(request, pk):
 @staff_member_required
 def unpublish_project(request, pk):
     project = get_object_or_404(Project, pk=pk)
-    project.is_published = True
+    project.is_published = False
     project.save()
     return redirect(reverse_lazy('project', kwargs={'pk': project.id}))

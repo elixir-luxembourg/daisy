@@ -39,6 +39,22 @@
                     <dd>{{ cohort.comments | default:'-'}}</dd>
                 </div>
                 <div class="floating-buttons-absolute">
+                    {% if request.user.is_superuser %}
+                        {% if cohort.is_published %}
+                            <a href="{% url 'cohort_unpublish' pk=cohort.pk %}" 
+                                id="unpublish" 
+                                title="Unpublish cohort" 
+                                class="btn btn-primary bmd-btn-fab float-right">
+                                <i class="material-icons">undo</i></a>
+                        {% else %}
+                            <a href="{% url 'cohort_publish' pk=cohort.pk %}" 
+                                id="publish" 
+                                title="Publish cohort"  
+                                class="btn btn-primary bmd-btn-fab float-right">
+                                <i class="material-icons">publish</i></a>
+                        {% endif %}
+                    {% endif %}
+
                     {% if can_edit %}
                         <a class="btn btn-primary bmd-btn-fab float-right"  title="Edit cohort" href="{% url 'cohort_edit' pk=cohort.id %}"><i
                                 class="material-icons">edit</i>

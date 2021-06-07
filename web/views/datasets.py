@@ -134,7 +134,7 @@ class DatasetDelete(CheckerMixin, DeleteView):
 @staff_member_required
 def publish_dataset(request, pk):
     dataset = get_object_or_404(Dataset, pk=pk)
-    dataset.is_published = False
+    dataset.is_published = True
     dataset.save()
     return redirect(reverse_lazy('dataset', kwargs={'pk': dataset.id}))
 
@@ -142,6 +142,6 @@ def publish_dataset(request, pk):
 @staff_member_required
 def unpublish_dataset(request, pk):
     dataset = get_object_or_404(Dataset, pk=pk)
-    dataset.is_published = True
+    dataset.is_published = False
     dataset.save()
     return redirect(reverse_lazy('dataset', kwargs={'pk': dataset.id}))

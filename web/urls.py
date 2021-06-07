@@ -3,8 +3,8 @@ from django.urls import path
 from web.views import contracts, datasets, permissions, api, profile, documents, projects, storage_locations, \
     share, notifications, data_declarations, access, legalbasis
 from web.views.access import AccessCreateView
-from web.views.cohorts import CohortCreateView, CohortEditView, \
-    CohortDetailView, cohort_list, CohortDelete
+from web.views.cohorts import CohortCreateView, CohortEditView, CohortDetailView, CohortDelete
+from web.views.cohorts import  cohort_list, publish_cohort, unpublish_cohort
 from web.views.contact import ContactCreateView, ContactDetailView, add_contact_to_project, \
     remove_contact_from_project, ContactEditView, pick_contact_for_project, contact_search_view, ContactDelete
 from web.views.contracts import ContractCreateView, ContractEditView, ContractDelete, \
@@ -15,7 +15,8 @@ from web.views.data_declarations import DatadeclarationDetailView, Datadeclarati
 from web.views.datasets import DatasetDetailView, DatasetEditView, dataset_list, \
     DatasetCreateView, DatasetDelete, publish_dataset, unpublish_dataset
 from web.views.export import contacts_export, cohorts_export, contracts_export, datasets_export, partners_export, projects_export
-from web.views.partner import PartnerCreateView, PartnerDelete, partner_search_view, PartnerDetailView, PartnerEditView, publish_partner
+from web.views.partner import PartnerCreateView, PartnerDelete, PartnerDetailView, PartnerEditView
+from web.views.partner import partner_search_view, publish_partner, unpublish_partner
 
 from web.views.projects import ProjectCreateView, ProjectEditView, ProjectDetailView, ProjectDelete, publish_project, unpublish_project
 from web.views.publication import PublicationCreateView, PublicationListView, PublicationEditView, \
@@ -35,9 +36,12 @@ web_urls = [
     path('definitions/cohorts/', cohort_list, name="cohorts"),
     path('definitions/cohorts/export', cohorts_export, name="cohorts_export"),
     path('definitions/cohorts/add', CohortCreateView.as_view(), name='cohort_add'),
-    path('definitions/cohorts/<int:pk>/edit', CohortEditView.as_view(), name="cohort_edit"),
-    path('definitions/cohorts/<int:pk>/delete', CohortDelete.as_view(), name="cohort_delete"),
     path('definitions/cohorts/<int:pk>/', CohortDetailView.as_view(), name="cohort"),
+    path('definitions/cohorts/<int:pk>/delete', CohortDelete.as_view(), name="cohort_delete"),
+    path('definitions/cohorts/<int:pk>/edit', CohortEditView.as_view(), name="cohort_edit"),
+    path('definitions/cohorts/<int:pk>/publish', publish_cohort, name="cohort_publish"),
+    path('definitions/cohorts/<int:pk>/unpublish', unpublish_cohort, name="cohort_unpublish"),
+    
 
     path('contracts/', contract_list, name="contracts"),
 
@@ -52,12 +56,13 @@ web_urls = [
 
 
     # path('definitions/contacts', ContactListView.as_view(), name='contacts'),
+    path('definitions/contacts/', contact_search_view, name='contacts'),
     path('definitions/contact/<int:pk>', ContactDetailView.as_view(), name='contact'),
     path('definitions/contact/<int:pk>/edit', ContactEditView.as_view(), name='contact_edit'),
     path('definitions/contacts/add/', ContactCreateView.as_view(), name='contact_add'),
-    path('definitions/contacts/', contact_search_view, name='contacts'),
-    path('definitions/contacts/export', contacts_export, name='contacts_export'),
     path('definitions/contacts/<int:pk>/delete', ContactDelete.as_view(), name="contact_delete"),
+    path('definitions/contacts/export', contacts_export, name='contacts_export'),
+    
 
     path('dataset/<int:pk>/add-data-declaration', data_declarations.data_declarations_add,
          name='data_declarations_add'),
@@ -122,13 +127,14 @@ web_urls = [
     path('documents/<int:pk>/delete', documents.delete_document, name='document_delete'),
 
 
-    path('definitions/partners/<int:pk>/edit/', PartnerEditView.as_view(), name='partner_edit'),
-    path('definitions/partners/<int:pk>/', PartnerDetailView.as_view(), name="partner"),
     path('definitions/partners/', partner_search_view, name='partners'),
+    path('definitions/partners/<int:pk>/', PartnerDetailView.as_view(), name="partner"),
+    path('definitions/partners/<int:pk>/delete', PartnerDelete.as_view(), name="partner_delete"),
+    path('definitions/partners/<int:pk>/edit', PartnerEditView.as_view(), name='partner_edit'),
+    path('definitions/partners/<int:pk>/publish', publish_partner, name='partner_publish'),
+    path('definitions/partners/<int:pk>/unpublish', unpublish_partner, name='partner_unpublish'),
     path('definitions/partners/export', partners_export, name="partners_export"),
     path('definitions/partners/add/', PartnerCreateView.as_view(), name='partner_add'),
-    path('definitions/partners/<int:pk>/delete', PartnerDelete.as_view(), name="partner_delete"),
-    path('definitions/partners/<int:pk>/publish_partner/', publish_partner, name='publish_partner'),
 
     path('permissions/', permissions.index, name="permissions"),
     path('permissions/project/<int:pk>/', permissions.index, {'selection': 'project'}, name="permission_project"),
