@@ -1,18 +1,23 @@
 from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
+from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
+from django.utils.module_loading import import_string
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
-from django.shortcuts import render, redirect
+
+from . import facet_view_utils
 from core.forms import PartnerForm
 from core.forms.partner import PartnerFormEdit
 from core.models import Partner
-from web.views.utils import AjaxViewMixin
-from django.http import HttpResponseForbidden, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from sequences import get_next_value
-from . import facet_view_utils
-from core.permissions import permission_required
-FACET_FIELDS = settings.FACET_FIELDS['partner']
 from core.models.utils import COMPANY
+from core.permissions import permission_required
+from sequences import get_next_value
+from web.views.user import superuser_required
+from web.views.utils import AjaxViewMixin
+
+
+FACET_FIELDS = settings.FACET_FIELDS['partner']
 
 
 class PartnerCreateView(CreateView, AjaxViewMixin):
@@ -104,16 +109,23 @@ def generate_elu_accession():
     return elu_accession
 
 
+@staff_member_required
 def publish_partner(request, pk):
     partner = get_object_or_404(Partner, pk=pk)
-    if not partner.is_published:
-        partner.is_published = True
-        if partner.elu_accession == '-':
-            partner.elu_accession = generate_elu_accession()
-    else:
-        partner.is_published = False
-    partner.save(update_fields=['is_published', 'elu_accession'])
+    partner.publish()
     return HttpResponseRedirect(reverse_lazy('partner', kwargs={'pk': pk}))
+
+
+@superuser_required
+def unpublish_partner(request, pk):
+    partner = get_object_or_404(Partner, pk=pk)
+    return HttpResponseRedirect(reverse_lazy('partner', kwargs={'pk': pk}))
+    """
+    if partner.is_published:
+        partner.is_published = False    
+    partner.save(update_fields=['is_published'])
+    return HttpResponseRedirect(reverse_lazy('partner', kwargs={'pk': pk}))
+    """
 
 
 class PartnerDelete(DeleteView):

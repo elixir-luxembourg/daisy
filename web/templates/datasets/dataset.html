@@ -47,22 +47,25 @@
                 </div>
                 <div class="floating-buttons-absolute">
                     {% if request.user.is_superuser %}
-                <p class="text-center mt-5">
-                    {% if dataset.is_published %}
-                        <a href="{% url 'dataset_unpublish' pk=dataset.pk %}" 
-                            id="unpublish" 
-                            title="Unpublish dataset" 
-                            class="btn btn-primary bmd-btn-fab float-right">
-                            <i class="material-icons">undo</i></a>
-                    {% else %}
-                        <a href="{% url 'dataset_publish' pk=dataset.pk %}" 
-                            id="publish" 
-                            title="Publish dataset"  
-                            class="btn btn-primary bmd-btn-fab float-right">
-                            <i class="material-icons">publish</i></a>
+                        <p class="text-center mt-5">
+                            {% if not dataset.is_published %}
+                            <a  href="{% url 'dataset_publish' pk=dataset.pk %}" 
+                                id="publish" 
+                                title="Publish dataset"  
+                                class="btn btn-primary bmd-btn-fab float-right">
+                                    <i class="material-icons">publish</i>
+                            </a>    
+                            {% else %}
+                                {% comment %}
+                                    <a href="{% url 'dataset_unpublish' pk=dataset.pk %}" 
+                                        id="unpublish" 
+                                        title="Unpublish dataset" 
+                                        class="btn btn-primary bmd-btn-fab float-right">
+                                        <i class="material-icons">undo</i></a>
+                                {% endcomment %}
+                            {% endif %}
+                        </p>
                     {% endif %}
-                </p>
-            {% endif %}
                     {% if is_admin %}
                         <a class="btn btn-default bmd-btn-fab float-right"
                            title="Manage dataset permissions"

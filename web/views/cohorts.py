@@ -1,3 +1,4 @@
+from web.views.user import superuser_required
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseForbidden
@@ -113,9 +114,11 @@ def publish_cohort(request, pk):
     return redirect(reverse_lazy('cohort', kwargs={'pk': cohort.id}))
 
 
-@staff_member_required
+@superuser_required
 def unpublish_cohort(request, pk):
     cohort = get_object_or_404(Cohort, pk=pk)
+    return redirect(reverse_lazy('cohort', kwargs={'pk': cohort.id}))
+    """
     cohort.is_published = False
     cohort.save()
-    return redirect(reverse_lazy('cohort', kwargs={'pk': cohort.id}))
+    """
