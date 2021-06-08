@@ -55,6 +55,5 @@ PREDEFINED_PIS_LIST = [
     # "name.surname@uni.lu", "othername.othersurname@uni.lu",
 ]
 
-IDSERVICE_FUNCTION = 'core.lcsb.generate_identifier'
-# IDSERVICE_FUNCTION = 'web.views.partner.generate_elu_accession'
+# IDSERVICE_FUNCTION = 'core.lcsb.generate_identifier'
 IDSERVICE_ENDPOINT = 'https://10.240.16.199/v1/api/id'

@@ -316,6 +316,8 @@ LOGIN_PASSWORD_PLACEHOLDER = ''
 EXPLORER_CONNECTIONS = { 'Default': 'default' } 
 EXPLORER_DEFAULT_CONNECTION = 'default'
 
+IDSERVICE_FUNCTION = 'web.views.partner.generate_elu_accession'
+
 # Import local settings to override those values based on the deployment environment
 try:
     from .settings_local import *

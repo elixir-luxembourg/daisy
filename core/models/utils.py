@@ -35,7 +35,7 @@ class CoreTrackedModel(CoreModel):
         if not self.is_published:
             self.is_published = True
             if self.elu_accession == '-':
-                self.elu_accession = generate_id_function()
+                self.elu_accession = generate_id_function(self)
         if save:
             self.save(update_fields=['is_published', 'elu_accession'])
 

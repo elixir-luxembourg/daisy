@@ -113,8 +113,7 @@ def publish_cohort(request, pk):
     cohort.save()
     return redirect(reverse_lazy('cohort', kwargs={'pk': cohort.id}))
 
-
-@superuser_required
+@staff_member_required
 def unpublish_cohort(request, pk):
     cohort = get_object_or_404(Cohort, pk=pk)
     return redirect(reverse_lazy('cohort', kwargs={'pk': cohort.id}))

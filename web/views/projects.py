@@ -275,7 +275,7 @@ def publish_project(request, pk):
     return redirect(reverse_lazy('project', kwargs={'pk': project.id}))
 
 
-@superuser_required
+@staff_member_required
 def unpublish_project(request, pk):
     project = get_object_or_404(Project, pk=pk)
     return redirect(reverse_lazy('project', kwargs={'pk': project.id}))

@@ -104,7 +104,7 @@ def partner_search_view(request):
     })
 
 
-def generate_elu_accession():
+def generate_elu_accession(obj=None):
     elu_accession = 'ELU_I_' + str(get_next_value('elu_accession', initial_value=100))
     return elu_accession
 
@@ -115,8 +115,7 @@ def publish_partner(request, pk):
     partner.publish()
     return HttpResponseRedirect(reverse_lazy('partner', kwargs={'pk': pk}))
 
-
-@superuser_required
+@staff_member_required
 def unpublish_partner(request, pk):
     partner = get_object_or_404(Partner, pk=pk)
     return HttpResponseRedirect(reverse_lazy('partner', kwargs={'pk': pk}))

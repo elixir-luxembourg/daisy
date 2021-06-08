@@ -138,8 +138,7 @@ def publish_dataset(request, pk):
     dataset.publish()
     return redirect(reverse_lazy('dataset', kwargs={'pk': dataset.id}))
 
-
-@superuser_required
+@staff_member_required
 def unpublish_dataset(request, pk):
     dataset = get_object_or_404(Dataset, pk=pk)
     return redirect(reverse_lazy('dataset', kwargs={'pk': dataset.id}))
