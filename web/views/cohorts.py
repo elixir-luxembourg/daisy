@@ -109,8 +109,7 @@ class CohortDelete(DeleteView):
 @staff_member_required
 def publish_cohort(request, pk):
     cohort = get_object_or_404(Cohort, pk=pk)
-    cohort.is_published = True
-    cohort.save()
+    cohort.publish()
     return redirect(reverse_lazy('cohort', kwargs={'pk': cohort.id}))
 
 @staff_member_required
