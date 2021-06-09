@@ -28,6 +28,7 @@ from web.views.users import add_personnel_to_project, remove_personnel_from_proj
 
 
 web_urls = [
+    path('api/rems', api.rems_endpoint, name='rems_endpoint'),
     path('', dashboard, name='dashboard'),
     path('about', about, name='about'),
     path('profile', profile.ProfileEditView.as_view(), name='profile'),

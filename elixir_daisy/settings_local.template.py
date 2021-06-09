@@ -54,3 +54,7 @@ COMPANY = 'LCSB'  # Used for generating some models' verbose names
 PREDEFINED_PIS_LIST = [
     # "name.surname@uni.lu", "othername.othersurname@uni.lu",
 ]
+
+# REMS Integration
+REMS_ALLOWED_IP_ADDRESSES = []
+REMS_INTEGRATION_ENABLED = False

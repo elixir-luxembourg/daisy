@@ -17,6 +17,8 @@ from core.importer.projects_exporter import ProjectsExporter
 from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm
 from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneTerm
 from core.utils import DaisyLogger
+from web.lcsb import handle_rems_callback
+from web.views.utils import get_client_ip
 
 from elixir_daisy import settings
 
@@ -158,3 +160,46 @@ def projects(request):
             'description': 'Something went wrong during exporting the projects',
             'more': str(e)
         }, status=500)
+
+@public
+def rems_endpoint(request):
+    if getattr(settings, 'REMS_INTEGRATION_ENABLED', False):
+        ip = get_client_ip()
+        logger.debug(f'REMS endpoint called from: {ip}...')
+
+        allowed_ips = getattr(settings, 'REMS_ALLOWED_IP_ADDRESSES', [])
+        if len(allowed_ips) == 0:
+            message = f'REMS - the list of allowed IPs is empty, import failed!'
+            logger.debug(message)
+            return JsonResponse({
+                'status': 'Error',
+                'description': message
+            }, status=500)
+
+        if ip not in allowed_ips:
+            message = f'REMS - the IP is not in the list of allowed IPs, import failed!'
+            logger.debug(message)
+            return JsonResponse({
+                'status': 'Error',
+                'description': message
+            }, status=500)
+        
+        try:
+            status = "successfull" if handle_rems_callback(request.POST) else "failed"
+            logger.debug(f'REMS - import {status}!')
+            return JsonResponse({'status': 'Success'}, status=200)
+        except Exception as ex:
+            message = f'REMS - something went wrong during the import!'
+            logger.debug(message)
+            return JsonResponse({
+                'status': 'Error',
+                'description': message,
+                'more': str(ex)
+            }, status=500)
+    else:
+        message = f'REMS endpoint called, but it''s disabled.'
+        logger.debug(message)
+        return JsonResponse({
+                'status': 'Error',
+                'description': message
+            }, status=500)
