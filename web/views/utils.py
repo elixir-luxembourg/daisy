@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.views.generic.edit import FormMixin
+from sequences import get_next_value
 
 
 class AjaxViewMixin(SingleObjectTemplateResponseMixin, FormMixin):
@@ -26,3 +27,8 @@ class AjaxViewMixin(SingleObjectTemplateResponseMixin, FormMixin):
             }
             return JsonResponse(data)
         return response
+
+
+def generate_elu_accession(_=None):
+    elu_accession = 'ELU_I_' + str(get_next_value('elu_accession', initial_value=100))
+    return elu_accession

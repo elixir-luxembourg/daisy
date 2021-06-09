@@ -12,7 +12,6 @@ from core.forms.partner import PartnerFormEdit
 from core.models import Partner
 from core.models.utils import COMPANY
 from core.permissions import permission_required
-from sequences import get_next_value
 from web.views.user import superuser_required
 from web.views.utils import AjaxViewMixin
 
@@ -103,17 +102,12 @@ def partner_search_view(request):
         ]
     })
 
-
-def generate_elu_accession(obj=None):
-    elu_accession = 'ELU_I_' + str(get_next_value('elu_accession', initial_value=100))
-    return elu_accession
-
-
 @staff_member_required
 def publish_partner(request, pk):
     partner = get_object_or_404(Partner, pk=pk)
     partner.publish()
     return HttpResponseRedirect(reverse_lazy('partner', kwargs={'pk': pk}))
+
 
 @staff_member_required
 def unpublish_partner(request, pk):
