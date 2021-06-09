@@ -203,3 +203,26 @@ def rems_endpoint(request):
                 'status': 'Error',
                 'description': message
             }, status=500)
+
+@public
+def permissions(request, user_id: str):
+    if 'API_KEY' not in request.GET:
+        return JsonResponse({
+            'status': 'Error',
+            'description': 'API_KEY missing or invalid'
+        }, status=403)
+    elif request.GET.get('API_KEY') != getattr(settings, 'GLOBAL_API_KEY'):
+        return JsonResponse({
+            'status': 'Error',
+            'description': 'API_KEY missing or invalid'
+        }, status=403)
+
+    try:
+        user = User.objects.get(id=user_id)
+        return HttpResponse(user.get_access_permissions())
+    except Exception as e:
+        return JsonResponse({
+            'status': 'Error',
+            'description': 'Something went wrong during exporting the permissions',
+            'more': str(e)
+        }, status=500)

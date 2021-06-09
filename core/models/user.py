@@ -186,3 +186,6 @@ class User(AbstractUser):
         True if he has ADMIN right on the project
         """
         return ContractChecker(self).check(constants.Permissions.EDIT, contract)
+
+    def get_access_permissions(self):
+        raise NotImplemented()
