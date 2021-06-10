@@ -164,7 +164,7 @@ def projects(request):
 @public
 def rems_endpoint(request):
     if getattr(settings, 'REMS_INTEGRATION_ENABLED', False):
-        ip = get_client_ip()
+        ip = get_client_ip(request)
         logger.debug(f'REMS endpoint called from: {ip}...')
 
         allowed_ips = getattr(settings, 'REMS_ALLOWED_IP_ADDRESSES', [])
