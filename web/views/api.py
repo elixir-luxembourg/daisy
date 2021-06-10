@@ -168,7 +168,11 @@ def rems_endpoint(request):
         logger.debug(f'REMS endpoint called from: {ip}...')
 
         allowed_ips = getattr(settings, 'REMS_ALLOWED_IP_ADDRESSES', [])
-        if len(allowed_ips) == 0:
+        skip_check_setting = getattr(settings, 'REMS_SKIP_IP_CHECK', False)
+        if '*' in allowed_ips:
+            skip_check_setting = True
+
+        if len(allowed_ips) == 0 and not skip_check_setting:
             message = f'REMS - the list of allowed IPs is empty, import failed!'
             logger.debug(message)
             return JsonResponse({
@@ -176,7 +180,7 @@ def rems_endpoint(request):
                 'description': message
             }, status=500)
 
-        if ip not in allowed_ips:
+        if ip not in allowed_ips and not skip_check_setting:
             message = f'REMS - the IP is not in the list of allowed IPs, import failed!'
             logger.debug(message)
             return JsonResponse({
