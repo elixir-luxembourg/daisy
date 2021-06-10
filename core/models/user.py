@@ -188,4 +188,5 @@ class User(AbstractUser):
         return ContractChecker(self).check(constants.Permissions.EDIT, contract)
 
     def get_access_permissions(self):
-        raise NotImplemented()
+        
+        raise NotImplementedError()
