@@ -316,9 +316,11 @@ LOGIN_PASSWORD_PLACEHOLDER = ''
 EXPLORER_CONNECTIONS = { 'Default': 'default' } 
 EXPLORER_DEFAULT_CONNECTION = 'default'
 
-# REMS Integration
-REMS_ALLOWED_IP_ADDRESSES = []
+# REMS (http://rems2docs.rahtiapp.fi/) Integration
 REMS_INTEGRATION_ENABLED = False
+REMS_MATCH_USERS_BY = 'email'  # 'email' or 'id'
+REMS_SKIP_IP_CHECK = False
+REMS_ALLOWED_IP_ADDRESSES = []  # use '*' to allow all, otherwise e.g. '127.0.0.1'...
 
 # Import local settings to override those values based on the deployment environment
 try:

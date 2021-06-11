@@ -188,5 +188,13 @@ class User(AbstractUser):
         return ContractChecker(self).check(constants.Permissions.EDIT, contract)
 
     def get_access_permissions(self):
-        
+
         raise NotImplementedError()
+
+    def add_rems_entitlement(self, 
+        application: str, 
+        resource: str, 
+        user_id: str, 
+        email: str) -> bool:
+        return True
+        # TODO
