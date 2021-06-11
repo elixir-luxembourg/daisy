@@ -6,6 +6,7 @@ from io import StringIO
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.views.decorators.csrf import csrf_exempt
 
 from ontobio import obograph_util, Ontology
 
@@ -162,6 +163,7 @@ def projects(request):
         }, status=500)
 
 @public
+@csrf_exempt
 def rems_endpoint(request):
     if getattr(settings, 'REMS_INTEGRATION_ENABLED', False):
         ip = get_client_ip(request)
