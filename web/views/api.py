@@ -191,7 +191,7 @@ def rems_endpoint(request):
             }, status=500)
         
         try:
-            status = "successfull" if handle_rems_callback(request.POST) else "failed"
+            status = "successfull" if handle_rems_callback(request) else "failed"
             logger.debug(f'REMS - import {status}!')
             return JsonResponse({'status': 'Success'}, status=200)
         except Exception as ex:
