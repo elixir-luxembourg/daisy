@@ -6,6 +6,7 @@ from enumchoicefield.enum import ChoiceEnum
 from guardian.shortcuts import assign_perm, remove_perm
 
 from core import constants
+from core.models import Access, Dataset
 from core.permissions import ProjectChecker, DatasetChecker, ContractChecker, AutoChecker
 from .utils import TextFieldWithInputWidget
 
@@ -188,13 +189,28 @@ class User(AbstractUser):
         return ContractChecker(self).check(constants.Permissions.EDIT, contract)
 
     def get_access_permissions(self):
-
-        raise NotImplementedError()
+        """
+        Finds Accesses of the user, and returns a list of their dataset IDs 
+        """
+        accesses = Access.objects.filter(user=self)
+        return [access.dataset.elu_accession for access in accesses]
 
     def add_rems_entitlement(self, 
         application: str, 
         resource: str, 
-        user_id: str, 
+        user_id: str,
         email: str) -> bool:
+        """
+        Tries to find a dataset with `elu_accession` equal to `resource`.
+        If it exists, it will add a new Access object set to the current user
+        Otherwise - it will raise an exception
+        """
+        notes = f'Set automatically by REMS application #{application}'
+        dataset = Dataset.objects.get(elu_accession=resource)
+        new_access = Access(
+            user=self,
+            dataset=dataset,
+            access_notes=notes
+        )
+        new_access.save()
         return True
-        # TODO

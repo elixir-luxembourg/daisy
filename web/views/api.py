@@ -1,6 +1,7 @@
 import json
 import os
 
+from functools import wraps
 from io import StringIO
 
 from django.conf import settings
@@ -25,6 +26,24 @@ from elixir_daisy import settings
 
 
 logger = DaisyLogger(__name__)
+
+
+def protect_with_api_key(view):
+    @wraps(view)
+    def decorator(request, *args, **kwargs):
+        message = 'API_KEY missing in POST or GET parameters, or its value is invalid!'
+        if 'API_KEY' not in request.GET and 'API_KEY' not in request.POST:
+            return JsonResponse({
+                'status': 'Error',
+                'description': message
+            }, status=403)
+        elif getattr(settings, 'GLOBAL_API_KEY') not in [request.GET.get('API_KEY',''), request.POST.get('API_KEY','')]:
+            return JsonResponse({
+                'status': 'Error',
+                'description': message
+            }, status=403)
+        return view(request, *args, **kwargs)
+    return decorator
 
 
 """
@@ -102,18 +121,8 @@ def termsearch(request, category):
 
 @public
 @csrf_exempt
+@protect_with_api_key
 def datasets(request):
-    if 'API_KEY' not in request.GET:
-        return JsonResponse({
-            'status': 'Error',
-            'description': 'API_KEY missing or invalid'
-        }, status=403)
-    elif request.GET.get('API_KEY') != getattr(settings, 'GLOBAL_API_KEY'):
-        return JsonResponse({
-            'status': 'Error',
-            'description': 'API_KEY missing or invalid'
-        }, status=403)
-
     if 'project_title' in request.GET:
         project_title = request.GET.get('project_title', '')
         datasets = Dataset.objects.filter(project__title__iexact=project_title, is_published=True)
@@ -135,18 +144,8 @@ def datasets(request):
 
 @public
 @csrf_exempt
+@protect_with_api_key
 def projects(request):
-    if 'API_KEY' not in request.GET:
-        return JsonResponse({
-            'status': 'Error',
-            'description': 'API_KEY missing or invalid'
-        }, status=403)
-    elif request.GET.get('API_KEY') != getattr(settings, 'GLOBAL_API_KEY'):
-        return JsonResponse({
-            'status': 'Error',
-            'description': 'API_KEY missing or invalid'
-        }, status=403)
-        
     if 'title' in request.GET:
         title = request.GET.get('title', '')
         projects = Project.objects.filter(title__iexact=title, is_published=True)
@@ -216,21 +215,12 @@ def rems_endpoint(request):
 
 @public
 @csrf_exempt
+@protect_with_api_key
 def permissions(request, user_id: str):
-    if 'API_KEY' not in request.GET:
-        return JsonResponse({
-            'status': 'Error',
-            'description': 'API_KEY missing or invalid'
-        }, status=403)
-    elif request.GET.get('API_KEY') != getattr(settings, 'GLOBAL_API_KEY'):
-        return JsonResponse({
-            'status': 'Error',
-            'description': 'API_KEY missing or invalid'
-        }, status=403)
-
     try:
         user = User.objects.get(id=user_id)
-        return HttpResponse(user.get_access_permissions())
+        permissions = user.get_access_permissions()
+        return JsonResponse(permissions, status=200, safe=False)
     except Exception as e:
         return JsonResponse({
             'status': 'Error',
