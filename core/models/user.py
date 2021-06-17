@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -202,15 +204,16 @@ class User(AbstractUser):
         email: str) -> bool:
         """
         Tries to find a dataset with `elu_accession` equal to `resource`.
-        If it exists, it will add a new Access object set to the current user
+        If it exists, it will add a new logbook entry (Access object) set to the current user
         Otherwise - it will raise an exception
         """
         notes = f'Set automatically by REMS application #{application}'
         dataset = Dataset.objects.get(elu_accession=resource)
-        new_access = Access(
+        new_logbook_entry = Access(
             user=self,
             dataset=dataset,
-            access_notes=notes
+            access_notes=notes,
+            granted_on=datetime.now()
         )
-        new_access.save()
+        new_logbook_entry.save()
         return True
