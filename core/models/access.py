@@ -31,7 +31,6 @@ class Access(CoreModel):
 
     defined_on_locations = models.ManyToManyField('core.DataLocation',
         blank=True,
-        null=True,
         related_name='accesses',
         verbose_name='Data Locations',
         help_text='The dataset locations on which access is defined.'

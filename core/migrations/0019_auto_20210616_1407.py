@@ -20,6 +20,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='access',
             name='defined_on_locations',
-            field=models.ManyToManyField(blank=True, help_text='The dataset locations on which access is defined.', null=True, related_name='accesses', to='core.DataLocation', verbose_name='Data Locations'),
+            field=models.ManyToManyField(blank=True, help_text='The dataset locations on which access is defined.', related_name='accesses', to='core.DataLocation', verbose_name='Data Locations'),
         ),
     ]
