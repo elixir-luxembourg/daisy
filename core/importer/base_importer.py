@@ -250,7 +250,7 @@ class BaseImporter:
                 type=ContactType.objects.get(name=role_name)
             )
             for affiliation in affiliations:
-                partner = Partner.objects.filter(name=affiliation)
+                partner = (Partner.objects.filter(name=affiliation) | Partner.objects.filter(acronym=affiliation))
                 if len(partner):
                     contact.partners.add(partner[0])
                 else:
