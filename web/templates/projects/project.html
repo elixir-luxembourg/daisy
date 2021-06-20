@@ -7,6 +7,11 @@
 {% block content %}
     <div class="row mt-4">
         <div class="jumbotron col">
+            {% if project.is_published %}
+                <div class="ribbon ribbon-green"><span>Published</span></div>
+            {% else %}
+                <div class="ribbon ribbon-orange"><span>Not Published</span></div>
+            {% endif %}
             <span style="color: #8D8F8F;">Project</span>
             <h1>{{ project.acronym }} </h1>
             <div class="row">
