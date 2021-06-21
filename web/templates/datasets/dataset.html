@@ -48,6 +48,13 @@
                 <div class="floating-buttons-absolute">
                     {% if request.user.is_superuser %}
                         <p class="text-center mt-5">
+                            <a  href="{% url 'admin:core_dataset_change' dataset.pk %}" 
+                                id="dataset-admin" 
+                                title="See in django admin"  
+                                class="btn btn-secondary bmd-btn-fab float-right">
+                                    <i class="material-icons">build</i>
+                            </a>
+                        
                             {% if not dataset.is_published %}
                             <a  href="{% url 'dataset_publish' pk=dataset.pk %}" 
                                 id="publish" 
@@ -326,6 +333,7 @@
                         <th>Remarks</th>
                         <th>Granted on</th>
                         {% if can_edit %}
+                            <th>User</th>
                             <th style="width:7em">Actions</th>
                         {% endif %}
                     </tr>
@@ -336,8 +344,9 @@
                             <td><p>{{ access.display_locations |truncatechars:90 }}</p></td>
                             <td>{{ access.access_notes |truncatechars:45  }}</td>
                             <td><p>{{ access.granted_on | default:"-"  }}</p></td>
-                            <td>
-                                {% if can_edit %}
+                            {% if can_edit %}
+                                <td>{% if access.user %}{{ access.user.full_name }}{% else %}-{% endif %}</td>
+                                <td>
                                     <i class="material-icons clickable"
                                        id="editaccess"
                                        title="Edit access"
@@ -349,8 +358,8 @@
                                        title="Delete access"
                                        data-parent-to-remove="tr"
                                        data-url="{% url 'dataset_access_remove' dataset_pk=dataset.id access_pk=access.id %}">delete_forever</i>
-                                {% endif %}
-                            </td>
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                     </tbody>

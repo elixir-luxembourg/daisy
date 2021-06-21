@@ -44,7 +44,12 @@
                 </div>
                 <div class="floating-buttons-absolute">
                     {% if request.user.is_superuser %}
-
+                        <a  href="{% url 'admin:core_partner_change' partner.pk %}" 
+                            id="partner-admin" 
+                            title="See in django admin"  
+                            class="btn btn-secondary bmd-btn-fab float-right">
+                                <i class="material-icons">build</i>
+                        </a>
                             {% if not partner.is_published %}
                                 <a  id="publish" 
                                     class="btn btn-primary bmd-btn-fab float-right"

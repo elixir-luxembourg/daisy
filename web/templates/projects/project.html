@@ -72,6 +72,13 @@
                 <div class="floating-buttons-absolute">
                     {% if request.user.is_superuser %}
                         <p class="text-center mt-5">
+                            <a  href="{% url 'admin:core_project_change' project.pk %}" 
+                                id="project-admin" 
+                                title="See in django admin"  
+                                class="btn btn-secondary bmd-btn-fab float-right">
+                                    <i class="material-icons">build</i>
+                            </a>
+
                             {% if not project.is_published %}
                                 <a href="{% url 'project_publish' pk=project.pk %}" 
                                    id="publish" 

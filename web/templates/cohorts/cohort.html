@@ -46,6 +46,13 @@
                 </div>
                 <div class="floating-buttons-absolute">
                     {% if request.user.is_superuser %}
+                        <a  href="{% url 'admin:core_cohort_change' cohort.pk %}" 
+                            id="cohort-admin" 
+                            title="See in django admin"  
+                            class="btn btn-secondary bmd-btn-fab float-right">
+                                <i class="material-icons">build</i>
+                        </a>
+
                         {% if not cohort.is_published %}
                             <a  href="{% url 'cohort_publish' pk=cohort.pk %}" 
                                 id="publish" 
