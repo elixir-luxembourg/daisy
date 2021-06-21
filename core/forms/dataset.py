@@ -8,7 +8,7 @@ from core.models.contract import Contract
 class DatasetForm(forms.ModelForm):
     class Meta:
         model = Dataset
-        fields = ['local_custodians', 'title', 'comments']
+        fields = ['local_custodians', 'elu_accession', 'title', 'comments']
         widgets = {
             'comments': forms.Textarea(attrs={'rows': 2, 'cols': 40}),
         }

@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.views.generic.edit import FormMixin
+from sequences import get_next_value
 
 
 class AjaxViewMixin(SingleObjectTemplateResponseMixin, FormMixin):
@@ -33,3 +34,7 @@ def get_client_ip(request):
     if ip_from_forwarded_for:
         return ip_from_forwarded_for.split(',')[0]    
     return request.META.get('REMOTE_ADDR')
+
+def generate_elu_accession(_=None):
+    elu_accession = 'ELU_I_' + str(get_next_value('elu_accession', initial_value=100))
+    return elu_accession

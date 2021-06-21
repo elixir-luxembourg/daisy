@@ -322,6 +322,9 @@ REMS_MATCH_USERS_BY = 'email'  # 'email' or 'id'
 REMS_SKIP_IP_CHECK = False
 REMS_ALLOWED_IP_ADDRESSES = []  # use '*' to allow all, otherwise e.g. '127.0.0.1'...
 
+# ID service
+IDSERVICE_FUNCTION = 'web.views.utils.generate_elu_accession'
+
 # Import local settings to override those values based on the deployment environment
 try:
     from .settings_local import *

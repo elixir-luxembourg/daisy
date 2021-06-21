@@ -20,6 +20,7 @@ class CohortForm(ModelForm):
 
     field_order = [
         'title',
+        'elu_accession',
         'owners',
         'institutes',
         'comments'

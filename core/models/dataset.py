@@ -163,6 +163,15 @@ class Dataset(CoreTrackedModel):
         d['data_declarations'] = ','.join(data_declarations)
 
         return d
+
+    def publish(self, save=True):
+        if self.project:
+            self.project.publish()
+        
+        for data_declaration in self.data_declarations.all():
+            data_declaration.publish_subentities()
+
+        super().publish()
         
 
 # faster lookup for permissions

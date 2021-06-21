@@ -7,16 +7,16 @@ class PartnerForm(ModelForm):
     class Meta:
         model = Partner
         fields = '__all__'
-        widgets = {
-            'elu_accession': forms.HiddenInput()
-        }
-        exclude = ['is_published']
+        # widgets = {
+        #     'elu_accession': forms.HiddenInput()
+        # }
+        # exclude = ['is_published']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     field_order = [
-        'elu_accession'
+        'elu_accession',
         'acronym',
         'name',
         'address',

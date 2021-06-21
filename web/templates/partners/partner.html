@@ -46,9 +46,19 @@
                     {% if request.user.is_superuser %}
 
                             {% if not partner.is_published %}
-                                <a id="publish" class="btn btn-primary bmd-btn-fab float-right"
-                                   href="{% url 'publish_partner' pk=partner.id %}"><i
-                                class="material-icons">publish</i></a>
+                                <a  id="publish" 
+                                    class="btn btn-primary bmd-btn-fab float-right"
+                                    href="{% url 'partner_publish' pk=partner.id %}">
+                                        <i class="material-icons">publish</i>
+                                </a>
+                            {% else %}
+                                {% comment %}
+                                <a  id="unpublish" 
+                                    class="btn btn-primary bmd-btn-fab float-right"
+                                    href="{% url 'partner_unpublish' pk=partner.id %}">
+                                    <i class="material-icons">undo</i>
+                                </a>
+                                {% endcomment %}
                             {% endif %}
                     {% endif %}
                     {% if can_edit %}
