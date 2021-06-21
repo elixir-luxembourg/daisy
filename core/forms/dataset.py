@@ -9,6 +9,7 @@ class DatasetForm(forms.ModelForm):
     class Meta:
         model = Dataset
         fields = ['local_custodians', 'elu_accession', 'title', 'comments']
+        exclude = ('is_published',)
         widgets = {
             'comments': forms.Textarea(attrs={'rows': 2, 'cols': 40}),
         }
@@ -20,6 +21,7 @@ class DatasetForm(forms.ModelForm):
             dataset = kwargs.pop('dataset')
         super().__init__(*args, **kwargs)
         self.fields['local_custodians'].queryset = User.objects.exclude(username='AnonymousUser')
+        self.fields['elu_accession'].disabled = True
         projects = Project.objects.filter().all()
         project_choices = [(None, "---------------------")]
         project_choices.extend([(p.id, str(p)) for p in projects])

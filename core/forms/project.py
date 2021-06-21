@@ -21,7 +21,7 @@ class ProjectForm(ModelForm):
             'comments': forms.Textarea(attrs={'rows': 2, 'cols': 40}),
             'dpia': forms.Textarea(attrs={'rows': 2, 'cols': 40})
         }
-        exclude = ['publications', 'contacts']
+        exclude = ['publications', 'contacts', 'is_published']
 
     field_order = [
         'acronym',
@@ -81,7 +81,8 @@ class ProjectForm(ModelForm):
                 self.fields['gene_terms'].queryset = GeneTerm.objects.all()
                 self.fields['study_terms'].queryset = StudyTerm.objects.all()
 
-
+        self.fields['elu_accession'].disabled = True
+        
         self.fields['company_personnel'].queryset = User.objects.exclude(username='AnonymousUser')
         self.fields['local_custodians'].queryset = User.objects.exclude(username='AnonymousUser')
 
