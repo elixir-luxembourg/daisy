@@ -46,8 +46,15 @@ class StorageResourceAdmin(admin.ModelAdmin):
     form = StorageResourceForm
 
 
+class DatasetAdmin(admin.ModelAdmin):
+    search_fields = ['title']
+    list_display = ('title', 'project', 'unique_id', 'elu_accession', 'is_published')
+
+
 class ProjectAdmin(admin.ModelAdmin):
     exclude = ('gene_terms', 'disease_terms', 'phenotype_terms', 'study_terms')
+    search_fields = ['acronym', 'title']
+    list_display = ('acronym', 'title', 'elu_accession', 'is_published', 'umbrella_project')
 
 
 # DAISY core models
@@ -58,7 +65,7 @@ admin.site.register(Contact)
 admin.site.register(ContactType)
 admin.site.register(Contract)
 admin.site.register(DataDeclaration)
-admin.site.register(Dataset)
+admin.site.register(Dataset, DatasetAdmin)
 admin.site.register(DataLocation)  # storage_location.py
 admin.site.register(DataType)
 admin.site.register(DocumentType)
