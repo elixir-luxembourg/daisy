@@ -5,9 +5,10 @@ from .utils import CoreModel, TextFieldWithInputWidget
 
 
 USE_RESTRICTION_CHOICES = Choices(
-        ('CONSTRAINTS', 'CONSTRAINTS'),
-        ('NO_CONSTRAINTS', 'NO_CONSTRAINTS'),
-        ('FORBIDDEN', 'FORBIDDEN')
+        ('OBLIGATION', 'OBLIGATION'),
+        ('PERMISSION', 'PERMISSION'),
+        ('PROHIBITION', 'PROHIBITION'),
+        ('CONSTRAINED_PERMISSION', 'CONSTRAINED_PERMISSION'),
 )
 
 
@@ -45,7 +46,7 @@ class UseRestriction(CoreModel):
 
     use_restriction_rule = models.TextField(verbose_name='Use Restriction Rule',
                                             choices=USE_RESTRICTION_CHOICES,
-                                            default=USE_RESTRICTION_CHOICES.NO_CONSTRAINTS,
+                                            default=USE_RESTRICTION_CHOICES.PROHIBITION,
                                             blank=False, 
                                             null=False,
                                             max_length=64)
