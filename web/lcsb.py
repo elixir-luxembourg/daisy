@@ -26,7 +26,7 @@ def handle_rems_callback(request: HttpRequest) -> bool:
 
     if not isinstance(request_post_data, list):
         the_type = type(request_post_data)
-        message = f'Received wrong data (it is not a list, but {the_type}!'
+        message = f'Received data with wrong format (it is not a list, but {the_type})!'
         raise TypeError(message)
 
     statuses = [handle_rems_entitlement(item) for item in request_post_data]
@@ -44,7 +44,7 @@ def handle_rems_entitlement(data: Dict) -> bool:
     user_id = data.get('user')
     email = data.get('mail')
 
-    logger.debug(f'* application_id: {application}, user: {user_id}@{email}, resource: {resource}')
+    logger.debug(f'* application_id: {application}, user_id: {user_id}, user_email: {email}, resource: {resource}')
 
     method = getattr(settings, 'REMS_MATCH_USERS_BY', 'email').lower()
     if method == 'email':
@@ -52,6 +52,8 @@ def handle_rems_entitlement(data: Dict) -> bool:
     elif method == 'id':
         user = User.objects.get(oidc_id=user_id)
     else:
-        raise ValueError(f"'REMS_MATCH_USERS_BY' must contain either 'id' or 'email', but has: {method} instead!")
+        message = f"'REMS_MATCH_USERS_BY' must contain either 'id' or 'email', but has: {method} instead!"
+        logger.warn(message)
+        raise ValueError(message)
 
     return user.add_rems_entitlement(application, resource, user_id, email)
