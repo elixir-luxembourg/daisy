@@ -3,6 +3,7 @@ from datetime import datetime
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.crypto import get_random_string
 from enumchoicefield import EnumChoiceField
 from enumchoicefield.enum import ChoiceEnum
 from guardian.shortcuts import assign_perm, remove_perm
@@ -12,6 +13,10 @@ from core.models import Access, Dataset
 from core.permissions import ProjectChecker, DatasetChecker, ContractChecker, AutoChecker
 from .utils import TextFieldWithInputWidget
 
+
+def create_api_key(length=48):
+    allowed_chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
+    return get_random_string(length, allowed_chars)
 
 class UserSource(ChoiceEnum):
     ACTIVE_DIRECTORY = "active directory"
@@ -87,6 +92,13 @@ class User(AbstractUser):
         app_label = 'core'
         ordering = ['first_name', 'last_name']
 
+    api_key = models.CharField(verbose_name='API key',
+        blank=False,
+        null=False,
+        max_length=64,
+        default=create_api_key,
+        help_text='A token used to authenticate the user for accessing API'
+    )
     email = models.EmailField(blank=False)
     full_name = TextFieldWithInputWidget(max_length=128)
     objects = UserManager()

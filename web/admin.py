@@ -159,9 +159,9 @@ class UserAdmin(BaseUserAdmin):
     # Sections in the Edit page
     fieldsets = (
         (None, {'fields': ('username', 'email', 'password', 'is_active', 'source')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'full_name')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'full_name', 'oidc_id')}),
         ('Permissions', {'fields': ('is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Additional metdata', {'fields': ('date_joined', 'last_login')}),
+        ('Additional metdata', {'fields': ('date_joined', 'last_login', 'api_key')}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. BaseUserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.

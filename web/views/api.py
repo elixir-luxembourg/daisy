@@ -3,6 +3,7 @@ import os
 
 from functools import wraps
 from io import StringIO
+from typing import Dict, Optional
 
 from django.conf import settings
 from django.core.paginator import Paginator
@@ -15,54 +16,53 @@ from stronghold.decorators import public
 
 from core.importer.datasets_exporter import DatasetsExporter
 from core.importer.projects_exporter import ProjectsExporter
-
 from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm
 from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneTerm
 from core.utils import DaisyLogger
+from elixir_daisy import settings
 from web.lcsb import handle_rems_callback
 from web.views.utils import get_client_ip
 
-from elixir_daisy import settings
+
 
 
 logger = DaisyLogger(__name__)
 
 
+def error_response(message: str, more: Optional[Dict]={}, status: int=500) -> JsonResponse:
+    body = {
+        'status': 'Error',
+        'description': message
+    }
+    return JsonResponse({**more, **body}, status=status)
+
 def protect_with_api_key(view):
+    """
+    Checks if there is a GET or POST parameter that:
+     * contains either GLOABAL_API_KEY from settings
+     * matches one of User's api_key attribute
+    """
     @wraps(view)
     def decorator(request, *args, **kwargs):
-        message = 'API_KEY missing in POST or GET parameters, or its value is invalid!'
+        submitted_keys = [request.GET.get('API_KEY', '-'), request.POST.get('API_KEY', '-')]
+        error_message = 'API_KEY missing in POST or GET parameters, or its value is invalid!'
         if 'API_KEY' not in request.GET and 'API_KEY' not in request.POST:
-            return JsonResponse({
-                'status': 'Error',
-                'description': message
-            }, status=403)
-        elif getattr(settings, 'GLOBAL_API_KEY') not in [request.GET.get('API_KEY',''), request.POST.get('API_KEY','')]:
-            return JsonResponse({
-                'status': 'Error',
-                'description': message
-            }, status=403)
-        return view(request, *args, **kwargs)
+            return error_response(error_message, status=403)
+        elif hasattr(settings, 'GLOBAL_API_KEY') and getattr(settings, 'GLOBAL_API_KEY') in submitted_keys:
+            return view(request, *args, **kwargs)
+        # Check the key from GET
+        elif submitted_keys[0] not in ['-', ''] and User.objects.filter(api_key=submitted_keys[0]).count() > 0:
+            return view(request, *args, **kwargs)
+        # Check the key from POST
+        elif submitted_keys[1] not in ['-', ''] and User.objects.filter(api_key=submitted_keys[1]).count() > 0:
+            return view(request, *args, **kwargs)
+        return error_response(error_message, status=403)
     return decorator
-
 
 """
 Rapido API method, we should probably use django rest framework if we want to develop API further.
 """
 def users(request):
-    #     "results": [
-    #     {
-    #       "id": 1,
-    #       "text": "Option 1"
-    #     },
-    #     {
-    #       "id": 2,
-    #       "text": "Option 2"
-    #     }
-    #   ],
-    #   "pagination": {
-    #     "more": true
-    #   }
     return JsonResponse({
         "results": [{"id": user.pk, "text": str(user)}
                     for user in User.objects.all() if not user.username == 'AnonymousUser']
@@ -136,11 +136,10 @@ def datasets(request):
 
         return HttpResponse(buffer.getvalue())
     except Exception as e:
-        return JsonResponse({
-            'status': 'Error',
-            'description': 'Something went wrong during exporting the datasets',
-            'more': str(e)
-        }, status=500)
+        return error_response(
+            'Something went wrong during exporting the datasets',
+            {'more': str(e)}
+        )
 
 @public
 @csrf_exempt
@@ -159,11 +158,10 @@ def projects(request):
 
         return HttpResponse(buffer.getvalue())
     except Exception as e:
-        return JsonResponse({
-            'status': 'Error',
-            'description': 'Something went wrong during exporting the projects',
-            'more': str(e)
-        }, status=500)
+        return error_response(
+            'Something went wrong during exporting the projects',
+            {'more': str(e)}
+        )
 
 @public
 @csrf_exempt
@@ -171,10 +169,7 @@ def rems_endpoint(request):
     if not getattr(settings, 'REMS_INTEGRATION_ENABLED', False):
         message = f'REMS endpoint called, but it''s disabled.'
         logger.debug(message)
-        return JsonResponse({
-                'status': 'Error',
-                'description': message
-            }, status=500)
+        return error_response(message)
         
     ip = get_client_ip(request)
     logger.debug(f'REMS endpoint called from: {ip}...')
@@ -187,18 +182,12 @@ def rems_endpoint(request):
     if len(allowed_ips) == 0 and not skip_check_setting:
         message = f'REMS - the list of allowed IPs is empty, import failed!'
         logger.debug(message)
-        return JsonResponse({
-            'status': 'Error',
-            'description': message
-        }, status=500)
+        return error_response(message)
 
     if ip not in allowed_ips and not skip_check_setting:
         message = f'REMS - the IP is not in the list of allowed IPs, import failed!'
         logger.debug(message)
-        return JsonResponse({
-            'status': 'Error',
-            'description': message
-        }, status=500)
+        return error_response(message)
     
     try:
         status = "Success" if handle_rems_callback(request) else "Failure"
@@ -207,11 +196,8 @@ def rems_endpoint(request):
     except Exception as ex:
         message = f'REMS - something went wrong during the import!'
         logger.debug(message)
-        return JsonResponse({
-            'status': 'Error',
-            'description': message,
-            'more': str(ex)
-        }, status=500)
+        return error_response(message, {'more': str(ex)})
+
 
 @public
 @csrf_exempt
@@ -222,8 +208,7 @@ def permissions(request, user_id: str):
         permissions = user.get_access_permissions()
         return JsonResponse(permissions, status=200, safe=False)
     except Exception as e:
-        return JsonResponse({
-            'status': 'Error',
-            'description': 'Something went wrong during exporting the permissions',
-            'more': str(e)
-        }, status=500)
+        return error_response(
+            'Something went wrong during exporting the permissions',
+            {'more': str(e)}
+        )
