@@ -57,6 +57,7 @@ web_urls = [
     path('contracts/<int:pk>/add-partner-role', contracts.PartnerRoleCreateView.as_view(), name="add_partner_role_to_contract"),
     path('contracts/<int:pk>/delete', ContractDelete.as_view(), name="contract_delete"),
     path('contracts/<int:pk>/edit', ContractEditView.as_view(), name="contract_edit"),
+    path('partner_role/<int:pk>/edit', contracts.PartnerRoleEditView.as_view(), name="edit_partner_role"),
     path('partner_role/<int:pk>/delete', contracts.partner_role_delete, name="delete_partner_role"),
 
     # Data declaration
