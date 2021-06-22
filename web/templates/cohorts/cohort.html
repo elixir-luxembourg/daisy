@@ -49,7 +49,7 @@
                         <a  href="{% url 'admin:core_cohort_change' cohort.pk %}" 
                             id="cohort-admin" 
                             title="See in django admin"  
-                            class="btn btn-secondary bmd-btn-fab float-right">
+                            class="btn btn-default bmd-btn-fab float-right">
                                 <i class="material-icons">build</i>
                         </a>
 
@@ -57,17 +57,16 @@
                             <a  href="{% url 'cohort_publish' pk=cohort.pk %}" 
                                 id="publish" 
                                 title="Publish cohort"  
-                                class="btn btn-primary bmd-btn-fab float-right">
+                                class="btn btn-default bmd-btn-fab float-right">
                                     <i class="material-icons">publish</i>
                             </a>
                         {% else %}
-                            {% comment %}
                             <a href="{% url 'cohort_unpublish' pk=cohort.pk %}" 
-                                    id="unpublish" 
+                                    id="unpublish"
+                                    data-confirm="Are you sure to unpublish the cohort? The changes won't be propagated to other systems!" 
                                     title="Unpublish cohort" 
-                                    class="btn btn-primary bmd-btn-fab float-right">
+                                    class="btn btn-default bmd-btn-fab float-right">
                                     <i class="material-icons">undo</i></a>
-                            {% endcomment %}
                         {% endif %}
                     {% endif %}
 

@@ -141,9 +141,7 @@ def publish_dataset(request, pk):
 @staff_member_required
 def unpublish_dataset(request, pk):
     dataset = get_object_or_404(Dataset, pk=pk)
-    return redirect(reverse_lazy('dataset', kwargs={'pk': dataset.id}))
-    """
     dataset.is_published = False
     dataset.save()
-    """
+    return redirect(reverse_lazy('dataset', kwargs={'pk': dataset.id}))
     

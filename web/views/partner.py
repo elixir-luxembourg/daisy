@@ -112,13 +112,10 @@ def publish_partner(request, pk):
 @staff_member_required
 def unpublish_partner(request, pk):
     partner = get_object_or_404(Partner, pk=pk)
-    return HttpResponseRedirect(reverse_lazy('partner', kwargs={'pk': pk}))
-    """
     if partner.is_published:
         partner.is_published = False    
     partner.save(update_fields=['is_published'])
     return HttpResponseRedirect(reverse_lazy('partner', kwargs={'pk': pk}))
-    """
 
 
 class PartnerDelete(DeleteView):

@@ -47,23 +47,22 @@
                         <a  href="{% url 'admin:core_partner_change' partner.pk %}" 
                             id="partner-admin" 
                             title="See in django admin"  
-                            class="btn btn-secondary bmd-btn-fab float-right">
+                            class="btn btn-default bmd-btn-fab float-right">
                                 <i class="material-icons">build</i>
                         </a>
                             {% if not partner.is_published %}
                                 <a  id="publish" 
-                                    class="btn btn-primary bmd-btn-fab float-right"
+                                    class="btn btn-default bmd-btn-fab float-right"
                                     href="{% url 'partner_publish' pk=partner.id %}">
                                         <i class="material-icons">publish</i>
                                 </a>
                             {% else %}
-                                {% comment %}
                                 <a  id="unpublish" 
-                                    class="btn btn-primary bmd-btn-fab float-right"
+                                    data-confirm="Are you sure to unpublish the partner? The changes won't be propagated to other systems!"
+                                    class="btn btn-default bmd-btn-fab float-right"
                                     href="{% url 'partner_unpublish' pk=partner.id %}">
                                     <i class="material-icons">undo</i>
                                 </a>
-                                {% endcomment %}
                             {% endif %}
                     {% endif %}
                     {% if can_edit %}

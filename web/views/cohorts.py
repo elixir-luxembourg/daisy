@@ -115,8 +115,6 @@ def publish_cohort(request, pk):
 @staff_member_required
 def unpublish_cohort(request, pk):
     cohort = get_object_or_404(Cohort, pk=pk)
-    return redirect(reverse_lazy('cohort', kwargs={'pk': cohort.id}))
-    """
     cohort.is_published = False
     cohort.save()
-    """
+    return redirect(reverse_lazy('cohort', kwargs={'pk': cohort.id}))

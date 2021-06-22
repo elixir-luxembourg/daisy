@@ -7,7 +7,7 @@
                 <li class="list-group-item"><a href="{% url url_name pk=object.id %}">{{ object }}</a>
                 </li>
             {% empty %}
-                <li class="list-group-item">No entry yet</li>
+                <li class="list-group-item">No entries yet</li>
             {% endfor %}
         </ul>
         {% if paginate %}

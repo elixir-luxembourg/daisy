@@ -75,7 +75,7 @@
                             <a  href="{% url 'admin:core_project_change' project.pk %}" 
                                 id="project-admin" 
                                 title="See in django admin"  
-                                class="btn btn-secondary bmd-btn-fab float-right">
+                                class="btn btn-default bmd-btn-fab float-right">
                                     <i class="material-icons">build</i>
                             </a>
 
@@ -83,18 +83,17 @@
                                 <a href="{% url 'project_publish' pk=project.pk %}" 
                                    id="publish" 
                                    title="Publish project"
-                                   class="btn btn-primary bmd-btn-fab float-right">
+                                   class="btn btn-default bmd-btn-fab float-right">
                                     <i class="material-icons">publish</i>
                                 </a>
                             {% else %}
-                                {% comment %}
                                 <a  href="{% url 'project_unpublish' pk=project.pk %}" 
                                     id="unpublish" 
                                     title="Unpublish project"
-                                    class="btn btn-primary bmd-btn-fab float-right">
+                                    data-confirm="Are you sure to unpublish the project? The changes won't be propagated to other systems!"
+                                    class="btn btn-default bmd-btn-fab float-right">
                                         <i class="material-icons">undo</i>
                                 </a>
-                                {% endcomment %}
                             {% endif %}
                         </p>
                     {% endif %}

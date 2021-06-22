@@ -51,25 +51,26 @@
                             <a  href="{% url 'admin:core_dataset_change' dataset.pk %}" 
                                 id="dataset-admin" 
                                 title="See in django admin"  
-                                class="btn btn-secondary bmd-btn-fab float-right">
+                                class="btn btn-default bmd-btn-fab float-right">
                                     <i class="material-icons">build</i>
                             </a>
                         
                             {% if not dataset.is_published %}
-                            <a  href="{% url 'dataset_publish' pk=dataset.pk %}" 
-                                id="publish" 
-                                title="Publish dataset"  
-                                class="btn btn-primary bmd-btn-fab float-right">
-                                    <i class="material-icons">publish</i>
-                            </a>    
+                                <a  href="{% url 'dataset_publish' pk=dataset.pk %}" 
+                                    data-confirm="Are you sure to publish the dataset? This will publish related projects and data declarations' information as well!"
+                                    id="publish" 
+                                    title="Publish dataset"
+                                    class="btn btn-default bmd-btn-fab float-right">
+                                        <i class="material-icons">publish</i>
+                                </a>    
                             {% else %}
-                                {% comment %}
-                                    <a href="{% url 'dataset_unpublish' pk=dataset.pk %}" 
-                                        id="unpublish" 
-                                        title="Unpublish dataset" 
-                                        class="btn btn-primary bmd-btn-fab float-right">
-                                        <i class="material-icons">undo</i></a>
-                                {% endcomment %}
+                                <a href="{% url 'dataset_unpublish' pk=dataset.pk %}" 
+                                    data-confirm="Are you sure to unpublish the dataset? The changes won't be propagated to other systems!"
+                                    id="unpublish" 
+                                    title="Unpublish dataset" 
+                                    class="btn btn-default bmd-btn-fab float-right">
+                                    <i class="material-icons">undo</i>
+                                </a>
                             {% endif %}
                         </p>
                     {% endif %}

@@ -278,9 +278,6 @@ def publish_project(request, pk):
 @staff_member_required
 def unpublish_project(request, pk):
     project = get_object_or_404(Project, pk=pk)
-    return redirect(reverse_lazy('project', kwargs={'pk': project.id}))
-    """
-    project = get_object_or_404(Project, pk=pk)
     project.is_published = False
     project.save()
-    """
+    return redirect(reverse_lazy('project', kwargs={'pk': project.id}))
