@@ -50,7 +50,7 @@ def handle_rems_entitlement(data: Dict) -> bool:
     if method == 'email':
         user = User.objects.get(email=email)
     elif method == 'id':
-        raise NotImplementedError('Matching the users via keycloak''s ID has not been implemented yet...')
+        user = User.objects.get(oidc_id=user_id)
     else:
         raise ValueError(f"'REMS_MATCH_USERS_BY' must contain either 'id' or 'email', but has: {method} instead!")
 

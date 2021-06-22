@@ -88,10 +88,17 @@ class User(AbstractUser):
         ordering = ['first_name', 'last_name']
 
     email = models.EmailField(blank=False)
-    source = EnumChoiceField(UserSource, default=UserSource.MANUAL, blank=False, null=False)
     full_name = TextFieldWithInputWidget(max_length=128)
-
     objects = UserManager()
+    oidc_id = models.CharField(verbose_name='OIDC user identifier',
+        blank=True,
+        null=True,
+        max_length=64,
+        help_text="Internal user identifier coming from OIDC's IdP"
+    )
+    source = EnumChoiceField(UserSource, default=UserSource.MANUAL, blank=False, null=False)
+
+    
 
     def __str__(self):
         fullname = self.get_full_name()
