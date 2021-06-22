@@ -11,11 +11,11 @@ from core.models.project import Project
 from core.models.utils import CoreTrackedModel
 
 
-def _http_post(url: str, data: Dict):
+def _http_post(url: str, data: Dict, timeout: int=6):
     encoded_data = json.dumps(data).encode('utf8')
     request = Request(url, encoded_data)
     request.add_header('Content-Type', 'application/json')
-    response = urlopen(request).read().decode('utf-8')
+    response = urlopen(request, timeout=timeout).read().decode('utf-8')
     return response
 
 def _call_idservice(entity_type: str, name: Optional[str]=None):
