@@ -9,7 +9,7 @@ from enumchoicefield.enum import ChoiceEnum
 from guardian.shortcuts import assign_perm, remove_perm
 
 from core import constants
-from core.models import Access, Dataset, Share, DataLogType
+from core.models import Access, Dataset
 from core.permissions import ProjectChecker, DatasetChecker, ContractChecker, AutoChecker
 from .utils import TextFieldWithInputWidget
 
@@ -228,20 +228,11 @@ class User(AbstractUser):
         """
         notes = f'Set automatically by REMS application #{application}'
         dataset = Dataset.objects.get(elu_accession=resource)
-        new_access = Access(
+        new_logbook_entry = Access(
             user=self,
             dataset=dataset,
             access_notes=notes,
             granted_on=datetime.now()
         )
-        new_access.save()
-
-        new_logbook_entry = Share(
-            dataset=dataset,
-            granted_on=datetime.now(),
-            share_notes='rems-application:'+application,
-            data_log_type=DataLogType.objects.get(name='Other')
-        )
         new_logbook_entry.save()
-
         return True
