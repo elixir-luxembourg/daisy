@@ -16,14 +16,14 @@ class Command(BaseCommand):
 
     def _load_demo_projects(self):
         projects_json_file = os.path.join(DEMO_DATA_DIR, 'projects.json')
-        importer = ProjectsImporter()
-        importer.import_json_file(projects_json_file, False, True)
+        importer = ProjectsImporter(exit_on_error=False, verbose=True)
+        importer.import_json_file(projects_json_file)
         self.stdout.write(self.style.SUCCESS("Project import successful!"))    
 
     def _load_demo_datasets(self):
         dataset_json_file = os.path.join(DEMO_DATA_DIR, 'datasets.json')
-        importer = DatasetsImporter()
-        importer.import_json_file(dataset_json_file, False, True)
+        importer = DatasetsImporter(exit_on_error=False, verbose=True)
+        importer.import_json_file(dataset_json_file)
         self.stdout.write(self.style.SUCCESS("Dataset import successful!"))
 
     def _create_demo_superuser(self):
