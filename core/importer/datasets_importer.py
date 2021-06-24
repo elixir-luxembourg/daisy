@@ -77,6 +77,11 @@ class DatasetsImporter(BaseImporter):
 
         dataset.save()
 
+        dataset.elu_accession = dataset_dict.get('elu_accession', '-') or '-'
+
+        if self.publish_on_import:
+            self.publish_object(dataset)
+
         return True
 
     # @staticmethod

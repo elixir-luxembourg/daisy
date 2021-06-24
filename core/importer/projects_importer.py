@@ -98,6 +98,9 @@ class ProjectsImporter(BaseImporter):
         for local_custodian in local_custodians:
             local_custodian.assign_permissions_to_dataset(project)
 
+        if self.publish_on_import:
+            self.publish_object(project)
+
         return True
 
     @staticmethod

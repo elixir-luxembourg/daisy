@@ -32,11 +32,13 @@ class BaseImporter:
 
     def __init__(
             self,
+            publish_on_import=False,
             exit_on_error=False,
             verbose=False,
             validate=True
         ):
         self.verbose = verbose
+        self.publish_on_import = publish_on_import
         self.exit_on_error = exit_on_error
         self.validate = validate
 
@@ -146,6 +148,16 @@ class BaseImporter:
 
     def process_json(self, import_dict):
         raise NotImplementedError("Abstract method: Implement this method in the child class.")
+
+    def publish_object(self, object) -> bool:
+        try:
+            object.publish(save=True)
+            self.logger.debug(f'Item {object.name} published under identifier: {object.elu_accession}.')
+            result = True
+        except AttributeError as e:
+            self.logger.warn(f'Publishing this type of entity ({object._meta.object_name}) is not implemented - item is not published.')
+            result = False
+        return result
 
     def process_contacts(self, contacts_list: List[Dict]):
         if not isinstance(contacts_list, list):

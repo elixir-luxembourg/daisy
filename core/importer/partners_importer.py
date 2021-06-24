@@ -34,6 +34,8 @@ class PartnersImporter(BaseImporter):
         partner.country_code = partner_dict['country_code']
         partner.save()
         partner.updated = True
+        if self.publish_on_import:
+            self.publish_object(partner)
 
     @staticmethod
     def process_sector_category(partner_dict):

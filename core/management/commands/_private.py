@@ -22,6 +22,12 @@ class ImportBaseCommand(BaseCommand):
             default=False
         )
         parser.add_argument(
+            '--publish-entities',
+            action='store_true',
+            help="Entities are published on import. The identifiers are taken from JSON file or generated automatically if missing.",
+            dest='publish_on_import'
+        )
+        parser.add_argument(
             '--verbose',
             action='store_true',
             dest='verbose',
@@ -41,15 +47,18 @@ class ImportBaseCommand(BaseCommand):
     def handle(self, *args, **options):
         try:
             verbose = options.get('verbose')
+            publish_on_import = options.get('publish_on_import')
             exit_on_error = options.get('exit')
             path_to_json_file = options.get('file')
             validate = not(options.get('no_validation'))
             path_to_json_directory = options.get('directory')
 
             importer = self.get_importer(
-                exit_on_error, 
-                verbose, 
-                validate)
+                                publish_on_import = publish_on_import,
+                                exit_on_error = exit_on_error, 
+                                verbose = verbose, 
+                                validate = validate
+                            )
 
             if not(path_to_json_directory or path_to_json_file):
                 raise CommandError('Either directory (--directory) or file (--file) argument must be specified!')
@@ -70,7 +79,12 @@ class ImportBaseCommand(BaseCommand):
                 self.style.ERROR(msg))
             self.stderr.write(self.style.ERROR(str(e)))
 
-    def get_importer(self):
+    def get_importer(self,
+            publish_on_import=False,
+            exit_on_error=False,
+            verbose=False,
+            validate=True
+        ):
         raise NotImplementedError("Abstract method: Implement this method in the child class.")
 
     def import_directory(self, importer, dir_path):

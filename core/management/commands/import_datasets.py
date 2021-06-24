@@ -7,7 +7,9 @@ class Command(ImportBaseCommand):
 
     def get_importer(
             self,
+            publish_on_import=False,
             exit_on_error=False,
             verbose=False,
-            validate=True):
-        return DatasetsImporter(exit_on_error, verbose, validate)
+            validate=True
+        ):
+        return DatasetsImporter(publish_on_import, exit_on_error, verbose, validate)

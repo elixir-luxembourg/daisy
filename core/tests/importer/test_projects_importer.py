@@ -22,8 +22,8 @@ def test_import_projects(celery_session_worker, contact_types, partners):
     factories.UserFactory.create(first_name='James', last_name='BK')
 
     projects_json = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../data/projects.json")
-    importer = ProjectsImporter()
-    importer.import_json_file(projects_json, True)
+    importer = ProjectsImporter(exit_on_error=True, verbose=False, validate=True)
+    importer.import_json_file(projects_json)
     
     projects = Project.objects.all()
     assert 2 == projects.count()
