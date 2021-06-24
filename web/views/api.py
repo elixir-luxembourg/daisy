@@ -166,33 +166,30 @@ def projects(request):
 @public
 @csrf_exempt
 def rems_endpoint(request):
-    if not getattr(settings, 'REMS_INTEGRATION_ENABLED', False):
-        message = f'REMS endpoint called, but it''s disabled.'
-        logger.debug(message)
-        return create_error_response(message)
-        
-    ip = get_client_ip(request)
-    logger.debug(f'REMS endpoint called from: {ip}...')
-
-    allowed_ips = getattr(settings, 'REMS_ALLOWED_IP_ADDRESSES', [])
-    skip_check_setting = getattr(settings, 'REMS_SKIP_IP_CHECK', False)
-    if '*' in allowed_ips:
-        skip_check_setting = True
-
-    if len(allowed_ips) == 0 and not skip_check_setting:
-        message = f'REMS - the list of allowed IPs is empty, import failed!'
-        logger.debug(message)
-        return create_error_response(message)
-
-    if ip not in allowed_ips and not skip_check_setting:
-        message = f'REMS - the IP is not in the list of allowed IPs, import failed!'
-        logger.debug(message)
-        return create_error_response(message)
-    
     try:
+        if not getattr(settings, 'REMS_INTEGRATION_ENABLED', False):
+            raise Warning(f'REMS endpoint called, but it''s disabled.')
+            
+        ip = get_client_ip(request)
+        logger.debug(f'REMS endpoint called from: {ip}...')
+
+        allowed_ips = getattr(settings, 'REMS_ALLOWED_IP_ADDRESSES', [])
+        skip_check_setting = getattr(settings, 'REMS_SKIP_IP_CHECK', False)
+        if '*' in allowed_ips:
+            skip_check_setting = True
+
+        if len(allowed_ips) == 0 and not skip_check_setting:
+            raise Warning(f'REMS - the IP whitelist is empty, import failed!')
+
+        if ip not in allowed_ips and not skip_check_setting:
+            raise Warning(f'REMS - the IP is not in the whitelist, import failed!')
+        
         status = "Success" if handle_rems_callback(request) else "Failure"
         logger.debug(f'REMS - import status: {status}!')
         return JsonResponse({'status': f'{status}'}, status=200)
+    except Warning as ex:
+        logger.debug(ex.message)
+        return create_error_response(ex.message)
     except Exception as ex:
         message = f'REMS - something went wrong during the import!'
         logger.debug(message)
