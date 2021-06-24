@@ -67,6 +67,8 @@
                         <dd>{{ project.comments | default:'-' }}</dd>
                         <dt>Last update</dt>
                         <dd>{{ project.updated }}</dd>
+                        <dt>Accession number</dt>
+                        <dd>{{ project.elu_accession | default:'-'  }}</dd>
                     </dl>
                 </div>
                 <div class="floating-buttons-absolute">
