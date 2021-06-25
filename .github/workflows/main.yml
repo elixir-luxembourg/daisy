@@ -13,22 +13,22 @@ on:
     - master
 
 jobs:
-  docker:
+  tests:
     timeout-minutes: 15
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v1
+    - name: Checkout the repository
+      uses: actions/checkout@v2
 
-    - name: Copy settings
+    - name: Prepare DAISY settings for CI
       run: cp elixir_daisy/settings_compose_ci.py elixir_daisy/settings_compose.py
 
-    - name: Start containers
+    - name: Build and start containers
       run: docker-compose up -d --build
 
-    - name: Run tests
-      run: docker-compose exec web python setup.py pytest
+    - name: Execute the tests
+      run: docker-compose exec -T web python setup.py pytest
 
     - name: Stop containers
       if: always()
