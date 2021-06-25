@@ -42,9 +42,4 @@ def generate_identifier(obj: CoreTrackedModel, save=True):
         raise KeyError(msg)
 
     the_id = _call_idservice(klass.lower(), title)
-    obj.elu_accession = the_id
-    
-    if save:
-        obj.save()
-
-    return obj
+    return the_id

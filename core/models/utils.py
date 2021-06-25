@@ -34,7 +34,7 @@ class CoreTrackedModel(CoreModel):
         generate_id_function = import_string(generate_id_function_path)
         if not self.is_published:
             self.is_published = True
-            if self.elu_accession == '-':
+            if self.elu_accession in ['-', '']:
                 self.elu_accession = generate_id_function(self)
         if save:
             self.save(update_fields=['is_published', 'elu_accession'])
