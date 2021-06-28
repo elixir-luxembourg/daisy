@@ -213,7 +213,7 @@ class User(AbstractUser):
         """
         Finds Accesses of the user, and returns a list of their dataset IDs 
         """
-        accesses = Access.objects.filter(user=self)
+        accesses = Access.objects.filter(user=self, dataset__is_published=True)
         return [access.dataset.elu_accession for access in accesses]
 
     def add_rems_entitlement(self, 
