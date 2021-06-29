@@ -29,17 +29,17 @@
                         {
                             "use_class": "COL-[XX]",
                             "use_class_note": "Data is shared as part of the LUX-Epigen programme, a collaboration with CHL, IBBL, LCSB and LSRU.",
-                            "use_restriction_rule": "CONSTRAINTS"
+                            "use_restriction_rule": "OBLIGATION"
                         },
                         {
                             "use_class": "DS-[XX](CC)",
                             "use_class_note": "Data is consented for cancer research studies only.",
-                            "use_restriction_rule": "CONSTRAINTS"
+                            "use_restriction_rule": "CONSTRAINED_PERMISSION"
                         },
                         {
                             "use_class": "GS-[XX]",
                             "use_class_note": "Data is consented for sharing outside EU/EEA region.",
-                            "use_restriction_rule": "CONSTRAINTS"
+                            "use_restriction_rule": "PERMISSION"
                         }
                     ]
                 }
@@ -96,12 +96,12 @@
                         {
                             "use_class": "PUB",
                             "use_class_note": "Acknowledgement required.",
-                            "use_restriction_rule": "CONSTRAINTS"
+                            "use_restriction_rule": "OBLIGATION"
                         },
                         {
                             "use_class": "TS-[XX]",
                             "use_class_note": "Data is obtained for a limited duration. 2022-02-28",
-                            "use_restriction_rule": "CONSTRAINTS"
+                            "use_restriction_rule": "OBLIGATION"
                         }
                     ]
                 }

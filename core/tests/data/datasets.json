@@ -50,12 +50,12 @@
                         {
                             "use_class": "PS",
                             "use_class_note": "Use is restricted to projects: ABCD",
-                            "use_restriction_rule": "CONSTRAINTS"
+                            "use_restriction_rule": "OBLIGATION"
                         },
                         {
                             "use_class": "PUB",
                             "use_class_note": "Acknowledgement required.",
-                            "use_restriction_rule": "CONSTRAINTS"
+                            "use_restriction_rule": "OBLIGATION"
                         }
                     ]
                 }
@@ -108,12 +108,12 @@
                         {
                             "use_class": "PS",
                             "use_class_note": "Use is restricted to projects: Hypertension",
-                            "use_restriction_rule": "CONSTRAINTS"
+                            "use_restriction_rule": "CONSTRAINED_PERMISSION"
                         },
                         {
                             "use_class": "RS-[XX]",
                             "use_class_note": "Use is restricted to research areas: Hypertension-ABC disease",
-                            "use_restriction_rule": "CONSTRAINTS"
+                            "use_restriction_rule": "CONSTRAINED_PERMISSION"
                         }
                     ]
                 }
@@ -215,7 +215,7 @@
                         {
                             "use_class": "PUB",
                             "use_class_note": "Acknowledgement required.",
-                            "use_restriction_rule": "CONSTRAINTS"
+                            "use_restriction_rule": "OBLIGATION"
                         }
                     ]
                 }
@@ -335,17 +335,17 @@
                         {
                             "use_class": "PS",
                             "use_class_note": "Consent form restricts data use to projects XYZ",
-                            "use_restriction_rule": "CONSTRAINTS"
+                            "use_restriction_rule": "CONSTRAINED_PERMISSION"
                         },
                         {
                             "use_class": "RS-[XX]",
-                            "use_class_note": "Data is consented for research onParkinson's disease",
-                            "use_restriction_rule": "CONSTRAINTS"
+                            "use_class_note": "Data is consented for research on Parkinson's disease",
+                            "use_restriction_rule": "CONSTRAINED_PERMISSION"
                         },
                         {
                             "use_class": "GS-[XX]",
                             "use_class_note": "Data is consented for sharing outside institute (Within Luxembourg)",
-                            "use_restriction_rule": "CONSTRAINTS"
+                            "use_restriction_rule": "CONSTRAINED_PERMISSION"
                         }
                     ]
                 },
@@ -370,12 +370,12 @@
                         {
                             "use_class": "PUB",
                             "use_class_note": "Acknowledgement required.",
-                            "use_restriction_rule": "CONSTRAINTS"
+                            "use_restriction_rule": "OBLIGATION"
                         },
                         {
                             "use_class": "TS-[XX]",
                             "use_class_note": "Data is obtained for a limited duration. 2021-02-28",
-                            "use_restriction_rule": "CONSTRAINTS"
+                            "use_restriction_rule": "OBLIGATION"
                         }
                     ]
                 }

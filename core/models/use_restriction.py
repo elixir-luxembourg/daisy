@@ -1,13 +1,16 @@
 from django.db import models
 
 from model_utils import Choices
-from .utils import CoreModel, TextFieldWithInputWidget
+
+from . import RestrictionClass
+from .utils import CoreModel
 
 
 USE_RESTRICTION_CHOICES = Choices(
-        ('CONSTRAINTS', 'CONSTRAINTS'),
-        ('NO_CONSTRAINTS', 'NO_CONSTRAINTS'),
-        ('FORBIDDEN', 'FORBIDDEN')
+        ('OBLIGATION', 'OBLIGATION'),
+        ('PERMISSION', 'PERMISSION'),
+        ('PROHIBITION', 'PROHIBITION'),
+        ('CONSTRAINED_PERMISSION', 'CONSTRAINED_PERMISSION'),
 )
 
 
@@ -45,7 +48,7 @@ class UseRestriction(CoreModel):
 
     use_restriction_rule = models.TextField(verbose_name='Use Restriction Rule',
                                             choices=USE_RESTRICTION_CHOICES,
-                                            default=USE_RESTRICTION_CHOICES.NO_CONSTRAINTS,
+                                            default=USE_RESTRICTION_CHOICES.PROHIBITION,
                                             blank=False, 
                                             null=False,
                                             max_length=64)
@@ -70,7 +73,8 @@ class UseRestriction(CoreModel):
         Used for import/export - the keys are conformant to the schema
         """
         return {
-            "use_class": self.restriction_class, 
+            "use_class": self.restriction_class,
+            "use_class_label": RestrictionClass.objects.get(code=self.restriction_class).name,
             "use_class_note": self.use_class_note,
             "use_restriction_note": self.notes,
             "use_restriction_rule": self.use_restriction_rule
