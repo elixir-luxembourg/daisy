@@ -1,7 +1,9 @@
 from django.db import models
 
 from model_utils import Choices
-from .utils import CoreModel, TextFieldWithInputWidget
+
+from . import RestrictionClass
+from .utils import CoreModel
 
 
 USE_RESTRICTION_CHOICES = Choices(
@@ -71,7 +73,8 @@ class UseRestriction(CoreModel):
         Used for import/export - the keys are conformant to the schema
         """
         return {
-            "use_class": self.restriction_class, 
+            "use_class": self.restriction_class,
+            "use_class_label": RestrictionClass.objects.get(code=self.restriction_class).name,
             "use_class_note": self.use_class_note,
             "use_restriction_note": self.notes,
             "use_restriction_rule": self.use_restriction_rule
