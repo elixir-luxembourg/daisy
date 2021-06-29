@@ -155,9 +155,10 @@
               "use_restriction_rule": {
                 "type": "string",
                 "enum": [
-                  "CONSTRAINTS",
-                  "NO_CONSTRAINTS",
-                  "FORBIDDEN"
+                  "OBLIGATION",
+                  "PERMISSION",
+                  "PROHIBITION",
+                  "CONSTRAINED_PERMISSION"
                 ]
               },
               "use_restriction_objects": {
