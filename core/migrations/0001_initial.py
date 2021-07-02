@@ -245,7 +245,7 @@ class Migration(migrations.Migration):
                 ('content', models.FileField(upload_to=core.models.document.get_file_name)),
                 ('content_url', models.URLField(blank=True, null=True, verbose_name='Document Url')),
                 ('content_notes', models.TextField(null=True, verbose_name='Document Notes')),
-                ('domain_type', models.TextField(choices=[('not_specified', 'Not Specified'), ('agreement', 'Agreement'), ('ethics_approval', 'Ethics Approval'), ('consent_form', 'Consent Form'), ('subject_informationsheet', 'Subject InformationSheet'), ('project_proposal', 'Project Proposal'), ('other', 'Other')], default='not_specified', verbose_name='Domain Type')),
+                ('domain_type', models.TextField(choices=[('not_specified', 'Not Specified'), ('agreement', 'Agreement'), ('ethics_approval', 'Ethics Approval'), ('consent_form', 'Consent Form'), ('dpia', 'DPIA'), ('subject_informationsheet', 'Subject InformationSheet'), ('project_proposal', 'Project Proposal'), ('other', 'Other')], default='not_specified', verbose_name='Domain Type')),
                 ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contenttypes.ContentType')),
             ],
             options={
@@ -364,7 +364,6 @@ class Migration(migrations.Migration):
                 ('cner_notes', models.TextField(blank=True, default='', help_text='Provide notes on national ethics approval. If it does not exist, please state justifications here.', null=True, verbose_name='National ethics approval notes')),
                 ('comments', models.TextField(blank=True, help_text='Any remarks other than the project description can be provided here.', null=True, verbose_name='Other comments')),
                 ('description', models.TextField(blank=True, help_text="Lay summary should provide a brief overview of project goals and approach. Lay summary may be displayed publicly if the project's data gets published in the data catalog", null=True, verbose_name='Lay summary')),
-                ('dpia', models.TextField(blank=True, null=True, verbose_name='DPIA Link')),
                 ('end_date', models.DateField(blank=True, help_text='Formal end date of project.', null=True, verbose_name='End date')),
                 ('erp_notes', models.TextField(blank=True, default='', help_text='Provide notes on institutional ethics approval. If it does not exist, please state justifications here.', null=True, verbose_name='Institutional ethics approval notes.')),
                 ('has_cner', models.BooleanField(default=False, help_text="Does the project have an ethics approval from a national body. E.g. In Luxembourg this would be Comité National d'Ethique de Recherche (CNER)", verbose_name='Has National Ethics Approval?')),
