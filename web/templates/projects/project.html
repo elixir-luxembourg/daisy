@@ -273,8 +273,8 @@
                         <td><span class="col-xs-4 text-center">{{ file.domain_type  }}</span></td>
                         {% if can_edit %}
                         <td>
-                            <a data-toggle="modal" id="btnupdate" class="jsBtn clickable" data-target="#modal" data-modal-title="Update document" data-ajax-url="{% url " document_edit " pk=file.id %}" title="Update document">
-                                <i class="material-icons">edit</i>
+                            <a data-toggle="modal" id="btnupdate" class="jsBtn clickable" data-target="#modal" data-modal-title="Update document" data-ajax-url="{% url "document_edit" pk=file.id %}" title="Update document"></a>
+                            <i class="material-icons">edit</i>
                             </a>
                             <i title="Delete document" class="material-icons red clickable" data-method="delete" data-parent-to-remove="tr" data-url="{% url 'document_delete' pk=file.id  %}">delete_forever</i>
                         </td>
