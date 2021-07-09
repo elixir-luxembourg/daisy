@@ -106,6 +106,7 @@ class User(AbstractUser):
         blank=True,
         null=True,
         max_length=64,
+        unique=True,
         help_text="Internal user identifier coming from OIDC's IdP"
     )
     source = EnumChoiceField(UserSource, default=UserSource.MANUAL, blank=False, null=False)
@@ -228,6 +229,8 @@ class User(AbstractUser):
         """
         notes = f'Set automatically by REMS application #{application}'
         dataset = Dataset.objects.get(elu_accession=resource)
+        # TODO: Set created_by to REMS user
+        # TODO: Add REMS user
         new_logbook_entry = Access(
             user=self,
             dataset=dataset,
@@ -236,3 +239,20 @@ class User(AbstractUser):
         )
         new_logbook_entry.save()
         return True
+
+    @classmethod
+    def find_user_by_email_or_oidc_id(cls, email, oidc_id, method):
+        if method == 'email':
+            return cls.objects.get(email=email)
+        elif method == 'id':
+            return cls.objects.get(oidc_id=oidc_id)
+        elif method == 'auto':
+            if cls.objects.filter(oidc_id=oidc_id).count() == 1:
+                return cls.objects.get(oidc_id=oidc_id)
+            if cls.objects.filter(email=email).count() == 1:
+                return cls.objects.get(email=email)
+            else:
+                message = f'There are either zero, or 2 and more users with such `email` and `oidc_id`!'
+                raise cls.DoesNotExist(message)
+        else:
+            raise KeyError('Wrong method! Only `id`, `email` and `auto` implemented!')

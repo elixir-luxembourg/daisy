@@ -4,8 +4,10 @@ import logging
 from typing import Dict
 
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest
 
+from core.models.contact import Contact
 from core.models.user import User
 from core.utils import DaisyLogger
 
@@ -20,6 +22,9 @@ def handle_rems_callback(request: HttpRequest) -> bool:
 
     :returns: True if everything was processed, False if not
     """
+
+    # TODO: Send an email to the Data Stewards or create a notification
+
     logger.debug('Unpacking the data received from REMS...')
     body_unicode = request.body.decode('utf-8')
     request_post_data = json.loads(body_unicode)
@@ -46,14 +51,21 @@ def handle_rems_entitlement(data: Dict) -> bool:
 
     logger.debug(f'* application_id: {application}, user_id: {user_id}, user_email: {email}, resource: {resource}')
 
-    method = getattr(settings, 'REMS_MATCH_USERS_BY', 'email').lower()
-    if method == 'email':
-        user = User.objects.get(email=email)
-    elif method == 'id':
-        user = User.objects.get(oidc_id=user_id)
-    else:
-        message = f"'REMS_MATCH_USERS_BY' must contain either 'id' or 'email', but has: {method} instead!"
+    method = getattr(settings, 'REMS_MATCH_USERS_BY', '-').lower()
+    if method not in ['email', 'id', 'auto']:
+        message = f"'REMS_MATCH_USERS_BY' must contain either 'id', 'email' or 'auto', but is: {method} instead!"
         logger.warn(message)
-        raise ValueError(message)
+        raise ImproperlyConfigured(message)
+    
+    try:
+        user = User.find_user_by_email_or_oidc_id(email, user_id, method)
+        return user.add_rems_entitlement(application, resource, user_id, email)
+    except:
+        logger.debug(' * Didn''t find the user with such oidc id or email, will add a contact instead')
+    
+    try:
+        contact = Contact.get_or_create(email, user_id, resource, method)
+        return contact.add_rems_entitlement(application, resource, user_id, email)
+    except:
+        raise ValueError('Something went wrong during creating an entry for Access/Contact')
 
-    return user.add_rems_entitlement(application, resource, user_id, email)

@@ -318,7 +318,7 @@ EXPLORER_DEFAULT_CONNECTION = 'default'
 
 # REMS (http://rems2docs.rahtiapp.fi/) Integration
 REMS_INTEGRATION_ENABLED = False
-REMS_MATCH_USERS_BY = 'email'  # 'email' or 'id'
+REMS_MATCH_USERS_BY = 'auto'  # 'email', 'id' or 'auto'
 REMS_SKIP_IP_CHECK = False
 REMS_ALLOWED_IP_ADDRESSES = []  # use '*' to allow all, otherwise e.g. '127.0.0.1'...
 
