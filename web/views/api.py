@@ -6,6 +6,7 @@ from io import StringIO
 from typing import Dict, Optional
 
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
@@ -187,7 +188,7 @@ def rems_endpoint(request):
         status = "Success" if handle_rems_callback(request) else "Failure"
         logger.debug(f'REMS - import status: {status}!')
         return JsonResponse({'status': f'{status}'}, status=200)
-    except Warning as ex:
+    except (Warning, ImproperlyConfigured) as ex:
         logger.debug(ex.message)
         return create_error_response(ex.message)
     except Exception as ex:
@@ -204,6 +205,11 @@ def permissions(request, user_oidc_id: str) -> JsonResponse:
         user = User.objects.get(oidc_id=user_oidc_id)
         permissions = user.get_access_permissions()
         return JsonResponse(permissions, status=200, safe=False)
+    except User.DoesNotExist as e:
+        return create_error_response(
+            'User with such OIDC_ID was not found',
+            status=404
+        )
     except Exception as e:
         return create_error_response(
             'Something went wrong during exporting the permissions',
