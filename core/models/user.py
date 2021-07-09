@@ -229,13 +229,16 @@ class User(AbstractUser):
         """
         notes = f'Set automatically by REMS application #{application}'
         dataset = Dataset.objects.get(elu_accession=resource)
-        # TODO: Set created_by to REMS user
-        # TODO: Add REMS user
+
+        # TODO: add REMS user (e.g. `system::REMS`) to the system
+        # Then add this information to created_by of an Access
+        
         new_logbook_entry = Access(
             user=self,
             dataset=dataset,
             access_notes=notes,
-            granted_on=datetime.now()
+            granted_on=datetime.now(),
+            was_created_automatically=True
         )
         new_logbook_entry.save()
         return True

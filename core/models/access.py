@@ -1,4 +1,6 @@
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
 
 from .utils import CoreModel
 
@@ -12,12 +14,44 @@ class Access(CoreModel):
         app_label = 'core'
         get_latest_by = "added"
         ordering = ['added']
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                    Q(user__isnull=False) & 
+                    Q(contact__isnull=True)
+                ) | (
+                    Q(user__isnull=True) & 
+                    Q(contact__isnull=False)
+                ),
+                name='user_or_contact_only',
+            )
+        ]
+
+    def clean(self):
+        if self.user and self.contact:
+            raise ValidationError("The Access is granted either to an User, or to a Contact. If you need both, please create two separate entries.")
 
     access_notes = models.TextField(null=False,
         blank=False,
         max_length=255,
         verbose_name='Remarks', 
         help_text='Remarks on why and how access was given, what is the purpose of use.'
+    )
+
+    contact = models.ForeignKey('core.Contact',
+        verbose_name='Contact that has the access',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        help_text='Use either `contact` or `user`'
+    )
+
+    created_by = models.ForeignKey('core.User',
+        verbose_name='Created by',
+        on_delete=models.CASCADE,
+        help_text='Which User added this entry to DAISY',
+        blank=True,
+        null=True
     )
 
     dataset = models.ForeignKey('core.Dataset',
@@ -63,7 +97,14 @@ class Access(CoreModel):
         verbose_name='User that has the access',
         on_delete=models.CASCADE,
         null=True,
-        blank=True
+        blank=True,
+        help_text='Use either `contact` or `user`'
+    )
+
+    was_generated_automatically = models.BooleanField(
+        verbose_name='Was created automatically',
+        default=False,
+        help_text='Was the entry generated automatically, e.g. by REMS?'
     )
 
     def __str__(self):
