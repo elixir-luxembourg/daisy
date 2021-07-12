@@ -29,7 +29,7 @@ class ProjectsImporter(BaseImporter):
         else:
             acronym = name
         description = project_dict.get('description', None)
-        elu_accession = project_dict.get('elu_accession', '-') or '-'
+        elu_accession = project_dict.get('external_id', '-') or '-'
         has_cner = project_dict.get('has_national_ethics_approval', False)
         has_erp = project_dict.get('has_institutional_ethics_approval', False)
         cner_notes = project_dict.get('national_ethics_approval_notes', None)

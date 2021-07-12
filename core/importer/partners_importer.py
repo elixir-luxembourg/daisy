@@ -26,7 +26,7 @@ class PartnersImporter(BaseImporter):
             self.logger.info(f'Creating institution "{partner_dict.get("name")}")')
             partner = Partner.objects.create(**partner_dict)
         partner.name = partner_dict['name']
-        partner.elu_accession = partner_dict['elu_accession']
+        partner.elu_accession = partner_dict['external_id']
         partner.is_clinical = partner_dict['is_clinical']
         partner.geo_category = partner_dict['geo_category']
         partner.sector_category = self.process_sector_category(partner_dict)

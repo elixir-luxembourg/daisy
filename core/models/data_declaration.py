@@ -54,7 +54,8 @@ class DataDeclaration(CoreModel):
         help_text='The Partner/Institute that have provided this data.'
     )
 
-    access_procedure = models.TextField(verbose_name='Remarks on the access procedure', blank=True, null=True, help_text='In case the access type is "open" or "controlled", you can elaborate on that')
+    access_procedure = models.TextField(verbose_name='Remarks on the access procedure', blank=True, null=True,
+                                        help_text='In case the access type is "open" or "controlled", you can elaborate on that')
 
     contract = models.ForeignKey(
         "core.Contract",
@@ -65,28 +66,35 @@ class DataDeclaration(CoreModel):
         help_text='The Contract that ensures the legal receipt, keeping and analysis of this data.'
     )
 
-    cohorts = models.ManyToManyField("core.Cohort", blank=True, related_name="data_declarations",  help_text='If the data is collected from subjects from a known/predefined Cohort please select it from the list.')
+    cohorts = models.ManyToManyField("core.Cohort", blank=True, related_name="data_declarations",
+                                     help_text='If the data is collected from subjects from a known/predefined Cohort please select it from the list.')
 
-    comments = models.TextField(verbose_name='Remarks on data source', blank=True, null=True, help_text='Please provide any remarks on the source and nature of data.')
+    comments = models.TextField(verbose_name='Remarks on data source', blank=True, null=True,
+                                help_text='Please provide any remarks on the source and nature of data.')
 
     consent_status = EnumChoiceField(ConsentStatus, default=ConsentStatus.unknown, blank=False, null=False,
                                      help_text='Is the consent given by data subjects heterogeneous or homogeneous. Homogeneous consent  means that all subjects\' data have the same restrictions. Heterogeneous means that there are differences among consents given by subjects, therefore  there are differing use restrictions on data.')
 
-    dataset = models.ForeignKey("core.Dataset", related_name="data_declarations", null=False, on_delete=models.CASCADE, help_text='The dataset that embodies this data.')
+    dataset = models.ForeignKey("core.Dataset", related_name="data_declarations", null=False, on_delete=models.CASCADE,
+                                help_text='The dataset that embodies this data.')
 
     data_types_generated = models.ManyToManyField("core.DataType",
                                                   blank=True,
                                                   related_name="data_declarations_generated",
-                                                  verbose_name='Data types generated',  help_text='Select from the list the new types of data generated (if applicable).')
+                                                  verbose_name='Data types generated',
+                                                  help_text='Select from the list the new types of data generated (if applicable).')
     data_types_received = models.ManyToManyField("core.DataType",
                                                  blank=True,
                                                  related_name="data_declarations_received",
-                                                 verbose_name='Data types received', help_text='Select from the list the types of data received.')
+                                                 verbose_name='Data types received',
+                                                 help_text='Select from the list the types of data received.')
 
-    data_types_notes = models.TextField(verbose_name="Remarks on data types", blank=True, null=True, help_text='Remarks on data types, especially if dealing with a data type not present in the predefined list.')
+    data_types_notes = models.TextField(verbose_name="Remarks on data types", blank=True, null=True,
+                                        help_text='Remarks on data types, especially if dealing with a data type not present in the predefined list.')
 
     deidentification_method = EnumChoiceField(DeidentificationMethod, verbose_name='Deidentification method',
-                                              default=DeidentificationMethod.pseudonymization, blank=False, null=False, help_text='How has the data been de-identified, is it pseudonymized or anonymized?')
+                                              default=DeidentificationMethod.pseudonymization, blank=False, null=False,
+                                              help_text='How has the data been de-identified, is it pseudonymized or anonymized?')
 
     embargo_date = models.DateField(verbose_name='Embargo date',
                                     blank=True,
@@ -96,7 +104,8 @@ class DataDeclaration(CoreModel):
     end_of_storage_duration = models.DateField(verbose_name='Storage end date', blank=True, null=True,
                                                help_text='Is the data obtained for a limited duration? If so please state the storage end date for data.')
 
-    storage_duration_criteria = models.TextField(verbose_name='Storage duration criteria', blank=True, null=True, help_text='Please describe criteria used to determine storage duration.')
+    storage_duration_criteria = models.TextField(verbose_name='Storage duration criteria', blank=True, null=True,
+                                                 help_text='Please describe criteria used to determine storage duration.')
 
     has_special_subjects = models.NullBooleanField(null=True,
                                                    blank=True,
@@ -139,8 +148,8 @@ class DataDeclaration(CoreModel):
                                  verbose_name='Unique identifier',
                                  help_text='This is the unique identifier used by DAISY for this dataset. This field annot be edited.')
 
-
-    data_declarations_parents = models.ManyToManyField('core.DataDeclaration', verbose_name="Derived/re-used from:", blank=True,
+    data_declarations_parents = models.ManyToManyField('core.DataDeclaration', verbose_name="Derived/re-used from:",
+                                                       blank=True,
                                                        help_text='If this data declaration is based on or derived from an earlier data declaration, then select ancestor data declaration.',
                                                        related_name='data_declarations_derivated')
 
@@ -181,34 +190,39 @@ class DataDeclaration(CoreModel):
     def __str__(self):
         return self.title
 
-
     def get_long_name(self):
-        lname =  self.title + " Dataset: "+ self.dataset.title + ", Project: "
+        lname = self.title + " Dataset: " + self.dataset.title + ", Project: "
         if (self.dataset.project is not None and self.dataset.project.title is not None):
-             lname +=  self.dataset.project.title
+            lname += self.dataset.project.title
         else:
-            lname +=   "-"
+            lname += "-"
         return lname
-
 
     def to_dict(self):
         use_restrictions_list = []
         for restriction in self.data_use_restrictions.all():
             use_restrictions_list.append(restriction.to_dict())
 
+        cohort_short_dicts = []
+        for cohort in self.cohorts.all():
+            cohort_short_dicts.append({"cohort": cohort.title if cohort.title else None,
+                                       "cohort_external_id": cohort.elu_accession if cohort.elu_accession is not None and cohort.elu_accession != "-" else None})
+
         base_dict = {
             "title": self.title,
-            "data_types":[ dt.name for dt in list(self.data_types)],
+            "cohorts": cohort_short_dicts,
+            "data_types": [dt.name for dt in list(self.data_types)],
             "data_types_notes": self.data_types_notes if self.data_types_notes else None,
             "access_category": self.share_category.name if self.share_category else None,
             "access_procedure": self.access_procedure if self.access_procedure else None,
             "subjects_category": self.subjects_category.name if self.subjects_category else None,
-            "de_identification":  self.deidentification_method.name  if self.deidentification_method else None,
-            "consent_status":  self.consent_status.name if self.consent_status else None,
+            "de_identification": self.deidentification_method.name if self.deidentification_method else None,
+            "consent_status": self.consent_status.name if self.consent_status else None,
             "has_special_subjects": self.has_special_subjects,
             "special_subjects_description": self.special_subjects_description,
             "embargo_date": self.embargo_date.strftime('%Y-%m-%d') if self.embargo_date else None,
-            "storage_end_date": self.end_of_storage_duration.strftime('%Y-%m-%d') if self.end_of_storage_duration else None,
+            "storage_end_date": self.end_of_storage_duration.strftime(
+                '%Y-%m-%d') if self.end_of_storage_duration else None,
             "storage_duration_criteria": self.storage_duration_criteria if self.storage_duration_criteria else None,
             "use_restrictions": use_restrictions_list,
         }
