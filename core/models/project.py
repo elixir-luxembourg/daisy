@@ -194,8 +194,9 @@ class Project(CoreTrackedModel):
 
         base_dict = {
             "source": settings.SERVER_URL,
+            "id_at_source": self.id.__str__(),
             "acronym": self.acronym,
-            "elu_accession": self.elu_accession if self.elu_accession else None,
+            "external_id": self.elu_accession if self.elu_accession else None,
             "name": self.title if self.title else None,
             "description":  self.description if self.description else None,
             "has_institutional_ethics_approval": self.has_erp,
