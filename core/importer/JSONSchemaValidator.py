@@ -101,5 +101,5 @@ class InstitutionJSONSchemaValidator(BaseJSONSchemaValidator):
     schema_name = "elu-institution.json"
 
 
-class SubmissionJSONSchema(BaseJSONSchemaValidator):
+class SubmissionJSONSchemaValidator(BaseJSONSchemaValidator):
     schema_name = "elu-study.json"
