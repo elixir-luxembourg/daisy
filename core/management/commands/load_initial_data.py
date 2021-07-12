@@ -155,7 +155,7 @@ class Command(BaseCommand):
     @staticmethod
     def create_elu_institutions():
         print('Creating institutions')
-        with open(os.path.join(FIXTURE_DIR, 'elu-institutions.json'), 'r', encoding='utf-8') as handler:
+        with open(os.path.join(FIXTURE_DIR, 'institutions.json'), 'r', encoding='utf-8') as handler:
             data = json.load(handler)
             for partner in data:
                 _current = {k: v for k, v in partner.items()}
