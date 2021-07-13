@@ -22,6 +22,9 @@ class Access(CoreModel):
                 ) | (
                     Q(user__isnull=True) & 
                     Q(contact__isnull=False)
+                ) | (
+                    Q(user__isnull=True) & 
+                    Q(contact__isnull=True)
                 ),
                 name='user_or_contact_only',
             )
@@ -54,7 +57,7 @@ class Access(CoreModel):
         null=True
     )
 
-    dataset = models.ForeignKey('core.Dataset',
+    dataset = models.ForeignKey('core.Dataset', 
         verbose_name='Dataset',
         related_name='accesses',
         on_delete=models.CASCADE,
