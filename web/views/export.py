@@ -13,7 +13,7 @@ log = DaisyLogger(__name__)
 
 @staff_member_required
 def generic_export(request, object_model_class, object_name):
-    def _do_export(request, object_model_class, object_name):
+    def _get_objects(request, object_model_class, object_name):
         query = request.GET.get('query', '')
         order_by = request.GET.get('order_by', '')
         objects = facet_view_utils.search_objects(
@@ -28,16 +28,24 @@ def generic_export(request, object_model_class, object_name):
         objects_ids = [obj.__dict__['pk'] for obj in objects]
         objects = object_model_class.objects.filter(id__in=objects_ids)
         values = [obj.serialize_to_export() for obj in objects]
+        return values
 
+    def _do_export(values):
         if len(values) == 0:
             raise ValueError("There are no values to export - your selection was empty")
         return ExcelResponse(values)
-    
+
     try:
-        response = _do_export(request, object_model_class, object_name)
+        values = _get_objects(request, object_model_class, object_name)
+    except Exception as e:
+        return HttpResponse(f'There was a problem with serialization during export: \r\n{str(e)}')
+
+    try:
+        response = _do_export(values)
         return response
     except Exception as e:
-        return HttpResponse(f'There was a problem with export: \r\n{str(e)}')
+            return HttpResponse(f'There was a problem during export to Excel file: \r\n{str(e)}')  
+
 
 def cohorts_export(request):
     return generic_export(request, Cohort, 'cohort')
