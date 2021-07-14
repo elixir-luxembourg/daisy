@@ -16,6 +16,14 @@ class DaisyError(Exception):
         return "{}({!r})".format(self.__class__.__name__, msg)
 
 
+class PartnerImportError(DaisyError):
+    """Error when importing partner into daisy."""
+
+    default_message = "Error when importing partner:' {data}'"
+
+    def __init__(self, data, msg=None):
+        self.data = data
+        super().__init__(msg=msg)
 
 
 class DatasetImportError(DaisyError):
