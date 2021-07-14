@@ -54,25 +54,8 @@ class ProjectsImporter(BaseImporter):
             project.erp_notes = erp_notes
             project.elu_accession = elu_accession
 
-        try:
-            if 'start_date' in project_dict and project_dict.get('start_date') and len(project_dict.get('start_date')) > 0:
-                project.start_date = self.process_date(project_dict.get('start_date'))
-        except self.DateImportException:
-            date_str = project_dict.get('start_date')
-            message = "\tCouldn't import the 'start_date'. Does it follow the '%Y-%m-%d' format?\n\t"
-            message = message + f'Was: "{date_str}". '
-            message = message + "Continuing with empty value."
-            self.logger.warning(message)
-
-        try:
-            if 'end_date' in project_dict and project_dict.get('end_date') and len(project_dict.get('end_date')) > 0:
-                project.end_date = self.process_date(project_dict.get('end_date'))
-        except self.DateImportException:
-            date_str = project_dict.get('end_date')
-            message = "\tCouldn't import the 'end_date'. Does it follow the '%Y-%m-%d' format?\n\t"
-            message = message + f'Was: "{date_str}". '
-            message = message + "Continuing with empty value."
-            self.logger.warning(message)
+        self._process_date_attribute(project, project_dict, "start_date")
+        self._process_date_attribute(project, project_dict, "end_date")
 
         project.save()
 
@@ -125,3 +108,14 @@ class ProjectsImporter(BaseImporter):
         
         publication.save()
         return publication
+
+    def _process_date_attribute(self, project_obj, project_dict, attribute_name):
+        try:
+            if attribute_name in project_dict and project_dict.get(attribute_name) and len(project_dict.get(attribute_name)) > 0:
+                setattr(project_obj, attribute_name, self.process_date(project_dict.get(attribute_name)))
+        except self.DateImportException:
+            date_str = project_dict.get(attribute_name)
+            message = f'\tCouldn''t import the "{attribute_name}". Does it follow the ''%Y-%m-%d'' format?\n\t'
+            message = message + f'Was: "{date_str}". '
+            message = message + "Continuing with empty value."
+            self.logger.warning(message)
