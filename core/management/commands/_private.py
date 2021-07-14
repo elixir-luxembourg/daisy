@@ -28,6 +28,12 @@ class ImportBaseCommand(BaseCommand):
             dest='publish_on_import'
         )
         parser.add_argument(
+            '--no-update',
+            action='store_true',
+            help="When a matching entity already exists in database it is updated by default (all attributes present in JSON are updated). Use this flag to skip entity import on match (update of sub-entities is also skipped)",
+            dest='no_update'
+        )
+        parser.add_argument(
             '--verbose',
             action='store_true',
             dest='verbose',
@@ -52,12 +58,13 @@ class ImportBaseCommand(BaseCommand):
             path_to_json_file = options.get('file')
             validate = not(options.get('no_validation'))
             path_to_json_directory = options.get('directory')
-
+            update = not(options.get('no_update'))
             importer = self.get_importer(
                                 publish_on_import = publish_on_import,
                                 exit_on_error = exit_on_error, 
                                 verbose = verbose, 
-                                validate = validate
+                                validate = validate,
+                                update = update
                             )
 
             if not(path_to_json_directory or path_to_json_file):
@@ -83,7 +90,8 @@ class ImportBaseCommand(BaseCommand):
             publish_on_import=False,
             exit_on_error=False,
             verbose=False,
-            validate=True
+            validate=True,
+            update=True
         ):
         raise NotImplementedError("Abstract method: Implement this method in the child class.")
 

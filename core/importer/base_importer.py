@@ -35,12 +35,14 @@ class BaseImporter:
             publish_on_import=False,
             exit_on_error=False,
             verbose=False,
-            validate=True
+            validate=True,
+            update=True
         ):
         self.verbose = verbose
         self.publish_on_import = publish_on_import
         self.exit_on_error = exit_on_error
         self.validate = validate
+        self.update = update
 
     @property
     def json_schema_validator(self):
