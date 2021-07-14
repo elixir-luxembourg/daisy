@@ -19,7 +19,7 @@ class DatasetsImporter(BaseImporter):
 
     def process_json(self, dataset_dict):
         try:
-            title = dataset_dict['name']
+            title = dataset_dict['name'].strip()
         except KeyError:
             raise DatasetImportError(data='dataset without title')
 
