@@ -18,14 +18,24 @@ class PartnersImporter(BaseImporter):
     json_schema_validator = InstitutionJSONSchemaValidator()
 
     def process_json(self, partner_dict):
+        def get_partner(elu_accession, name):
+            if elu_accession and elu_accession != '-':
+                partner = Partner.objects.get(elu_accession=elu_accession)
+            else: 
+                partner = Partner.objects.get(name=name)
+            return partner
+        
         try:
-            partner = Partner.objects.get(name=partner_dict.get('name'))
+            partner = get_partner(elu_accession=partner_dict.get('external_id', None), 
+                                  name=partner_dict.get('name'))
             self.logger.warning(
                 f'Partner with name \""{partner_dict.get("name")}"\" already found. It will be updated.')
+            if partner.is_published:
+                raise PartnerImportError(data=f'Updating published entity is not supported - partner: "{partner.name}".')
         except Partner.DoesNotExist:
             self.logger.info(f'Creating institution "{partner_dict.get("name")}")')
-            partner = Partner.objects.create(**partner_dict)
-        partner.name = partner_dict['name']
+            partner = Partner.objects.create(name=partner_dict['name'])
+
         partner.elu_accession = partner_dict['external_id']
         partner.is_clinical = partner_dict['is_clinical']
         partner.geo_category = partner_dict['geo_category']
