@@ -23,17 +23,20 @@ class DatasetsImporter(BaseImporter):
         except KeyError:
             raise DatasetImportError(data='dataset without title')
 
-        title = title.strip()
-
+        def get_dataset(elu_accession, title):
+            if elu_accession and elu_accession != '-':
+                dataset = Dataset.objects.get(elu_accession=elu_accession)
+            else: 
+                dataset = Dataset.objects.get(title=title)
+            return dataset
+      
         try:
-            dataset = Dataset.objects.get(title=title)
-        except Dataset.DoesNotExist:
-            dataset = None
-
-        if dataset:
+            dataset = get_dataset(elu_accession = dataset_dict.get('external_id', None), title=title)
             title_to_show = title.encode('utf8')
             self.logger.warning(f"Dataset with title '{title_to_show}' already found. It will be updated.")
-        else:
+            if dataset.is_published:
+                raise DatasetImportError(data=f'Updating published entity is not supported - dataset: "{dataset.title}".')
+        except Dataset.DoesNotExist:
             dataset = Dataset.objects.create(title=title)
 
         if 'project' in dataset_dict and dataset_dict['project']:
