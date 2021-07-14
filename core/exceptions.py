@@ -28,6 +28,15 @@ class DatasetImportError(DaisyError):
         super().__init__(msg=msg)
 
 
+class ProjectImportError(DaisyError):
+    """Error when importing project into daisy."""
+
+    default_message = "Error when importing project:' {data}'"
+
+    def __init__(self, data, msg=None):
+        self.data = data
+        super().__init__(msg=msg)
+
 
 class FixtureImportError(DaisyError):
     """Error when importing initial definition data into daisy."""
