@@ -1,6 +1,7 @@
 from core.importer.base_importer import BaseImporter
 from core.importer.JSONSchemaValidator import ProjectJSONSchemaValidator
 from core.models import Partner, Project, Publication
+from core.exceptions import ProjectImportError
 
 
 class ProjectsImporter(BaseImporter):
@@ -23,6 +24,21 @@ class ProjectsImporter(BaseImporter):
                         for publication_dict
                         in project_dict.get('publications', [])]
 
+
+        def get_project(elu_accession, title, acronym):
+            if elu_accession and elu_accession != '-':
+                project = Project.objects.get(elu_accession=elu_accession)
+            else: 
+                project = (Project.objects.filter(title=title) | Project.objects.filter(acronym=acronym))
+                if len(project) == 1:
+                    project = project[0]
+                elif len(project) > 1:
+                    raise ProjectImportError(data=f'Multiple projects matched by title="{title}" or acronym="{acronym}".')
+                else:
+                    raise Project.DoesNotExist
+            return project
+
+
         name = project_dict.get('name', "N/A")
         acronym = project_dict.get('acronym', name)
         description = project_dict.get('description', None)
@@ -32,7 +48,16 @@ class ProjectsImporter(BaseImporter):
         cner_notes = project_dict.get('national_ethics_approval_notes', None)
         erp_notes = project_dict.get('institutional_ethics_approval_notes', None)
 
-        project = Project.objects.filter(acronym=acronym).first()
+        try:
+            project = get_project(elu_accession=elu_accession,
+                              title=name,
+                              acronym=acronym)
+            if project.is_published:
+                raise ProjectImportError(data=f'Updating published entity is not supported: "{project.title}".')
+
+        except Project.DoesNotExist:
+            project = None
+       
         if project is None:
             project, _ = Project.objects.get_or_create(acronym=acronym,
                                                        title=name,
