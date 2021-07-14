@@ -151,8 +151,8 @@ class BaseImporter:
 
     def publish_object(self, object) -> bool:
         try:
-            object.publish(save=True)
-            self.logger.debug(f'Item {object.name} published under identifier: {object.elu_accession}.')
+            object.is_published = True
+            object.save()
             result = True
         except AttributeError as e:
             self.logger.warn(f'Publishing this type of entity ({object._meta.object_name}) is not implemented - item is not published.')
