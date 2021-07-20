@@ -61,9 +61,7 @@ class Project(CoreTrackedModel):
                                    null=True,
                                    help_text='Lay summary should provide a brief overview of project goals and approach. Lay summary may be displayed publicly if the project\'s data gets published in the data catalog')
 
-    dpia = models.TextField(verbose_name='DPIA Link',
-                            blank=True,
-                            null=True)
+   
 
     disease_terms = models.ManyToManyField('core.DiseaseTerm',
                                            related_name='projects_w_term',

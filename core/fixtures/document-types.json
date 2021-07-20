@@ -1,27 +1,32 @@
-[
-  {
-    "name": "Other"
-  },
-  
-  {
-    "name": "Contract/Agreement"
-  },
-  {
-    "name": "Consent Form Template"
-  },
-  {
-    "name":  "CNER Approval"
-  },
-  {
-    "name": "CNPD Authorisation"
-  },
-  {
-    "name": "CNPD Notification"
-  },
-  {
-    "name": "ERP Approval"
-  },
-  {
-    "name": "Subject Information Sheet Template"
-  }
+[{
+        "name": "Other"
+    },
+
+    {
+        "name": "Data Protection Impact Assessment"
+    },
+
+    {
+        "name": "Contract/Agreement"
+    },
+    {
+        "name": "Consent Form Template"
+    },
+    {
+        "name": "CNER Approval"
+    },
+    {
+        "name": "CNPD Authorisation"
+    },
+    {
+        "name": "CNPD Notification"
+    },
+
+
+    {
+        "name": "ERP Approval"
+    },
+    {
+        "name": "Subject Information Sheet Template"
+    }
 ]
