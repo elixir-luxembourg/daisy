@@ -12,7 +12,7 @@ from core.utils import DaisyLogger
 
 logger = DaisyLogger(__name__)
 
-JSONSCHEMA_BASE_LOCAL_PATH = os.path.join(settings.BASE_DIR, 'core', 'fixtures', 'json_schemas')
+JSONSCHEMA_BASE_LOCAL_PATH = getattr(settings, 'IMPORT_JSON_SCHEMAS_DIR')
 JSONSCHEMA_BASE_REMOTE_URL = getattr(settings, 'IMPORT_JSON_SCHEMAS_URI')
 
 
