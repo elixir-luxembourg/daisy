@@ -151,8 +151,7 @@ class BaseImporter:
 
     def publish_object(self, object) -> bool:
         try:
-            object.is_published = True
-            object.save()
+            object.publish(save=True)
             result = True
         except AttributeError as e:
             self.logger.warn(f'Publishing this type of entity ({object._meta.object_name}) is not implemented - item is not published.')
