@@ -317,8 +317,7 @@ EXPLORER_CONNECTIONS = { 'Default': 'default' }
 EXPLORER_DEFAULT_CONNECTION = 'default'
 
 # JSON schemas used for validation on import
-IMPORT_JSON_SCHEMAS_VERSION = 'v0.0.2'
-IMPORT_JSON_SCHEMAS_URI = f'https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/{IMPORT_JSON_SCHEMAS_VERSION}/schemas/'
+IMPORT_JSON_SCHEMAS_URI = 'https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.2/schemas/'
 
 # Import local settings to override those values based on the deployment environment
 try:
