@@ -1,3 +1,4 @@
+from web.views.user import superuser_required
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -134,14 +135,13 @@ class DatasetDelete(CheckerMixin, DeleteView):
 @staff_member_required
 def publish_dataset(request, pk):
     dataset = get_object_or_404(Dataset, pk=pk)
-    dataset.is_published = False
-    dataset.save()
+    dataset.publish()
     return redirect(reverse_lazy('dataset', kwargs={'pk': dataset.id}))
-
 
 @staff_member_required
 def unpublish_dataset(request, pk):
     dataset = get_object_or_404(Dataset, pk=pk)
-    dataset.is_published = True
+    dataset.is_published = False
     dataset.save()
     return redirect(reverse_lazy('dataset', kwargs={'pk': dataset.id}))
+    

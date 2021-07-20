@@ -23,32 +23,49 @@ class Contact(CoreModel):
 
 
     address = TextFieldWithInputWidget(
-                               blank=True,
-                               null=True,
-                               verbose_name='Address')
+        blank=True,
+        null=True,
+        verbose_name='Address'
+    )
 
     email = models.EmailField(verbose_name='E-mail of the contact')
 
-    first_name = TextFieldWithInputWidget(blank=False,
-                                  verbose_name='First name of the contact')
+    first_name = TextFieldWithInputWidget(
+        blank=False,
+        verbose_name='First name of the contact'
+    )
 
-    last_name = TextFieldWithInputWidget(blank=False,
-                                 verbose_name='Last name of the contact')
+    last_name = TextFieldWithInputWidget(
+        blank=False,
+        verbose_name='Last name of the contact'
+    )
+
+    oidc_id = models.CharField(verbose_name='OIDC user identifier',
+        blank=True,
+        null=True,
+        max_length=64,
+        unique=True,
+        help_text="Internal user identifier from OIDC's IdP"
+    )
+
+    partners = models.ManyToManyField(
+        'core.Partner',
+        related_name='contacts',
+        verbose_name='Affiliation(s)',
+        blank=False
+    )
 
     phone = TextFieldWithInputWidget(max_length=32,
-                             blank=True,
-                             null=True,
-                             verbose_name='Phone')
+        blank=True,
+        null=True,
+        verbose_name='Phone'
+    )
 
-    type = models.ForeignKey('core.ContactType',
-                             verbose_name='Type of the contact',
-                             on_delete=models.CASCADE)
-
-    partners = models.ManyToManyField('core.Partner',
-                                related_name='contacts',
-                                verbose_name='Affiliation(s)',
-                                blank=False)
-
+    type = models.ForeignKey(
+        'core.ContactType',
+        verbose_name='Type of the contact',
+        on_delete=models.CASCADE
+    )
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.type.name})"
@@ -86,3 +103,27 @@ class Contact(CoreModel):
             d['partners'] = ','.join(partners)
 
         return d
+
+    @classmethod
+    def get_or_create(cls, email: str, oidc_id: str, resource: str, method: str):
+        try:
+            if method == 'email':
+                return cls.objects.get(email=email)
+            elif method == 'id':
+                return cls.objects.get(oidc_id=oidc_id)
+            elif method == 'auto':
+                if cls.objects.filter(oidc_id=oidc_id).count() == 1:
+                    return cls.objects.get(oidc_id=oidc_id)
+                if cls.objects.filter(email=email).count() == 1:
+                    return cls.objects.get(email=email)
+                else:
+                    message = f'There are either zero, or 2 and more contacts with such `email` and `oidc_id`!'
+                    raise ValueError(message)
+        except cls.DoesNotExist:
+            new_object = cls(
+                email=email, 
+                first_name='IMPORTED BY REMS', 
+                last_name='IMPORTED BY REMS'
+            )
+            new_object.save()
+            return new_object
