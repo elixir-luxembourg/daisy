@@ -17,5 +17,5 @@ def client_user_data_steward(client, user_data_steward):
 
 @pytest.fixture
 def client_user_admin(client, user_admin):
-    client.login(username=user_admin.username, password=user_admin.username)
+    client.login(username=user_admin.username, password="password") #TODO: the password is hardcoded since user_admin.password returns just hash
     return client
