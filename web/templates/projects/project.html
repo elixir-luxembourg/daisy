@@ -1,58 +1,105 @@
-{% extends 'layout.html' %} {% block title %}{{ project.acronym }}{% endblock %} {% block head_end %}{{ document_form.media }}{% endblock %} {% block content %}
-<div class="row mt-4">
-    <div class="jumbotron col">
-        <span style="color: #8D8F8F;">Project</span>
-        <h1>{{ project.acronym }} </h1>
-        <div class="row">
-            <div class="col">
-                <dl>
-                    <dt>Full title</dt>
-                    <dd>{{ project.title | default:'-' }}</dd>
-                    <dt>Local custodians</dt>
-                    <dd>
-                        {% for local_custodian in project.local_custodians.all %}
-                        <span class="badge badge-pill badge-primary">{{ local_custodian }}</span> {% endfor %}
-                    </dd>
-                    <dt>Start date</dt>
-                    <dd>{{ project.start_date | default:'-' }}</dd>
-                    <dt>End date</dt>
-                    <dd>{{ project.end_date | default:'-' }}</dd>
-                    <dt>Project web page</dt>
-                    <dd>{{ project.project_web_page | default:'-' }}</dd>
-                    <dt>Funding resources</dt>
-                    <dd>{{ project.funding_sources.all | join:", " | default:'-' }}</dd>
-                    <dt>Sub projects</dt>
-                    <dd>
-                        {% if project.child_projects.all %} {% for prj in project.child_projects.all %}
-                        <a href="{% url 'project' pk=prj.pk %}">{{ prj }}</a> {% endfor %} {% else %} - {% endif %}
-                    </dd>
-                    <dt>Umbrella project</dt>
-                    <dd>
-                        {%if project.umbrella_project %}<a href="{% url 'project' pk=project.umbrella_project.pk %}">{{project.umbrella_project  }}</a> {% else %}-{% endif %}
-                    </dd>
-                </dl>
-            </div>
-            <div class="col">
-                <dl>
-                    <dt>Study features</dt>
-                    <dd>{{ project.study_terms.all | join:", " | default:'-' }}</dd>
-                    <dt>Disease terms</dt>
-                    <dd>{{ project.disease_terms.all | join:", " | default:'-' }}</dd>
-                    <dt>Gene terms</dt>
-                    <dd>{{ project.gene_terms.all | join:", " | default:'-' }}</dd>
-                    <dt>Phenotype terms</dt>
-                    <dd>{{ project.phenotype_terms.all | join:", " | default:'-' }}</dd>
-                    <dt>Includes automated profiling</dt>
-                    <dd>{{ project.includes_automated_profiling | yesno }}</dd>
-                    <dt>Remarks</dt>
-                    <dd>{{ project.comments | default:'-' }}</dd>
-                    <dt>Last update</dt>
-                    <dd>{{ project.updated }}</dd>
-                </dl>
-            </div>
-            <div class="floating-buttons-absolute">
-                {% if is_admin %}
-                <a class="btn btn-default bmd-btn-fab float-right" title="Manage project permissions" href="{% url 'permission_project' pk=project.id %}"><i
+{% extends 'layout.html' %}
+
+{% block title %}{{ project.acronym }}{% endblock %}
+
+{% block head_end %}{{ document_form.media }}{% endblock %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            {% if project.is_published %}
+                <div class="ribbon ribbon-green"><span>Published</span></div>
+            {% else %}
+                <div class="ribbon ribbon-orange"><span>Not Published</span></div>
+            {% endif %}
+            <span style="color: #8D8F8F;">Project</span>
+            <h1>{{ project.acronym }} </h1>
+            <div class="row">
+                <div class="col">
+                    <dl>
+                        <dt>Full title</dt>
+                        <dd>{{ project.title | default:'-' }}</dd>
+                        <dt>Local custodians</dt>
+                        <dd>
+                            {% for local_custodian in project.local_custodians.all %}
+                                <span class="badge badge-pill badge-primary">{{ local_custodian }}</span>
+                            {% endfor %}
+                        </dd>
+                        <dt>Start date</dt>
+                        <dd>{{ project.start_date | default:'-' }}</dd>
+                        <dt>End date</dt>
+                        <dd>{{ project.end_date | default:'-' }}</dd>
+                        <dt>Project web page</dt>
+                        <dd>{{ project.project_web_page | default:'-' }}</dd>
+                        <dt>Funding resources</dt>
+                        <dd>{{ project.funding_sources.all | join:", "  | default:'-'  }}</dd>
+                        <dt>Sub projects</dt>
+                        <dd>
+                            {% if project.child_projects.all %}
+                                {% for prj in  project.child_projects.all %}
+                                <a href="{% url 'project' pk=prj.pk %}">{{ prj }}</a>
+                                {% endfor %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </dd>
+                        <dt>Umbrella project</dt>
+                        <dd>
+                            {%if project.umbrella_project  %}<a href="{% url 'project' pk=project.umbrella_project.pk %}">{{project.umbrella_project  }}</a> {% else %}-{% endif %}
+                        </dd>
+                    </dl>
+                </div>
+                <div class="col">
+                  <dl>
+                        <dt>Study features</dt>
+                        <dd>{{ project.study_terms.all | join:", " | default:'-' }}</dd>
+                        <dt>Disease terms</dt>
+                        <dd>{{ project.disease_terms.all | join:", " | default:'-' }}</dd>
+                        <dt>Gene terms</dt>
+                        <dd>{{ project.gene_terms.all | join:", " | default:'-' }}</dd>
+                        <dt>Phenotype terms</dt>
+                        <dd>{{ project.phenotype_terms.all | join:", " | default:'-' }}</dd>
+                        <dt>Includes automated profiling</dt>
+                        <dd>{{ project.includes_automated_profiling | yesno }}</dd>
+                        <dt>Remarks</dt>
+                        <dd>{{ project.comments | default:'-' }}</dd>
+                        <dt>Last update</dt>
+                        <dd>{{ project.updated }}</dd>
+                    </dl>
+                </div>
+                <div class="floating-buttons-absolute">
+                    {% if request.user.is_superuser %}
+                        <p class="text-center mt-5">
+                            <a  href="{% url 'admin:core_project_change' project.pk %}" 
+                                id="project-admin" 
+                                title="See in django admin"  
+                                class="btn btn-default bmd-btn-fab float-right">
+                                    <i class="material-icons">build</i>
+                            </a>
+
+                            {% if not project.is_published %}
+                                <a href="{% url 'project_publish' pk=project.pk %}" 
+                                   id="publish" 
+                                   title="Publish project"
+                                   class="btn btn-default bmd-btn-fab float-right">
+                                    <i class="material-icons">publish</i>
+                                </a>
+                            {% else %}
+                                <a  href="{% url 'project_unpublish' pk=project.pk %}" 
+                                    id="unpublish" 
+                                    title="Unpublish project"
+                                    data-confirm="Are you sure to unpublish the project? The changes won't be propagated to other systems!"
+                                    class="btn btn-default bmd-btn-fab float-right">
+                                        <i class="material-icons">undo</i>
+                                </a>
+                            {% endif %}
+                        </p>
+                    {% endif %}
+
+                    {% if is_admin %}
+                        <a class="btn btn-default bmd-btn-fab float-right"
+                           title="Manage project permissions"
+                           href="{% url 'permission_project' pk=project.id %}"><i
                                 class="material-icons">visibility</i>
                         </a> {% endif %} {% if can_edit %}
                 <a class="btn btn-primary bmd-btn-fab float-right" title="Edit project" href="{% url 'project_edit' pk=project.id %}"><i
@@ -66,13 +113,14 @@
             </div>
         </div>
     </div>
-</div>
-{% if project.description %}
-<div class="row">
-    <div class="border-left border-3 border-primary card col mt-4">
-        <div class="card-body">
-            <h2 class="card-title">Lay Summary</h2>
-            <blockquote>{{ project.description }}</blockquote>
+    {% if project.description %}
+        <div class="row">
+            <div class="border-left border-3 border-primary card col mt-4">
+                <div class="card-body">
+                    <h2 class="card-title">Lay Summary</h2>
+                    <blockquote>{{ project.description | linebreaks }}</blockquote>
+                </div>
+            </div>
         </div>
     </div>
 </div>

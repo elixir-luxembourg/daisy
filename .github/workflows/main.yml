@@ -1,0 +1,35 @@
+name: Execute the tests
+
+on:
+  push:
+    branches:
+    - use-github-actions
+    - master
+    - develop
+    - dependabot/**
+  pull_request:
+    branches:
+    - develop
+    - master
+
+jobs:
+  tests:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the repository
+      uses: actions/checkout@v2
+
+    - name: Prepare DAISY settings for CI
+      run: cp elixir_daisy/settings_compose_ci.py elixir_daisy/settings_compose.py
+
+    - name: Build and start containers
+      run: docker-compose up -d --build
+
+    - name: Execute the tests
+      run: docker-compose exec -T web python setup.py pytest
+
+    - name: Stop containers
+      if: always()
+      run: docker-compose down

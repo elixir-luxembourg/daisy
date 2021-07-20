@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}Add partner and role to contract{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
 
 {% block content %}
     <div class="jumbotron mt-4">
@@ -8,7 +8,7 @@
     </div>
     <div class="card">
         <div class="card-body">
-            <h2 class="card-title">{% block card_title %}Add partner and role{% endblock %}</h2>
+            <h2 class="card-title">{% block card_title %}{{ card_title  }}{% endblock %}</h2>
             <div class="card-text">
                 {% include '_includes/forms.html' %}
             </div>
