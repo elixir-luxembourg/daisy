@@ -45,6 +45,101 @@ class DataDeclaration(CoreModel):
             (constants.Permissions.PROTECTED.value, 'View the protected elements'),
         )
 
+    access_procedure = models.TextField(verbose_name='Remarks on the access procedure', 
+        blank=True, 
+        null=True, 
+        help_text='In case the access type is "open" or "controlled", you can elaborate on that')
+
+    contract = models.ForeignKey(
+        "core.Contract",
+        related_name="data_declarations",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        help_text='The Contract that ensures the legal receipt, keeping and analysis of this data.')
+
+    cohorts = models.ManyToManyField("core.Cohort", 
+        blank=True, 
+        related_name="data_declarations",  
+        help_text='If the data is collected from subjects from a known/predefined Cohort please select it from the list.')
+
+    comments = models.TextField(verbose_name='Remarks on data source', 
+        blank=True, 
+        null=True, 
+        help_text='Please provide any remarks on the source and nature of data.')
+
+    consent_status = EnumChoiceField(
+        ConsentStatus, 
+        default=ConsentStatus.unknown, 
+        blank=False, 
+        null=False,
+        help_text='Is the consent given by data subjects heterogeneous or homogeneous. Homogeneous consent  means that all subjects\' data have the same restrictions. Heterogeneous means that there are differences among consents given by subjects, therefore  there are differing use restrictions on data.')
+
+    dataset = models.ForeignKey("core.Dataset", 
+        related_name="data_declarations", 
+        null=False, 
+        on_delete=models.CASCADE, 
+        help_text='The dataset that embodies this data.')
+
+    data_declarations_parents = models.ManyToManyField('core.DataDeclaration', 
+        verbose_name="Derived/re-used from:", 
+        blank=True,
+        help_text='If this data declaration is based on or derived from an earlier data declaration, then select ancestor data declaration.',
+        related_name='data_declarations_derivated')
+
+    data_types_generated = models.ManyToManyField("core.DataType",
+        blank=True,
+        related_name="data_declarations_generated",
+        verbose_name='Data types generated',  
+        help_text='Select from the list the new types of data generated (if applicable).')
+    
+    data_types_received = models.ManyToManyField("core.DataType",
+        blank=True,
+        related_name="data_declarations_received",
+        verbose_name='Data types received', 
+        help_text='Select from the list the types of data received.')
+
+    data_types_notes = models.TextField(verbose_name="Remarks on data types", 
+        blank=True, 
+        null=True,
+        help_text='Remarks on data types, especially if dealing with a data type not present in the predefined list.')
+
+    deidentification_method = EnumChoiceField(DeidentificationMethod, 
+        verbose_name='Deidentification method',
+        default=DeidentificationMethod.pseudonymization, 
+        blank=False, 
+        null=False, 
+        help_text='How has the data been de-identified, is it pseudonymized or anonymized?')
+
+
+    embargo_date = models.DateField(verbose_name='Embargo date',
+        blank=True,
+        null=True,
+        help_text='If there is an embargo date associated with data, please specify it. Data cannot be published before the embargo date.')
+
+    end_of_storage_duration = models.DateField(verbose_name='Storage end date', 
+        blank=True, 
+        null=True,
+        help_text='Is the data obtained for a limited duration? If so please state the storage end date for data.')
+
+    storage_duration_criteria = models.TextField(verbose_name='Storage duration criteria', 
+        blank=True, 
+        null=True, 
+        help_text='Please describe criteria used to determine storage duration.')
+
+    has_special_subjects = models.NullBooleanField(
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name='Has special subjects?',
+        help_text='\"Special subjects\" refers to minors or those unable to give consent themselves e.g. advanced-stage dementia patients. If the data is collected from such subjects, please tick this box and provide an description.')
+
+    other_external_id = TextFieldWithInputWidget(
+        blank=True,
+        null=True,
+        verbose_name='Other Identifiers',
+        help_text='If the dataset has another external identifier such as accession number(s) or DOI(s), then please state them here.')
+
     partner = models.ForeignKey(
         "core.Partner",
         related_name="data_declarations",
@@ -54,81 +149,22 @@ class DataDeclaration(CoreModel):
         help_text='The Partner/Institute that have provided this data.'
     )
 
-    access_procedure = models.TextField(verbose_name='Remarks on the access procedure', blank=True, null=True,
-                                        help_text='In case the access type is "open" or "controlled", you can elaborate on that')
-
-    contract = models.ForeignKey(
-        "core.Contract",
-        related_name="data_declarations",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        help_text='The Contract that ensures the legal receipt, keeping and analysis of this data.'
-    )
-
-    cohorts = models.ManyToManyField("core.Cohort", blank=True, related_name="data_declarations",
-                                     help_text='If the data is collected from subjects from a known/predefined Cohort please select it from the list.')
-
-    comments = models.TextField(verbose_name='Remarks on data source', blank=True, null=True,
-                                help_text='Please provide any remarks on the source and nature of data.')
-
-    consent_status = EnumChoiceField(ConsentStatus, default=ConsentStatus.unknown, blank=False, null=False,
-                                     help_text='Is the consent given by data subjects heterogeneous or homogeneous. Homogeneous consent  means that all subjects\' data have the same restrictions. Heterogeneous means that there are differences among consents given by subjects, therefore  there are differing use restrictions on data.')
-
-    dataset = models.ForeignKey("core.Dataset", related_name="data_declarations", null=False, on_delete=models.CASCADE,
-                                help_text='The dataset that embodies this data.')
-
-    data_types_generated = models.ManyToManyField("core.DataType",
-                                                  blank=True,
-                                                  related_name="data_declarations_generated",
-                                                  verbose_name='Data types generated',
-                                                  help_text='Select from the list the new types of data generated (if applicable).')
-    data_types_received = models.ManyToManyField("core.DataType",
-                                                 blank=True,
-                                                 related_name="data_declarations_received",
-                                                 verbose_name='Data types received',
-                                                 help_text='Select from the list the types of data received.')
-
-    data_types_notes = models.TextField(verbose_name="Remarks on data types", blank=True, null=True,
-                                        help_text='Remarks on data types, especially if dealing with a data type not present in the predefined list.')
-
-    deidentification_method = EnumChoiceField(DeidentificationMethod, verbose_name='Deidentification method',
-                                              default=DeidentificationMethod.pseudonymization, blank=False, null=False,
-                                              help_text='How has the data been de-identified, is it pseudonymized or anonymized?')
-
-    embargo_date = models.DateField(verbose_name='Embargo date',
-                                    blank=True,
-                                    null=True,
-                                    help_text='If there is an embargo date associated with data, please specify it. Data cannot be published before the embargo date.')
-
-    end_of_storage_duration = models.DateField(verbose_name='Storage end date', blank=True, null=True,
-                                               help_text='Is the data obtained for a limited duration? If so please state the storage end date for data.')
-
-    storage_duration_criteria = models.TextField(verbose_name='Storage duration criteria', blank=True, null=True,
-                                                 help_text='Please describe criteria used to determine storage duration.')
-
-    has_special_subjects = models.NullBooleanField(null=True,
-                                                   blank=True,
-                                                   default=None,
-                                                   verbose_name='Has special subjects?',
-                                                   help_text='\"Special subjects\" refers to minors or those unable to give consent themselves e.g. advanced-stage dementia patients. If the data is collected from such subjects, please tick this box and provide an description.')
-
-    other_external_id = TextFieldWithInputWidget(blank=True,
-                                                 null=True,
-                                                 verbose_name='Other Identifiers',
-                                                 help_text='If the dataset has another external identifier such as accession number(s) or DOI(s), then please state them here.')
-
-    share_category = EnumChoiceField(ShareCategory, verbose_name='Share category', blank=True, null=True)
+    share_category = EnumChoiceField(ShareCategory, 
+        verbose_name='Share category', 
+        blank=True, 
+        null=True)
 
     special_subjects_description = models.TextField(verbose_name='Description of special subjects',
-                                                    blank=True,
-                                                    help_text='This field should describe the nature of special data subjects (e.g. minors, elderly etc).',
-                                                    null=True)
+        blank=True,
+        help_text='This field should describe the nature of special data subjects (e.g. minors, elderly etc).',
+        null=True)
 
     subjects_category = EnumChoiceField(SubjectCategory,
-                                        default=SubjectCategory.cases_and_controls,
-                                        verbose_name='Subjects category', blank=False, null=False,
-                                        help_text='This field designates if the data subjects are cases or controls or both.')
+        default=SubjectCategory.cases_and_controls,
+        verbose_name='Subjects category', 
+        blank=False, 
+        null=False,
+        help_text='This field designates if the data subjects are cases or controls or both.')
 
     submission_id = TextFieldWithInputWidget(
         verbose_name='Submission ID',
@@ -137,21 +173,17 @@ class DataDeclaration(CoreModel):
         blank=True)
 
     title = TextFieldWithInputWidget(blank=False,
-                                     max_length=255,
-                                     verbose_name='Title', unique=True,
-                                     help_text='Title is a brief description for the  data declaration. Think of how you - in the lab - refer to  data from a particular source; use that as the title.')
+        max_length=255,
+        verbose_name='Title', 
+        unique=True,
+        help_text='Title is a brief description for the  data declaration. Think of how you - in the lab - refer to  data from a particular source; use that as the title.')
 
     unique_id = models.UUIDField(default=uuid.uuid4,
-                                 editable=False,
-                                 unique=True,
-                                 blank=False,
-                                 verbose_name='Unique identifier',
-                                 help_text='This is the unique identifier used by DAISY for this dataset. This field annot be edited.')
-
-    data_declarations_parents = models.ManyToManyField('core.DataDeclaration', verbose_name="Derived/re-used from:",
-                                                       blank=True,
-                                                       help_text='If this data declaration is based on or derived from an earlier data declaration, then select ancestor data declaration.',
-                                                       related_name='data_declarations_derivated')
+        editable=False,
+        unique=True,
+        blank=False,
+        verbose_name='Unique identifier',
+        help_text='This is the unique identifier used by DAISY for this dataset. This field annot be edited.')
 
     def copy(self, source_data_declaration, excluded_fields=None, ignore_many_to_many=False):
         many_to_many_fields = [
@@ -233,3 +265,10 @@ class DataDeclaration(CoreModel):
     def data_types(self):
         return set(DataType.objects.filter(data_declarations_generated=self).all()).union(
             set(DataType.objects.filter(data_declarations_received=self).all()))
+
+    def publish_subentities(self):
+        if self.partner:
+            self.partner.publish()
+
+        for cohort in self.cohorts.all():
+            cohort.publish()

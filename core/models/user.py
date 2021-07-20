@@ -1,14 +1,22 @@
+from datetime import datetime
+
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.crypto import get_random_string
 from enumchoicefield import EnumChoiceField
 from enumchoicefield.enum import ChoiceEnum
 from guardian.shortcuts import assign_perm, remove_perm
 
 from core import constants
+from core.models import Access, Dataset
 from core.permissions import ProjectChecker, DatasetChecker, ContractChecker, AutoChecker
 from .utils import TextFieldWithInputWidget
 
+
+def create_api_key(length=48):
+    allowed_chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
+    return get_random_string(length, allowed_chars)
 
 class UserSource(ChoiceEnum):
     ACTIVE_DIRECTORY = "active directory"
@@ -84,11 +92,26 @@ class User(AbstractUser):
         app_label = 'core'
         ordering = ['first_name', 'last_name']
 
+    api_key = models.CharField(verbose_name='API key',
+        blank=False,
+        null=False,
+        max_length=64,
+        default=create_api_key,
+        help_text='A token used to authenticate the user for accessing API'
+    )
     email = models.EmailField(blank=False)
-    source = EnumChoiceField(UserSource, default=UserSource.MANUAL, blank=False, null=False)
     full_name = TextFieldWithInputWidget(max_length=128)
-
     objects = UserManager()
+    oidc_id = models.CharField(verbose_name='OIDC user identifier',
+        blank=True,
+        null=True,
+        max_length=64,
+        unique=True,
+        help_text="Internal user identifier coming from OIDC's IdP"
+    )
+    source = EnumChoiceField(UserSource, default=UserSource.MANUAL, blank=False, null=False)
+
+    
 
     def __str__(self):
         fullname = self.get_full_name()
@@ -186,3 +209,53 @@ class User(AbstractUser):
         True if he has ADMIN right on the project
         """
         return ContractChecker(self).check(constants.Permissions.EDIT, contract)
+
+    def get_access_permissions(self):
+        """
+        Finds Accesses of the user, and returns a list of their dataset IDs 
+        """
+        accesses = Access.objects.filter(user=self, dataset__is_published=True)
+        return [access.dataset.elu_accession for access in accesses]
+
+    def add_rems_entitlement(self, 
+        application: str, 
+        resource: str, 
+        user_id: str,
+        email: str) -> bool:
+        """
+        Tries to find a dataset with `elu_accession` equal to `resource`.
+        If it exists, it will add a new logbook entry (Access object) set to the current user
+        Otherwise - it will raise an exception
+        """
+        notes = f'Set automatically by REMS application #{application}'
+        dataset = Dataset.objects.get(elu_accession=resource)
+
+        # TODO: add REMS user (e.g. `system::REMS`) to the system
+        # Then add this information to created_by of an Access
+        
+        new_logbook_entry = Access(
+            user=self,
+            dataset=dataset,
+            access_notes=notes,
+            granted_on=datetime.now(),
+            was_created_automatically=True
+        )
+        new_logbook_entry.save()
+        return True
+
+    @classmethod
+    def find_user_by_email_or_oidc_id(cls, email, oidc_id, method):
+        if method == 'email':
+            return cls.objects.get(email=email)
+        elif method == 'id':
+            return cls.objects.get(oidc_id=oidc_id)
+        elif method == 'auto':
+            if cls.objects.filter(oidc_id=oidc_id).count() == 1:
+                return cls.objects.get(oidc_id=oidc_id)
+            if cls.objects.filter(email=email).count() == 1:
+                return cls.objects.get(email=email)
+            else:
+                message = f'There are either zero, or 2 and more users with such `email` and `oidc_id`!'
+                raise cls.DoesNotExist(message)
+        else:
+            raise KeyError('Wrong method! Only `id`, `email` and `auto` implemented!')
