@@ -110,8 +110,18 @@ class CohortFactory(factory.django.DjangoModelFactory):
         model = 'core.Cohort'
         django_get_or_create = ('title',)
 
-    owners = factory.Faker('city')
+    title = factory.Faker("bs")
     comments = factory.Faker('text')
+    
+    @factory.post_generation
+    def owners(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            # A list of contacts/owners were passed in, use them
+            for contact in extracted:
+                self.owners.add(contact)
 
 
 class DatasetFactory(factory.django.DjangoModelFactory):

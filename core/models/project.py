@@ -214,6 +214,8 @@ class Project(CoreTrackedModel):
         d = self.to_dict()
         contacts = map(lambda v: f"[{v['first_name']} {v['last_name']}, {v['email']}]", d['contacts'])
         d['contacts'] = ','.join(contacts)
+        publications = map(lambda v: f"[{v['citation']}, {v['doi']}]", d['publications'])
+        d['publications'] = ','.join(publications)
         return d
 
 # faster lookup for permissions

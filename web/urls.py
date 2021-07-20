@@ -52,7 +52,7 @@ web_urls = [
     # Contracts and partner roles
     path('contracts/', contract_list, name="contracts"),
     path('contracts/add/', ContractCreateView.as_view(), name='contract_add'),
-    path('contracts/export/', contracts_export, name='contract_export'),
+    path('contracts/export/', contracts_export, name='contracts_export'),
     path('contracts/<int:pk>/', ContractDetailView.as_view(), name="contract"),
     path('contracts/<int:pk>/add-partner-role', contracts.PartnerRoleCreateView.as_view(), name="add_partner_role_to_contract"),
     path('contracts/<int:pk>/delete', ContractDelete.as_view(), name="contract_delete"),
