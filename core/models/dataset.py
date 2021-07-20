@@ -6,7 +6,7 @@ from django.urls import reverse
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from core import constants
 
-from core.models.legal_basis import LegalBasis
+
 from .utils import CoreTrackedModel, TextFieldWithInputWidget
 from .partner import HomeOrganisation
 
@@ -132,12 +132,13 @@ class Dataset(CoreTrackedModel):
         base_dict = {
             "source": settings.SERVER_URL,
             "id_at_source": self.id.__str__(),
-            "project": self.project.acronym if self.project else None,
+            "external_id": self.elu_accession if self.elu_accession is not None and self.elu_accession != "-" else None,
             "name": self.title,
-            "elu_accession": self.elu_accession if self.elu_accession else None,
             "description":  self.comments if self.comments else None,
             "elu_uuid": self.unique_id.__str__() if self.unique_id else None,
             "other_external_id": self.other_external_id if self.other_external_id else None,
+            "project": self.project.acronym if self.project else None,
+            "project_external_id": self.project.elu_accession if self.project else None,
             "data_declarations": [ddec.to_dict() for ddec in self.data_declarations.all()],
             "legal_bases": [x.to_dict() for x in self.legal_basis_definitions.all()],
             "storages": storage_dicts,

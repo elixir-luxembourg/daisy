@@ -111,6 +111,7 @@ class DataDeclaration(CoreModel):
         null=False, 
         help_text='How has the data been de-identified, is it pseudonymized or anonymized?')
 
+
     embargo_date = models.DateField(verbose_name='Embargo date',
         blank=True,
         null=True,
@@ -221,34 +222,39 @@ class DataDeclaration(CoreModel):
     def __str__(self):
         return self.title
 
-
     def get_long_name(self):
-        lname =  self.title + " Dataset: "+ self.dataset.title + ", Project: "
+        lname = self.title + " Dataset: " + self.dataset.title + ", Project: "
         if (self.dataset.project is not None and self.dataset.project.title is not None):
-             lname +=  self.dataset.project.title
+            lname += self.dataset.project.title
         else:
-            lname +=   "-"
+            lname += "-"
         return lname
-
 
     def to_dict(self):
         use_restrictions_list = []
         for restriction in self.data_use_restrictions.all():
             use_restrictions_list.append(restriction.to_dict())
 
+        cohort_short_dicts = []
+        for cohort in self.cohorts.all():
+            cohort_short_dicts.append({"cohort": cohort.title if cohort.title else None,
+                                       "cohort_external_id": cohort.elu_accession if cohort.elu_accession is not None and cohort.elu_accession != "-" else None})
+
         base_dict = {
             "title": self.title,
-            "data_types":[ dt.name for dt in list(self.data_types)],
+            "cohorts": cohort_short_dicts,
+            "data_types": [dt.name for dt in list(self.data_types)],
             "data_types_notes": self.data_types_notes if self.data_types_notes else None,
             "access_category": self.share_category.name if self.share_category else None,
             "access_procedure": self.access_procedure if self.access_procedure else None,
             "subjects_category": self.subjects_category.name if self.subjects_category else None,
-            "de_identification":  self.deidentification_method.name  if self.deidentification_method else None,
-            "consent_status":  self.consent_status.name if self.consent_status else None,
+            "de_identification": self.deidentification_method.name if self.deidentification_method else None,
+            "consent_status": self.consent_status.name if self.consent_status else None,
             "has_special_subjects": self.has_special_subjects,
             "special_subjects_description": self.special_subjects_description,
             "embargo_date": self.embargo_date.strftime('%Y-%m-%d') if self.embargo_date else None,
-            "storage_end_date": self.end_of_storage_duration.strftime('%Y-%m-%d') if self.end_of_storage_duration else None,
+            "storage_end_date": self.end_of_storage_duration.strftime(
+                '%Y-%m-%d') if self.end_of_storage_duration else None,
             "storage_duration_criteria": self.storage_duration_criteria if self.storage_duration_criteria else None,
             "use_restrictions": use_restrictions_list,
         }

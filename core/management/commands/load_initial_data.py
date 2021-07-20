@@ -160,6 +160,9 @@ class Command(BaseCommand):
             for partner in data:
                 _current = {k: v for k, v in partner.items()}
                 _current.update({'is_published': True})
+                if 'external_id' in _current:
+                    _current['elu_accession'] = _current['external_id']
+                    _current.pop('external_id')
                 try:
                     p = Partner.objects.get(elu_accession=_current['elu_accession'])
                     for key, value in _current.items():
@@ -174,6 +177,9 @@ class Command(BaseCommand):
         with open(os.path.join(FIXTURE_DIR, 'elu-cohorts.json'), 'r', encoding='utf-8') as handler:
             data = json.load(handler)
             for cohort in data:
+                if 'external_id' in cohort:
+                    cohort['elu_accession'] = cohort['external_id']
+                    cohort.pop('external_id')
                 try:
                     c = Cohort.objects.get(elu_accession=cohort['elu_accession'])
                 except Cohort.DoesNotExist:
