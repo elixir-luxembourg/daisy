@@ -123,9 +123,51 @@ class PartnerRoleCreateView(CreateView):
         else:
             return HttpResponseForbidden()
 
+    def get_context_data(self, **kwargs):
+        context = super(PartnerRoleCreateView, self).get_context_data(**kwargs)
+        context['card_title'] = 'Add partner and role'
+        context['page_title'] = 'Add partner and role to contract'
+        return context
+
     def get_initial(self):
         initial = super().get_initial()
         contract_id = self.kwargs.get('pk')
+        initial.update({'user': self.request.user})
+        if contract_id:
+            initial.update({'contract': contract_id})
+        return initial
+
+    def get_success_url(self):
+        return reverse_lazy('contract', kwargs={'pk': self.contract.id})
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        return response
+
+    
+class PartnerRoleEditView(UpdateView):
+    model = PartnerRole
+    template_name = 'contracts/partner_role_form.html'
+    form_class = PartnerRoleForm
+
+    def dispatch(self, request, *args, **kwargs):
+        self.contract = self.get_object().contract
+        the_user = request.user
+        can_edit = the_user.can_edit_contract(self.contract)
+        if can_edit:
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden()
+
+    def get_context_data(self, **kwargs):
+        context = super(PartnerRoleEditView, self).get_context_data(**kwargs)
+        context['card_title'] = 'Edit partner and role'
+        context['page_title'] = 'Edit partner and role'
+        return context
+
+    def get_initial(self):
+        initial = super().get_initial()
+        contract_id = self.get_object().contract.id
         initial.update({'user': self.request.user})
         if contract_id:
             initial.update({'contract': contract_id})
