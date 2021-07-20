@@ -51,8 +51,8 @@ class PickUserForm(forms.Form):
 
 class UserAuthForm(AuthenticationForm):
     username = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'validate', 'placeholder': settings.LOGIN_USERNAME_PLACEHOLDER}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': settings.LOGIN_PASSWORD_PLACEHOLDER}))
+        widget=forms.TextInput(attrs={'class': 'validate', 'placeholder': settings.LOGIN_USERNAME_PLACEHOLDER, 'autocomplete': 'on'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': settings.LOGIN_PASSWORD_PLACEHOLDER, 'autocomplete': 'on'}))
 
     def clean(self):
         username = self.cleaned_data.get('username')

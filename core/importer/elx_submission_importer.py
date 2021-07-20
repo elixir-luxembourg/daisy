@@ -149,7 +149,7 @@ class DishSubmissionImporter(BaseImporter):
 
     def process_submission_as_dataset(self, submission_dict, project):
         try:
-            elu_accession = submission_dict['elu_accession']
+            elu_accession = submission_dict['external_id']
         except KeyError:
             raise DatasetImportError(data='submission without accession number')
 

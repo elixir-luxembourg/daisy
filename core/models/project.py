@@ -61,9 +61,7 @@ class Project(CoreTrackedModel):
                                    null=True,
                                    help_text='Lay summary should provide a brief overview of project goals and approach. Lay summary may be displayed publicly if the project\'s data gets published in the data catalog')
 
-    dpia = models.TextField(verbose_name='DPIA Link',
-                            blank=True,
-                            null=True)
+   
 
     disease_terms = models.ManyToManyField('core.DiseaseTerm',
                                            related_name='projects_w_term',
@@ -194,8 +192,9 @@ class Project(CoreTrackedModel):
 
         base_dict = {
             "source": settings.SERVER_URL,
+            "id_at_source": self.id.__str__(),
             "acronym": self.acronym,
-            "elu_accession": self.elu_accession if self.elu_accession else None,
+            "external_id": self.elu_accession if self.elu_accession else None,
             "name": self.title if self.title else None,
             "description":  self.description if self.description else None,
             "has_institutional_ethics_approval": self.has_erp,
