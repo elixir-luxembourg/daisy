@@ -12,7 +12,6 @@ from core.constants import Groups as GroupConstants
 from core.models import Partner, Contact, ContactType, User
 from core.utils import DaisyLogger
 
-from core.models import DataDeclaration, Dataset
 
 PRINCIPAL_INVESTIGATOR = 'Principal_Investigator'
 
@@ -134,50 +133,20 @@ class BaseImporter:
         """
         item_name = item.get('name', 'N/A').encode('utf-8')
         self.logger.debug(f'Trying to import item: "{item_name}"')
-
-        if not self.update:
-            self.skip_update_existing_item(item)
-
-        else:
-            try:
-                result = self.process_json(item)
-            except Exception as e:
-                self.logger.error('Import failed: ')
-                self.logger.error(str(e))
-                if self.verbose:
-                    import traceback
-                    ex = traceback.format_exception(*sys.exc_info())
-                    self.logger.error('\n'.join([e for e in ex]))
-                if self.exit_on_error:
-                    raise e
-                result = False
-            self.logger.debug(f'Successfully imported item: {item_name}')
-            return result
-
-    def skip_update_existing_item(self, item):
-
-        title = item.get('name', 'N/A')
-        
-        try:            
-            dataset = Dataset.objects.get(title=title)
-            if dataset:
-                self.logger.warning(f" Dataset with title '{dataset.title}' already found. It will not be updated")
-        except:
-            try:
-                result = self.process_json(item)
-            except Exception as e:
-                    self.logger.error('Import failed: ')
-                    self.logger.error(str(e))
-                    if self.verbose:
-                        import traceback
-                        ex = traceback.format_exception(*sys.exc_info())
-                        self.logger.error('\n'.join([e for e in ex]))
-                    if self.exit_on_error:
-                        raise e
-                    result = False
-            self.logger.debug(f"Successfully imported item: '{title}'")
-            return result
-
+        try:
+            result = self.process_json(item)
+        except Exception as e:
+            self.logger.error('Import failed: ')
+            self.logger.error(str(e))
+            if self.verbose:
+                import traceback
+                ex = traceback.format_exception(*sys.exc_info())
+                self.logger.error('\n'.join([e for e in ex]))
+            if self.exit_on_error:
+                raise e
+            result = False
+        self.logger.debug(f'Successfully imported item: {item_name}')
+        return result
 
     def process_json(self, import_dict):
         raise NotImplementedError("Abstract method: Implement this method in the child class.")
