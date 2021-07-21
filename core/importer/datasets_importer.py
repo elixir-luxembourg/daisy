@@ -33,6 +33,9 @@ class DatasetsImporter(BaseImporter):
         try:
             dataset = get_dataset(elu_accession = dataset_dict.get('external_id', None), title=title)
             title_to_show = title.encode('utf8')
+            if not self.update:
+                self.logger.warning(f"Dataset with title '{title_to_show}' already found. The update will be skipped")
+                return True
             self.logger.warning(f"Dataset with title '{title_to_show}' already found. It will be updated.")
             if dataset.is_published:
                 raise DatasetImportError(data=f'Updating published entity is not supported - dataset: "{dataset.title}".')
