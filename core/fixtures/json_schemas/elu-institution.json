@@ -1,0 +1,51 @@
+{
+  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.2/schemas/elu-institution.json",
+  "title": "ELIXIR Luxembourg Partner Schema",
+  "description": "A JSON Schema for describing partners institutes.",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{
+    "$ref": "#/definitions/elu:partner"
+  }],
+  "definitions": {
+    "elu:partner": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.2/schemas/elu-core.json"
+        }
+      ],
+      "properties": {
+        "is_clinical": {
+          "type": "boolean"
+        },
+        "geo_category": {
+          "type": "string",
+          "enum": [
+            "National",
+            "EU",
+            "Non_EU",
+            "International"
+          ]
+        },
+        "sector_category": {
+          "type": "string",
+          "enum": [
+            "PUBLIC",
+            "PRIVATE_P",
+            "PRIVATE_NP"
+          ]
+        },
+        "address": {
+          "type": ["string", "null"]
+        },
+        "country_code":{
+          "title": "ISO 3166-1 Alpha-2 Country code",
+          "type": ["string", "null"],
+          "pattern": "^[A-Z]{2}$"
+        }
+      }
+    }
+  }
+}
+

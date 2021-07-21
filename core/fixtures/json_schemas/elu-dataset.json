@@ -1,11 +1,12 @@
 {
-  "description": "ELIXIR Luxembourg Projects Schema",
-  "title": "A JSON Schema for describing biomedical research Projects.",
+  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.2/schemas/elu-dataset.json",
+  "title": "ELIXIR Luxembourg Datasets Schema",
+  "description": "A JSON Schema for describing biomedical research Datasets.",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "allOf": [
     {
-      "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-core.json"
+      "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.2/schemas/elu-core.json"
     }
   ],
   "properties": {
@@ -279,9 +280,4 @@
     }
   }
 }
-
-
-
-
-
 
