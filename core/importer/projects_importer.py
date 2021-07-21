@@ -1,6 +1,7 @@
 from core.importer.base_importer import BaseImporter
 from core.importer.JSONSchemaValidator import ProjectJSONSchemaValidator
 from core.models import Partner, Project, Publication
+from core.exceptions import ProjectImportError
 
 
 class ProjectsImporter(BaseImporter):
@@ -23,11 +24,23 @@ class ProjectsImporter(BaseImporter):
                         for publication_dict
                         in project_dict.get('publications', [])]
 
+
+        def get_project(elu_accession, title, acronym):
+            if elu_accession and elu_accession != '-':
+                project = Project.objects.get(elu_accession=elu_accession)
+            else: 
+                project = (Project.objects.filter(title=title) | Project.objects.filter(acronym=acronym))
+                if len(project) == 1:
+                    project = project[0]
+                elif len(project) > 1:
+                    raise ProjectImportError(data=f'Multiple projects matched by title="{title}" or acronym="{acronym}".')
+                else:
+                    raise Project.DoesNotExist
+            return project
+
+
         name = project_dict.get('name', "N/A")
-        if 'acronym' in project_dict:
-            acronym = project_dict.get('acronym')
-        else:
-            acronym = name
+        acronym = project_dict.get('acronym', name)
         description = project_dict.get('description', None)
         elu_accession = project_dict.get('external_id', '-')
         has_cner = project_dict.get('has_national_ethics_approval', False)
@@ -35,7 +48,16 @@ class ProjectsImporter(BaseImporter):
         cner_notes = project_dict.get('national_ethics_approval_notes', None)
         erp_notes = project_dict.get('institutional_ethics_approval_notes', None)
 
-        project = Project.objects.filter(acronym=acronym).first()
+        try:
+            project = get_project(elu_accession=elu_accession,
+                              title=name,
+                              acronym=acronym)
+            if project.is_published:
+                raise ProjectImportError(data=f'Updating published entity is not supported: "{project.title}".')
+
+        except Project.DoesNotExist:
+            project = None
+       
         if project is None:
             project, _ = Project.objects.get_or_create(acronym=acronym,
                                                        title=name,
@@ -57,25 +79,8 @@ class ProjectsImporter(BaseImporter):
             project.erp_notes = erp_notes
             project.elu_accession = elu_accession
 
-        try:
-            if 'start_date' in project_dict and project_dict.get('start_date') and len(project_dict.get('start_date')) > 0:
-                project.start_date = self.process_date(project_dict.get('start_date'))
-        except self.DateImportException:
-            date_str = project_dict.get('start_date')
-            message = "\tCouldn't import the 'start_date'. Does it follow the '%Y-%m-%d' format?\n\t"
-            message = message + f'Was: "{date_str}". '
-            message = message + "Continuing with empty value."
-            self.logger.warning(message)
-
-        try:
-            if 'end_date' in project_dict and project_dict.get('end_date') and len(project_dict.get('end_date')) > 0:
-                project.end_date = self.process_date(project_dict.get('end_date'))
-        except self.DateImportException:
-            date_str = project_dict.get('end_date')
-            message = "\tCouldn't import the 'end_date'. Does it follow the '%Y-%m-%d' format?\n\t"
-            message = message + f'Was: "{date_str}". '
-            message = message + "Continuing with empty value."
-            self.logger.warning(message)
+        self._process_date_attribute(project, project_dict, "start_date")
+        self._process_date_attribute(project, project_dict, "end_date")
 
         project.save()
 
@@ -97,6 +102,9 @@ class ProjectsImporter(BaseImporter):
         project.save()
         for local_custodian in local_custodians:
             local_custodian.assign_permissions_to_dataset(project)
+
+        if self.publish_on_import:
+            self.publish_object(project)
 
         return True
 
@@ -125,3 +133,14 @@ class ProjectsImporter(BaseImporter):
         
         publication.save()
         return publication
+
+    def _process_date_attribute(self, project_obj, project_dict, attribute_name):
+        try:
+            if attribute_name in project_dict and project_dict.get(attribute_name) and len(project_dict.get(attribute_name)) > 0:
+                setattr(project_obj, attribute_name, self.process_date(project_dict.get(attribute_name)))
+        except self.DateImportException:
+            date_str = project_dict.get(attribute_name)
+            message = f'\tCouldn''t import the "{attribute_name}". Does it follow the ''%Y-%m-%d'' format?\n\t'
+            message = message + f'Was: "{date_str}". '
+            message = message + "Continuing with empty value."
+            self.logger.warning(message)
