@@ -13,8 +13,6 @@ from core.models import Partner, Contact, ContactType, User
 from core.utils import DaisyLogger
 
 from core.models import DataDeclaration, Dataset
-from core.importer import datasets_importer
-
 
 PRINCIPAL_INVESTIGATOR = 'Principal_Investigator'
 
@@ -129,9 +127,6 @@ class BaseImporter:
             result = self.import_object(item) and result
         self.logger.debug('Finished importing the object(s)')
         return result
-
-
-
 
     def import_object(self, item: Dict):
         """
