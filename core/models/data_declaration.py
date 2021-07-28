@@ -44,6 +44,9 @@ class DataDeclaration(CoreModel):
             (constants.Permissions.VIEW.value, 'View the dataset'),
             (constants.Permissions.PROTECTED.value, 'View the protected elements'),
         )
+        constraints = [
+            models.UniqueConstraint(fields=['title', 'dataset'], name='unique_title_dataset')
+        ]
 
     access_procedure = models.TextField(verbose_name='Remarks on the access procedure', 
         blank=True, 
@@ -174,8 +177,7 @@ class DataDeclaration(CoreModel):
 
     title = TextFieldWithInputWidget(blank=False,
         max_length=255,
-        verbose_name='Title', 
-        unique=True,
+        verbose_name='Title',
         help_text='Title is a brief description for the  data declaration. Think of how you - in the lab - refer to  data from a particular source; use that as the title.')
 
     unique_id = models.UUIDField(default=uuid.uuid4,
