@@ -11,6 +11,6 @@ class Command(ImportBaseCommand):
             exit_on_error=False,
             verbose=False,
             validate=True,
-            update=True
+            skip_on_exist=True
         ):
-        return DatasetsImporter(publish_on_import, exit_on_error, verbose, validate, update)
+        return DatasetsImporter(publish_on_import, exit_on_error, verbose, validate, skip_on_exist)
