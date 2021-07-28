@@ -99,17 +99,28 @@
                     {% if is_admin %}
                         <a class="btn btn-default bmd-btn-fab float-right"
                            title="Manage project permissions"
-                           href="{% url 'permission_project' pk=project.id %}"><i
-                                class="material-icons">visibility</i>
-                        </a> {% endif %} {% if can_edit %}
-                <a class="btn btn-primary bmd-btn-fab float-right" title="Edit project" href="{% url 'project_edit' pk=project.id %}"><i
-                                class="material-icons">edit</i>
-                        </a> {% if not project.is_published %}
-                <a id="deleteproject" class="btn btn-danger bmd-btn-fab float-right red" title="Delete project" data-toggle="modal" data-target="#modal" data-ajax-url="{% url 'project_delete' project.id %}">
-                    <i class="material-icons">delete</i>
-
-                </a>
-                {% endif %} {% endif %}
+                           href="{% url 'permission_project' pk=project.id %}">
+                                <i class="material-icons">visibility</i>
+                        </a>
+                    {% endif %} 
+                    {% if can_edit %}
+                        <a class="btn btn-primary bmd-btn-fab float-right" 
+                           title="Edit project"
+                           href="{% url 'project_edit' pk=project.id %}">
+                            <i class="material-icons">edit</i>
+                        </a> 
+                        {% if not project.is_published %}
+                            <a id="deleteproject" 
+                               class="btn btn-danger bmd-btn-fab float-right red" 
+                               title="Delete project" 
+                               data-toggle="modal" 
+                               data-target="#modal" 
+                               data-ajax-url="{% url 'project_delete' project.id %}">
+                                <i class="material-icons">delete</i>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
