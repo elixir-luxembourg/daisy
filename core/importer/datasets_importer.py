@@ -87,34 +87,6 @@ class DatasetsImporter(BaseImporter):
 
         return True
 
-    # @staticmethod
-    # def process_local_custodians(dataset_dict):
-    #     result = []
-    #
-    #     local_custodians = dataset_dict.get('local_custodian', [])
-    #
-    #     for local_custodian in local_custodians:
-    #         custodian_str_strip = local_custodian.strip()
-    #         user = (User.objects.filter(full_name__icontains=custodian_str_strip.lower()) | User.objects.filter(
-    #             full_name__icontains=custodian_str_strip.upper())).first()
-    #         if user is None:
-    #             names = custodian_str_strip.split(maxsplit=1)
-    #
-    #             if len(names) == 2:
-    #                 logger.warning('no user found for %s and inactive user will be created', custodian_str_strip)
-    #                 usr_name = names[0].strip().lower() + '.' + names[1].strip().lower()
-    #                 user = User.objects.create(username=usr_name, password='', first_name=names[0], last_name=names[1],is_active=False,
-    #                                            email='inactive.user@uni.lu',
-    #                                            )
-    #                 user.staff = True
-    #                 g = Group.objects.get(name=GroupConstants.VIP.value)
-    #                 user.groups.add(g)
-    #                 user.save()
-    #                 result.append(user)
-    #
-    #         else:
-    #             result.append(user)
-    #     return result
 
     def process_project(self, project_acronym):
         try:
