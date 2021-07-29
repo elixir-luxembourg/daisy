@@ -19,7 +19,7 @@ class PartnersImporter(BaseImporter):
 
     def process_json(self, partner_dict):
         def get_partner(elu_accession, name):
-            if elu_accession and elu_accession != '-':
+            if elu_accession:
                 partner = Partner.objects.get(elu_accession=elu_accession)
             else: 
                 partner = Partner.objects.get(name=name)
