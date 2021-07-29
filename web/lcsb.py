@@ -8,6 +8,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest
 
 from core.models.contact import Contact
+from core.models.dataset import Dataset
 from core.models.user import User
 from core.utils import DaisyLogger
 
@@ -56,16 +57,23 @@ def handle_rems_entitlement(data: Dict) -> bool:
         message = f"'REMS_MATCH_USERS_BY' must contain either 'id', 'email' or 'auto', but is: {method} instead!"
         logger.warn(message)
         raise ImproperlyConfigured(message)
+
+    try:
+        Dataset.objects.get(elu_accession=resource)
+    except Dataset.DoesNotExist:
+        message = f'Dataset with such `elu_accession` ({resource}) does not exist! Quitting'
+        logger.debug(f' * {message}')
+        raise ValueError(message)
     
     try:
         user = User.find_user_by_email_or_oidc_id(email, user_id, method)
         return user.add_rems_entitlement(application, resource, user_id, email)
-    except:
-        logger.debug(' * Didn''t find the user with such oidc id or email, will add a contact instead')
+    except Exception as ex:
+        logger.debug(' * Didn''t find the user with such oidc id or email, will add a contact instead: ' + str(ex))
     
     try:
         contact = Contact.get_or_create(email, user_id, resource, method)
         return contact.add_rems_entitlement(application, resource, user_id, email)
-    except:
-        raise ValueError('Something went wrong during creating an entry for Access/Contact')
+    except Exception as ex:
+        raise ValueError('Something went wrong during creating an entry for Access/Contact: ' + str(ex))
 
