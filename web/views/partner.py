@@ -27,7 +27,7 @@ class PartnerCreateView(CreateView, AjaxViewMixin):
     def get_initial(self):
         initial = super().get_initial()
 
-        initial.update({'elu_accession': '-', 'user': self.request.user})
+        initial.update({'elu_accession': None, 'user': self.request.user})
         return initial
 
     def get_success_url(self):
