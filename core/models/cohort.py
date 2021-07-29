@@ -58,7 +58,7 @@ class Cohort(CoreTrackedModel):
         base_dict = {
             "source": settings.SERVER_URL,
             "id_at_source": self.id.__str__(),
-            "external_id": self.elu_accession if self.elu_accession is not None and self.elu_accession != "-" else None,
+            "external_id": self.elu_accession,
             'name': self.title,
             'description': self.comments,
             'url': self.cohort_web_page,
