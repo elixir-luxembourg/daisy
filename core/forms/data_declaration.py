@@ -57,7 +57,7 @@ class DataDeclarationEditForm(forms.ModelForm):
         """
         cleaned_data = super().clean()
 
-        validate_title_unique(cleaned_data.get('title'), self.dataset)
+        validate_title_unique(cleaned_data.get('title'), self.instance.dataset)
         
         source_partner = cleaned_data.get("partner", None)
         source_contract = cleaned_data.get("contract", None)
