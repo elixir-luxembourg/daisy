@@ -97,11 +97,11 @@ class Access(CoreModel):
 
     user = models.ForeignKey('core.User', 
         related_name='user', 
-        verbose_name='User with access',
+        verbose_name='User that has the access',
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        help_text='Select either an User, or a Contact'
+        help_text='Use either `contact` or `user`'
     )
 
     was_generated_automatically = models.BooleanField(

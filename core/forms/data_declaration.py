@@ -7,6 +7,11 @@ from core.forms.use_restriction import UseRestrictionForm
 from core.models import DataDeclaration, Partner, Contract, GDPRRole
 from core.models.contract import PartnerRole
 
+def validate_title_unique(title, dataset):
+    duplicates = DataDeclaration.objects.filter(title=title,
+                                                dataset=dataset)
+    if duplicates.exists():
+        raise ValidationError({'title': 'Data declaration with the same title already exists for the dataset.'})
 
 class DataDeclarationEditForm(forms.ModelForm):
 
@@ -51,6 +56,9 @@ class DataDeclarationEditForm(forms.ModelForm):
         Override to check selected Partner and Contract match
         """
         cleaned_data = super().clean()
+
+        validate_title_unique(cleaned_data.get('title'), self.instance.dataset)
+        
         source_partner = cleaned_data.get("partner", None)
         source_contract = cleaned_data.get("contract", None)
         is_signatory = False
@@ -185,6 +193,9 @@ class DataDeclarationForm(forms.ModelForm):
         * samples_location field can be specified only when the "generated_from_samples" field is true #70
         """
         cleaned_data = super().clean()
+       
+        validate_title_unique(cleaned_data.get('title'), self.dataset)
+        
         return cleaned_data
 
     def save(self, commit=True):
