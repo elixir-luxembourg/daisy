@@ -132,7 +132,7 @@ class Dataset(CoreTrackedModel):
         base_dict = {
             "source": settings.SERVER_URL,
             "id_at_source": self.id.__str__(),
-            "external_id": self.elu_accession if self.elu_accession is not None and self.elu_accession != "-" else None,
+            "external_id": self.elu_accession,
             "name": self.title,
             "description":  self.comments if self.comments else None,
             "elu_uuid": self.unique_id.__str__() if self.unique_id else None,

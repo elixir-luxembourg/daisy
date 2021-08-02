@@ -238,7 +238,7 @@ class DataDeclaration(CoreModel):
         cohort_short_dicts = []
         for cohort in self.cohorts.all():
             cohort_short_dicts.append({"cohort": cohort.title if cohort.title else None,
-                                       "cohort_external_id": cohort.elu_accession if cohort.elu_accession is not None and cohort.elu_accession != "-" else None})
+                                       "cohort_external_id": cohort.elu_accession})
 
         base_dict = {
             "title": self.title,
