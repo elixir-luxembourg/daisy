@@ -26,7 +26,7 @@ class ProjectsImporter(BaseImporter):
 
 
         def get_project(elu_accession, title, acronym):
-            if elu_accession and elu_accession != '-':
+            if elu_accession:
                 project = Project.objects.get(elu_accession=elu_accession)
             else: 
                 project = (Project.objects.filter(title=title) | Project.objects.filter(acronym=acronym))
@@ -42,7 +42,7 @@ class ProjectsImporter(BaseImporter):
         name = project_dict.get('name', "N/A")
         acronym = project_dict.get('acronym', name)
         description = project_dict.get('description', None)
-        elu_accession = project_dict.get('external_id', '-')
+        elu_accession = project_dict.get('external_id', None)
         has_cner = project_dict.get('has_national_ethics_approval', False)
         has_erp = project_dict.get('has_institutional_ethics_approval', False)
         cner_notes = project_dict.get('national_ethics_approval_notes', None)

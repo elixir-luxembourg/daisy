@@ -24,7 +24,7 @@ class DatasetsImporter(BaseImporter):
             raise DatasetImportError(data='dataset without title')
 
         def get_dataset(elu_accession, title):
-            if elu_accession and elu_accession != '-':
+            if elu_accession:
                 dataset = Dataset.objects.get(elu_accession=elu_accession)
             else: 
                 dataset = Dataset.objects.get(title=title)
@@ -80,7 +80,7 @@ class DatasetsImporter(BaseImporter):
 
         dataset.save()
 
-        dataset.elu_accession = dataset_dict.get('elu_accession', '-') or '-'
+        dataset.elu_accession = dataset_dict.get('elu_accession', None)
 
         if self.publish_on_import:
             self.publish_object(dataset)
