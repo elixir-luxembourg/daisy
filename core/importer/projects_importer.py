@@ -70,6 +70,9 @@ class ProjectsImporter(BaseImporter):
             )
         else:
             acronym_to_show = acronym.encode('utf8')
+            if not self.skip_on_exist:
+                self.logger.warning(f"Project with acronym '{acronym_to_show}' already found. It will be skipped.")
+                return True
             self.logger.warning(f"Project with acronym '{acronym_to_show}' already found. It will be updated.")
             project.title = name
             project.description = description

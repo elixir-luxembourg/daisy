@@ -145,7 +145,8 @@ class BaseImporter:
             if self.exit_on_error:
                 raise e
             result = False
-        self.logger.debug(f'Successfully imported item: {item_name}')
+
+        self.logger.debug(f'Importing item: {item_name}')
         return result
 
     def process_json(self, import_dict):

@@ -28,6 +28,9 @@ class PartnersImporter(BaseImporter):
         try:
             partner = get_partner(elu_accession=partner_dict.get('external_id', None), 
                                   name=partner_dict.get('name'))
+            if not self.skip_on_exist:
+                self.logger.warning(f'Partner with name \""{partner_dict.get("name")}"\" already found. It will be skipped.')
+                return True
             self.logger.warning(
                 f'Partner with name \""{partner_dict.get("name")}"\" already found. It will be updated.')
             if partner.is_published:
@@ -46,6 +49,7 @@ class PartnersImporter(BaseImporter):
         partner.updated = True
         if self.publish_on_import:
             self.publish_object(partner)
+        return True
 
     @staticmethod
     def process_sector_category(partner_dict):
