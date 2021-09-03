@@ -1,5 +1,5 @@
 {
-  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.2/schemas/elu-core.json",
+  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.3/schemas/elu-core.json",
   "title": "ELIXIR Luxembourg Core json schema",
   "description": "Schema containing core attributes for any json serialisable ELIXIR Luxembourg record.",
   "$schema": "http://json-schema.org/draft-04/schema#",

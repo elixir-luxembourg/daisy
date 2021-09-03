@@ -1,5 +1,5 @@
 {
-  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.2/schemas/elu-study.json",
+  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.3/schemas/elu-study.json",
   "title": "Study-Project Schema",
   "description": "A JSON Schema for describing Studies-Projects within the ELIXIR Data Submission System.",
   "$schema": "http://json-schema.org/draft-04/schema#",
@@ -14,7 +14,7 @@
       "type": "object",
       "allOf": [
         {
-          "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.2/schemas/elu-core.json"
+          "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.3/schemas/elu-core.json"
         }
       ],
       "properties": {
