@@ -1,5 +1,5 @@
 {
-  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.2/schemas/elu-submission.json",
+  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.3/schemas/elu-submission.json",
   "title": "Submission Schema",
   "description": "A JSON Schema for describing submissions in the ELIXIR Data Submission System a.k.a. DISH.",
   "$schema": "http://json-schema.org/draft-04/schema#",
@@ -14,7 +14,7 @@
       "type": "object",
       "allOf": [
         {
-          "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.2/schemas/elu-core.json"
+          "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.3/schemas/elu-core.json"
         }
       ],
       "properties": {
@@ -24,7 +24,7 @@
             "type": "object",
             "allOf": [
               {
-                "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.2/schemas/elu-study.json"
+                "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.3/schemas/elu-study.json"
               }
             ]
           },
@@ -34,7 +34,7 @@
               "type": "object",
               "allOf": [
                 {
-                  "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.2/schemas/elu-dataset.json"
+                  "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.3/schemas/elu-dataset.json"
                 }
               ]
             }
