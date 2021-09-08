@@ -212,9 +212,11 @@ class DatadeclarationEditView(CheckerMixin, UpdateView):
     def post(self, request, **kwargs):
         data_declaration = self.get_object()
         declaration_form = DataDeclarationEditForm(request.POST, instance=data_declaration)
-        restriction_formset = RestrictionFormset(request.POST)
 
-        formset_valid = reduce(operator.and_, [res_form.is_valid() for res_form in restriction_formset], True)
+        restriction_data = [restriction.serialize() for restriction in data_declaration.data_use_restrictions.all()]
+        restriction_formset = RestrictionFormset(request.POST, initial=restriction_data)
+
+        formset_valid = restriction_formset.is_valid()
 
         if declaration_form.is_valid() and formset_valid:
             try:

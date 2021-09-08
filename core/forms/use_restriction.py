@@ -22,7 +22,7 @@ class UseRestrictionForm(ModelForm):
         self.fields['restriction_class'] = CharField(label='Use category', help_text= 'Select the category of restrictions. These are \'GA4GH Consent Codes\'', required=False, widget=Select(choices=class_choices, attrs={'class': 'dummy-select'}))
         self.fields['notes'].widget.attrs['cols'] = '70'
         self.fields['notes'].widget.attrs['rows'] = '5'
-        self.fields['use_restriction_rule'] = CharField(label='Use Restriction Rule', help_text= 'Does the rule constraints or forbids?', required=False, widget=Select(choices=USE_RESTRICTION_CHOICES, attrs={'class': 'dummy-select'}))
+        self.fields['use_restriction_rule'] = CharField(label='Use Restriction Rule', help_text= 'Does the rule constraints or forbids?', required=True, initial=USE_RESTRICTION_CHOICES.PROHIBITION, widget=Select(choices=USE_RESTRICTION_CHOICES, attrs={'class': 'dummy-select'}))
         self.fields['use_class_note'].widget.attrs['cols'] = '70'
         self.fields['use_class_note'].widget.attrs['rows'] = '3'
 
@@ -31,8 +31,10 @@ class UseRestrictionForm(ModelForm):
         cleaned_data = super().clean()
         restriction_class = cleaned_data.get('restriction_class')
         notes = cleaned_data.get('notes')
-        if not restriction_class and notes:
+        if not restriction_class:
             self.add_error('restriction_class', 'Please select a valid restriction class')
+        if not notes:
+            self.add_error('notes', 'Please fill "Use Restriction notes"')
         return self.cleaned_data
 
 
