@@ -31,6 +31,14 @@
 
     {% block head_end %}{% endblock %}
     <title>DAISY</title>
+
+    {% if instance_primary_color %}
+    <style>
+        .bg-primary {
+            background-color: {{ instance_primary_color }} !important;
+        }
+    </style>
+    {% endif %}
 </head>
 <body>
 
