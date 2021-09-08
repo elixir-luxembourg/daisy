@@ -185,33 +185,46 @@ def rems_endpoint(request):
         if ip not in allowed_ips and not skip_check_setting:
             raise Warning(f'REMS - the IP is not in the whitelist, import failed!')
         
-        status = "Success" if handle_rems_callback(request) else "Failure"
-        logger.debug(f'REMS - import status: {status}!')
-        return JsonResponse({'status': f'{status}'}, status=200)
+        status = True if handle_rems_callback(request) else False
+        logger.debug(f'REMS - was import successful?: {status}!')
+        if status:
+            return JsonResponse({'status': 'Success'}, status=200)
+        else:
+            return JsonResponse({'status': 'Failure'}, status=500)
     except (Warning, ImproperlyConfigured) as ex:
-        logger.debug(ex.message)
+        message = f'REMS - something is wrong with the configuration!'
+        more = str(ex)
+        logger.debug(f'{message} ({more})')
         return create_error_response(ex.message)
     except Exception as ex:
         message = f'REMS - something went wrong during the import!'
-        logger.debug(message)
-        return create_error_response(message, {'more': str(ex)})
+        more = str(ex)
+        logger.debug(f'{message} ({more}')
+        return create_error_response(message, {'more': more})
 
 
 @public
 @csrf_exempt
 @protect_with_api_key
 def permissions(request, user_oidc_id: str) -> JsonResponse:
+    logger.debug('Permissions API endpoint called')
     try:
         user = User.objects.get(oidc_id=user_oidc_id)
         permissions = user.get_access_permissions()
         return JsonResponse(permissions, status=200, safe=False)
     except User.DoesNotExist as e:
+        message = 'User with such OIDC_ID was not found'
+        more = str(e)
+        logger.debug(f'{message} ({more})')
         return create_error_response(
-            'User with such OIDC_ID was not found',
+            message,
             status=404
         )
     except Exception as e:
+        message = 'Something went wrong during exporting the permissions'
+        more = str(e)
+        logger.debug(f'{message} ({more}')
         return create_error_response(
-            'Something went wrong during exporting the permissions',
-            {'more': str(e)}
+            message,
+            {'more': more}
         )
