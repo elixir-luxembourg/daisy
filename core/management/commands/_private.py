@@ -58,7 +58,7 @@ class ImportBaseCommand(BaseCommand):
             path_to_json_file = options.get('file')
             validate = not(options.get('no_validation'))
             path_to_json_directory = options.get('directory')
-            skip_on_exist = not(options.get('skip_on_exist'))
+            skip_on_exist = options.get('skip_on_exist')
             importer = self.get_importer(
                                 publish_on_import = publish_on_import,
                                 exit_on_error = exit_on_error, 
@@ -91,7 +91,7 @@ class ImportBaseCommand(BaseCommand):
             exit_on_error=False,
             verbose=False,
             validate=True,
-            skip_on_exist=True
+            skip_on_exist=False
         ):
         raise NotImplementedError("Abstract method: Implement this method in the child class.")
 

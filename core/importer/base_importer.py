@@ -146,7 +146,6 @@ class BaseImporter:
                 raise e
             result = False
 
-        self.logger.debug(f'Importing item: {item_name}')
         return result
 
     def process_json(self, import_dict):

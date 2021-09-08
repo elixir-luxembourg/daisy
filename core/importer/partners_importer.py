@@ -28,7 +28,7 @@ class PartnersImporter(BaseImporter):
         try:
             partner = get_partner(elu_accession=partner_dict.get('external_id', None), 
                                   name=partner_dict.get('name'))
-            if not self.skip_on_exist:
+            if self.skip_on_exist:
                 self.logger.warning(f'Partner with name \""{partner_dict.get("name")}"\" already found. It will be skipped.')
                 return True
             self.logger.warning(

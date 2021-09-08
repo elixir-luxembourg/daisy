@@ -11,6 +11,6 @@ class Command(ImportBaseCommand):
             exit_on_error=False,
             verbose=False,
             validate=True,
-            skip_on_exist=True
+            skip_on_exist=False
         ):
         return ProjectsImporter(publish_on_import, exit_on_error, verbose, validate, skip_on_exist)
