@@ -33,8 +33,6 @@ class UseRestrictionForm(ModelForm):
         notes = cleaned_data.get('notes')
         if not restriction_class:
             self.add_error('restriction_class', 'Please select a valid restriction class')
-        if not notes:
-            self.add_error('notes', 'Please fill "Use Restriction notes"')
         return self.cleaned_data
 
 
