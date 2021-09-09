@@ -17,6 +17,11 @@ import pytz
 COMPANY = 'LCSB'  # Used for generating some models' verbose names
 DEMO_MODE = False
 
+# A string shown in site's navbar to help distinguish from different instances
+INSTANCE_LABEL = None
+# Override of the layout's primary color (used in e.g. navbar), e.g. '#076505'
+INSTANCE_PRIMARY_COLOR = None 
+
 AUTH_USER_MODEL = 'core.User'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -86,7 +91,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'web.views.context_processors.daisy_version'
+                'web.views.context_processors.daisy_version',
+                'web.views.context_processors.instance_branding'
             ],
         },
     },
