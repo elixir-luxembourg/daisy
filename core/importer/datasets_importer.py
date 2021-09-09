@@ -520,7 +520,7 @@ class DatasetsImporter(BaseImporter):
             else:
                 cohort = Cohort.objects.create(title=name)
 
-            cohort.description = description
+            cohort.comments = description
             cohort.ethics_confirmation = has_ethics_approval
             cohort.ethics_notes = ethics_approval_notes
             cohort.cohort_web_page = url
