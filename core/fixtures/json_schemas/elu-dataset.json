@@ -1,12 +1,12 @@
 {
-  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.3/schemas/elu-dataset.json",
+  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.5/schemas/elu-dataset.json",
   "title": "ELIXIR Luxembourg Datasets Schema",
   "description": "A JSON Schema for describing biomedical research Datasets.",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "allOf": [
     {
-      "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.3/schemas/elu-core.json"
+      "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.5/schemas/elu-core.json"
     }
   ],
   "properties": {
@@ -223,7 +223,7 @@
           "type": "string"
         },
         "access_category": {
-          "type": "string",
+          "type": ["string", "null"],
           "enum": [
             "open_access",
             "controlled_access",
@@ -246,17 +246,17 @@
           ]
         },
         "consent_status": {
-          "type": "string",
           "enum": [
             "heterogeneous",
-            "homogeneous"
+            "homogeneous",
+            null
           ]
         },
         "consent_status_description": {
           "type": "string"
         },
         "has_special_subjects": {
-          "type": "boolean"
+          "type": ["boolean", "null"]
         },
         "special_subjects_description": {
           "type": "string"
@@ -266,7 +266,7 @@
           "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
         },
         "storage_end_date": {
-          "type": "string",
+          "type": ["string", "null"],
           "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
         },
         "storage_duration_criteria": {
