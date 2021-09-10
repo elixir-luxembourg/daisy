@@ -11,13 +11,14 @@ logger = DaisyLogger(__name__)
 
 
 class ProjectsExporter:
-    def __init__(self, objects=None):
+    def __init__(self, include_unpublished=False, objects=None):
         """
         objects would be Django obejct manager containing projects to export,
         i.e.:
         objects = Project.objects.all()
         objects = Project.objects.filter(acronym='test')
         """
+        include_unpublished = include_unpublished
         if objects is not None:
             self.objects = objects
         else:

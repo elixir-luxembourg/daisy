@@ -10,6 +10,8 @@ logger = DaisyLogger(__name__)
 
 
 class PartnersExporter:
+    def __init__(self, include_unpublished=False):
+        include_unpublished = include_unpublished
 
     def export_to_file(self, file_handle, stop_on_error=False, verbose=False):
         result = True

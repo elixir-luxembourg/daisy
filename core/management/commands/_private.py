@@ -43,6 +43,7 @@ class ImportBaseCommand(BaseCommand):
             help='JSON file(s) content is validated against JSON schema before import by default.',
             dest='skip_validation',
         )
+        
 
     def handle(self, *args, **options):
         try:
@@ -52,16 +53,18 @@ class ImportBaseCommand(BaseCommand):
             path_to_json_file = options.get('file')
             validate = not(options.get('no_validation'))
             path_to_json_directory = options.get('directory')
+            
 
             importer = self.get_importer(
                                 publish_on_import = publish_on_import,
                                 exit_on_error = exit_on_error, 
                                 verbose = verbose, 
                                 validate = validate
+                               
                             )
-
             if not(path_to_json_directory or path_to_json_file):
                 raise CommandError('Either directory (--directory) or file (--file) argument must be specified!')
+            
 
             # Import files from directory
             if path_to_json_directory:
@@ -84,6 +87,12 @@ class ImportBaseCommand(BaseCommand):
             exit_on_error=False,
             verbose=False,
             validate=True
+            
+
+        ):
+        raise NotImplementedError("Abstract method: Implement this method in the child class.")
+    def get_exporter(self,
+            include_unpublished=False
         ):
         raise NotImplementedError("Abstract method: Implement this method in the child class.")
 
@@ -112,16 +121,31 @@ class ExportBaseCommand(BaseCommand):
             default=False
         )
 
+        parser.add_argument(
+            '--include-unpublished',
+            action='store_true',
+            help='Exporter allows export of all records include unpublished ones.',
+            dest='include_unpublished',
+        )
+
     def handle(self, *args, **options):
         if not(options.get('file')):
             raise CommandError('File (--file) argument must be specified!')
 
         try:
+            include_unpublished = options.get('include_unpublished')
             path_to_json_file = options.get('file')
+
+            exporter = self.get_exporter(
+                                include_unpublished = include_unpublished
+                
+                            )
+
             with open(path_to_json_file,  mode="w+", encoding='utf-8') as json_file:
                 exp = self.get_exporter()
                 exp.export_to_file(json_file)
                 self.stdout.write(self.style.SUCCESS("Export complete!"))
+        
 
         except Exception as e:
             msg = f"Something went wrong during the export ({__file__}:class {self.__class__.__name__})! Details:"
@@ -129,5 +153,8 @@ class ExportBaseCommand(BaseCommand):
                 self.style.ERROR(msg))
             self.stderr.write(self.style.ERROR(str(e)))
 
-    def get_exporter(self):
+    def get_exporter(
+            self,
+            include_unpublished=False
+        ):
         raise NotImplementedError("Abstract method: Implement this method in the child class.")

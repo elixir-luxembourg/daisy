@@ -10,13 +10,14 @@ logger = DaisyLogger(__name__)
 
 
 class DatasetsExporter:
-    def __init__(self, objects=None):
+    def __init__(self, include_unpublished=False, objects=None):
         """
         objects would be Django object manager containing datasets to export,
         i.e.:
         objects = Dataset.objects.all()
         objects = Dataset.objects.filter(acronym='test')
         """
+        self.include_unpublished = include_unpublished
         if objects is not None:
             self.objects = objects
         else:
