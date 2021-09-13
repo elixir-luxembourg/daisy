@@ -67,7 +67,7 @@
         </tr>
     </table>
 
-    {% for project in projects %}
+    {% for project in projects.all %}
 
     <table border="0" cellspacing="0" cellpadding="0"
             style="table-layout: fixed;font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -91,7 +91,7 @@
             style="table-layout: fixed;font-family: 'Roboto','Helvetica','Arial',sans-serif;
             font-weight: 300; background-color: rgba(158, 158, 158, 0.2);"
             width="100%">
-        {% for dataset in project.datasets %}
+        {% for dataset in project.datasets.all %}
         <tr>
             <td width="15%" style=" background-color: #fff"></td>
             <td colspan="2" width="70%" 
@@ -107,7 +107,7 @@
         {% endfor %}
     </table>
 
-    {% endif %}
+    {% endfor %}
 
     <table border="0" cellspacing="0" cellpadding="0"
             style="table-layout: fixed;font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -140,7 +140,7 @@
             </td>
             <td width="5%" style="background-color: #fff"></td>
         </tr>
-        {% endif %}
+        {% endfor %}
         <tr style="background-color: #ffffff; height: 60px; width: 100%"><td colspan=4></td></tr>
     </table>
 </div>
