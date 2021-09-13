@@ -33,6 +33,9 @@ class DatasetsImporter(BaseImporter):
         try:
             dataset = get_dataset(elu_accession = dataset_dict.get('external_id', None), title=title)
             title_to_show = title.encode('utf8')
+            if self.skip_on_exist:
+                self.logger.warning(f"Dataset with title '{title_to_show}' already found. The update will be skipped")
+                return True
             self.logger.warning(f"Dataset with title '{title_to_show}' already found. It will be updated.")
             if dataset.is_published:
                 raise DatasetImportError(data=f'Updating published entity is not supported - dataset: "{dataset.title}".')
@@ -488,7 +491,7 @@ class DatasetsImporter(BaseImporter):
             else:
                 cohort = Cohort.objects.create(title=name)
 
-            cohort.description = description
+            cohort.comments = description
             cohort.ethics_confirmation = has_ethics_approval
             cohort.ethics_notes = ethics_approval_notes
             cohort.cohort_web_page = url

@@ -10,6 +10,7 @@ class Command(ImportBaseCommand):
             publish_on_import=False,
             exit_on_error=False,
             verbose=False,
-            validate=True
+            validate=True,
+            skip_on_exist=False
         ):
-        return PartnersImporter(publish_on_import, exit_on_error, verbose, validate)
+        return PartnersImporter(publish_on_import, exit_on_error, verbose, validate, skip_on_exist)
