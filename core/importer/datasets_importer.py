@@ -7,7 +7,7 @@ from core.models.data_declaration import ConsentStatus, DeidentificationMethod, 
     ShareCategory, SubjectCategory
 from core.models.storage_location import StorageLocationCategory, DataLocation
 from core.models.use_restriction import USE_RESTRICTION_CHOICES
-
+from django.db.models import Count
 
 class DatasetsImporter(BaseImporter):
     """
@@ -424,48 +424,47 @@ class DatasetsImporter(BaseImporter):
         """
         This should be called after data-declarations have been processed
         (they rely on data-declaration's acronyms to be properly imported)
-        """
-        legal_basis_obj = LegalBasis.objects.filter(
-            dataset=dataset_object,
-            remarks=legal_basis.get('legal_basis_notes', '')
-        )  # Note: at this point we can have 0, 1 or more LegalBasis objects
-
-        data_declaration_titles = legal_basis.get('data_declarations', [])
-        data_declarations = [DataDeclaration.objects.get(title=title, dataset=dataset_object) for title in data_declaration_titles]
-
+        """   
+        datasets_legal_bases = LegalBasis.objects.filter(
+                dataset=dataset_object,
+                remarks=legal_basis.get('legal_basis_notes', '')
+                )
+        # get only those legal bases with matching data types and basis codes
         legal_basis_types_titles = legal_basis.get('legal_basis_codes', [])
         legal_basis_types = [LegalBasisType.objects.get(code=code) for code in legal_basis_types_titles]
-
         personal_data_types_titles = legal_basis.get('personal_data_codes', [])
         personal_data_types = [PersonalDataType.objects.get(code=code) for code in personal_data_types_titles]
-
-        if len(legal_basis_obj) == 0:
+        datasets_legal_bases = datasets_legal_bases.annotate(data_types_count=Count('personal_data_types'),
+                                    basis_types_count=Count('legal_basis_types')).filter(
+                                        data_types_count=len(personal_data_types),
+                                        basis_types_count=len(legal_basis_types)
+                                    )
+        # get only those with same data types
+        for personal_data_type in personal_data_types:
+            datasets_legal_bases =  datasets_legal_bases.filter(personal_data_types=personal_data_type)                            
+        
+        # get only those with same basis types
+        for legal_basis_type in legal_basis_types:
+            datasets_legal_bases = datasets_legal_bases.filter(legal_basis_types=legal_basis_type)
+        
+        data_declaration_titles = legal_basis.get('data_declarations', [])
+        data_declarations = [DataDeclaration.objects.get(title=title, dataset=dataset_object) for title in data_declaration_titles]
+        
+        if len(datasets_legal_bases) == 0:
             legal_basis_obj = LegalBasis.objects.create(
                 dataset=dataset_object,
                 remarks=legal_basis.get('legal_basis_notes', '')
             )
-        elif len(legal_basis_obj) == 1:
-            legal_basis_obj = legal_basis_obj[0]
+            legal_basis_obj.data_declarations.set(data_declarations)
+            legal_basis_obj.legal_basis_types.set(legal_basis_types)
+            legal_basis_obj.personal_data_types.set(personal_data_types)
+            legal_basis_obj.save()
         else:
-            # Try looking for the correct LegalBasis
-            legal_basis_obj = LegalBasis.objects.filter(
-                dataset=dataset_object,
-                remarks=legal_basis.get('legal_basis_notes', ''),
-                data_declarations__in=data_declarations
-            )
-
-            if len(legal_basis_obj) == 1:
-                legal_basis_obj = legal_basis_obj[0]
-            else:
-                legal_basis_obj = LegalBasis.objects.create(
-                    dataset=dataset_object,
-                    remarks=legal_basis.get('legal_basis_notes', '')
-                )
-
-        legal_basis_obj.data_declarations.set(data_declarations)
-        legal_basis_obj.legal_basis_types.set(legal_basis_types)
-        legal_basis_obj.personal_data_types.set(personal_data_types)
-        legal_basis_obj.save()
+            # Do not add data declaration to global legal basis
+            legal_basis_obj = datasets_legal_bases[0]
+            if len(legal_basis_obj.data_declarations.all()) > 0:
+                for data_declaration in data_declarations:
+                    legal_basis_obj.data_declarations.add(data_declaration)
 
         return legal_basis_obj
 
