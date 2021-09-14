@@ -7,7 +7,7 @@ from core.models.data_declaration import ConsentStatus, DeidentificationMethod, 
     ShareCategory, SubjectCategory
 from core.models.storage_location import StorageLocationCategory, DataLocation
 from core.models.use_restriction import USE_RESTRICTION_CHOICES
-
+from django.db.models import Count
 
 class DatasetsImporter(BaseImporter):
     """
@@ -15,25 +15,31 @@ class DatasetsImporter(BaseImporter):
     """
 
     json_schema_validator = DatasetJSONSchemaValidator()
-    json_schema_uri = 'https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-dataset.json'
+    #json_schema_uri = 'https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-dataset.json'
 
     def process_json(self, dataset_dict):
         try:
-            title = dataset_dict['name']
+            title = dataset_dict['name'].strip()
         except KeyError:
             raise DatasetImportError(data='dataset without title')
 
-        title = title.strip()
-
+        def get_dataset(elu_accession, title):
+            if elu_accession:
+                dataset = Dataset.objects.get(elu_accession=elu_accession)
+            else: 
+                dataset = Dataset.objects.get(title=title)
+            return dataset
+      
         try:
-            dataset = Dataset.objects.get(title=title)
-        except Dataset.DoesNotExist:
-            dataset = None
-
-        if dataset:
+            dataset = get_dataset(elu_accession = dataset_dict.get('external_id', None), title=title)
             title_to_show = title.encode('utf8')
+            if self.skip_on_exist:
+                self.logger.warning(f"Dataset with title '{title_to_show}' already found. The update will be skipped")
+                return True
             self.logger.warning(f"Dataset with title '{title_to_show}' already found. It will be updated.")
-        else:
+            if dataset.is_published:
+                raise DatasetImportError(data=f'Updating published entity is not supported - dataset: "{dataset.title}".')
+        except Dataset.DoesNotExist:
             dataset = Dataset.objects.create(title=title)
 
         if 'project' in dataset_dict and dataset_dict['project']:
@@ -77,36 +83,13 @@ class DatasetsImporter(BaseImporter):
 
         dataset.save()
 
+        dataset.elu_accession = dataset_dict.get('elu_accession', None)
+
+        if self.publish_on_import:
+            self.publish_object(dataset)
+
         return True
 
-    # @staticmethod
-    # def process_local_custodians(dataset_dict):
-    #     result = []
-    #
-    #     local_custodians = dataset_dict.get('local_custodian', [])
-    #
-    #     for local_custodian in local_custodians:
-    #         custodian_str_strip = local_custodian.strip()
-    #         user = (User.objects.filter(full_name__icontains=custodian_str_strip.lower()) | User.objects.filter(
-    #             full_name__icontains=custodian_str_strip.upper())).first()
-    #         if user is None:
-    #             names = custodian_str_strip.split(maxsplit=1)
-    #
-    #             if len(names) == 2:
-    #                 logger.warning('no user found for %s and inactive user will be created', custodian_str_strip)
-    #                 usr_name = names[0].strip().lower() + '.' + names[1].strip().lower()
-    #                 user = User.objects.create(username=usr_name, password='', first_name=names[0], last_name=names[1],is_active=False,
-    #                                            email='inactive.user@uni.lu',
-    #                                            )
-    #                 user.staff = True
-    #                 g = Group.objects.get(name=GroupConstants.VIP.value)
-    #                 user.groups.add(g)
-    #                 user.save()
-    #                 result.append(user)
-    #
-    #         else:
-    #             result.append(user)
-    #     return result
 
     def process_project(self, project_acronym):
         try:
@@ -444,48 +427,47 @@ class DatasetsImporter(BaseImporter):
         """
         This should be called after data-declarations have been processed
         (they rely on data-declaration's acronyms to be properly imported)
-        """
-        legal_basis_obj = LegalBasis.objects.filter(
-            dataset=dataset_object,
-            remarks=legal_basis.get('legal_basis_notes', '')
-        )  # Note: at this point we can have 0, 1 or more LegalBasis objects
-
-        data_declaration_titles = legal_basis.get('data_declarations', [])
-        data_declarations = [DataDeclaration.objects.get(title=title, dataset=dataset_object) for title in data_declaration_titles]
-
+        """   
+        datasets_legal_bases = LegalBasis.objects.filter(
+                dataset=dataset_object,
+                remarks=legal_basis.get('legal_basis_notes', '')
+                )
+        # get only those legal bases with matching data types and basis codes
         legal_basis_types_titles = legal_basis.get('legal_basis_codes', [])
         legal_basis_types = [LegalBasisType.objects.get(code=code) for code in legal_basis_types_titles]
-
         personal_data_types_titles = legal_basis.get('personal_data_codes', [])
         personal_data_types = [PersonalDataType.objects.get(code=code) for code in personal_data_types_titles]
-
-        if len(legal_basis_obj) == 0:
+        datasets_legal_bases = datasets_legal_bases.annotate(data_types_count=Count('personal_data_types'),
+                                    basis_types_count=Count('legal_basis_types')).filter(
+                                        data_types_count=len(personal_data_types),
+                                        basis_types_count=len(legal_basis_types)
+                                    )
+        # get only those with same data types
+        for personal_data_type in personal_data_types:
+            datasets_legal_bases =  datasets_legal_bases.filter(personal_data_types=personal_data_type)                            
+        
+        # get only those with same basis types
+        for legal_basis_type in legal_basis_types:
+            datasets_legal_bases = datasets_legal_bases.filter(legal_basis_types=legal_basis_type)
+        
+        data_declaration_titles = legal_basis.get('data_declarations', [])
+        data_declarations = [DataDeclaration.objects.get(title=title, dataset=dataset_object) for title in data_declaration_titles]
+        
+        if len(datasets_legal_bases) == 0:
             legal_basis_obj = LegalBasis.objects.create(
                 dataset=dataset_object,
                 remarks=legal_basis.get('legal_basis_notes', '')
             )
-        elif len(legal_basis_obj) == 1:
-            legal_basis_obj = legal_basis_obj[0]
+            legal_basis_obj.data_declarations.set(data_declarations)
+            legal_basis_obj.legal_basis_types.set(legal_basis_types)
+            legal_basis_obj.personal_data_types.set(personal_data_types)
+            legal_basis_obj.save()
         else:
-            # Try looking for the correct LegalBasis
-            legal_basis_obj = LegalBasis.objects.filter(
-                dataset=dataset_object,
-                remarks=legal_basis.get('legal_basis_notes', ''),
-                data_declarations__in=data_declarations
-            )
-
-            if len(legal_basis_obj) == 1:
-                legal_basis_obj = legal_basis_obj[0]
-            else:
-                legal_basis_obj = LegalBasis.objects.create(
-                    dataset=dataset_object,
-                    remarks=legal_basis.get('legal_basis_notes', '')
-                )
-
-        legal_basis_obj.data_declarations.set(data_declarations)
-        legal_basis_obj.legal_basis_types.set(legal_basis_types)
-        legal_basis_obj.personal_data_types.set(personal_data_types)
-        legal_basis_obj.save()
+            # Do not add data declaration to global legal basis
+            legal_basis_obj = datasets_legal_bases[0]
+            if len(legal_basis_obj.data_declarations.all()) > 0:
+                for data_declaration in data_declarations:
+                    legal_basis_obj.data_declarations.add(data_declaration)
 
         return legal_basis_obj
 
@@ -509,7 +491,7 @@ class DatasetsImporter(BaseImporter):
             else:
                 cohort = Cohort.objects.create(title=name)
 
-            cohort.description = description
+            cohort.comments = description
             cohort.ethics_confirmation = has_ethics_approval
             cohort.ethics_notes = ethics_approval_notes
             cohort.cohort_web_page = url

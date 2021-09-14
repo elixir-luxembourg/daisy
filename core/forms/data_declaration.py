@@ -51,6 +51,7 @@ class DataDeclarationEditForm(forms.ModelForm):
         Override to check selected Partner and Contract match
         """
         cleaned_data = super().clean()
+
         source_partner = cleaned_data.get("partner", None)
         source_contract = cleaned_data.get("contract", None)
         is_signatory = False
@@ -62,6 +63,13 @@ class DataDeclarationEditForm(forms.ModelForm):
                 self.add_error('contract', "Selected partner is not a signatory on the selected contract.")
         return self.cleaned_data
 
+    def clean_title(self):
+        title = self.cleaned_data['title']
+        duplicates = DataDeclaration.objects.filter(title=title,
+                                                    dataset=self.instance.dataset).exclude(pk=self.instance.pk)
+        if duplicates.exists():
+            self.add_error('title', "Data declaration with the same title already exists for the dataset.")
+        return title
 
 
 RestrictionFormset = forms.formset_factory(UseRestrictionForm, extra=1, min_num=0, max_num=10)
@@ -184,8 +192,17 @@ class DataDeclarationForm(forms.ModelForm):
         * One PI must be present in the responsible persons.
         * samples_location field can be specified only when the "generated_from_samples" field is true #70
         """
-        cleaned_data = super().clean()
+        cleaned_data = super().clean()      
         return cleaned_data
+
+    def clean_title(self):
+        title = self.cleaned_data['title']
+        duplicates = DataDeclaration.objects.filter(title=title,
+                                                    dataset=self.dataset)
+        if duplicates.exists():
+            self.add_error('title', "Data declaration with the same title already exists for the dataset.")
+
+        return title
 
     def save(self, commit=True):
         self.instance.dataset = self.dataset

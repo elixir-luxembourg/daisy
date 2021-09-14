@@ -30,6 +30,20 @@ class BaseImporter:
 
     logger = DaisyLogger(__name__)
 
+    def __init__(
+            self,
+            publish_on_import=False,
+            exit_on_error=False,
+            verbose=False,
+            validate=True,
+            skip_on_exist=True
+        ):
+        self.verbose = verbose
+        self.publish_on_import = publish_on_import
+        self.exit_on_error = exit_on_error
+        self.validate = validate
+        self.skip_on_exist = skip_on_exist
+
     @property
     def json_schema_validator(self):
         """
@@ -72,33 +86,33 @@ class BaseImporter:
         self.logger.debug(message)
         return False
 
-    def import_json_file(self, path_to_the_file: str, stop_on_error=False, verbose=False, validate=True) -> bool:
+    def import_json_file(self, path_to_the_file: str) -> bool:
         """
         Opens, loads and imports a JSON file.
         """
         self.logger.info(f'Opening the file: {path_to_the_file}')
         with open(path_to_the_file, encoding='utf-8') as json_file:
             json_file_contents = json_file.read()
-            result = self.import_json(json_file_contents, stop_on_error, verbose)
+            result = self.import_json(json_file_contents)
             self.logger.info(f'Successfully completed import for the file: {path_to_the_file}')
             return result
 
-    def import_json(self, json_string: str, stop_on_error=False, verbose=False, validate=True) -> bool:
+    def import_json(self, json_string: str) -> bool:
         result = True
         importer_class_name = self.__class__.__name__
         self.logger.info(f'Attempting to use "{importer_class_name}" to parse and import the JSON')
         json_list = json.loads(json_string)['items']
-        result = self.import_object_list(json_list, stop_on_error, verbose)
+        result = self.import_object_list(json_list)
         status = 'success' if result else 'failed'
         self.logger.info(f'Import ({importer_class_name}) result: {status}')
         return result
 
-    def import_object_list(self, json_list: List[Dict], stop_on_error=False, verbose=False, validate=True) -> bool:
+    def import_object_list(self, json_list: List[Dict]) -> bool:
         """
         Validates and imports a list of objects.
         """
         result = True
-        if validate:
+        if self.validate:
             validator_name = self.json_schema_validator.__class__.__name__
             self.logger.debug(f'Validating the file with "{validator_name}" against JSON schema...')
             self.json_schema_validator.validate_items(json_list, self.logger)
@@ -109,11 +123,11 @@ class BaseImporter:
         verb = 'are' if count > 1 else 'is'
         self.logger.debug(f'There {verb} {count} object(s) to be imported. Starting the process...')
         for item in json_list:
-            result = self.import_object(item, stop_on_error, verbose) and result
+            result = self.import_object(item) and result
         self.logger.debug('Finished importing the object(s)')
         return result
 
-    def import_object(self, item: Dict, stop_on_error=False, verbose=False):
+    def import_object(self, item: Dict):
         """
         Tries to import a single object
         """
@@ -124,18 +138,27 @@ class BaseImporter:
         except Exception as e:
             self.logger.error('Import failed: ')
             self.logger.error(str(e))
-            if verbose:
+            if self.verbose:
                 import traceback
                 ex = traceback.format_exception(*sys.exc_info())
                 self.logger.error('\n'.join([e for e in ex]))
-            if stop_on_error:
+            if self.exit_on_error:
                 raise e
             result = False
-        self.logger.debug(f'Successfully imported item: {item_name}')
+
         return result
 
     def process_json(self, import_dict):
         raise NotImplementedError("Abstract method: Implement this method in the child class.")
+
+    def publish_object(self, object) -> bool:
+        try:
+            object.publish(save=True)
+            result = True
+        except AttributeError as e:
+            self.logger.warn(f'Publishing this type of entity ({object._meta.object_name}) is not implemented - item is not published.')
+            result = False
+        return result
 
     def process_contacts(self, contacts_list: List[Dict]):
         if not isinstance(contacts_list, list):
@@ -250,7 +273,7 @@ class BaseImporter:
                 type=ContactType.objects.get(name=role_name)
             )
             for affiliation in affiliations:
-                partner = Partner.objects.filter(name=affiliation)
+                partner = (Partner.objects.filter(name=affiliation) | Partner.objects.filter(acronym=affiliation))
                 if len(partner):
                     contact.partners.add(partner[0])
                 else:

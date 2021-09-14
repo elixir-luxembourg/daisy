@@ -17,6 +17,11 @@ import pytz
 COMPANY = 'LCSB'  # Used for generating some models' verbose names
 DEMO_MODE = False
 
+# A string shown in site's navbar to help distinguish from different instances
+INSTANCE_LABEL = None
+# Override of the layout's primary color (used in e.g. navbar), e.g. '#076505'
+INSTANCE_PRIMARY_COLOR = None 
+
 AUTH_USER_MODEL = 'core.User'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -86,7 +91,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'web.views.context_processors.daisy_version'
+                'web.views.context_processors.daisy_version',
+                'web.views.context_processors.instance_branding'
             ],
         },
     },
@@ -315,6 +321,19 @@ LOGIN_PASSWORD_PLACEHOLDER = ''
 
 EXPLORER_CONNECTIONS = { 'Default': 'default' } 
 EXPLORER_DEFAULT_CONNECTION = 'default'
+
+# JSON schemas used for validation on import
+IMPORT_JSON_SCHEMAS_URI = 'https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.5/schemas/'
+IMPORT_JSON_SCHEMAS_DIR = os.path.join(BASE_DIR, 'core', 'fixtures', 'json_schemas')
+
+# REMS (http://rems2docs.rahtiapp.fi/) Integration
+REMS_INTEGRATION_ENABLED = False
+REMS_MATCH_USERS_BY = 'auto'  # 'email', 'id' or 'auto'
+REMS_SKIP_IP_CHECK = False
+REMS_ALLOWED_IP_ADDRESSES = []  # use '*' to allow all, otherwise e.g. '127.0.0.1'...
+
+# ID service
+IDSERVICE_FUNCTION = 'web.views.utils.generate_elu_accession'
 
 # Import local settings to override those values based on the deployment environment
 try:

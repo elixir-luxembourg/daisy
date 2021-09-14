@@ -1,7 +1,7 @@
 from django.db import models
 
 from .utils import COMPANY, CoreTrackedModel, TextFieldWithInputWidget
-
+from django.conf import settings
 
 class Cohort(CoreTrackedModel):
     class Meta:
@@ -56,14 +56,16 @@ class Cohort(CoreTrackedModel):
             owners_dicts.append(owner.to_dict())
                 
         base_dict = {
-            'id': self.id,
-            'comments': self.comments,
-            'owners': owners_dicts,
-            'title': self.title,
+            "source": settings.SERVER_URL,
+            "id_at_source": self.id.__str__(),
+            "external_id": self.elu_accession,
+            'name': self.title,
+            'description': self.comments,
+            'url': self.cohort_web_page,
+            'contacts': owners_dicts,
             'institutes': [i.id for i in self.institutes.all()],
-            'ethics_confirmation': self.ethics_confirmation,
+            'has_ethics_approval': self.ethics_confirmation,
             'ethics_approval_notes': self.ethics_notes,
-            'url': self.cohort_web_page
         }
         return base_dict
 

@@ -25,7 +25,7 @@ class Partner(CoreTrackedModel):
     """
     Represents a partner.
       {
-        "elu_accession": "ELU_I_6",
+        "external_id": "ELU_I_6",
         "name": "University Hospital of the Saarland",
         "geo_category": "EU",
         "sector_category": "PUBLIC",
@@ -93,10 +93,10 @@ class Partner(CoreTrackedModel):
 
     def to_dict(self):
         base_dict = {
-            "pk": self.id.__str__(),
             "source": settings.SERVER_URL,
+            "id_at_source": self.id.__str__(),
+            "external_id": self.elu_accession,
             "name": self.name,
-            "elu_accession": self.elu_accession if self.elu_accession else None,
             "acronym": self.acronym if self.acronym else None,
             "is_clinical": self.is_clinical,
             "geo_category": self.geo_category,

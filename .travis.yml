@@ -2,7 +2,6 @@ language: python
 
 python:
   - "3.6"
-  - "3.5"
 
 services:
   - docker
@@ -19,3 +18,8 @@ install:
 
 script:
   - docker-compose exec web python setup.py pytest 
+  
+branches:
+  only:
+  - master
+  - develop

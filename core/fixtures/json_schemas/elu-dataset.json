@@ -1,11 +1,12 @@
 {
-  "description": "ELIXIR Luxembourg Projects Schema",
-  "title": "A JSON Schema for describing biomedical research Projects.",
+  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.5/schemas/elu-dataset.json",
+  "title": "ELIXIR Luxembourg Datasets Schema",
+  "description": "A JSON Schema for describing biomedical research Datasets.",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "allOf": [
     {
-      "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-core.json"
+      "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.5/schemas/elu-core.json"
     }
   ],
   "properties": {
@@ -155,9 +156,10 @@
               "use_restriction_rule": {
                 "type": "string",
                 "enum": [
-                  "CONSTRAINTS",
-                  "NO_CONSTRAINTS",
-                  "FORBIDDEN"
+                  "OBLIGATION",
+                  "PERMISSION",
+                  "PROHIBITION",
+                  "CONSTRAINED_PERMISSION"
                 ]
               },
               "use_restriction_objects": {
@@ -215,72 +217,63 @@
               "Other_Phenotype_data",
               "Other"
             ]
-          },
-          "data_type_notes": {
-            "type": "string"
-          },
-          "access_category": {
-            "type": "string",
-            "enum": [
-              "open-access",
-              "controlled-access",
-              "registered-access"
-            ]
-          },
-          "subjects_category": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "cases",
-                "controls",
-                "cases_and_controls"
-              ]
-            }
-          },
-          "de_identification": {
-            "type": "string",
-            "enum": [
-              "anonymized",
-              "pseudonymized"
-            ]
-          },
-          "consent_status": {
-            "type": "string",
-            "enum": [
-              "heterogeneous",
-              "homogeneous"
-            ]
-          },
-          "consent_status_description": {
-            "type": "string"
-          },
-          "has_special_subjects": {
-            "type": "boolean"
-          },
-          "special_subjects_description": {
-            "type": "string"
-          },
-          "embargo_date": {
-            "type": "string",
-            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
-          },
-          "storage_end_date": {
-            "type": "string",
-            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
-          },
-          "storage_duration_criteria": {
-            "type": "string",
-            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
           }
+        },
+        "data_type_notes": {
+          "type": "string"
+        },
+        "access_category": {
+          "type": ["string", "null"],
+          "enum": [
+            "open_access",
+            "controlled_access",
+            "registered_access"
+          ]
+        },
+        "subjects_category": {
+          "type": "string",
+          "enum": [
+            "cases",
+            "controls",
+            "cases_and_controls"
+          ]
+        },
+        "de_identification": {
+          "type": "string",
+          "enum": [
+            "anonymization",
+            "pseudonymization"
+          ]
+        },
+        "consent_status": {
+          "enum": [
+            "heterogeneous",
+            "homogeneous",
+            null
+          ]
+        },
+        "consent_status_description": {
+          "type": "string"
+        },
+        "has_special_subjects": {
+          "type": ["boolean", "null"]
+        },
+        "special_subjects_description": {
+          "type": "string"
+        },
+        "embargo_date": {
+          "type": ["string","null"],
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "storage_end_date": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "storage_duration_criteria": {
+          "type": ["string", "null"]
         }
       }
     }
   }
 }
-
-
-
-
-
 

@@ -30,6 +30,7 @@ class Document(CoreModel):
                    ("consent_form", "Consent Form"),
                    ("subject_informationsheet", "Subject InformationSheet"),
                    ("project_proposal", "Project Proposal"),
+                   ('data_protection_impact_assessment', 'Data Protection Impact Assessment'),
                    ("other", "Other"))
 
     class Meta:

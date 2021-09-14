@@ -1,13 +1,16 @@
 from django.db import models
 
 from model_utils import Choices
-from .utils import CoreModel, TextFieldWithInputWidget
+
+from . import RestrictionClass
+from .utils import CoreModel
 
 
 USE_RESTRICTION_CHOICES = Choices(
-        ('CONSTRAINTS', 'CONSTRAINTS'),
-        ('NO_CONSTRAINTS', 'NO_CONSTRAINTS'),
-        ('FORBIDDEN', 'FORBIDDEN')
+        ('PROHIBITION', 'PROHIBITION'),
+        ('OBLIGATION', 'OBLIGATION'),
+        ('PERMISSION', 'PERMISSION'),
+        ('CONSTRAINED_PERMISSION', 'CONSTRAINED_PERMISSION'),
 )
 
 
@@ -23,20 +26,21 @@ class UseRestriction(CoreModel):
                                          on_delete=models.CASCADE,
                                          help_text='The data declaration to which this restriction applies.')
                                          
-    # use_class after renaming
+    # Use Category
     restriction_class = models.CharField(verbose_name='Use Category',
                                          max_length=20,
                                          blank=True,
                                          null=True,
                                          help_text='Select the GA4GH code for the restriction.  Refer to \'GA4GH Consent Codes\' for a detailed explanation of each.')
 
-    # use_class_note after renaming
+    # Use Restriction Note
     notes = models.TextField(verbose_name='Use Restriction note',
                              max_length=255,
                              blank=True,
                              null=True,
                              help_text='Provide a free text description of the restriction.')
 
+    # Use Category note
     use_class_note = models.TextField(verbose_name='Use Category note',
                                       max_length=255,
                                       blank=True,
@@ -45,7 +49,7 @@ class UseRestriction(CoreModel):
 
     use_restriction_rule = models.TextField(verbose_name='Use Restriction Rule',
                                             choices=USE_RESTRICTION_CHOICES,
-                                            default=USE_RESTRICTION_CHOICES.NO_CONSTRAINTS,
+                                            default=USE_RESTRICTION_CHOICES.PROHIBITION,
                                             blank=False, 
                                             null=False,
                                             max_length=64)
@@ -70,7 +74,8 @@ class UseRestriction(CoreModel):
         Used for import/export - the keys are conformant to the schema
         """
         return {
-            "use_class": self.restriction_class, 
+            "use_class": self.restriction_class,
+            "use_class_label": RestrictionClass.objects.get(code=self.restriction_class).name,
             "use_class_note": self.use_class_note,
             "use_restriction_note": self.notes,
             "use_restriction_rule": self.use_restriction_rule

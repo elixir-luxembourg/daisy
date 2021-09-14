@@ -61,9 +61,7 @@ class Project(CoreTrackedModel):
                                    null=True,
                                    help_text='Lay summary should provide a brief overview of project goals and approach. Lay summary may be displayed publicly if the project\'s data gets published in the data catalog')
 
-    dpia = models.TextField(verbose_name='DPIA Link',
-                            blank=True,
-                            null=True)
+   
 
     disease_terms = models.ManyToManyField('core.DiseaseTerm',
                                            related_name='projects_w_term',
@@ -194,8 +192,9 @@ class Project(CoreTrackedModel):
 
         base_dict = {
             "source": settings.SERVER_URL,
+            "id_at_source": self.id.__str__(),
             "acronym": self.acronym,
-            "elu_accession": self.elu_accession if self.elu_accession else None,
+            "external_id": self.elu_accession,
             "name": self.title if self.title else None,
             "description":  self.description if self.description else None,
             "has_institutional_ethics_approval": self.has_erp,
@@ -215,6 +214,8 @@ class Project(CoreTrackedModel):
         d = self.to_dict()
         contacts = map(lambda v: f"[{v['first_name']} {v['last_name']}, {v['email']}]", d['contacts'])
         d['contacts'] = ','.join(contacts)
+        publications = map(lambda v: f"[{v['citation']}, {v['doi']}]", d['publications'])
+        d['publications'] = ','.join(publications)
         return d
 
 # faster lookup for permissions

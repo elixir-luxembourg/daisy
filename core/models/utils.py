@@ -2,9 +2,10 @@ from django import forms
 from django.conf import settings
 from django.db import models
 from django.db.models import TextField
+from django.utils.module_loading import import_string
+
 
 COMPANY = getattr(settings, "COMPANY", 'Company')
-
 
 class classproperty(property):
     def __get__(self, cls, owner):
@@ -23,10 +24,23 @@ class CoreTrackedModel(CoreModel):
     is_published = models.BooleanField(default=False,
                                        blank=False,
                                        verbose_name='Is published?')
-    elu_accession = models.CharField(default='-', blank=True, null=False, max_length=20)
+    elu_accession = models.CharField(unique=True,
+                                     blank=True,
+                                     null=True,
+                                     max_length=20)
 
     class Meta:
         abstract = True
+
+    def publish(self, save=True):
+        generate_id_function_path = getattr(settings, 'IDSERVICE_FUNCTION')
+        generate_id_function = import_string(generate_id_function_path)
+        if not self.is_published:
+            self.is_published = True
+            if not self.elu_accession:
+                self.elu_accession = generate_id_function(self)
+        if save:
+            self.save(update_fields=['is_published', 'elu_accession'])
 
 
 class TextFieldWithInputWidget(TextField):

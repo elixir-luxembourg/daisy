@@ -72,7 +72,8 @@
                         <th>Roles</th>
                         <th>Contacts</th>
                         {% if can_edit %}
-                            <th style="width:7em">Actions</th>{% endif %}
+                            <th style="width:7em">Actions</th>
+                        {% endif %}
                     </tr>
                     </thead>
                     <tbody>
@@ -92,6 +93,7 @@
                             </td>
                             {% if can_edit %}
                                 <td>
+                                    <a href="{% url 'edit_partner_role' pk=partner_role.id %}"><i title="Update participant" class="material-icons">edit</i></a>
                                     <i title="Delete participant" class="material-icons red clickable" data-method="delete"
                                        data-parent-to-remove="tr"
                                        data-confirmation = "delete"
