@@ -50,7 +50,8 @@ def test_report_renderer():
     params = ReportParameters(list_of_projects)
     report_renderer = ReportRenderer(params)
 
-    rendered_html = report_renderer.render()
+    rendered_html = report_renderer.render_html()
+    _ = report_renderer.render_txt()
     assert PROJECT_ACRONYM in rendered_html
     assert PROJECT_TITLE in rendered_html
 

@@ -2,6 +2,7 @@ from functools import reduce
 from operator import concat
 from typing import List, Type, Union
 
+from django.conf import settings
 from django.db.models import Model
 from django.db.models.query import QuerySet
 from django.db.models.manager import Manager
@@ -11,10 +12,18 @@ from core.models.dataset import Dataset
 from core.models.data_declaration import DataDeclaration
 from core.models.project import Project
 from core.models.user import User
+from notification.email_sender import send_the_email
 
 
 def cast_to_queryset(object: Union[Model, List[Model], QuerySet], klass: Type = None):
-    """Casts the object, or a list of objects to a queryset"""
+    """
+    Casts the parameter to a queryset.
+    Accepts:
+     - the object (of Model)
+     - a list of objects
+     - a Queryset (e.g. Project.objects.all())
+     - a Manager (e.g. Project.objects)
+    """
     if object is None:
         return None
     if klass is None:
@@ -63,6 +72,10 @@ class ReportParameters:
 class ReportParametersCollector:
     @classmethod
     def generate_for_user(cls, user: User):
+        """
+        Generates the `ReportParameters` containing given User's entities -
+        projects, datasets, data declarations and issues.
+        """
         projects = Project.objects.filter(local_custodians__id=user.id)
         # TODO: What exactly needs to be collected here:
         # 1) datasets whose local_custodian is the User
@@ -91,11 +104,42 @@ class ReportRenderer:
         self.data_declarations = report_parameters.data_declarations
         self.projects = report_parameters.projects
 
-    def render(self):
+    def render_html(self):
+        return self._render('report_email.html')
+
+    def render_txt(self):
+        return self._render('report_email.txt')
+    
+    def _render(self, template_name):
         context = {
             'projects': self.projects,
             'datasets': self.datasets,
             'data_declarations': self.data_declarations,
             'issues': self.issues
         }
-        return render_to_string('report_email.html', context)
+        return render_to_string(template_name, context)
+
+def get_users_to_receive_emails(force=False):
+    should_continue = getattr(settings, 'EMAIL_REPORTS_ENABLED', False)
+    if force or should_continue:
+        return User.objects.filter(email__contains='@')
+    else:
+        return []
+
+def generate_and_send_reports(force=False):
+    list_of_users = get_users_to_receive_emails(force)
+
+    for user in list_of_users:
+        generate_and_send_report_to(user)
+
+def generate_and_send_report_to(user: User):
+    report_params = ReportParametersCollector.generate_for_user(user)
+    html_contents = ReportRenderer(report_params).render_html()
+    txt_contents = ReportRenderer(report_params).render_txt()
+    send_the_email(
+        settings.EMAIL_DONOTREPLY,
+        user.email,
+        'Report',
+        txt_contents,
+        html_contents
+    )
