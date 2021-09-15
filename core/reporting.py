@@ -4,6 +4,7 @@ from typing import List, Type, Union
 
 from django.db.models import Model
 from django.db.models.query import QuerySet
+from django.db.models.manager import Manager
 from django.template.loader import render_to_string
 
 from core.models.dataset import Dataset
@@ -12,16 +13,21 @@ from core.models.project import Project
 from core.models.user import User
 
 
-def ensure_queryset(object: Model, klass: Type):
+def cast_to_queryset(object: Union[Model, List[Model], QuerySet], klass: Type = None):
+    """Casts the object, or a list of objects to a queryset"""
     if object is None:
         return None
+    if klass is None:
+        raise TypeError(f'`klass` parameter missing!')    
     if type(object) == klass:
-        return klass.objects.get(id=object.id)
+        return klass.objects.filter(id=object.id)
     if type(object) == list:
         ids = [x.id for x in object]
         return klass.objects.filter(id__in=ids)
     if type(object) == QuerySet:
         return object
+    if type(object) == Manager:
+        return object.all()
     class_name = object.__class__.__name__
     raise TypeError(f'Unrecognised class: {class_name}!')
         
@@ -44,14 +50,14 @@ class ReportParameters:
     but only once we move to Python 3.7
     """
     def __init__(self, 
-                 projects: Union[Project, List[Project]] = None,
-                 datasets: Union[Dataset, List[Dataset]] = None,
-                 data_declarations: Union[DataDeclaration, List[DataDeclaration]] = None,
-                 issues: Union[Issue, List[Issue]] = None) -> None:
-        self.issues = ensure_queryset(issues, Issue)
-        self.datasets = ensure_queryset(datasets, Dataset)
-        self.data_declarations = ensure_queryset(data_declarations, DataDeclaration)
-        self.projects = ensure_queryset(projects, Project)
+                 projects: Union[Project, List[Project], QuerySet] = None,
+                 datasets: Union[Dataset, List[Dataset], QuerySet] = None,
+                 data_declarations: Union[DataDeclaration, List[DataDeclaration], QuerySet] = None,
+                 issues: Union[Issue, List[Issue], QuerySet] = None) -> None:
+        self.issues = cast_to_queryset(issues, Issue)
+        self.datasets = cast_to_queryset(datasets, Dataset)
+        self.data_declarations = cast_to_queryset(data_declarations, DataDeclaration)
+        self.projects = cast_to_queryset(projects, Project)
 
 
 class ReportParametersCollector:
@@ -65,7 +71,7 @@ class ReportParametersCollector:
 
         datasets = Dataset.objects.filter(local_custodians__id=user.id)
 
-        data_declarations_list = [dataset.data_declarations for dataset in datasets]
+        data_declarations_list = [dataset.data_declarations.all() for dataset in datasets]
         if len(data_declarations_list) == 0:
             data_declarations = []
         else:

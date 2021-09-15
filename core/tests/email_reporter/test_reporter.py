@@ -1,8 +1,24 @@
-from core.reporting import ReportParameters, ReportParametersCollector, ReportRenderer
+from typing import cast
+from django.db.models.query import QuerySet
 
-from core.models import Project
+from core.reporting import cast_to_queryset, ReportParameters, ReportParametersCollector, ReportRenderer
+from core.models import Project, data_declaration
 from test import factories
 
+
+def test_cast_to_queryset():
+    assert cast_to_queryset(None, Project) == None
+
+    project = factories.ProjectFactory.create(acronym='test1', title='test1')
+    assert type(cast_to_queryset(project, Project)) == QuerySet
+
+    project2 = factories.ProjectFactory.create(acronym='test2', title='test2')
+    assert type(cast_to_queryset([project, project2], Project)) == QuerySet
+
+    assert type(cast_to_queryset(Project.objects.all(), Project)) == QuerySet
+    assert type(cast_to_queryset(Project.objects, Project)) == QuerySet
+    assert type(cast_to_queryset(Project.objects.get(acronym='test2'), Project)) == QuerySet
+    
 
 def test_report_parameters():
     """Ensure that all of these don't fail"""
@@ -49,10 +65,17 @@ def test_report_collector():
     project.local_custodians.add(user1)
     project.save()
 
+    dataset = factories.DatasetFactory.create(project=project)
+    dataset.local_custodians.add(user1)
+    dataset.save()
+
+    data_declaration = factories.DataDeclarationFactory.create(dataset=dataset)
+    data_declaration.save()
+
     params = ReportParametersCollector.generate_for_user(user1)
     assert len(params.projects) == 1
     assert params.issues is None
-    assert len(params.datasets) == 0
-    assert len(params.data_declarations) == 0
+    assert len(params.datasets) == 1
+    assert len(params.data_declarations) == 1
 
     assert params.projects[0].acronym == PROJECT_ACRONYM
