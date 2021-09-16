@@ -75,7 +75,7 @@ def test_report_collector():
 
     params = ReportParametersCollector.generate_for_user(user1)
     assert len(params.projects) == 1
-    assert params.issues is None
+    assert len(params.issues) > 0
     assert len(params.datasets) == 1
     assert len(params.data_declarations) == 1
 
