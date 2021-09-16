@@ -46,7 +46,7 @@
                 Projects count: {{ projects | length }} <br />
                 Datasets count: {{ datasets | length }} <br />
                 Data declarations count: {{ data_declarations | length }} <br /><br />
-                Issues found: {{ issues | length }}
+                {% if issues %}Issues found: {{ issues | length }}{% else %}No issues with the entries found{% endif %}
             </td>
             <td width="5%" style="background-color: #fff"></td>
         </tr>
@@ -108,7 +108,7 @@
     </table>
 
     {% endfor %}
-
+    {% if issues %}
     <table border="0" cellspacing="0" cellpadding="0"
             style="table-layout: fixed;font-family: 'Roboto','Helvetica','Arial',sans-serif;
             font-weight: 300; background-color: rgba(158, 158, 158, 0.2);"
@@ -142,5 +142,5 @@
         </tr>
         {% endfor %}
         <tr style="background-color: #ffffff; height: 60px; width: 100%"><td colspan=4></td></tr>
-    </table>
+    </table>{% endif %}
 </div>

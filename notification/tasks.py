@@ -1,13 +1,15 @@
 import datetime
+
 from collections import defaultdict
 from datetime import timedelta
 
 from celery import shared_task
 from django.conf import settings
-from django.utils import timezone
 from django.db.models import Q
+from django.utils import timezone
+
 from core.models import Contract, DataDeclaration, Dataset, Document, Project, User
-from notification.email_sender import send_the_email
+from notification.email_sender import send_email_from_template
 from notification.models import (Notification, NotificationStyle, NotificationVerb)
 
 # map each notification style to a delta
@@ -44,7 +46,7 @@ def send_notifications_for_user_by_time(user_id, time):
         'user': user,
         'notifications': dict(notifications_by_verb)
     }
-    send_the_email(
+    send_email_from_template(
         settings.EMAIL_DONOTREPLY,
         user.email,
         'Notifications',
@@ -65,7 +67,7 @@ def send_dataset_notification_for_user(user_id, dataset_id, created):
         'dataset': dataset,
         'created': created
     }
-    send_the_email(
+    send_email_from_template(
         settings.EMAIL_DONOTREPLY,
         user.email,
         'Notifications',

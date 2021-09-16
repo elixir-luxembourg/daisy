@@ -9,7 +9,7 @@ General overview:
     Projects count: {{ projects | length }} 
     Datasets count: {{ datasets | length }} 
     Data declarations count: {{ data_declarations | length }} 
-    Issues found: {{ issues | length }}
+    {% if issues %}Issues found: {{ issues | length }}{% else %}No issues with the entries found{% endif %}
 
 Detailed overview:
     {% for project in projects.all %}
@@ -24,10 +24,10 @@ Detailed overview:
     {% endfor %}
 
     
-Issues found:
+{% if issues %}Issues found:
 {% for issue in issues %}
     {{ issue.code }}: {{ issue.description }} 
     {{ issue.object_title }} 
     {{ issue.url }}
-{% endfor %}
+{% endfor %}{% endif %}
         
