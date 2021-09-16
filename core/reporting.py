@@ -15,7 +15,7 @@ from core.models.user import User
 from notification.email_sender import send_the_email
 
 
-def cast_to_queryset(object: Union[Model, List[Model], QuerySet], klass: Type = None):
+def cast_to_queryset(object: Union[Model, List[Model], QuerySet], klass: Type = None) -> QuerySet:
     """
     Casts the parameter to a queryset.
     Accepts:
@@ -71,7 +71,7 @@ class ReportParameters:
 
 class ReportParametersCollector:
     @classmethod
-    def generate_for_user(cls, user: User):
+    def generate_for_user(cls, user: User) -> ReportParameters:
         """
         Generates the `ReportParameters` containing given User's entities -
         projects, datasets, data declarations and issues.
@@ -104,13 +104,13 @@ class ReportRenderer:
         self.data_declarations = report_parameters.data_declarations
         self.projects = report_parameters.projects
 
-    def render_html(self):
+    def render_html(self) -> str:
         return self._render('report_email.html')
 
-    def render_txt(self):
+    def render_txt(self) -> str:
         return self._render('report_email.txt')
     
-    def _render(self, template_name):
+    def _render(self, template_name) -> str:
         context = {
             'projects': self.projects,
             'datasets': self.datasets,
@@ -119,20 +119,20 @@ class ReportRenderer:
         }
         return render_to_string(template_name, context)
 
-def get_users_to_receive_emails(force=False):
+def get_users_to_receive_emails(force=False) -> List[User]:
     should_continue = getattr(settings, 'EMAIL_REPORTS_ENABLED', False)
     if force or should_continue:
         return User.objects.filter(email__contains='@')
     else:
         return []
 
-def generate_and_send_reports(force=False):
+def generate_and_send_reports(force=False) -> None:
     list_of_users = get_users_to_receive_emails(force)
 
     for user in list_of_users:
         generate_and_send_report_to(user)
 
-def generate_and_send_report_to(user: User):
+def generate_and_send_report_to(user: User) -> None:
     report_params = ReportParametersCollector.generate_for_user(user)
     html_contents = ReportRenderer(report_params).render_html()
     txt_contents = ReportRenderer(report_params).render_txt()
