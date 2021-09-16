@@ -8,6 +8,7 @@ from django.db.models.query import QuerySet
 from django.db.models.manager import Manager
 from django.template.loader import render_to_string
 
+from core.issues import Issue, find_issues_in_datadeclarations, find_issues_in_datasets, find_issues_in_projects 
 from core.models.dataset import Dataset
 from core.models.data_declaration import DataDeclaration
 from core.models.project import Project
@@ -39,19 +40,17 @@ def cast_to_queryset(object: Union[Model, List[Model], QuerySet], klass: Type = 
         return object.all()
     class_name = object.__class__.__name__
     raise TypeError(f'Unrecognised class: {class_name}!')
+
+def cast_to_issue_list(object: Union[Issue, List[Issue]]) -> List[Issue]:
+    if object is None:
+        return None
+    if type(object) == Issue:
+        return [object]
+    if type(object) == list:
+        return object
+    class_name = object.__class__.__name__
+    raise TypeError(f'Unrecognised class: {class_name}!')
         
-
-class Issue:
-    def __init__(self,
-            url: str,
-            code: str,
-            description: str,
-            object_title: str) -> None:
-        self.url = url
-        self.object_title = object_title
-        self.description = description
-        self.code = code
-
 
 class ReportParameters:
     """
@@ -62,8 +61,8 @@ class ReportParameters:
                  projects: Union[Project, List[Project], QuerySet] = None,
                  datasets: Union[Dataset, List[Dataset], QuerySet] = None,
                  data_declarations: Union[DataDeclaration, List[DataDeclaration], QuerySet] = None,
-                 issues: Union[Issue, List[Issue], QuerySet] = None) -> None:
-        self.issues = cast_to_queryset(issues, Issue)
+                 issues: Union[Issue, List[Issue]] = None) -> None:
+        self.issues = cast_to_issue_list(issues)
         self.datasets = cast_to_queryset(datasets, Dataset)
         self.data_declarations = cast_to_queryset(data_declarations, DataDeclaration)
         self.projects = cast_to_queryset(projects, Project)
@@ -91,9 +90,8 @@ class ReportParametersCollector:
             data_declarations_with_repetitions = reduce(concat, data_declarations_list)
             data_declarations = list(set(data_declarations_with_repetitions))
 
-        # TODO: Generate Issues
-        issues = None
-        
+        issues = find_issues_in_projects(projects) + find_issues_in_datasets(datasets) + find_issues_in_datadeclarations(data_declarations)
+
         return ReportParameters(projects, datasets, data_declarations, issues)
 
 
