@@ -1,13 +1,15 @@
+from core.issues import Issue
 from typing import cast
 from django.db.models.query import QuerySet
 
-from core.reporting import cast_to_queryset, ReportParameters, ReportParametersCollector, ReportRenderer
+from core.reporting import cast_to_queryset, cast_to_issue_list
+from core.reporting import ReportParameters, ReportParametersCollector, ReportRenderer
 from core.models import Project, data_declaration
 from test import factories
 
 
 def test_cast_to_queryset():
-    assert cast_to_queryset(None, Project) == None
+    assert cast_to_queryset(None, Project) is None
 
     project = factories.ProjectFactory.create(acronym='test1', title='test1')
     assert type(cast_to_queryset(project, Project)) == QuerySet
@@ -18,6 +20,13 @@ def test_cast_to_queryset():
     assert type(cast_to_queryset(Project.objects.all(), Project)) == QuerySet
     assert type(cast_to_queryset(Project.objects, Project)) == QuerySet
     assert type(cast_to_queryset(Project.objects.get(acronym='test2'), Project)) == QuerySet
+
+
+def test_cast_to_issue_list():
+    issue = Issue('https://a.com', '1', 'desc', 'title')
+    assert cast_to_issue_list(None) is None
+    assert type(cast_to_issue_list(issue)) == list
+    assert issue in cast_to_issue_list(issue)
     
 
 def test_report_parameters():

@@ -2,6 +2,10 @@
 Module that regroup some utilities.
 """
 import logging
+from os.path import join
+
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 
 
 class DaisyLogger:
@@ -22,3 +26,11 @@ class DaisyLogger:
             message += ' '.join(('%s=%s' % (str(k), str(v)) for k, v in kwargs.items()))
             return fn(message)
         return wrap
+
+
+def get_absolute_uri(uri):
+    if len(getattr(settings, 'SERVER_SCHEME', '')) == 0:
+        raise ImproperlyConfigured('You must specify "HTTP_SCHEME" in settings.py')
+    if len(getattr(settings, 'SERVER_URL', '')) == 0:
+        raise ImproperlyConfigured('You must specify "SERVER_URL" in settings.py')
+    return join(f'{settings.SERVER_SCHEME}://{settings.SERVER_URL}', uri)

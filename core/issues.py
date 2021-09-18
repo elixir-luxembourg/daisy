@@ -5,6 +5,7 @@ from django.urls import reverse
 from core.models.data_declaration import DataDeclaration
 from core.models.project import Project
 from core.models.dataset import Dataset
+from core.utils import get_absolute_uri
 
 
 class Issue:
@@ -21,8 +22,9 @@ class Issue:
 
 def find_issues_in_dataset(dataset: Dataset) -> List[Issue]:
     issues = []
-    url = reverse('dataset', args=[str(dataset.id)])
-
+    local_url = reverse('dataset', args=[str(dataset.id)])
+    url = get_absolute_uri(local_url)
+    
     if dataset.legal_basis_definitions.count() == 0:
         issues.append(Issue(url, '[D-1]', 'Missing legal bases for a dataset', dataset.title))
 
@@ -39,7 +41,8 @@ def find_issues_in_dataset(dataset: Dataset) -> List[Issue]:
 
 def find_issues_in_project(project: Project) -> List[Issue]:
     issues = []
-    url = reverse('project', args=[str(project.id)])
+    local_url = reverse('project', args=[str(project.id)])
+    url = get_absolute_uri(local_url)
 
     if project.datasets.count() == 0:
         issues.append(Issue(url, '[P-1]', 'No dataset in a project', project.acronym))
@@ -54,7 +57,8 @@ def find_issues_in_project(project: Project) -> List[Issue]:
 
 def find_issues_in_datadeclaration(data_declaration: DataDeclaration) -> List[Issue]:
     issues = []
-    url = reverse('data_declaration', args=[str(data_declaration.id)])
+    local_url = reverse('data_declaration', args=[str(data_declaration.id)])
+    url = get_absolute_uri(local_url)
 
     # TODO:
 

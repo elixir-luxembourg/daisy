@@ -22,7 +22,7 @@ Detailed overview:
     {% endfor %}
 
     
-{% if issues %}Issues found:
+{% if issues|length > 0 %}Issues found:
 {% for issue in issues %}
     {{ issue.code }}: {{ issue.description }} 
     {{ issue.object_title }} 
