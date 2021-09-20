@@ -10,14 +10,17 @@ logger = DaisyLogger(__name__)
 
 
 class DatasetsExporter:
-    def __init__(self, include_unpublished=False, objects=None):
+    def __init__(
+            self, 
+            include_unpublished=False,
+            objects=None):
+        self.include_unpublished = include_unpublished
         """
         objects would be Django object manager containing datasets to export,
         i.e.:
         objects = Dataset.objects.all()
         objects = Dataset.objects.filter(acronym='test')
         """
-        self.include_unpublished = include_unpublished
         if objects is not None:
             self.objects = objects
         else:
@@ -47,20 +50,24 @@ class DatasetsExporter:
         for dataset in objects:
             dataset_repr = str(dataset)
             logger.debug(f' * Exporting dataset: "{dataset_repr}"...')
-            try:
-                pd = dataset.to_dict()
-                pd["source"] = settings.SERVER_URL
-                dataset_dicts.append(pd)
-            except Exception as e:
-                logger.error(f'Export failed for dataset {dataset.title}')
-                logger.error(str(e))
-                if verbose:
-                    import traceback
-                    ex = traceback.format_exception(*sys.exc_info())
-                    logger.error('\n'.join([e for e in ex]))
-                if stop_on_error:
-                    raise e
-            logger.debug("   ... complete!")
+            if dataset.is_published or self.include_unpublished:
+                try:
+                    pd = dataset.to_dict()
+                    pd["source"] = settings.SERVER_URL
+                    dataset_dicts.append(pd)
+                except Exception as e:
+                    logger.error(f'Export failed for dataset {dataset.title}')
+                    logger.error(str(e))
+                    if verbose:
+                        import traceback
+                        ex = traceback.format_exception(*sys.exc_info())
+                        logger.error('\n'.join([e for e in ex]))
+                    if stop_on_error:
+                        raise e
+                logger.debug("   ... complete!")
+            else:
+                logger.debug(f' "{dataset_repr}" is not published, it can not be exported')
+
         json.dump({
             "$schema": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-dataset.json",
             "items": dataset_dicts}, buffer, indent=4)

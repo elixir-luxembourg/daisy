@@ -91,10 +91,6 @@ class ImportBaseCommand(BaseCommand):
 
         ):
         raise NotImplementedError("Abstract method: Implement this method in the child class.")
-    def get_exporter(self,
-            include_unpublished=False
-        ):
-        raise NotImplementedError("Abstract method: Implement this method in the child class.")
 
     def import_directory(self, importer, dir_path):
         for json_file_path in os.listdir(dir_path):
@@ -136,13 +132,10 @@ class ExportBaseCommand(BaseCommand):
             include_unpublished = options.get('include_unpublished')
             path_to_json_file = options.get('file')
 
-            exporter = self.get_exporter(
-                                include_unpublished = include_unpublished
-                
-                            )
+        
 
             with open(path_to_json_file,  mode="w+", encoding='utf-8') as json_file:
-                exp = self.get_exporter()
+                exp = self.get_exporter( include_unpublished = include_unpublished)
                 exp.export_to_file(json_file)
                 self.stdout.write(self.style.SUCCESS("Export complete!"))
         
