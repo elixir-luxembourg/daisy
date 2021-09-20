@@ -1,10 +1,12 @@
-from core.issues import Issue
 from typing import cast
+
+from django.conf import settings
 from django.db.models.query import QuerySet
 
-from core.reporting import cast_to_queryset, cast_to_issue_list
-from core.reporting import ReportParameters, ReportParametersCollector, ReportRenderer
+from core.issues import Issue
 from core.models import Project, data_declaration
+from core.reporting import cast_to_queryset, cast_to_issue_list, get_users_to_receive_emails
+from core.reporting import ReportParameters, ReportParametersCollector, ReportRenderer
 from test import factories
 
 
@@ -89,3 +91,22 @@ def test_report_collector():
     assert len(params.data_declarations) == 1
 
     assert params.projects[0].acronym == PROJECT_ACRONYM
+
+def test_get_users_to_receive_emails():
+    previous_value = getattr(settings, 'EMAIL_REPORTS_ENABLED', None)
+
+    user1 = factories.UserFactory.create(first_name='Daria', last_name='Crayon', email='daria@crayon.com')
+    user1.save()
+
+    user2 = factories.UserFactory.create(first_name='Adam', last_name='Crayon', email='adam@crayon.com')
+    user2.save()
+
+    setattr(settings, 'EMAIL_REPORTS_ENABLED', False)
+    assert len(get_users_to_receive_emails()) == 0
+    assert len(get_users_to_receive_emails(True)) > 0
+
+    setattr(settings, 'EMAIL_REPORTS_ENABLED', True)
+    assert len(get_users_to_receive_emails()) > 0
+    assert len(get_users_to_receive_emails(True)) > 0
+
+    setattr(settings, 'EMAIL_REPORTS_ENABLED', previous_value)

@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from core.models import Contract, DataDeclaration, Dataset, Document, Project, User
+from core.reporting import generate_and_send_reports
 from notification.email_sender import send_email_from_template
 from notification.models import (Notification, NotificationStyle, NotificationVerb)
 
@@ -19,6 +20,11 @@ NOTIFICATION_MAPPING = {
     NotificationStyle.once_per_week: timedelta(days=7, hours=16),
     NotificationStyle.once_per_month: timedelta(days=33),
 }
+
+
+@shared_task
+def send_email_reports():
+    generate_and_send_reports()
 
 
 @shared_task
