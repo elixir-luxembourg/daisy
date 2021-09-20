@@ -5,6 +5,9 @@ from core.models import Partner
 from core.utils import DaisyLogger
 from django.conf import settings
 from io import StringIO
+from urllib.parse import urljoin
+
+JSONSCHEMA_BASE_REMOTE_URL = getattr(settings, 'IMPORT_JSON_SCHEMAS_URI')
 
 logger = DaisyLogger(__name__)
 
@@ -54,7 +57,7 @@ class PartnersExporter:
                 else:
                     logger.debug(f' "{partner.name}" is not published, it can not be exported')
             json.dump({
-                "$schema": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-institution.json",
+                "$schema": urljoin(JSONSCHEMA_BASE_REMOTE_URL, 'elu-institution.json'),
                 "items": partner_dicts}, buffer , indent=4)
             return buffer
 
