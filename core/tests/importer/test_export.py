@@ -8,6 +8,11 @@ from core.importer.projects_exporter import ProjectsExporter
 from core.importer.JSONSchemaValidator import ProjectJSONSchemaValidator, DatasetJSONSchemaValidator,  InstitutionJSONSchemaValidator
 from test import factories
 
+def export_entities(exporter):
+    buffer = exporter.export_to_buffer(StringIO())
+    dict = json.loads(buffer.getvalue())
+    dict_items = dict['items']
+    return dict_items
 
 @pytest.mark.django_db
 def test_export_projects(celery_session_worker, contact_types, partners, gdpr_roles, storage_resources, can_defer_constraint_checks):
@@ -20,13 +25,14 @@ def test_export_projects(celery_session_worker, contact_types, partners, gdpr_ro
     a_project =  factories.ProjectFactory.create(acronym='Test_PRJ', title='Title of test project.', local_custodians=[rebecca, embury])
     another_project =  factories.ProjectFactory.create(acronym='Another PRJ', title='Title of another test project.', local_custodians=[rebecca, embury])
 
-    exp = ProjectsExporter()
-    buffer = exp.export_to_buffer(StringIO())
+    exp = ProjectsExporter(include_unpublished=False)
+    project_dicts = export_entities(exp)
+    assert 0 == len(project_dicts)
 
-    dict = json.loads(buffer.getvalue())
-    project_dicts = dict['items']
+    exp = ProjectsExporter(include_unpublished=True)
+    project_dicts = export_entities(exp)
+
     assert 2 == len(project_dicts)
-
     assert "Title of test project." ==  project_dicts[0]['name']
     assert 2 == len(project_dicts[0]['contacts'])
 
@@ -39,13 +45,15 @@ def test_export_projects(celery_session_worker, contact_types, partners, gdpr_ro
 @pytest.mark.django_db
 def test_export_partners(celery_session_worker, contact_types, partners, gdpr_roles, storage_resources, can_defer_constraint_checks):
 
-
-    exp = PartnersExporter()
-    buffer = exp.export_to_buffer(StringIO())
-
-    dict = json.loads(buffer.getvalue())
-    partner_dicts = dict['items']
+    a_partner =  factories.PartnerFactory.create()
+    
+    exp = PartnersExporter(include_unpublished=False)
+    partner_dicts = export_entities(exp)
     assert 96 == len(partner_dicts) # initial data has 96 partners
+    
+    exp = PartnersExporter(include_unpublished=True)
+    partner_dicts = export_entities(exp)
+    assert 97 == len(partner_dicts) # initial data has 96 partners
 
     #TODO add check of more fields
 
@@ -65,11 +73,13 @@ def test_export_datasets(celery_session_worker, contact_types, partners, gdpr_ro
     a_dataset =  factories.DatasetFactory.create(title='A test dataset', project=a_project, local_custodians=[rebecca, embury])
 
 
-    exp = DatasetsExporter()
-    buffer = exp.export_to_buffer(StringIO())
-
-    dict = json.loads(buffer.getvalue())
-    dataset_dicts = dict['items']
+    exp = DatasetsExporter(include_unpublished=False)
+    dataset_dicts = export_entities(exp)
+    assert 0 == len(dataset_dicts)
+    
+    exp = DatasetsExporter(include_unpublished=True)
+    dataset_dicts = export_entities(exp)
+    
     assert 1 == len(dataset_dicts)
     assert "A test dataset" == dataset_dicts[0]['name']
     assert "Test_PRJ" == dataset_dicts[0]['project']
