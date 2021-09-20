@@ -35,12 +35,14 @@ class BaseImporter:
             publish_on_import=False,
             exit_on_error=False,
             verbose=False,
-            validate=True
+            validate=True,
+            skip_on_exist=True
         ):
         self.verbose = verbose
         self.publish_on_import = publish_on_import
         self.exit_on_error = exit_on_error
         self.validate = validate
+        self.skip_on_exist = skip_on_exist
 
     @property
     def json_schema_validator(self):
@@ -143,7 +145,7 @@ class BaseImporter:
             if self.exit_on_error:
                 raise e
             result = False
-        self.logger.debug(f'Successfully imported item: {item_name}')
+
         return result
 
     def process_json(self, import_dict):
