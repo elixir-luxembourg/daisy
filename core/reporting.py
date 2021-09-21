@@ -82,8 +82,7 @@ class ReportParametersCollector:
         # 3) everything, 1 + 2 
 
         datasets = Dataset.objects.filter(local_custodians__id=user.id)
-
-        data_declarations_list = [dataset.data_declarations.all() for dataset in datasets]
+        data_declarations_list = [dataset.data_declarations.all() for dataset in datasets if len(dataset.data_declarations.all()) > 0 ]
         if len(data_declarations_list) == 0:
             data_declarations = []
         else:
