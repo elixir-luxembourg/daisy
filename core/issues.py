@@ -35,7 +35,10 @@ def find_issues_in_dataset(dataset: Dataset) -> List[Issue]:
         issues.append(Issue(url, '[D-3]', 'No storage locations for a dataset', dataset.title))
 
     if dataset.accesses.count() == 0:
-        issues.append(Issue(url, '[D-4]', 'No accesses specified for a dataset', dataset.title))
+        issues.append(Issue(url, '[D-4]', 'No access specified for a dataset', dataset.title))
+
+    if dataset.sensitivity is None:
+        issues.append(Issue(url, '[D-5]', 'No sensitivity class for a dataset', dataset.title))
 
     return issues
 
@@ -47,11 +50,19 @@ def find_issues_in_project(project: Project) -> List[Issue]:
     if project.datasets.count() == 0:
         issues.append(Issue(url, '[P-1]', 'No dataset in a project', project.acronym))
 
-    if project.has_erp == False:
-        issues.append(Issue(url, '[P-2]', 'No ERP in project', project.acronym))
+    if project.has_erp == False and len(project.erp_notes) == 0:
+        issues.append(Issue(url, '[P-2]', 'No ERP approval and no ERP notes', project.acronym))
 
-    if project.has_erp and len(project.erp_notes) == 0:
-        issues.append(Issue(url, '[P-3]', 'Empty ERP notes', project.acronym))
+    #If a project is marked as having Ethics,a document of type ethics approval should be uploaded
+    if project.has_erp:
+        ethics_approval_docs = project.legal_documents.all().filter(domain_type = 'ethics_approval')
+        if len(ethics_approval_docs) < 1:
+            issues.append(Issue(url, '[P-3]', 'Projet has an ERP approval but ethics approval document is not uploaded', project.acronym))
+
+    # Does the project have a data classification and a DPIA attachment.
+    dpia_docs = project.legal_documents.all().filter(domain_type = 'data_protection_impact_assessment')
+    if len(dpia_docs) < 1:
+        issues.append(Issue(url, '[P-4]', 'DPIA not present', project.acronym))
 
     return issues
 
@@ -60,7 +71,9 @@ def find_issues_in_datadeclaration(data_declaration: DataDeclaration) -> List[Is
     local_url = reverse('data_declaration', args=[str(data_declaration.id)])
     url = get_absolute_uri(local_url)
 
-    # TODO:
+    # Storage end date is filled in. If not, there should be explanaition
+    if data_declaration.end_of_storage_duration is None and data_declaration.storage_duration_criteria is None:
+        issues.append(Issue(url, '[DD-1]', 'No storage end date or storage duration criteria recorded', data_declaration.title))
 
     return issues
 
