@@ -5,5 +5,8 @@ from core.importer.datasets_exporter import DatasetsExporter
 class Command(ExportBaseCommand):
     help = 'export dataset records to a designated file'
 
-    def get_exporter(self):
-        return DatasetsExporter()
+    def get_exporter(
+            self,
+            include_unpublished=False
+        ):
+        return DatasetsExporter(include_unpublished)
