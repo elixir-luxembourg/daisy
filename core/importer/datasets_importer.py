@@ -63,6 +63,8 @@ class DatasetsImporter(BaseImporter):
         if shares:
             dataset.shares.set(shares, bulk=False)
 
+        dataset.scientific_metadata = dataset_dict.get('metadata', '{}') or '{}'
+
         dataset.save()
         dataset.updated = True
         for local_custodian in local_custodians:
@@ -477,6 +479,7 @@ class DatasetsImporter(BaseImporter):
             has_ethics_approval = study.get('has_ethics_approval', False)
             ethics_approval_notes = study.get('ethics_approval_notes', '')
             url = study.get('url', '')
+            metadata = study.get('metadata', '{}') or '{}'
 
             try:
                 cohort = Cohort.objects.get(title=name)
@@ -493,6 +496,7 @@ class DatasetsImporter(BaseImporter):
             cohort.ethics_confirmation = has_ethics_approval
             cohort.ethics_notes = ethics_approval_notes
             cohort.cohort_web_page = url
+            cohort.scientific_metadata = metadata
             cohort.save()
             cohort.updated = True
             

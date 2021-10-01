@@ -39,6 +39,7 @@ class PartnersImporter(BaseImporter):
         partner.elu_accession = partner_dict['external_id']
         partner.is_clinical = partner_dict['is_clinical']
         partner.geo_category = partner_dict['geo_category']
+        partner.scientific_metadata = partner_dict.get('metadata', '{}') or '{}'
         partner.sector_category = self.process_sector_category(partner_dict)
         partner.address = partner_dict.get('address') if partner_dict.get('address') else ''
         partner.country_code = partner_dict['country_code']
