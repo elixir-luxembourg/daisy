@@ -102,7 +102,8 @@ class Partner(CoreTrackedModel):
             "geo_category": self.geo_category,
             "sector_category": self.sector_category,
             "address": self.address if self.address else None,
-            "country_code": self.country.ioc_code if self.country.ioc_code else None
+            "country_code": self.country.ioc_code if self.country.ioc_code else None,
+            "metadata": self.scientific_metadata
         }
         return base_dict
 

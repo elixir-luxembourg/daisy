@@ -21,14 +21,23 @@ class CoreModel(models.Model):
 
 
 class CoreTrackedModel(CoreModel):
-    is_published = models.BooleanField(default=False,
-                                       blank=False,
-                                       verbose_name='Is published?')
-    elu_accession = models.CharField(unique=True,
-                                     blank=True,
-                                     null=True,
-                                     max_length=20)
+    elu_accession = models.CharField(
+        unique=True,
+        blank=True,
+        null=True,
+        max_length=20)
+    
+    is_published = models.BooleanField(
+        default=False,
+        blank=False,
+        verbose_name='Is published?')
 
+    scientific_metadata = models.TextField(
+        default='{}',
+        blank=False,
+        null=False,
+        verbose_name='Additional scientific metadata (in JSON format)'
+    )
     class Meta:
         abstract = True
 
