@@ -34,8 +34,8 @@ class CoreTrackedModel(CoreModel):
 
     scientific_metadata = models.TextField(
         default='{}',
-        blank=False,
-        null=False,
+        blank=True,
+        null=True,
         verbose_name='Additional scientific metadata (in JSON format)'
     )
     class Meta:
