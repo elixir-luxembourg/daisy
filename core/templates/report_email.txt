@@ -11,6 +11,7 @@ other necessary information required for compliance with GDPR.
     Data declarations count: {{ data_declarations | length }} 
     {% if issues %}Issues found count: {{ issues | length }}{% else %}No issues with the entries found{% endif %}
 
+{% if projects %}
  *** Detailed overview: ***
     {% for project in projects.all %}
         * Project {{ forloop.counter }}/{{ projects.all | length }}: {{ project.title }} ({{ project.acronym }}){% for dataset in project.datasets.all %}
@@ -20,6 +21,7 @@ other necessary information required for compliance with GDPR.
                 Data locations: {{ dataset_data_locations }} (TODO:){% endcomment %}
         {% endfor %}
     {% endfor %}
+{% endif %}
 
 {% if issues|length > 0 %}
  *** Issues found: *** {% for issue in issues %}
