@@ -79,7 +79,7 @@
                 style="background-color: #fff; color: #222">
                 <h3>Project: 
                     <a href="{% url 'project' pk=project.id %}">
-                        {{ project.title }} ({{ project.acronym }})
+                        <strong>{{ project.title }}</strong> ({{ project.acronym }})
                     </a>
                 </h3>
             </td>
@@ -136,7 +136,7 @@
             </td>
             <td width="80%" 
                 style="background-color: #fff; color: #222">
-                {{ issue.description }} <a href="{{ issue.url }}">{{ issue.object_title }}</a>
+                {{ issue.description }}: <a href="{{ issue.url }}">{{ issue.object_title }}</a>
             </td>
             <td width="5%" style="background-color: #fff"></td>
         </tr>

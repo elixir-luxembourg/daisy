@@ -1,19 +1,19 @@
-DAISY report (Generated at: {% now "Y/m/j" %})
+ *** DAISY report (Generated at: {% now "Y/m/j" %}) ***
                 
 This report contains all records for which you were appointed as a local custodian, 
 and highlights any issues in the records (found by an automatic validation rules).
 The list has been created to raise awareness of missing or incomplete records and 
 other necessary information required for compliance with GDPR.
             
-General overview:
+ *** General overview: ***
     Projects count: {{ projects | length }} 
     Datasets count: {{ datasets | length }} 
     Data declarations count: {{ data_declarations | length }} 
-    {% if issues %}Issues found: {{ issues | length }}{% else %}No issues with the entries found{% endif %}
+    {% if issues %}Issues found count: {{ issues | length }}{% else %}No issues with the entries found{% endif %}
 
-Detailed overview:
+ *** Detailed overview: ***
     {% for project in projects.all %}
-        Project {{ forloop.counter }}/{{ projects.all | length }}: {{ project.title }} ({{ project.acronym }}){% for dataset in project.datasets.all %}
+        * Project {{ forloop.counter }}/{{ projects.all | length }}: {{ project.title }} ({{ project.acronym }}){% for dataset in project.datasets.all %}
             Dataset {{ forloop.counter }}/{{ project.datasets.all | length }}: {{ dataset.title }}
                 Data declaration count: {{ dataset.data_declarations.all | length }} 
                 {% comment %}Data types: {{ dataset_data_types }} (TODO:)
@@ -21,11 +21,9 @@ Detailed overview:
         {% endfor %}
     {% endfor %}
 
-    
-{% if issues|length > 0 %}Issues found:
-{% for issue in issues %}
-    {{ issue.code }}: {{ issue.description }} 
-    {{ issue.object_title }} 
-    {{ issue.url }}
-{% endfor %}{% endif %}
+{% if issues|length > 0 %}
+ *** Issues found: *** {% for issue in issues %}
+    {{ issue.code }}: {{ issue.description }}  {{ issue.object_title }}  {{ issue.url }}
+{% endfor %}
+{% endif %}
         

@@ -1,0 +1,49 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1 class="display-4">E-mail reports</h1>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="card col">
+            <div class="card-body">
+                <h2 class="card-title">
+                    Who will receive the email reports?
+                    <hr />
+                </h2>
+                <div id="form-container" class="card-text">
+                    <table class="table table-borderless table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">No.</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">E-mail</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ user.get_full_name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>
+                                        <a class="btn btn-danger btn-outline btn-small" href="{% url 'admin:core_user_change' user.pk %}">Don't send the report to this user</a>
+                                        <a class="btn btn-secondary btn-outline" href="{% url 'email_reports_preview' user.pk %}">Preview the report</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+

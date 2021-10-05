@@ -95,11 +95,14 @@ def test_report_collector():
 def test_get_users_to_receive_emails():
     previous_value = getattr(settings, 'EMAIL_REPORTS_ENABLED', None)
 
-    user1 = factories.UserFactory.create(first_name='Daria', last_name='Crayon', email='daria@crayon.com')
+    user1 = factories.UserFactory.create(first_name='Daria', last_name='Crayon', email='daria@crayon.com', should_receive_email_reports=True)
     user1.save()
 
-    user2 = factories.UserFactory.create(first_name='Adam', last_name='Crayon', email='adam@crayon.com')
+    user2 = factories.UserFactory.create(first_name='Adam', last_name='Crayon', email='adam@crayon.com', should_receive_email_reports=False)
     user2.save()
+
+    user3 = factories.UserFactory.create(first_name='Bob', last_name='Malrey', email='bobmalrey.com', should_receive_email_reports=True)
+    user3.save()
 
     setattr(settings, 'EMAIL_REPORTS_ENABLED', False)
     assert len(get_users_to_receive_emails()) == 0
@@ -107,6 +110,10 @@ def test_get_users_to_receive_emails():
 
     setattr(settings, 'EMAIL_REPORTS_ENABLED', True)
     assert len(get_users_to_receive_emails()) > 0
-    assert len(get_users_to_receive_emails(True)) > 0
+    users = get_users_to_receive_emails(True)
+    assert len(users) > 0
+    assert user1 in users
+    assert user2 not in users
+    assert user3 not in users
 
     setattr(settings, 'EMAIL_REPORTS_ENABLED', previous_value)

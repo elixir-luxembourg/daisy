@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+    
+    {% if error %}
+        <div class="row mt-4">
+            <div class="jumbotron col">
+                <h1 class="display-4">
+                    Sorry, there has been an error: {{ error }}
+                </h1>
+
+                <a class="btn btn-secondary btn-outline" href="{% url 'email_reports' %}">
+                    Go back to the list of Users
+                </a>
+            </div>
+        </div>
+    {% else %}
+
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1 class="display-4">
+                E-mail reports preview for the user: <strong>{{ user.full_name }}</strong> <small>({{ user.email }})</small>
+            </h1>
+            
+            <a class="btn btn-secondary btn-outline" href="{% url 'email_reports' %}">
+                Go back to the list of Users
+            </a>
+        </div>
+    </div>
+
+    <div class="row mt-4" style="white-space: nowrap;">
+        <h1>Text report<br /></h1>
+
+        <pre>
+            {{ txt_contents | linebreaks }}    
+        </pre>
+    </div>
+
+    <div class="row mt-4">
+        <h1>HTML report<br /></h1>
+        
+        {{ html_contents | safe }}
+    </div>
+    {% endif %}
+{% endblock content %}
+
+
