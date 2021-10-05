@@ -50,7 +50,7 @@ def find_issues_in_project(project: Project) -> List[Issue]:
     if project.datasets.count() == 0:
         issues.append(Issue(url, '[P-1]', 'No dataset in a project', project.acronym))
 
-    if project.has_erp == False and len(project.erp_notes) == 0:
+    if project.has_erp == False and (project.erp_notes is None or len(project.erp_notes) == 0):
         issues.append(Issue(url, '[P-2]', 'No ERP approval and no ERP notes', project.acronym))
 
     #If a project is marked as having Ethics,a document of type ethics approval should be uploaded
