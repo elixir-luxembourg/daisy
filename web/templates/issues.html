@@ -1,0 +1,51 @@
+{% extends 'layout.html' %}
+{% load staticfiles %}
+
+{% block content %}
+
+{% if issues|length > 0 %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1 class="display-4">Current issues</h1>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="card col">
+            <div class="card-body">
+                <div id="form-container" class="card-text">
+                    <table class="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Code</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Object</th>
+                            <th scope="col">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        {% for issue in issues %}<tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ issue.code }}</td>
+                            <td><strong>{{ issue.description }}</strong></td>
+                            <td><a href="{{ issue.url }}">{{ issue.object_title }}</a></td>
+                            <td><a class="btn btn-secondary btn-outline" href="{{ issue.url }}">Fix</a></td>
+                          </tr>{% endfor %}
+                        </tbody>
+                      </table>
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+{% else %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1 class="display-4">No issues found!</h1>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock content %}

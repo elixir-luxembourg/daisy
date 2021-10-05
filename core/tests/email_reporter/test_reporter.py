@@ -1,13 +1,17 @@
 from typing import cast
+
+from django.conf import settings
 from django.db.models.query import QuerySet
 
-from core.reporting import cast_to_queryset, ReportParameters, ReportParametersCollector, ReportRenderer
+from core.issues import Issue
 from core.models import Project, data_declaration
+from core.reporting import cast_to_queryset, cast_to_issue_list, get_users_to_receive_emails
+from core.reporting import ReportParameters, ReportParametersCollector, ReportRenderer
 from test import factories
 
 
 def test_cast_to_queryset():
-    assert cast_to_queryset(None, Project) == None
+    assert cast_to_queryset(None, Project) is None
 
     project = factories.ProjectFactory.create(acronym='test1', title='test1')
     assert type(cast_to_queryset(project, Project)) == QuerySet
@@ -18,6 +22,13 @@ def test_cast_to_queryset():
     assert type(cast_to_queryset(Project.objects.all(), Project)) == QuerySet
     assert type(cast_to_queryset(Project.objects, Project)) == QuerySet
     assert type(cast_to_queryset(Project.objects.get(acronym='test2'), Project)) == QuerySet
+
+
+def test_cast_to_issue_list():
+    issue = Issue('https://a.com', '1', 'desc', 'title')
+    assert cast_to_issue_list(None) is None
+    assert type(cast_to_issue_list(issue)) == list
+    assert issue in cast_to_issue_list(issue)
     
 
 def test_report_parameters():
@@ -75,8 +86,27 @@ def test_report_collector():
 
     params = ReportParametersCollector.generate_for_user(user1)
     assert len(params.projects) == 1
-    assert params.issues is None
+    assert len(params.issues) > 0
     assert len(params.datasets) == 1
     assert len(params.data_declarations) == 1
 
     assert params.projects[0].acronym == PROJECT_ACRONYM
+
+def test_get_users_to_receive_emails():
+    previous_value = getattr(settings, 'EMAIL_REPORTS_ENABLED', None)
+
+    user1 = factories.UserFactory.create(first_name='Daria', last_name='Crayon', email='daria@crayon.com')
+    user1.save()
+
+    user2 = factories.UserFactory.create(first_name='Adam', last_name='Crayon', email='adam@crayon.com')
+    user2.save()
+
+    setattr(settings, 'EMAIL_REPORTS_ENABLED', False)
+    assert len(get_users_to_receive_emails()) == 0
+    assert len(get_users_to_receive_emails(True)) > 0
+
+    setattr(settings, 'EMAIL_REPORTS_ENABLED', True)
+    assert len(get_users_to_receive_emails()) > 0
+    assert len(get_users_to_receive_emails(True)) > 0
+
+    setattr(settings, 'EMAIL_REPORTS_ENABLED', previous_value)

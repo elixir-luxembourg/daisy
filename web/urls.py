@@ -20,6 +20,7 @@ from web.views.datasets import DatasetCreateView, DatasetDetailView, DatasetEdit
                                dataset_list, publish_dataset, unpublish_dataset
 from web.views.export import cohorts_export, contacts_export, contracts_export, \
                              datasets_export, partners_export, projects_export
+from web.views.issues import issues
 from web.views.partner import PartnerCreateView, PartnerDelete, PartnerDetailView, \
                               PartnerEditView, partner_search_view, \
                               publish_partner, unpublish_partner
@@ -37,6 +38,7 @@ web_urls = [
     # Single pages
     path('', dashboard, name='dashboard'),
     path('about', about, name='about'),
+    path('issues', issues, name='issues'),
     path('profile', profile.ProfileEditView.as_view(), name='profile'),
 
     # API urls

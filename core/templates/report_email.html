@@ -97,9 +97,9 @@
             <td colspan="2" width="70%" 
                 style="background-color: #fff; color: #222;">
                 <b>Dataset: {{ dataset.title }}</b> <br />
-                Data types: {{ dataset_data_types }} (TODO:)<br />
-                Data declaration count: {{ dataset.data_declarations | length }} <br />
-                Data locations: {{ dataset_data_locations }} (TODO:)<br />
+                Data declaration count: {{ dataset.data_declarations.all | length }} <br />
+                {% comment %}Data types: {{ dataset_data_types }} (TODO:)<br />                
+                Data locations: {{ dataset_data_locations }} (TODO:)<br />{% endcomment %}
             </td>
             <td width="5%" style="background-color: #fff"></td>
         </tr>
@@ -108,7 +108,7 @@
     </table>
 
     {% endfor %}
-    {% if issues %}
+    {% if issues|length > 0 %}
     <table border="0" cellspacing="0" cellpadding="0"
             style="table-layout: fixed;font-family: 'Roboto','Helvetica','Arial',sans-serif;
             font-weight: 300; background-color: rgba(158, 158, 158, 0.2);"
