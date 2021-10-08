@@ -73,6 +73,20 @@ def configure_mock_ldap():
     mockldap.stop()
 
 
+@pytest.fixture(autouse=False)
+def override_global_api_key(settings):
+    """
+    In theory it should work, but in practice the changes in settings
+    are not visible inside the decorator for some reason
+    (maybe because it's cached at the scope level? and not loaded
+    dynamically?)
+    """
+    original = getattr(settings, 'GLOBAL_API_KEY', None)
+    settings.GLOBAL_API_KEY = 'GLOBAL_API_KEY__as_set_in_conftest_py'
+    yield
+    settings.GLOBAL_API_KEY = original
+    
+
 @pytest.fixture(autouse=True)
 def enable_db_access_for_all_tests(db):
     pass

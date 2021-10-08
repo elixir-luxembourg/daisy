@@ -31,6 +31,7 @@ CELERY_BROKER_URL = 'amqp://guest:guest@mq:5672//'
 CELERY_RESULT_BACKEND = 'django-db'
 
 TESTING = os.environ.get('TEST', False)
+GLOBLA_API_KEY = 'test123'
 
 try:
     from .settings_ci import *
