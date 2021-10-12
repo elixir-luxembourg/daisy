@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest
 
+from core.lcsb import AccountSynchronizer, DummySynchronization, EmptyAccountSynchronizer, get_config_from_settings, KeycloakSynchronization
 from core.models.contact import Contact
 from core.models.dataset import Dataset
 from core.models.user import User
@@ -14,6 +15,14 @@ from core.utils import DaisyLogger
 
 
 logger = DaisyLogger(__name__)
+
+if getattr(settings, 'KEYCLOAK_INTEGRATION', False) == True:
+    keycloak_backend = KeycloakSynchronization(get_config_from_settings())
+    synchronizer = AccountSynchronizer(keycloak_backend)
+else:
+    keycloak_backend = DummySynchronization()
+    synchronizer = EmptyAccountSynchronizer(None)
+
 
 def handle_rems_callback(request: HttpRequest) -> bool:
     """
@@ -23,6 +32,10 @@ def handle_rems_callback(request: HttpRequest) -> bool:
 
     :returns: True if everything was processed, False if not
     """
+
+    # Ensure the most recent account inforrmation by pulling it from Keycloak
+    logger.debug('Refreshing the account information from Keycloak...')
+    synchronizer.synchronize()
 
     # TODO: Send an email to the Data Stewards or create a notification
 
