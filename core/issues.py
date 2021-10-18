@@ -52,7 +52,7 @@ def find_issues_in_project(project: Project) -> List[Issue]:
             issues.append(Issue(url, '[P-2]', 'Project ethical review status is missing', project.acronym))
 
     #If a project is marked as having Ethics,a document of type ethics approval should be uploaded
-    if project.has_erp || project.has_cner:
+    if project.has_erp | project.has_cner:
         ethics_approval_docs = project.legal_documents.all().filter(domain_type = 'ethics_approval')
         if len(ethics_approval_docs) < 1:
             issues.append(Issue(url, '[P-3]', 'Project marked to have ethics approval(s) but no document attachment is provided', project.acronym))
