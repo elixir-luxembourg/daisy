@@ -5,7 +5,7 @@
     <div class="row mt-4">
         <div class="jumbotron col">
             <h1 class="display-4">
-                We are sorry, there was something wrong with your request! <small>(error {{ reason }})</small>
+                <strong>We are sorry</strong>, there was something wrong with the page you requested! <small>(error code: {{ reason }})</small>
             </h1>
         </div>
     </div>
@@ -14,38 +14,60 @@
         <div class="card-body">
             <div class="col">
                 {% if reason == "404" %}
+                    <p class="display-4">
+                        <strong>The page does not exist. Let us guide you back!</strong>
+                    </p>
                     <p>
-                        <strong>The page you requested does not exist.</strong> 
                         Maybe you received a link to an obsolete resource or didn't copy the whole link?
                     </p>
-                {% elif reason == "400" %}
                     <p>
-                        <strong>Your browser sent a bad request, and we couldn't understand that.</strong> 
-                        In practice it usually means, that there's an error in the application.
-                        <br />
-                        If you'd like, please contact us about it.
+                        You might want to:
+                        <ul>
+                            <li>go <a href="#" onclick="window.history.back()">back</a></li>
+                            <li>go to <a href="{% url 'dashboard' %}">the index page</a></li>
+                            {% if request.user %}
+                            <li>go to <a href="{% url 'login' %}">the login</a></li>
+                            {% endif %}
+                        </ul>
+                    </p>
+                {% elif reason == "400" %}
+                    <p class="display-4">
+                        <strong>Your browser sent a bad request, and DAISY couldn't understand that.</strong>
+                    </p>
+                    <p>
+                        In practice it usually means, that there's a temporary error in the application. <strong>Can you reload the page (hit the refresh button), please?</strong>
+                    </p>
+                    <p>
+                        If the error persists after refreshing the page, please <a href="mailto:lcsb.sysadmins@uni.lu?subject=DAISY+error">contact us</a> about it.
                     </p>
                 {% elif reason == "csrf" %}
-                    <p>
+                    <p class="display-4">
                         <strong>The CSRF validation failed.</strong> 
-                        In practice it usually means, that filling the form took you slightly too long time (more than a few hours).
-                        <br /> 
-                        If you see this page in effect of clicking on any link you received from someone via mail or any other message, please let us know.
+                    </p>     
+                    <p>
+                        In practice it usually means, that filling the form took you slightly too long time (more than an hour). <strong>Go back and try to fill the form once again, please.</strong>
+                    </p>
+                    <p>
+                        If you see this page in effect of clicking on any link you received from someone via mail or any other message, please <a href="mailto:lcsb.sysadmins@uni.lu?subject=DAISY+error">let us know</a>.
                     </p>
                 {% elif reason == "500" %}
-                    <p>
+                    <p class="display-4">
                         <strong>The application has encountered the error.</strong> 
+                    </p>
+                    <p>
                         It might have happened because of the data you entered. If you'd like, you can let us know.
                     </p>
                 {% elif reason == "403" %}
+                    <p class="display-4">
+                        <strong>The page you requested is restricted, and your user cannot access the resource.</strong> 
+                    </p>
                     <p>
-                        <strong>The page you requested is protected, and your user cannot access the resource.</strong> 
-                        If you are sure that you should have the access, please contact your Data Steward.
+                        If you are sure that you should be able to access the document, please contact your Data Steward.
                     </p>
                 {% endif %}
                 <p>
-                    You might want to <button type="button" class="btn btn-raised btn-primary" onclick="window.history.back()">go back</button>, or  
-                    <a class="btn btn-raised btn-primary" href="{% url 'dashboard' %}">navigate to the main page</a>
+                    You might want to <button type="button" class="btn btn-raised btn-info" onclick="window.history.back()">go back</button>, or  
+                    <a class="btn btn-raised btn-info" href="{% url 'dashboard' %}">navigate to the main page</a>
                 </p>
             </div>
         </div>
