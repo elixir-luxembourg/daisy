@@ -66,6 +66,7 @@ class Cohort(CoreTrackedModel):
             'institutes': [i.id for i in self.institutes.all()],
             'has_ethics_approval': self.ethics_confirmation,
             'ethics_approval_notes': self.ethics_notes,
+            "metadata": self.scientific_metadata
         }
         return base_dict
 

@@ -205,6 +205,7 @@ class Project(CoreTrackedModel):
             "end_date": self.end_date.strftime('%Y-%m-%d') if self.end_date else None,
             "contacts": contact_dicts,
             "publications": pub_dicts,
+            "metadata": self.scientific_metadata
         }
 
         return base_dict
