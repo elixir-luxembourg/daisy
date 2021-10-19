@@ -1,24 +1,16 @@
-from django.conf import settings
-from django.core.management import BaseCommand
-
+from core.management.commands._private import ImportBaseCommand
 from core.importer.projects_importer import ProjectsImporter
 
 
-class Command(BaseCommand):
-    help = 'import projects from JSON file'
+class Command(ImportBaseCommand):
+    help = 'Import records from JSON file(s).'
 
-    def add_arguments(self, parser):
-        parser.add_argument('-f')
-
-    def handle(self, *args, **options):
-        try:
-            path_to_json_file = options.get('f')
-            with open(path_to_json_file) as json_file:
-                json_file_contents = json_file.read()
-                importer = ProjectsImporter()
-                importer.import_json(json_file_contents)
-                self.stdout.write(self.style.SUCCESS("Import was successful!"))
-        except Exception as e:
-            self.stderr.write(
-                self.style.ERROR("Something went wrong during the import! Is the path valid? Is the file valid?"))
-            self.stderr.write(self.style.ERROR(str(e)))
+    def get_importer(
+            self,
+            publish_on_import=False,
+            exit_on_error=False,
+            verbose=False,
+            validate=True,
+            skip_on_exist=False
+        ):
+        return ProjectsImporter(publish_on_import, exit_on_error, verbose, validate, skip_on_exist)

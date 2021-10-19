@@ -46,8 +46,9 @@ class UserFactory(factory.django.DjangoModelFactory):
 
     first_name = factory.Faker('first_name')
     last_name = factory.Faker('last_name')
-    full_name = factory.LazyAttribute(lambda x: '{0}.{1}'.format(x.first_name, x.last_name).lower())
-    username = factory.LazyAttribute(lambda x: '{0}.{1}@uni.lux'.format(x.first_name, x.last_name).lower())
+    email = factory.Faker('email')
+    full_name = factory.LazyAttribute(lambda x: f'{x.first_name}.{x.last_name}'.lower())
+    username = factory.LazyAttribute(lambda x: f'{x.first_name}.{x.last_name}@uni.lux'.lower())
 
     @factory.post_generation
     def groups(self, create, extracted, **kwargs):
@@ -109,8 +110,18 @@ class CohortFactory(factory.django.DjangoModelFactory):
         model = 'core.Cohort'
         django_get_or_create = ('title',)
 
-    owners = factory.Faker('city')
+    title = factory.Faker("bs")
     comments = factory.Faker('text')
+    
+    @factory.post_generation
+    def owners(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            # A list of contacts/owners were passed in, use them
+            for contact in extracted:
+                self.owners.add(contact)
 
 
 class DatasetFactory(factory.django.DjangoModelFactory):
@@ -199,7 +210,7 @@ class ContractFactory(factory.DjangoModelFactory):
     class Meta:
         model = 'core.Contract'
 
-    company_roles = factory.SubFactory(GDPRRoleFactory)
+    # company_roles = factory.SubFactory(GDPRRoleFactory)
     project = factory.SubFactory(ProjectFactory)
 
     @factory.post_generation
@@ -224,13 +235,13 @@ class ContractFactory(factory.DjangoModelFactory):
             for partner_roles in extracted:
                 self.partners_roles.add(partner_roles)
 
-    @factory.post_generation
-    def company_roles(self, create, extracted, **kwargs):
-        if not create:
-            return
-        if extracted:
-            for company_role in extracted:
-                self.company_roles.add(company_role)
+    # @factory.post_generation
+    # def company_roles(self, create, extracted, **kwargs):
+    #     if not create:
+    #         return
+    #     if extracted:
+    #         for company_role in extracted:
+    #             self.company_roles.add(company_role)
                 
 ## NOTIFICATIONS
 class AbstractNotificationFactory(factory.django.DjangoModelFactory):

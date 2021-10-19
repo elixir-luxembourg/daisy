@@ -24,13 +24,13 @@
 
                             <dt>Project</dt>
                             <dd>
-                                {%if dataset.project  %}<a href="{% url 'project' pk=dataset.project.pk %}">{{ dataset.project }}</a> {% else %}-{% endif %}
+                                {% if dataset.project  %}<a href="{% url 'project' pk=dataset.project.pk %}">{{ dataset.project }}</a> {% else %}-{% endif %}
 
                             </dd>
                         <dt>Other external id(s)</dt>
                         <dd>{{ dataset.other_external_id | default:'-' }}</dd>
                         <dt>Other comments</dt>
-                        <dd>{{ dataset.comments | default:'-' }}</dd>
+                        <dd>{{ dataset.comments | default:'-' | linebreaks }}</dd>
                     </dl>
                 </div>
 
@@ -42,21 +42,40 @@
                         <dd>{{ dataset.updated }}</dd>
                         <dt>Sensitivity class</dt>
                         <dd>{{ dataset.sensitivity.name | default:'-'}}</dd>
+                        <dt>Accession number</dt>
+                        <dd>{{ dataset.elu_accession | default:'-'  }}</dd>
                     </dl>
 
                 </div>
                 <div class="floating-buttons-absolute">
                     {% if request.user.is_superuser %}
-                <p class="text-center mt-5">
-                    {% if dataset.is_published %}
-                        <a id="unpublish" title="Unpublish dataset" class="btn btn-primary bmd-btn-fab float-right"><i
-                                class="material-icons">unpublish</i></a>
-                    {% else %}
-                        <a id="publish" title="Publish dataset"  class="btn btn-primary bmd-btn-fab float-right"><i
-                                class="material-icons">publish</i></a>
+                        <p class="text-center mt-5">
+                            <a  href="{% url 'admin:core_dataset_change' dataset.pk %}" 
+                                id="dataset-admin" 
+                                title="See in django admin"  
+                                class="btn btn-default bmd-btn-fab float-right">
+                                    <i class="material-icons">build</i>
+                            </a>
+                        
+                            {% if not dataset.is_published %}
+                                <a  href="{% url 'dataset_publish' pk=dataset.pk %}" 
+                                    data-confirm="Are you sure to publish the dataset? This will publish related projects and data declarations' information as well!"
+                                    id="publish" 
+                                    title="Publish dataset"
+                                    class="btn btn-default bmd-btn-fab float-right">
+                                        <i class="material-icons">publish</i>
+                                </a>    
+                            {% else %}
+                                <a href="{% url 'dataset_unpublish' pk=dataset.pk %}" 
+                                    data-confirm="Are you sure to unpublish the dataset? The changes won't be propagated to other systems!"
+                                    id="unpublish" 
+                                    title="Unpublish dataset" 
+                                    class="btn btn-default bmd-btn-fab float-right">
+                                    <i class="material-icons">undo</i>
+                                </a>
+                            {% endif %}
+                        </p>
                     {% endif %}
-                </p>
-            {% endif %}
                     {% if is_admin %}
                         <a class="btn btn-default bmd-btn-fab float-right"
                            title="Manage dataset permissions"
@@ -73,12 +92,14 @@
                             <i class="material-icons">edit</i>
                         </a>
                         {% if not dataset.is_published %}
-                            <a  id="deletedataset" class="btn btn-danger bmd-btn-fab float-right red"
-                            title="Delete dataset"
-                            data-toggle="modal" data-target="#modal" data-confirmation = "delete"
-                            data-ajax-url="{% url 'dataset_delete' dataset.id %}">
+                            <a id="deletedataset" 
+                                class="btn btn-danger bmd-btn-fab float-right red"
+                                title="Delete dataset"
+                                data-toggle="modal" 
+                                data-target="#modal" 
+                                data-confirmation = "delete"
+                                data-ajax-url="{% url 'dataset_delete' dataset.id %}">
                                 <i class="material-icons">delete</i>
-
                             </a>
                         {% endif %}
 
@@ -127,7 +148,7 @@
                                 <td>{{ data_declaration.cohorts.all | join:', ' }}</td>
                                 <td>{{ data_declaration.partner }}</td>
                                 <td>{%if data_declaration.data_types  %}{{ data_declaration.data_types | join:', ' }} {% else %}<p class="alert-error"> missing </p>{% endif %}</td>
-                                <td>{{ data_declaration.special_subjects | yesno:"yes,no,unknown" }}</td>
+                                <td>{{ data_declaration.has_special_subjects | yesno:"yes,no,unknown" }}</td>
                                 <td>{{ data_declaration.end_of_storage_duration  | default:"" }}</td>
                                 {% if can_edit %}
                                     <td>
@@ -315,6 +336,7 @@
                         <th>Remarks</th>
                         <th>Granted on</th>
                         {% if can_edit %}
+                            <th>User</th>
                             <th style="width:7em">Actions</th>
                         {% endif %}
                     </tr>
@@ -325,8 +347,9 @@
                             <td><p>{{ access.display_locations |truncatechars:90 }}</p></td>
                             <td>{{ access.access_notes |truncatechars:45  }}</td>
                             <td><p>{{ access.granted_on | default:"-"  }}</p></td>
-                            <td>
-                                {% if can_edit %}
+                            {% if can_edit %}
+                                <td>{% if access.user %}{{ access.user.full_name }}{% else %}-{% endif %}</td>
+                                <td>
                                     <i class="material-icons clickable"
                                        id="editaccess"
                                        title="Edit access"
@@ -338,8 +361,8 @@
                                        title="Delete access"
                                        data-parent-to-remove="tr"
                                        data-url="{% url 'dataset_access_remove' dataset_pk=dataset.id access_pk=access.id %}">delete_forever</i>
-                                {% endif %}
-                            </td>
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -350,17 +373,17 @@
     </div>
 
     <div class="row  mt-4">
-        {#    EXTERNAL SHARES OF DATASET     #}
+        {#    LOGBOOK ENTRIES FOR THE DATASET     #}
         <div class="card col-md-12 mr-0">
             <div class="card-body">
                 {% if can_edit %}
                     <div class="ml-1 float-right btn-group">
                         <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button"
                                 id="addshare"
-                                title="Add new transfer to dataset"
+                                title="Add logbook entry for dataset"
                                 data-toggle="modal"
                                 data-target="#modal"
-                                data-modal-title="Add new transfer"
+                                data-modal-title="Add new logbook entry"
                                 data-ajax-url="{% url 'dataset_share_add' dataset_pk=dataset.id %}"
                                 data-ajax-refresh-selector="#partner-select"
                                 data-ajax-refresh-param='partner'
@@ -371,16 +394,16 @@
                         </button>
                     </div>
                 {% endif %}
-                <h2 class="card-title">Transfers</h2>
+                <h2 class="card-title">Logbook</h2>
 
                 <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                     <tr>
                         <th>Scope</th>
+                        <th>Category</th>
                         <th>Partner</th>
-                        <th>Contract</th>
-                        <th>Granted on</th>
+                        <th>Date</th>
                         <th>Remarks</th>
                         <th></th>
                     </tr>
@@ -389,22 +412,22 @@
                     {% for share in dataset.shares.all %}
                         <tr>
                             <td><p>{% for ddec in share.data_declarations.all  %}{{ ddec.title}} <br/> {% empty %}Entire dataset{% endfor %}</p></td>
+                            <td>{%if share.data_log_type  %} {{ share.data_log_type.name }} {% else %}<p class="alert-error"> missing </p>{% endif %}</td>
                             <td>{{ share.partner }}</td>
-                            <td>{%if share.contract  %} {{ share.contract }} {% else %}<p class="alert-error"> missing </p>{% endif %}</td>
                             <td>{{ share.granted_on | default:"-" }}</td>
                             <td>{{ share.share_notes  | default:"-" }}</td>
                             <td>
                                 {% if can_edit %}
                                     <i class="material-icons clickable"
                                        id="editshare"
-                                       title="Edit transfer"
+                                       title="Edit logbook entry"
                                        data-toggle="modal"
                                        data-target="#modal"
-                                       data-modal-title="Edit transfer"
+                                       data-modal-title="Edit logbook entry"
                                        data-ajax-url="{% url 'dataset_share_edit' pk=share.id dataset_pk=dataset.id %}">edit</i>
                                     <i class="red material-icons clickable"
                                        data-method="delete"
-                                       title="Delete transfer"
+                                       title="Delete logbook entry"
                                        data-parent-to-remove="tr"
                                        data-url="{% url 'dataset_share_remove' dataset_pk=dataset.id share_pk=share.id %}">delete_forever</i>
                                 {% endif %}

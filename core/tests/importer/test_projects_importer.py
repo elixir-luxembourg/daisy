@@ -8,7 +8,7 @@ from test import factories
 
 
 @pytest.mark.django_db
-def test_import_projects(celery_session_worker, partners):
+def test_import_projects(celery_session_worker, contact_types, partners):
 
     VIP = factories.VIPGroup()
 
@@ -22,9 +22,9 @@ def test_import_projects(celery_session_worker, partners):
     factories.UserFactory.create(first_name='James', last_name='BK')
 
     projects_json = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../data/projects.json")
-    with open(projects_json, "r") as file_with_projects:
-        importer = ProjectsImporter()
-        importer.import_json(file_with_projects.read(), True)
+    importer = ProjectsImporter(exit_on_error=True, verbose=False, validate=True)
+    importer.import_json_file(projects_json)
+    
     projects = Project.objects.all()
     assert 2 == projects.count()
     project1 = Project.objects.filter(acronym='In vitro disease modeling').first()
@@ -45,3 +45,8 @@ def test_import_projects(celery_session_worker, partners):
     assert 11 == project2.start_date.month
     assert 1  == project2.start_date.day
     assert 1 == project2.publications.count()
+
+
+@pytest.mark.django_db
+def test_process_publication(*args, **kwargs):
+    pass

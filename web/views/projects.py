@@ -1,5 +1,7 @@
+from web.views.user import superuser_required
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction, IntegrityError
 from django.http import HttpResponse
@@ -42,6 +44,8 @@ def project_list(request):
         'reset': True,
         'facets': facet_view_utils.filter_empty_facets(projects.facet_counts()),
         'query': query or '',
+        'filters': request.GET.get('filters') or '',
+        'order_by': order_by or '',
         'title': 'Projects',
         'help_text': Project.AppMeta.help_text,
         'search_url': 'projects',
@@ -263,3 +267,17 @@ class ProjectDelete(CheckerMixin, DeleteView):
         context['id'] = self.object.id
         return context
 
+
+@staff_member_required
+def publish_project(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    project.publish()
+    return redirect(reverse_lazy('project', kwargs={'pk': project.id}))
+
+
+@staff_member_required
+def unpublish_project(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+    project.is_published = False
+    project.save()
+    return redirect(reverse_lazy('project', kwargs={'pk': project.id}))

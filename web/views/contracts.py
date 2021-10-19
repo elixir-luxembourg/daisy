@@ -16,7 +16,7 @@ from core.permissions import permission_required
 from . import facet_view_utils
 
 FACET_FIELDS = settings.FACET_FIELDS['contract']
-from core.models.utils import COMPANY
+
 
 
 class ContractCreateView(CreateView):
@@ -48,7 +48,6 @@ class ContractDetailView(DetailView):
         the_user = self.request.user
         can_edit = the_user.can_edit_contract(self.object)
         context['can_edit'] = can_edit
-        context['company_name'] = COMPANY
         pk = ContentType.objects.get(model='contract').pk
         context['content_type'] = pk
         context['object_id'] = self.object.pk
@@ -95,13 +94,14 @@ def contract_list(request):
         'reset': True,
         'facets': facet_view_utils.filter_empty_facets(contracts.facet_counts()),
         'query': query or '',
+        'order_by': order_by or '',
+        'filters': request.GET.get('filters') or '',
         'title': 'Contracts',
         'help_text' : Contract.AppMeta.help_text,
         'search_url': 'contracts',
         'add_url': 'contract_add',
         'data': {'contracts': contracts},
         'results_template_name': 'search/_items/contracts.html',
-        'company_name': COMPANY,
         'order_by_fields': [
             ('Contact', 'contact'),
             ('Project', 'project')
@@ -123,9 +123,51 @@ class PartnerRoleCreateView(CreateView):
         else:
             return HttpResponseForbidden()
 
+    def get_context_data(self, **kwargs):
+        context = super(PartnerRoleCreateView, self).get_context_data(**kwargs)
+        context['card_title'] = 'Add partner and role'
+        context['page_title'] = 'Add partner and role to contract'
+        return context
+
     def get_initial(self):
         initial = super().get_initial()
         contract_id = self.kwargs.get('pk')
+        initial.update({'user': self.request.user})
+        if contract_id:
+            initial.update({'contract': contract_id})
+        return initial
+
+    def get_success_url(self):
+        return reverse_lazy('contract', kwargs={'pk': self.contract.id})
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        return response
+
+    
+class PartnerRoleEditView(UpdateView):
+    model = PartnerRole
+    template_name = 'contracts/partner_role_form.html'
+    form_class = PartnerRoleForm
+
+    def dispatch(self, request, *args, **kwargs):
+        self.contract = self.get_object().contract
+        the_user = request.user
+        can_edit = the_user.can_edit_contract(self.contract)
+        if can_edit:
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden()
+
+    def get_context_data(self, **kwargs):
+        context = super(PartnerRoleEditView, self).get_context_data(**kwargs)
+        context['card_title'] = 'Edit partner and role'
+        context['page_title'] = 'Edit partner and role'
+        return context
+
+    def get_initial(self):
+        initial = super().get_initial()
+        contract_id = self.get_object().contract.id
         initial.update({'user': self.request.user})
         if contract_id:
             initial.update({'contract': contract_id})
@@ -163,7 +205,7 @@ def partner_role_delete(request, pk):
 #         else:
 #             error_messages = []
 #             for field, error in form.errors.items():
-#                 error_message = "{}: {}".format(field, error[0])
+#                 error_message = f"{field}: {error[0]}"
 #                 error_messages.append(error_message)
 #             messages.add_message(request, messages.ERROR, "\n".join(error_messages))
 #         return redirect(to='contract', pk=pk)

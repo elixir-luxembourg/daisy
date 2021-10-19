@@ -45,6 +45,17 @@ $(document).ready(function () {
 
     csrftoken = Cookies.get("csrftoken");
 
+    $(".input-group-text>i.reset-form-button").click(function(){
+        var $t = $(this);  // get the element
+        var target_id = $t.data("resets");  // get the ID of element to reset
+        var submits = $t.data("submits");  // should the form be submitted after resetting?
+        var $el = $("#" + target_id);
+        $el.val('').focus();  // reset the contents of editbox
+        if (submits) {
+            $el.form().submit();  // submit the form
+        }
+    });
+
     $('#users_table').DataTable();
 
     $('.nice-selects select').not('.dummy-select').select2({'width': '100%'});
@@ -256,6 +267,14 @@ $(document).ready(function () {
                 }
             });
     }
+    });
+
+    $(document).on('click', 'a[data-confirm]', function(e) {
+        var message = $(this).data('confirm');
+        if (!confirm(message)) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+        }
     });
 });
 

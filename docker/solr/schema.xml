@@ -80,217 +80,215 @@
     <field name="id" type="string" indexed="true" stored="true" multiValued="false" required="true"/>
     <field name="django_ct" type="string" indexed="true" stored="true" multiValued="false"/>
     <field name="django_id" type="string" indexed="true" stored="true" multiValued="false"/>
-
+    
     <field name="text" type="text_en" indexed="true" stored="true" multiValued="false" />
-
+    
     <field name="pk" type="long" indexed="true" stored="true" multiValued="false" />
-
+    
     <field name="pk_exact" type="long" indexed="true" stored="true" multiValued="false" />
-
-    <field name="contact" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="contact_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="partner" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="partner_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="exchange_channel" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="exchange_channel_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="has_legal_documents" type="boolean" indexed="true" stored="true" multiValued="false" />
-
-    <field name="has_legal_documents_exact" type="boolean" indexed="true" stored="true" multiValued="false" />
-
-    <field name="company_role" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="company_role_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="partner_role" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="partner_role_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="direction" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="direction_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="project" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="project_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="datasets" type="text_en" indexed="true" stored="true" multiValued="true" />
-
-    <field name="datasets_exact" type="string" indexed="true" stored="true" multiValued="true" />
-
-    <field name="consent_status" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="consent_status_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="data_types" type="text_en" indexed="true" stored="true" multiValued="true" />
-
-    <field name="data_types_exact" type="string" indexed="true" stored="true" multiValued="true" />
-
-    <field name="deidentification_method" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="deidentification_method_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="dpia" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="dpia_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="embargo_date" type="date" indexed="true" stored="true" multiValued="false" />
-
-    <field name="expiration_date" type="date" indexed="true" stored="true" multiValued="false" />
-
-    <field name="generated_from_samples" type="boolean" indexed="true" stored="true" multiValued="false" />
-
-    <field name="generated_from_samples_exact" type="boolean" indexed="true" stored="true" multiValued="false" />
-
-    <field name="has_special_subjects" type="boolean" indexed="true" stored="true" multiValued="false" />
-
-    <field name="has_special_subjects_exact" type="boolean" indexed="true" stored="true" multiValued="false" />
-
-    <field name="is_published" type="boolean" indexed="true" stored="true" multiValued="false" />
-
-    <field name="is_published_exact" type="boolean" indexed="true" stored="true" multiValued="false" />
-
-    <field name="local_custodians" type="text_en" indexed="true" stored="true" multiValued="true" />
-
-    <field name="local_custodians_exact" type="string" indexed="true" stored="true" multiValued="true" />
-
-    <field name="ombudsman" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="ombudsman_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="other_external_id" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="other_external_id_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="project_owner" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="project_owner_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="projects" type="text_en" indexed="true" stored="true" multiValued="true" />
-
-    <field name="projects_exact" type="string" indexed="true" stored="true" multiValued="true" />
-
-    <field name="samples_location" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="samples_location_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="share_category" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="share_category_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="special_subjects_description" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="special_subjects_description_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="source_type" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="source_type_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="subjects_category" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="subjects_category_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="submission_id" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="submission_id_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
+    
+    <field name="owners" type="text_en" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="owners_exact" type="string" indexed="true" stored="true" multiValued="true" />
+    
     <field name="title" type="text_en" indexed="true" stored="true" multiValued="false" />
-
+    
     <field name="title_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="unique_id" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="unique_id_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="use_restrictions" type="text_en" indexed="true" stored="true" multiValued="true" />
-
-    <field name="use_restrictions_exact" type="string" indexed="true" stored="true" multiValued="true" />
-
-    <field name="acronym" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="acronym_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="acronym_l" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="cner_notes" type="text_en" indexed="true" stored="true" multiValued="false" />
-
+    
+    <field name="title_l" type="string" indexed="false" stored="true" multiValued="false" />
+    
+    <field name="institutes" type="text_en" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="institutes_exact" type="string" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="ethics_confirmation" type="boolean" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="first_name" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="last_name" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="first_name_l" type="string" indexed="false" stored="true" multiValued="false" />
+    
+    <field name="last_name_l" type="string" indexed="false" stored="true" multiValued="false" />
+    
+    <field name="partners" type="text_en" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="partners_exact" type="string" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="type" type="string" indexed="false" stored="true" multiValued="false" />
+    
+    <field name="type_exact" type="string" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="local_custodians" type="text_en" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="local_custodians_exact" type="string" indexed="true" stored="true" multiValued="true" />
+    
     <field name="contacts" type="text_en" indexed="true" stored="true" multiValued="true" />
-
+    
     <field name="contacts_exact" type="string" indexed="true" stored="true" multiValued="true" />
-
+    
+    <field name="has_legal_documents" type="boolean" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="has_legal_documents_exact" type="boolean" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="partners_roles" type="text_en" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="partners_roles_exact" type="string" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="project" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="project_exact" type="string" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="data_declarations" type="text_en" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="data_declarations_exact" type="string" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="cohorts" type="text_en" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="cohorts_exact" type="string" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="consent_status" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="consent_status_exact" type="string" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="data_types" type="text_en" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="data_types_exact" type="string" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="data_types_generated" type="text_en" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="data_types_generated_exact" type="string" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="data_types_received" type="text_en" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="data_types_received_exact" type="string" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="deidentification_method" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="deidentification_method_exact" type="string" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="embargo_date" type="date" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="end_of_storage_duration" type="date" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="has_special_subjects" type="boolean" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="has_special_subjects_exact" type="boolean" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="other_external_id" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="other_external_id_exact" type="string" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="special_subjects_description" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="special_subjects_description_exact" type="string" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="subjects_category" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="subjects_category_exact" type="string" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="submission_id" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="submission_id_exact" type="string" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="unique_id" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="unique_id_exact" type="string" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="autocomplete" type="edge_ngram" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="is_published" type="boolean" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="is_published_exact" type="boolean" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="acronym" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="acronym_l" type="string" indexed="false" stored="true" multiValued="false" />
+    
+    <field name="address" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="address_l" type="string" indexed="false" stored="true" multiValued="false" />
+    
+    <field name="name" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="name_l" type="string" indexed="false" stored="true" multiValued="false" />
+    
+    <field name="is_clinical" type="boolean" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="is_clinical_exact" type="boolean" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="geo_category" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="geo_category_exact" type="string" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="sector_category" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="sector_category_exact" type="string" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="acronym_exact" type="string" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="cner_notes" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
     <field name="company_personnel" type="text_en" indexed="true" stored="true" multiValued="true" />
-
+    
     <field name="company_personnel_exact" type="string" indexed="true" stored="true" multiValued="true" />
-
+    
     <field name="description" type="text_en" indexed="true" stored="true" multiValued="false" />
-
+    
     <field name="description_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
+    
     <field name="disease_terms" type="text_en" indexed="true" stored="true" multiValued="true" />
-
+    
     <field name="disease_terms_exact" type="string" indexed="true" stored="true" multiValued="true" />
-
-    <field name="end_date" type="date" indexed="true" stored="true" multiValued="false" />
-
-    <field name="end_date_exact" type="date" indexed="true" stored="true" multiValued="false" />
-
+    
+    <field name="end_year" type="long" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="end_year_exact" type="long" indexed="true" stored="true" multiValued="false" />
+    
     <field name="erp_notes" type="text_en" indexed="true" stored="true" multiValued="false" />
-
+    
     <field name="erp_notes_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
+    
     <field name="funding_sources" type="text_en" indexed="true" stored="true" multiValued="true" />
-
+    
     <field name="funding_sources_exact" type="string" indexed="true" stored="true" multiValued="true" />
-
+    
     <field name="gene_terms" type="text_en" indexed="true" stored="true" multiValued="true" />
-
+    
     <field name="gene_terms_exact" type="string" indexed="true" stored="true" multiValued="true" />
-
+    
     <field name="has_cner" type="boolean" indexed="true" stored="true" multiValued="false" />
-
+    
     <field name="has_cner_exact" type="boolean" indexed="true" stored="true" multiValued="false" />
-
+    
     <field name="has_erp" type="boolean" indexed="true" stored="true" multiValued="false" />
-
+    
     <field name="has_erp_exact" type="boolean" indexed="true" stored="true" multiValued="false" />
-
-    <field name="inclusion_exclusion_criteria" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="inclusion_exclusion_criteria_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="is_internal" type="boolean" indexed="true" stored="true" multiValued="false" />
-
-    <field name="is_internal_exact" type="boolean" indexed="true" stored="true" multiValued="false" />
-
+    
     <field name="umbrella_project" type="text_en" indexed="true" stored="true" multiValued="false" />
-
+    
     <field name="umbrella_project_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
+    
     <field name="phenotype_terms" type="text_en" indexed="true" stored="true" multiValued="true" />
-
+    
     <field name="phenotype_terms_exact" type="string" indexed="true" stored="true" multiValued="true" />
-
+    
     <field name="project_web_page" type="text_en" indexed="true" stored="true" multiValued="false" />
-
+    
     <field name="project_web_page_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
+    
     <field name="publications" type="text_en" indexed="true" stored="true" multiValued="true" />
-
+    
     <field name="start_date" type="date" indexed="true" stored="true" multiValued="false" />
-
-    <field name="start_date_exact" type="date" indexed="true" stored="true" multiValued="false" />
-
-    <field name="study_type" type="text_en" indexed="true" stored="true" multiValued="false" />
-
-    <field name="study_type_exact" type="string" indexed="true" stored="true" multiValued="false" />
-
-    <field name="title_l" type="text_en" indexed="true" stored="true" multiValued="false" />
-
+    
+    <field name="start_year" type="long" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="start_year_exact" type="long" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="study_terms" type="text_en" indexed="true" stored="true" multiValued="true" />
+    
+    <field name="study_terms_exact" type="string" indexed="true" stored="true" multiValued="true" />
+    
     <uniqueKey>id</uniqueKey>
 
     <!--

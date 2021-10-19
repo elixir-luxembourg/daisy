@@ -1,3 +1,7 @@
+#SECURITY WARNING: change the key used in production and keep it secret !
+GLOBAL_API_KEY = None  # Generate a global api key by e.g. django.core.management.utils.get_random_secret_key()
+if GLOBAL_API_KEY is None: raise NotImplementedError('You must specify GLOBAL_API_KEY in settings_local.py')
+
 # Authentication backend
 # https://django-guardian.readthedocs.io/en/stable/configuration.html
 
@@ -6,11 +10,30 @@ AUTHENTICATION_BACKENDS = [
     'guardian.backends.ObjectPermissionBackend',
 ]
 
+
+#SECURITY WARNING: change the secret key used in production and keep it secret !
+SECRET_KEY = None  # Generate a secret key by e.g. django.core.management.utils.get_random_secret_key()
+if SECRET_KEY is None: raise NotImplementedError('You must specify SECRET_KEY in settings_local.py')
+
+
+
 COMPANY = 'LCSB'  # Used for generating some models' verbose names
 
 HELPDESK_EMAIL = 'lcsb-sysadmins@uni.lu'
 
+# Placeholders on login page
+# LOGIN_USERNAME_PLACEHOLDER = ''
+# LOGIN_PASSWORD_PLACEHOLDER = ''
+
+# Optional username suffixes
+# Setting this variable allows the user to login with a prefix only. Suffix is concatenated to create full user name)
+# LOGIN_USERNAME_SUFFIX = ''
+# This variable will be stripped from an entered user name and replaced by LOGIN_USERNAME_SUFFIX to create full user name
+# LOGIN_USERNAME_ALTERNATIVE_SUFFIX = ''
+
 # Uncomment the following lines if LDAP authentication will be used and user definitions will be bulk imported from LDAP
+# import ldap
+# from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 # AUTHENTICATION_BACKENDS = ['django_auth_ldap.backend.LDAPBackend'] + AUTHENTICATION_BACKENDS
 # AUTH_LDAP_SERVER_URI = 'ldap://XXXXXXX:389'
 # AUTH_LDAP_BIND_DN = ""
@@ -33,3 +56,10 @@ HELPDESK_EMAIL = 'lcsb-sysadmins@uni.lu'
 PREDEFINED_PIS_LIST = [
     # "name.surname@uni.lu", "othername.othersurname@uni.lu",
 ]
+
+# REMS Integration
+REMS_ALLOWED_IP_ADDRESSES = []
+REMS_INTEGRATION_ENABLED = False
+
+# IDSERVICE_FUNCTION = 'core.lcsb.generate_identifier'
+IDSERVICE_ENDPOINT = 'https://10.240.16.199:8080/v1/api/id'

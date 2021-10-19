@@ -11,7 +11,7 @@ from ontobio import obograph_util, Ontology
 from django.db import connection
 from core.exceptions import FixtureImportError
 from core.models import ContactType, DataType, DocumentType, StorageResource, FundingSource, RestrictionClass, \
-    SensitivityClass, Cohort, Contact, GDPRRole, LegalBasisType, PersonalDataType
+    SensitivityClass, Cohort, Contact, GDPRRole, LegalBasisType, PersonalDataType, DataLogType
 from core.models.partner import Partner
 from core.models.term_model import GeneTerm, StudyTerm, DiseaseTerm, PhenotypeTerm
 from core.permissions import PERMISSION_MAPPING
@@ -54,6 +54,17 @@ class Command(BaseCommand):
             for contact_type in data:
                 ContactType.objects.get_or_create(
                     **contact_type
+                )
+
+    @staticmethod
+    def create_log_types():
+        print('Creating data log event types')
+        DataLogType.objects.all().delete()
+        with open(os.path.join(FIXTURE_DIR, 'data-log-types.json'), 'r') as handler:
+            data = json.load(handler)
+            for data_log_type in data:
+                DataLogType.objects.get_or_create(
+                    **data_log_type
                 )
 
     @staticmethod
@@ -144,14 +155,19 @@ class Command(BaseCommand):
     @staticmethod
     def create_elu_institutions():
         print('Creating institutions')
-        with open(os.path.join(FIXTURE_DIR, 'elu-institutions.json'), 'r', encoding='utf-8') as handler:
+        with open(os.path.join(FIXTURE_DIR, 'institutions.json'), 'r', encoding='utf-8') as handler:
             data = json.load(handler)
             for partner in data:
                 _current = {k: v for k, v in partner.items()}
                 _current.update({'is_published': True})
+                if 'external_id' in _current:
+                    _current['elu_accession'] = _current['external_id']
+                    _current.pop('external_id')
                 try:
                     p = Partner.objects.get(elu_accession=_current['elu_accession'])
-                    Partner.objects.filter(pk=p.pk).update(**_current)
+                    for key, value in _current.items():
+                        setattr(p, key, value)
+                    p.save()
                 except Partner.DoesNotExist:
                     Partner.objects.create(**_current)
 
@@ -161,6 +177,9 @@ class Command(BaseCommand):
         with open(os.path.join(FIXTURE_DIR, 'elu-cohorts.json'), 'r', encoding='utf-8') as handler:
             data = json.load(handler)
             for cohort in data:
+                if 'external_id' in cohort:
+                    cohort['elu_accession'] = cohort['external_id']
+                    cohort.pop('external_id')
                 try:
                     c = Cohort.objects.get(elu_accession=cohort['elu_accession'])
                 except Cohort.DoesNotExist:
@@ -174,7 +193,7 @@ class Command(BaseCommand):
                             i = Partner.objects.get(elu_accession=ins)
                             institutes.append(i)
                         except Partner.DoesNotExist:
-                            raise FixtureImportError(data="unknown partner institute {}".format(ins))
+                            raise FixtureImportError(data=f"unknown partner institute {ins}")
                     c.institutes.set(institutes)
                 if 'owners' in cohort:
                     owners = []
@@ -306,4 +325,5 @@ class Command(BaseCommand):
         self.create_elu_institutions()
         self.create_elu_cohorts()
         self.create_gdpr_roles()
+        self.create_log_types()
         print('done')
