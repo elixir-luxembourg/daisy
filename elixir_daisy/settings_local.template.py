@@ -8,6 +8,8 @@ AUTHENTICATION_BACKENDS = [
 
 COMPANY = 'LCSB'  # Used for generating some models' verbose names
 
+HELPDESK_EMAIL = 'lcsb-sysadmins@uni.lu'
+
 # Uncomment the following lines if LDAP authentication will be used and user definitions will be bulk imported from LDAP
 # AUTHENTICATION_BACKENDS = ['django_auth_ldap.backend.LDAPBackend'] + AUTHENTICATION_BACKENDS
 # AUTH_LDAP_SERVER_URI = 'ldap://XXXXXXX:389'

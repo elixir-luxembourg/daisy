@@ -165,6 +165,9 @@ EMAIL_DONOTREPLY = 'do-not-reply@daisy.lcsb.uni.lu'
 SERVER_SCHEME = 'https'
 SERVER_URL = 'example.com'
 
+# email address to the support
+HELPDESK_EMAIL = 'support@example.com'
+
 # LOGGING settings
 # https://docs.djangoproject.com/en/2.0/topics/logging/
 LOGFILE_MAX_BYTES = 16777216  # 16MB
