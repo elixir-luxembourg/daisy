@@ -1,0 +1,26 @@
+{
+    "items": [
+        {
+            "name": "Centre Hospitalier de Togo",
+            "external_id": "ELU_I_19309",
+            "acronym": "CHT",
+            "is_clinical": true,
+            "geo_category": "National",
+            "sector_category": "PUBLIC",
+            "address": "Ave De La 6, Espoir Vie Togo, Lome",
+            "country_code": "TO",
+            "source": "example.com"
+        },
+        {
+            "name": "Hospitalier de Madagascar",
+            "external_id": "ELU_I_1939",
+            "acronym": "HMDGSK",
+            "is_clinical": true,
+            "geo_category": "National",
+            "sector_category": "PUBLIC",
+            "address": "Ave De La 6, Espoir Vie Togo, Antananarivo",
+            "country_code": "MG",
+            "source": "example.com"
+        }
+    ]
+}

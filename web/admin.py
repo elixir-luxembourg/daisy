@@ -26,6 +26,7 @@ from core.models import Access, \
                         Share, \
                         StorageResource, \
                         UseRestriction, \
+                        DataLogType, \
                         User
 from core.models.contract import PartnerRole
 from core.models.storage_location import DataLocation
@@ -45,6 +46,17 @@ class StorageResourceAdmin(admin.ModelAdmin):
     form = StorageResourceForm
 
 
+class DatasetAdmin(admin.ModelAdmin):
+    search_fields = ['title']
+    list_display = ('title', 'project', 'unique_id', 'elu_accession', 'is_published')
+
+
+class ProjectAdmin(admin.ModelAdmin):
+    exclude = ('gene_terms', 'disease_terms', 'phenotype_terms', 'study_terms')
+    search_fields = ['acronym', 'title']
+    list_display = ('acronym', 'title', 'elu_accession', 'is_published', 'umbrella_project')
+
+
 # DAISY core models
 admin.site.site_header = 'DAISY administration'
 admin.site.register(Access)
@@ -53,7 +65,7 @@ admin.site.register(Contact)
 admin.site.register(ContactType)
 admin.site.register(Contract)
 admin.site.register(DataDeclaration)
-admin.site.register(Dataset)
+admin.site.register(Dataset, DatasetAdmin)
 admin.site.register(DataLocation)  # storage_location.py
 admin.site.register(DataType)
 admin.site.register(DocumentType)
@@ -65,13 +77,14 @@ admin.site.register(LegalBasisType)
 admin.site.register(Partner)
 admin.site.register(PartnerRole)  # contract.py
 admin.site.register(PersonalDataType)
-admin.site.register(Project)
+admin.site.register(Project, ProjectAdmin)
 admin.site.register(Publication)
 admin.site.register(RestrictionClass)
 admin.site.register(SensitivityClass)
 admin.site.register(Share)
 admin.site.register(StorageResource, StorageResourceAdmin)
 admin.site.register(UseRestriction)
+admin.site.register(DataLogType)
 
 # Term models (term_model.py)
 admin.site.register(DiseaseTerm)
@@ -146,9 +159,9 @@ class UserAdmin(BaseUserAdmin):
     # Sections in the Edit page
     fieldsets = (
         (None, {'fields': ('username', 'email', 'password', 'is_active', 'source')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'full_name')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'full_name', 'oidc_id')}),
         ('Permissions', {'fields': ('is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Additional metdata', {'fields': ('date_joined', 'last_login')}),
+        ('Additional metdata', {'fields': ('date_joined', 'last_login', 'api_key')}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. BaseUserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.

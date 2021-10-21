@@ -1,0 +1,35 @@
+{
+  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.5/schemas/elu-project.json",
+  "title": "ELIXIR Luxembourg Projects Schema",
+  "description": "A JSON Schema for describing biomedical research Projects.",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [{
+    "$ref": "#/definitions/elu:project"
+  }],
+  "definitions": {
+    "elu:project": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.5/schemas/elu-study.json"
+        }
+      ],
+      "properties": {
+        "has_institutional_ethics_approval": {
+          "type": "boolean"
+        },
+        "institutional_ethics_approval_notes": {
+          "type": ["string", "null"]
+        },
+        "has_national_ethics_approval": {
+          "type": "boolean"
+        },
+        "national_ethics_approval_notes": {
+          "type": ["string", "null"]
+        }
+      }
+    }
+  }
+}
+

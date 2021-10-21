@@ -1,24 +1,29 @@
 import json
+import operator
+
+from functools import reduce
 
 from django.contrib import messages
-from django.http import HttpResponse
+from django.core.paginator import Paginator
+from django.db import IntegrityError, transaction
+from django.db.models import Q
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
-from functools import reduce
-from django.urls import reverse_lazy
 from django.views.generic import DetailView, UpdateView
+from django.urls import reverse_lazy
+
 from haystack.query import SearchQuerySet
-from django.db import IntegrityError, transaction
+
 from core.constants import Permissions
-from core.forms import DataDeclarationForm, DataDeclarationSubFormOther, DataDeclarationSubFormNew, \
-    DataDeclarationSubFormFromExisting, DataDeclarationEditForm
+from core.forms import DataDeclarationForm, DataDeclarationSubFormOther, DataDeclarationSubFormNew
+from core.forms import DataDeclarationSubFormFromExisting, DataDeclarationEditForm
 from core.forms.data_declaration import RestrictionFormset
 from core.models import Dataset, Partner, DataDeclaration, UseRestriction
-from core.utils import DaisyLogger
 from core.permissions import permission_required, CheckerMixin, constants
-from django.core.paginator import Paginator
-from django.http import JsonResponse, HttpResponseBadRequest
-from django.db.models import Q
+from core.utils import DaisyLogger
+
+
 
 log = DaisyLogger(__name__)
 
@@ -191,12 +196,10 @@ class DatadeclarationEditView(CheckerMixin, UpdateView):
 
     
     def get(self, request, *args, **kwargs):
-
         data_declaration = self.get_object()
 
         declaration_form = DataDeclarationEditForm(instance=data_declaration)
-        restriction_data = [{'restriction_class': l.restriction_class, 'notes': l.notes}
-                            for l in data_declaration.data_use_restrictions.all()]
+        restriction_data = [restriction.serialize() for restriction in data_declaration.data_use_restrictions.all()]
         restriction_formset = RestrictionFormset(initial=restriction_data)
         return render(request, self.template_name, {
             'form': declaration_form,
@@ -209,10 +212,11 @@ class DatadeclarationEditView(CheckerMixin, UpdateView):
     def post(self, request, **kwargs):
         data_declaration = self.get_object()
         declaration_form = DataDeclarationEditForm(request.POST, instance=data_declaration)
-        restriction_formset = RestrictionFormset(request.POST)
 
-        import operator
-        formset_valid = reduce(operator.and_, [res_form.is_valid() for res_form in restriction_formset], True)
+        restriction_data = [restriction.serialize() for restriction in data_declaration.data_use_restrictions.all()]
+        restriction_formset = RestrictionFormset(request.POST, initial=restriction_data)
+
+        formset_valid = restriction_formset.is_valid()
 
         if declaration_form.is_valid() and formset_valid:
             try:
@@ -225,7 +229,7 @@ class DatadeclarationEditView(CheckerMixin, UpdateView):
                             restriction = restriction_form.save(commit=False)
                             restriction.data_declaration = data_declaration
                             restriction.save()
-                    messages.add_message(request, messages.SUCCESS, "data declaration {} edited".format(data_declaration.title))
+                    messages.add_message(request, messages.SUCCESS, f"data declaration {data_declaration.title} edited")
             except IntegrityError:
                 #If the transaction failed
                 messages.add_message(request, messages.ERROR, "An error occurred when saving data declaration")

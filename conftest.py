@@ -124,6 +124,14 @@ def user_data_steward(django_user_model):
 
 
 @pytest.fixture
+def user_admin(django_user_model):
+    u = django_user_model.objects.create_superuser(username="test.admin",
+                                      email="test.admin@mail.com",
+                                      password="password")
+    return u
+
+
+@pytest.fixture
 def users(django_user_model, user_normal, user_vip, user_data_steward):
     """
     Fixture that create users based on the ldap directory created.
@@ -177,6 +185,14 @@ def storage_resources():
     Create storage resources
     """
     CommandLoadInitialData.create_storage_resources()
+
+
+@pytest.fixture
+def data_types():
+    """
+    Create data types
+    """
+    CommandLoadInitialData.create_datatypes()
 
 
 @pytest.fixture

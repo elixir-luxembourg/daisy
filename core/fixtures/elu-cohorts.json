@@ -1,6 +1,6 @@
 [
   {
-    "elu_accession": "ELU_C_1",
+    "external_id": "ELU_C_1",
     "title": "LuxPARK",
     "owners": [
       "Rejko Kr\u00fcger"
@@ -14,7 +14,7 @@
     ]
   },
   {
-    "elu_accession": "ELU_C_2",
+    "external_id": "ELU_C_2",
     "title": "MUST (Diabetes MUltiplex family STudy)",
     "owners": [
       "Carine de Beaufort"
@@ -27,7 +27,7 @@
     ]
   },
   {
-    "elu_accession": "ELU_C_3",
+    "external_id": "ELU_C_3",
     "title": "COSMIC (Colonisation, Succession and Evolution of Human Gastrointestinal Microbiome from Birth to Infancy)",
     "owners": [
       "Carine de Beaufort"
@@ -40,7 +40,7 @@
     ]
   },
   {
-    "elu_accession": "ELU_C_4",
+    "external_id": "ELU_C_4",
     "title": "DeNoPa (De Novo Parkinson Longitudinal Study)",
     "owners": [
       "Brit Mollenhauer"
@@ -51,7 +51,7 @@
     ]
   },
   {
-    "elu_accession": "ELU_C_5",
+    "external_id": "ELU_C_5",
     "title": "TREND (T\u00fbbinger evaluation of Risk factors for Early detection of NeuroDegeneration.)",
     "owners": [
       "Daniela Berg"
@@ -62,7 +62,7 @@
     ]
   },
   {
-    "elu_accession": "ELU_C_6",
+    "external_id": "ELU_C_6",
     "title": "ADNI (Alzheimer's Disease Neuroimaging Initiative.)",
     "comments": "...TBD...",
     "institutes": [
@@ -70,7 +70,7 @@
     ]
   },
   {
-    "elu_accession": "ELU_C_7",
+    "external_id": "ELU_C_7",
     "title": "PPMI (Partkinsons Progressive Markers Inititative Study Cohort.)",
     "comments": "...TBD...",
     "institutes": [
@@ -78,7 +78,7 @@
     ]
   },
   {
-    "elu_accession": "ELU_C_8",
+    "external_id": "ELU_C_8",
     "title": "Supercentenarians (Betterhumans Inc. Supercentenarians Research Study)",
     "comments": "...TBD...",
     "institutes": [

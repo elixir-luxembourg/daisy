@@ -19,10 +19,10 @@ log = DaisyLogger(__name__)
 
 def rfc5987_content_disposition(file_name):
     ascii_name = unicodedata.normalize('NFKD', file_name).encode('ascii', 'ignore').decode()
-    header = 'attachment; filename="{}"'.format(ascii_name)
+    header = f'attachment; filename="{ascii_name}"'
     if ascii_name != file_name:
         quoted_name = urlquote(file_name)
-        header += '; filename*=UTF-8\'\'{}'.format(quoted_name)
+        header += f'; filename*=UTF-8\'\'{quoted_name}'
     return header
 
 

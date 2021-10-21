@@ -6,6 +6,7 @@ from django.urls import reverse
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from core import constants
 
+
 from .utils import CoreTrackedModel, TextFieldWithInputWidget
 from .partner import HomeOrganisation
 
@@ -99,52 +100,83 @@ class Dataset(CoreTrackedModel):
 
 
     def to_dict(self):
-
         contact_dicts = []
 
         # p = HomeOrganisation()
 
         for lc in self.local_custodians.all():
-            contact_dicts.append(
-                {"first_name": lc.first_name,
+            contact_dicts.append({
+                "first_name": lc.first_name,
                  "last_name": lc.last_name,
                  "email": lc.email,
                  "role":  "Principal_Investigator" if lc.is_part_of(constants.Groups.VIP.name) else "Researcher",
-                 "affiliations": [HomeOrganisation().name]})
+                 "affiliations": [HomeOrganisation().name]
+            })
 
         storage_dicts = []
         for dl in self.data_locations.all():
-            storage_dicts.append(
-                {"platform": dl.category.name,
+            storage_dicts.append({
+                "platform": dl.category.name,
                  "location": dl.location_description,
                  "accesses": [ acc.access_notes for acc in dl.accesses.all()]
-                 })
+            })
 
         transfer_dicts = []
         for trf in self.shares.all():
-            transfer_dicts.append(
-                {"partner": trf.partner.name,
+            transfer_dicts.append({
+                "partner": trf.partner.name,
                  "transfer_details": trf.share_notes,
                  "transfer_date":  trf.granted_on.strftime('%Y-%m-%d') if trf.granted_on else None
-                 })
-
+            })
 
         base_dict = {
             "source": settings.SERVER_URL,
             "id_at_source": self.id.__str__(),
-            "project": self.project.acronym if self.project else None,
+            "external_id": self.elu_accession,
             "name": self.title,
-            "elu_accession": self.elu_accession if self.elu_accession else None,
             "description":  self.comments if self.comments else None,
             "elu_uuid": self.unique_id.__str__() if self.unique_id else None,
             "other_external_id": self.other_external_id if self.other_external_id else None,
+            "project": self.project.acronym if self.project else None,
+            "project_external_id": self.project.elu_accession if self.project else None,
             "data_declarations": [ddec.to_dict() for ddec in self.data_declarations.all()],
+            "legal_bases": [x.to_dict() for x in self.legal_basis_definitions.all()],
             "storages": storage_dicts,
             "transfers": transfer_dicts,
-            "contacts": contact_dicts
+            "contacts": contact_dicts,
+            "metadata": self.scientific_metadata
         }
         return base_dict
 
+    def serialize_to_export(self):
+        import functools
+        d = self.to_dict()
+
+        contacts = map(lambda v: f"[{v['first_name']} {v['last_name']}, {v['email']}]", d['contacts'])
+        d['contacts'] = ','.join(contacts)
+
+        transfers = map(lambda v: f"[{v['partner']} {v['transfer_details']}, {v['transfer_date']}]", d['transfers'])
+        d['transfers'] = ','.join(transfers)
+
+        storages = map(lambda v: f"[{v['platform']} {v['location']}]", d['storages'])
+        d['storages'] = ','.join(storages)
+        
+        data_declarations = map(lambda v: f"[{v['title']}]", d['data_declarations'])
+        d['data_declarations'] = ','.join(data_declarations)
+
+        legal_bases = map(lambda v: f"[{v['platform']} {v['location']}]", d['storages'])
+        d['legal_bases'] = legal_bases
+        return d
+
+    def publish(self, save=True):
+        if self.project:
+            self.project.publish()
+        
+        for data_declaration in self.data_declarations.all():
+            data_declaration.publish_subentities()
+
+        super().publish()
+        
 
 # faster lookup for permissions
 # https://django-guardian.readthedocs.io/en/stable/userguide/performance.html#direct-foreign-keys

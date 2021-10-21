@@ -15,7 +15,12 @@ import os
 import pytz
 
 COMPANY = 'LCSB'  # Used for generating some models' verbose names
+DEMO_MODE = False
 
+# A string shown in site's navbar to help distinguish from different instances
+INSTANCE_LABEL = None
+# Override of the layout's primary color (used in e.g. navbar), e.g. '#076505'
+INSTANCE_PRIMARY_COLOR = None 
 
 AUTH_USER_MODEL = 'core.User'
 
@@ -57,7 +62,8 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_celery_beat',
     'celery_haystack',
-    'sequences.apps.SequencesConfig'
+    'sequences.apps.SequencesConfig',
+    'explorer'
 ]
 
 MIDDLEWARE = [
@@ -85,7 +91,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'web.views.context_processors.daisy_version'
+                'web.views.context_processors.daisy_version',
+                'web.views.context_processors.instance_branding'
             ],
         },
     },
@@ -179,10 +186,10 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            'format': u'%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
         'simple': {
-            'format': '%(levelname)s %(message)s'
+            'format': u'%(levelname)s %(message)s'
         },
     },
     'filters': {
@@ -203,7 +210,7 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler',
+            'class': 'django.utils.log.AdminEmailHandler'
         },
         'sql': {
             'level': 'DEBUG',
@@ -271,7 +278,6 @@ FACET_FIELDS = {
         'is_published',
     ),
     'contract': (
-        'company_roles',
         'contacts',
         'partners',
         'project',
@@ -317,6 +323,23 @@ LOGIN_PASSWORD_PLACEHOLDER = ''
 # Custom error view, see e.g. 
 # https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-CSRF_FAILURE_VIEW
 CSRF_FAILURE_VIEW = 'web.views.error_views.custom_csrf'
+
+# See: https://github.com/groveco/django-sql-explorer
+EXPLORER_CONNECTIONS = { 'Default': 'default' } 
+EXPLORER_DEFAULT_CONNECTION = 'default'
+
+# JSON schemas used for validation on import
+IMPORT_JSON_SCHEMAS_URI = 'https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.5/schemas/'
+IMPORT_JSON_SCHEMAS_DIR = os.path.join(BASE_DIR, 'core', 'fixtures', 'json_schemas')
+
+# REMS (http://rems2docs.rahtiapp.fi/) Integration
+REMS_INTEGRATION_ENABLED = False
+REMS_MATCH_USERS_BY = 'auto'  # 'email', 'id' or 'auto'
+REMS_SKIP_IP_CHECK = False
+REMS_ALLOWED_IP_ADDRESSES = []  # use '*' to allow all, otherwise e.g. '127.0.0.1'...
+
+# ID service
+IDSERVICE_FUNCTION = 'web.views.utils.generate_elu_accession'
 
 # Import local settings to override those values based on the deployment environment
 try:

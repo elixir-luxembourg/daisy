@@ -3,6 +3,9 @@
     <div class="container-fluid">
         <a class="navbar-brand" href="/"><img src="{% static "images/daisy-logo-new.png" %}"
                                               height="auto"></a>
+        {% if instance_label %}
+        <span class="badge bg-light text-dark mr-4">{{ instance_label }}</span>
+        {% endif %}
 
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
                 aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">

@@ -21,8 +21,6 @@
                                 <span class="badge badge-pill badge-primary">{{ local_custodian }}</span>
                             {% endfor %}
                         </dd>
-                        <dt>{{ company_name }} Roles:</dt>
-                        <dl>{{ contract.company_roles.all | join:", " | default:'-' }}</dl>
                     </dl>
                 </div>
                 <div class="col">
@@ -74,7 +72,8 @@
                         <th>Roles</th>
                         <th>Contacts</th>
                         {% if can_edit %}
-                            <th style="width:7em">Actions</th>{% endif %}
+                            <th style="width:7em">Actions</th>
+                        {% endif %}
                     </tr>
                     </thead>
                     <tbody>
@@ -94,6 +93,7 @@
                             </td>
                             {% if can_edit %}
                                 <td>
+                                    <a href="{% url 'edit_partner_role' pk=partner_role.id %}"><i title="Update participant" class="material-icons">edit</i></a>
                                     <i title="Delete participant" class="material-icons red clickable" data-method="delete"
                                        data-parent-to-remove="tr"
                                        data-confirmation = "delete"
@@ -180,7 +180,7 @@
         </div>
         <div class="card col-md-6 mr-0">
             <div class="card-body">
-                <h2 class="card-title">Shares</h2>
+                <h2 class="card-title">Data logbook entries</h2>
                 <ul class="card-text list-group">
                     {% for share in contract.shares.all %}
                         <li class="list-group-item">

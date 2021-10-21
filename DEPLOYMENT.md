@@ -8,7 +8,7 @@ sudo yum install python36-devel openldap-devel nginx
 sudo yum group install "Development Tools"
 
 wget https://bootstrap.pypa.io/get-pip.py
-sudo python36 get-pip.py
+sudo python3.6 get-pip.py
 ```
 
 
@@ -22,7 +22,7 @@ sudo useradd daisy
 sudo usermod -a -G users daisy
 sudo su - daisy
 mkdir config log
-git clone git@github.com:elixir-luxembourg/daisy.git
+git clone https://github.com/elixir-luxembourg/daisy.git
 exit
 sudo /usr/local/bin/pip install -e /home/daisy/daisy
 sudo /usr/local/bin/pip install gunicorn
@@ -69,6 +69,10 @@ You need configure the solr core 'daisy'. To do so you need to create 'schema.xm
 ```bash
 sudo cp /home/daisy/daisy/docker/solr/schema.xml /var/solr/data/daisy/conf/
 sudo cp /home/daisy/daisy/docker/solr/solrconfig.xml /var/solr/data/daisy/conf/
+```
+
+Grant ownership and change privileges of `/var/solr` folder
+```
 sudo chown -R solr:users /var/solr
 sudo chmod -R 775 /var/solr
 ```
@@ -246,8 +250,6 @@ sudo systemctl start celery_beat
 
 ### Install database server
 
-Documentation from: https://www.postgresql.org/download/linux/redhat/
-
 ```bash
 sudo yum install https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm
 sudo yum install postgresql10
@@ -256,6 +258,8 @@ sudo /usr/pgsql-10/bin/postgresql-10-setup initdb
 sudo systemctl enable postgresql-10
 sudo systemctl start postgresql-10
 ```
+
+In case the installation fails, follow steps in the [official documentation](https://www.postgresql.org/download/linux/redhat/) for installation of Postgresql 10 on your platform.
 
 ### Create database and roles
 
@@ -304,6 +308,13 @@ Create a local configuration file for the application.
 sudo su - daisy
 cp /home/daisy/daisy/elixir_daisy/settings_local.template.py   /home/daisy/daisy/elixir_daisy/settings_local.py
 vi /home/daisy/daisy/elixir_daisy/settings_local.py
+```
+
+<span style="color:red;">Change SECRET_KEY variable:</span>
+
+```
+# SECURITY WARNING: change the secret key used in production and keep it secret !
+SECRET_KEY='<your-new-secret-key>'
 ```
 
 Put in the following database configuration to the 'settings_local.py' file.
@@ -452,18 +463,19 @@ To do this run the following.
 ```bash
 sudo su - daisy
 cd /home/daisy/daisy
-python36 manage.py collectstatic 
-python36 manage.py migrate 
-python36 manage.py build_solr_schema -c /var/solr/data/daisy/conf -r daisy  
+python3.6 manage.py collectstatic 
+python3.6 manage.py migrate 
+python3.6 manage.py build_solr_schema -c /var/solr/data/daisy/conf -r daisy  
 cd /home/daisy/daisy/core/fixtures/
 wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json
-python36 manage.py load_initial_data
+cd /home/daisy/daisy
+python3.6 manage.py load_initial_data
 ```
 The load_initial_data command needs several minutes to complete.
 DAISY has a demo data loader. With example records of Projects Datasets and Users. If you want to deploy DAISY  demo data, then do 
 
 ```bash
-python36 manage.py load_demo_data
+python3.6 manage.py load_demo_data
 ```
 
 The above command will create an 'admin' and other users such as 'alice.white', 'john.doe' 'jane.doe'. The password for all  is 'demo'.
@@ -472,13 +484,13 @@ The above command will create an 'admin' and other users such as 'alice.white', 
 If you do not want to load the demo data and work with your own definitions, then you'd still need to create super user for the application, with which you can logon and create other users as well as records. To create a super user, do the following and respond to the questions. 
 
 ```bash
-python36 manage.py createsuperuser
+python3.6 manage.py createsuperuser
 ```
 
 Trigger a reindex with:
 
 ```bash
-python36 manage.py rebuild_index
+python3.6 manage.py rebuild_index
 ```
 
 # Validate the installation
@@ -559,7 +571,7 @@ As daisy user:
 
 ```bash
 cd /home/daisy/daisy
-python36 manage.py migrate && python36 manage.py build_solr_schema -c /var/solr/data/daisy/conf/ -r daisy && yes | python36 manage.py clear_index && yes "yes" | python36 manage.py collectstatic;
+python3.6 manage.py migrate && python3.6 manage.py build_solr_schema -c /var/solr/data/daisy/conf/ -r daisy && yes | python3.6 manage.py clear_index && yes "yes" | python3.6 manage.py collectstatic;
 ```
 
 
@@ -575,7 +587,7 @@ cd /home/daisy/daisy/core/fixtures/
 wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json -O edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json -O hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json -O hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json -O hgnc.json
 
 cd /home/daisy/daisy
-python36 manage.py load_initial_data
+python3.6 manage.py load_initial_data
 ```     
   
 **IMPORTANT NOTE:** This step can take several minutes to complete. 
@@ -586,7 +598,7 @@ python36 manage.py load_initial_data
 If LDAP was used to import users, they have to be imported again.
 As daisy user:
 ```bash
-python36 manage.py import_users
+python3.6 manage.py import_users
 ```
 
 6) Rebuild Solr search index.
@@ -594,7 +606,7 @@ python36 manage.py import_users
 As daisy user:
  ```bash
  cd /home/daisy/daisy
- python36 manage.py rebuild_index
+ python3.6 manage.py rebuild_index
 ```
 
 7) Restart services.

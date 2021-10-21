@@ -1,25 +1,95 @@
 {% extends 'layout.html' %}
 
+{% load static %}
+
 
 {% block content %}
     <div class="row mt-4">
-        <div class="jumbotron col">
-            <h1 class="display-4">DAta Information SYstem</h1>
+        <div class="jumbotron col" style='background: url("{% static 'images/banner.png' %}"); background-repeat: no-repeat; background-size: contain;'>
             <span class="badge badge-pill badge-light">Version {{ app_version }}</span>
         </div>
     </div>
     <div class="row mt-4">
         <div class="col">
-            {% include '_includes/card_list.html' with list=last_datasets list_title='Last datasets' url_name='dataset' %}
+            {% url 'dataset_add' as dataset_add_url %}
+            {% include '_includes/card_list.html' with list=last_datasets list_title='My datasets' url_name='dataset' add_new_link=dataset_add_url  %}
         </div>
         <div class="col">
-            {% include '_includes/card_list.html' with list=last_projects list_title='Last projects' url_name='project' %}
+            {% url 'project_add' as project_add_url %}
+            {% include '_includes/card_list.html' with list=last_projects list_title='My projects' url_name='project' add_new_link=project_add_url %}
         </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Help</h2>
+                    <p>Please use the links at the top of the page to browse or submit 
+                        information about Projects, Datasets or other entities.</p>
+                    <p>
+                        For more information, refer to the <strong><a href="https://elixir.pages.uni.lu/daisy-doc/">User Guide</a></strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% comment %}
         <div class="col">
             {% include '_includes/card_list.html' with list=recently_published_datasets list_title='Recently published datasets' url_name='dataset' %}
         </div>
         <div class="col">
             {% include '_includes/card_list.html' with list=last_granted_accesses list_title='Last granted accesses' url_name='access' %}
         </div>
+        {% endcomment %}
+
+        {% comment %}
+        <div class="col-5">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Quick search</h2>
+
+                    <form class="form-inline" method="get" action="{% url 'projects' %}">
+                        <div class="form-group">
+                            <label for="query" class="bmd-label-floating">
+                                &nbsp;<i class="material-icons">search</i> Look for projects
+                            </label>
+                            <input type='text' class="form-control border border-top-0 bg-white" name='query' value='{{ query }}'/>
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
+
+                    <form class="form-inline" method="get" action="{% url 'datasets' %}">
+                        <div class="form-group">
+                            <label for="query" class="bmd-label-floating">
+                                &nbsp;<i class="material-icons">search</i> Look for datasets
+                            </label>
+                            <input type='text' class="form-control border border-top-0 bg-white" name='query' value='{{ query }}'/>
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h2 class="card-title">Latest notifications</h2> 
+ 
+                    {% if notifications %}
+                        <ul>
+                        {% for n in notifications %}
+                            <li>
+                                <strong>{{n.verb}}</strong>: <a href="{{n.get_absolute_url}}">{{n.content_object}}</a>
+                            </li>
+                        </tr>
+                        {% endfor %}
+                        </ul>
+
+                        <p>
+                            <a href="{% url 'notifications' %}">See all notifications</a>
+                        </p>
+                    {% else %}
+                        <strong>No notifications</strong>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endcomment %}
     </div>
 {% endblock content %}
