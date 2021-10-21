@@ -64,8 +64,8 @@
                       <ul>
                         <li>go <a href="#" onclick="window.history.back()">back</a></li>
                         <li>go to <a href="{% url 'dashboard' %}">the index page</a></li>
-                        {% if request.user %}
-                        <li>go to <a href="{% url 'login' %}">the login</a></li>
+                        {% if user.is_authenticated %}
+                        <li>go to <a href="{% url 'login' %}">the login page</a></li>
                         {% endif %}
                       </ul>
                     </div>
