@@ -16,14 +16,13 @@ from core.utils import DaisyLogger
 
 logger = DaisyLogger(__name__)
 
-"""
+
 if getattr(settings, 'KEYCLOAK_INTEGRATION', False) == True:
     keycloak_backend = KeycloakSynchronization(get_config_from_settings())
     synchronizer = AccountSynchronizer(keycloak_backend)
 else:
     keycloak_backend = DummySynchronization()
-    synchronizer = EmptyAccountSynchronizer()
-"""
+    synchronizer = EmptyAccountSynchronizer(keycloak_backend)
 
 def handle_rems_callback(request: HttpRequest) -> bool:
     """
@@ -34,11 +33,9 @@ def handle_rems_callback(request: HttpRequest) -> bool:
     :returns: True if everything was processed, False if not
     """
 
-    """
     # Ensure the most recent account inforrmation by pulling it from Keycloak
     logger.debug('Refreshing the account information from Keycloak...')
     synchronizer.synchronize()
-    """
 
     # TODO: Send an email to the Data Stewards or create a notification
 
