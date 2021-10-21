@@ -4,7 +4,7 @@ from typing import Dict, List
 
 from core.lcsb import KeycloakSynchronization
 
-
+"""
 class KeycloakSynchronizationMock(KeycloakSynchronization):
     def get_list_of_users(self) -> List[Dict]:
         def _item(a, b):
@@ -35,3 +35,4 @@ def test_keycloak_synchronization_config_validation():
         kc = KeycloakSynchronization({}, False)
         kc._create_connection({})
 
+"""

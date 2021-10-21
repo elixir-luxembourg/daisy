@@ -54,7 +54,7 @@ def get_config_from_settings() -> Dict:
         'KEYCLOAK_URL': getattr(settings, 'KEYCLOAK_URL'),
         'KEYCLOAK_REALM': getattr(settings, 'KEYCLOAK_REALM'),
         'KEYCLOAK_USER': getattr(settings, 'KEYCLOAK_USER'),
-        'KEYCLOAK_PASS':getattr(settings, 'KEYCLOAK_PASS'),
+        'KEYCLOAK_PASS': getattr(settings, 'KEYCLOAK_PASS')
     }
 
 
