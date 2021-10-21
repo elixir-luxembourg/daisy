@@ -29,5 +29,5 @@ def custom_403(request, exception):
 def custom_404(request, exception):
     return custom_error(request, exception, '404', 404)
 
-def custom_500(request, exception):
+def custom_500(request, *args, **kwargs):
     return custom_error(request, 'Server Error', '500', 500)
