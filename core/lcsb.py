@@ -121,7 +121,7 @@ class KeycloakSynchronization(AccountSynchronizationMethod):
 
 
 class EmptyAccountSynchronizer:
-    def __init__(self, _: AccountSynchronizationMethod=None):
+    def __init__(self, synchronizer: AccountSynchronizationMethod=None):
         pass
 
     def test_connection(self):
@@ -150,7 +150,9 @@ class AccountSynchronizer:
         self.test_connection()
 
     def test_connection(self) -> bool:
-        return self.synchronizer.test_connection()
+        if self.synchronizer is not None:
+            return self.synchronizer.test_connection()
+        return False
 
     def synchronize(self) -> None:
         """This will fetch the accounts from external source and use them to synchronize DAISY accounts"""

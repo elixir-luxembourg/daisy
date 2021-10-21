@@ -21,7 +21,7 @@ if getattr(settings, 'KEYCLOAK_INTEGRATION', False) == True:
     synchronizer = AccountSynchronizer(keycloak_backend)
 else:
     keycloak_backend = DummySynchronization()
-    synchronizer = EmptyAccountSynchronizer(None)
+    synchronizer = EmptyAccountSynchronizer()
 
 
 def handle_rems_callback(request: HttpRequest) -> bool:
