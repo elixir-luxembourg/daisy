@@ -11,7 +11,7 @@ from django.test import RequestFactory
 from web.views import api
 
 from test.factories import UserFactory
-from web.views.api import create_error_response, protect_with_api_key
+from web.views.api import create_error_response, create_protect_with_api_key_decorator
 from web.views.api import permissions
 
 
@@ -26,9 +26,7 @@ def test_create_error_response():
 
 # def test_protect_with_api_key(override_global_api_key):  # see conftest.py
 def test_protect_with_api_key():
-    # The global key should be set by a fixture in conftest.py
-    # But for some reason it does not work like that
-    test_global_key = getattr(settings, 'GLOBAL_API_KEY')
+    test_global_key = 'GLOBAL_API_KEY__as_set_in_tests'
 
     user = UserFactory.create(first_name='Rebecca', last_name='Kafe')
     user.save()
@@ -36,6 +34,8 @@ def test_protect_with_api_key():
 
     def dummy_view(request):
         return JsonResponse('Success', safe=False)
+
+    protect_with_api_key = create_protect_with_api_key_decorator(test_global_key)
 
     @protect_with_api_key
     def dummy_protected_view(request):

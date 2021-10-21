@@ -37,28 +37,33 @@ def create_error_response(message: str, more: Optional[Dict]={}, status: int=500
     }
     return JsonResponse({**more, **body}, status=status)
 
-def protect_with_api_key(view):
-    """
-    Checks if there is a GET or POST parameter that:
-     * contains either GLOABAL_API_KEY from settings
-     * matches one of User's api_key attribute
-    """
-    @wraps(view)
-    def decorator(request, *args, **kwargs):
-        submitted_keys = [request.GET.get('API_KEY', '-'), request.POST.get('API_KEY', '-')]
-        error_message = 'API_KEY missing in POST or GET parameters, or its value is invalid!'
-        if 'API_KEY' not in request.GET and 'API_KEY' not in request.POST:
+def create_protect_with_api_key_decorator(global_api_key=None):
+    def protect_with_api_key(view):
+        """
+        Checks if there is a GET or POST parameter that:
+        * contains either GLOABAL_API_KEY from settings
+        * matches one of User's api_key attribute
+        """
+        @wraps(view)
+        def decorator(request, *args, **kwargs):
+            submitted_keys = [request.GET.get('API_KEY', '-'), request.POST.get('API_KEY', '-')]
+            error_message = 'API_KEY missing in POST or GET parameters, or its value is invalid!'
+            if 'API_KEY' not in request.GET and 'API_KEY' not in request.POST:
+                return create_error_response(error_message, status=403)
+            elif global_api_key is not None and global_api_key in submitted_keys:
+                return view(request, *args, **kwargs)
+            # Check the key from GET
+            elif submitted_keys[0] not in ['-', ''] and User.objects.filter(api_key=submitted_keys[0]).count() > 0:
+                return view(request, *args, **kwargs)
+            # Check the key from POST
+            elif submitted_keys[1] not in ['-', ''] and User.objects.filter(api_key=submitted_keys[1]).count() > 0:
+                return view(request, *args, **kwargs)
             return create_error_response(error_message, status=403)
-        elif hasattr(settings, 'GLOBAL_API_KEY') and getattr(settings, 'GLOBAL_API_KEY') in submitted_keys:
-            return view(request, *args, **kwargs)
-        # Check the key from GET
-        elif submitted_keys[0] not in ['-', ''] and User.objects.filter(api_key=submitted_keys[0]).count() > 0:
-            return view(request, *args, **kwargs)
-        # Check the key from POST
-        elif submitted_keys[1] not in ['-', ''] and User.objects.filter(api_key=submitted_keys[1]).count() > 0:
-            return view(request, *args, **kwargs)
-        return create_error_response(error_message, status=403)
-    return decorator
+        return decorator
+    return protect_with_api_key
+
+_global_api_key = getattr(settings, 'GLOBAL_API_KEY') if hasattr(settings, 'GLOBAL_API_KEY') else None
+protect_with_api_key = create_protect_with_api_key_decorator(_global_api_key)
 
 """
 Rapido API method, we should probably use django rest framework if we want to develop API further.
