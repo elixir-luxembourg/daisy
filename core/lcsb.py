@@ -1,7 +1,7 @@
 import json
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 from urllib.request import urlopen, Request
 
 from django.conf import settings
@@ -49,7 +49,7 @@ def generate_identifier(obj: CoreTrackedModel, save=True):
     return the_id
 
 
-def get_config_from_settings() -> dict:
+def get_config_from_settings() -> Dict:
     return {
         'KEYCLOAK_URL': getattr(settings, 'KEYCLOAK_URL'),
         'KEYCLOAK_REALM': getattr(settings, 'KEYCLOAK_REALM'),
@@ -60,7 +60,7 @@ def get_config_from_settings() -> dict:
 
 class AccountSynchronizationMethod:
     @abstractmethod
-    def get_list_of_users(self) -> list[dict]:
+    def get_list_of_users(self) -> List[Dict]:
         pass
 
     @abstractmethod
@@ -71,12 +71,12 @@ class AccountSynchronizationException(Exception):
     pass
 
 class KeycloakSynchronization(AccountSynchronizationMethod):
-    def __init__(self, config: dict, connect=False) -> None:
+    def __init__(self, config: Dict, connect=False) -> None:
         self.config = config
         self.keycloak_admin_connection = self._create_connection(config) if connect else None
 
     @staticmethod
-    def _validate_config(config: dict) -> None:
+    def _validate_config(config: Dict) -> None:
         keys = ['KEYCLOAK_URL', 'KEYCLOAK_USER', 'KEYCLOAK_PASS', 'KEYCLOAK_REALM']
         for key in keys:
             if key not in config:
@@ -88,7 +88,7 @@ class KeycloakSynchronization(AccountSynchronizationMethod):
         
         return self.keycloak_admin_connection
 
-    def _create_connection(self, config:dict=None) -> KeycloakAdmin:
+    def _create_connection(self, config:Dict=None) -> KeycloakAdmin:
         if config is not None:
             self.config = config
         
@@ -108,7 +108,7 @@ class KeycloakSynchronization(AccountSynchronizationMethod):
         except:
             return False
 
-    def get_list_of_users(self) -> list[dict]:
+    def get_list_of_users(self) -> List[Dict]:
         keycloak_response = self.get_keycloak_admin_connection().get_users({})
         return [
             {
@@ -127,20 +127,20 @@ class EmptyAccountSynchronizer:
     def test_connection(self):
         return True
 
-    def compare(self) -> tuple[list, list]:
+    def compare(self) -> Tuple[List, List]:
         return [], []
 
     def synchronize(self) -> None:
         pass
 
 class DummySynchronization(AccountSynchronizationMethod):
-    def __init__(self, config: dict=None, connect=False) -> None:
+    def __init__(self, config: Dict=None, connect=False) -> None:
         pass
 
     def test_connection(self) -> bool:
         return True
         
-    def get_list_of_users(self) -> list[dict]:
+    def get_list_of_users(self) -> List[Dict]:
         return []
 
 class AccountSynchronizer:
@@ -159,7 +159,7 @@ class AccountSynchronizer:
         self._add_users(accounts_to_be_created)
         self._patch_users(accounts_to_be_patched)
 
-    def compare(self) -> tuple[list, list]:
+    def compare(self) -> Tuple[list, list]:
         to_be_created = []
         to_be_patched = []
         for external_account in self.current_external_accounts:
@@ -174,7 +174,7 @@ class AccountSynchronizer:
                 to_be_created.append(external_account)
         return to_be_created, to_be_patched
 
-    def _add_users(self, list_of_users: List[dict]):
+    def _add_users(self, list_of_users: List[Dict]):
         for user_to_be in list_of_users:
             first_name = user_to_be.get('first_name', '-')
             last_name = user_to_be.get('last_name', '-')
@@ -183,7 +183,7 @@ class AccountSynchronizer:
             new_user = User(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name)
             new_user.save()
 
-    def _patch_users(self, list_of_users: List[tuple[User, dict]]):
+    def _patch_users(self, list_of_users: List[Tuple[User, Dict]]):
         for (existing_user, new_user_info) in list_of_users:
             existing_user.oidc_id = new_user_info.get('id')
             existing_user.email = new_user_info.get('email')

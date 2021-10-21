@@ -56,3 +56,8 @@ CELERY_RESULT_BACKEND = 'django-db'
 
 ## Email backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Speed-up setting new accounts
+PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']
+
+DEBUG = False

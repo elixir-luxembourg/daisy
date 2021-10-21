@@ -1,10 +1,12 @@
 import pytest
 
+from typing import Dict, List
+
 from core.lcsb import KeycloakSynchronization
 
 
 class KeycloakSynchronizationMock(KeycloakSynchronization):
-    def get_list_of_users(self) -> list[dict]:
+    def get_list_of_users(self) -> List[Dict]:
         def _item(a, b):
             return {'id': a, 'email': b}
             
