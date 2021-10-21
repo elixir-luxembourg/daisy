@@ -32,7 +32,7 @@ requirements = [
     'psycopg2==2.7.7',
     'pysolr==3.8.1',
     'pytest-runner==5.1',
-    'python-keycloak==0.26.1'
+    'python-keycloak==0.26.1',
     'pytz==2018.9',
     'celery==4.4.7',
     'celery-haystack==0.10',
