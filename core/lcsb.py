@@ -71,7 +71,7 @@ class AccountSynchronizationException(Exception):
     pass
 
 class KeycloakSynchronization(AccountSynchronizationMethod):
-    def __init__(self, config: Dict, connect=False) -> None:
+    def __init__(self, config: Dict, connect=True) -> None:
         self.config = config
         self.keycloak_admin_connection = self._create_connection(config) if connect else None
 
