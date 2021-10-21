@@ -9,8 +9,8 @@ WORKDIR /code
 # Copy the list of Python dependencies
 COPY ./setup.py /code/.
 # Try to install as many Python dependencies as possible...
-RUN pip install -e . 2>/dev/null || true
+RUN pip install --no-cache-dir -e . 2>/dev/null || true
 # ... so that next time the project changes, the previous steps will be cached...
 COPY . /code/
 # ... and this will be blazing fast
-RUN pip install -e .
+RUN pip install --no-cache-dir -e .
