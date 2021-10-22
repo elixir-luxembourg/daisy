@@ -2,9 +2,9 @@ import pytest
 
 from typing import Dict, List
 
-from core.lcsb.oidc import KeycloakSynchronization
+from core.lcsb.oidc import KeycloakSynchronizationMethod
 
-class KeycloakSynchronizationMock(KeycloakSynchronization):
+class KeycloakSynchronizationMethodMock(KeycloakSynchronizationMethod):
     def get_list_of_users(self) -> List[Dict]:
         def _item(a, b):
             return {'id': a, 'email': b}
@@ -28,9 +28,9 @@ class KeycloakSynchronizationMock(KeycloakSynchronization):
 
 def test_keycloak_synchronization_config_validation():
     with pytest.raises(KeyError):
-        kc = KeycloakSynchronization({})
+        kc = KeycloakSynchronizationMethod({})
     
     with pytest.raises(KeyError):
-        kc = KeycloakSynchronization({}, False)
+        kc = KeycloakSynchronizationMethod({}, False)
         kc._create_connection({})
 
