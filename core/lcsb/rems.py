@@ -94,13 +94,12 @@ def handle_rems_entitlement(data: Dict) -> bool:
     except Exception as ex:
         raise ValueError('Something went wrong during creating an entry for Access/Contact: ' + str(ex))
 
-def create_rems_entitlement(
-    obj: Union[Access, User], 
-    application: str, 
-    dataset_id: str, 
-    user_id: str, 
-    email: str,
-) -> bool:
+
+def create_rems_entitlement(obj: Union[Access, User], 
+        application: str, 
+        dataset_id: str, 
+        user_id: str, 
+        email: str) -> bool:
     """
     Tries to find a dataset with `elu_accession` equal to `dataset_id`.
     If it exists, it will add a new logbook entry (Access object) set to the current user/contact

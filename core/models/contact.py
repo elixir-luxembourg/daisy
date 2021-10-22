@@ -132,16 +132,16 @@ class Contact(CoreModel):
             new_object.save()
             return new_object
 
-        def add_rems_entitlement(self, 
-            application: str, 
-            dataset_id: str, 
-            user_id: str,
-            email: str
-        ) -> bool:
-            """
-            Tries to find a dataset with `elu_accession` equal to `dataset_id`.
-            If it exists, it will add a new logbook entry (Access object) set to the current user
-            Assumes that the Dataset exists, otherwise will throw an exception.
-            """
-            create_rems_entitlement(self, application, dataset_id, user_id, email)
-            return True
+    def add_rems_entitlement(self, 
+        application: str, 
+        dataset_id: str, 
+        user_id: str,
+        email: str
+    ) -> bool:
+        """
+        Tries to find a dataset with `elu_accession` equal to `dataset_id`.
+        If it exists, it will add a new logbook entry (Access object) set to the current user
+        Assumes that the Dataset exists, otherwise will throw an exception.
+        """
+        create_rems_entitlement(self, application, dataset_id, user_id, email)
+        return True

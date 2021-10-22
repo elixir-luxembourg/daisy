@@ -214,7 +214,9 @@ class User(AbstractUser):
         Finds Accesses of the user, and returns a list of their dataset IDs 
         """
         accesses = Access.objects.filter(user=self, dataset__is_published=True)
-        return [access.dataset.elu_accession for access in accesses]
+        # TODO: Probably we should exclude the expired grants at certain point in time
+        accesses_names = [access.dataset.elu_accession for access in accesses]
+        return list(set(accesses_names))  # remove duplicates
 
     def add_rems_entitlement(self, 
             application: str, 
