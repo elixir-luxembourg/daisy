@@ -9,15 +9,27 @@ class Migration(migrations.Migration):
         ('core', '0018_load_datalogtype_fixtures'),
     ]
 
-    def migrate_existing_restrictions(apps, schema_editor):
-        mappings = {'CONSTRAINTS': 'CONSTRAINED_PERMISSION',
-                    'NO_CONSTRAINTS': 'PERMISSION',
-                    'FORBIDDEN': 'PROHIBITION',
-                    }
+    def migrate_existing_restrictions(apps, schema_editor):   
+        mappings = {
+            'CONSTRAINTS': 'CONSTRAINED_PERMISSION',
+            'NO_CONSTRAINTS': 'PERMISSION',
+            'FORBIDDEN': 'PROHIBITION',
+        }
         UseRestrictions = apps.get_model('core', 'UseRestriction')
         for restriction in UseRestrictions.objects.all():
             if restriction.use_restriction_rule is not None:
                 restriction.use_restriction_rule = mappings.get(restriction.use_restriction_rule, 'PROHIBITION')
+                restriction.save()
+
+    def reverse_migrate_existing_restrictions(apps, schema_editor):
+        reversed_mappings = {'CONSTRAINED_PERMISSION': 'CONSTRAINTS',
+                    'PERMISSION': 'NO_CONSTRAINTS',
+                    'PROHIBITION': 'FORBIDDEN',
+                    }
+        UseRestrictions = apps.get_model('core', 'UseRestriction')
+        for restriction in UseRestrictions.objects.all():
+            if restriction.use_restriction_rule is not None:
+                restriction.use_restriction_rule = reversed_mappings.get(restriction.use_restriction_rule, 'FORBIDDEN')
                 restriction.save()
 
     operations = [
@@ -29,5 +41,5 @@ class Migration(migrations.Migration):
                          ('CONSTRAINED_PERMISSION', 'CONSTRAINED_PERMISSION')], default='PROHIBITION', max_length=64,
                 verbose_name='Use Restriction Rule'),
         ),
-        migrations.RunPython(migrate_existing_restrictions)
+        migrations.RunPython(migrate_existing_restrictions, reverse_migrate_existing_restrictions)
     ]
