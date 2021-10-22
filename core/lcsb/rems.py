@@ -1,7 +1,8 @@
 import json
 import logging
 
-from typing import Dict
+from datetime import datetime
+from typing import Dict, Union
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -9,6 +10,7 @@ from django.http import HttpRequest
 
 from core.synchronizers import DummyAccountSynchronizer
 from core.lcsb.oidc import get_keycloak_config_from_settings, KeycloakSynchronizationMethod, KeycloakAccountSynchronizer
+from core.models.access import Access
 from core.models.contact import Contact
 from core.models.dataset import Dataset
 from core.models.user import User
@@ -91,3 +93,45 @@ def handle_rems_entitlement(data: Dict) -> bool:
         return contact.add_rems_entitlement(application, resource, user_id, email)
     except Exception as ex:
         raise ValueError('Something went wrong during creating an entry for Access/Contact: ' + str(ex))
+
+def create_rems_entitlement(
+    obj: Union[Access, User], 
+    application: str, 
+    dataset_id: str, 
+    user_id: str, 
+    email: str,
+) -> bool:
+    """
+    Tries to find a dataset with `elu_accession` equal to `dataset_id`.
+    If it exists, it will add a new logbook entry (Access object) set to the current user/contact
+    Assumes that the Dataset exists, otherwise will throw an exception.
+    """
+    notes = f'Set automatically by REMS application #{application}'
+
+    dataset = Dataset.objects.get(elu_accession=dataset_id)
+
+    # TODO: add REMS user (e.g. `system::REMS`) to the system
+    # Then add this information to created_by of an Access
+    
+    if type(object) == User:
+        new_logbook_entry = Access(
+            user=obj,
+            dataset=dataset,
+            access_notes=notes,
+            granted_on=datetime.now(),
+            was_generated_automatically=True
+        )
+    elif type(object) == Contact:
+        new_logbook_entry = Access(
+            contact=obj,
+            dataset=dataset,
+            access_notes=notes,
+            granted_on=datetime.now(),
+            was_generated_automatically=True
+        )
+    else:
+        klass = obj.__class__.__name__
+        raise TypeError(f'Wrong type of the object - should be Contact or User, is: {klass} instead')
+        
+    new_logbook_entry.save()
+    return True

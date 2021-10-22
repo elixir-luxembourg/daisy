@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -9,6 +7,7 @@ from enumchoicefield.enum import ChoiceEnum
 from guardian.shortcuts import assign_perm, remove_perm
 
 from core import constants
+from core.lcsb.rems import create_rems_entitlement
 from core.models import Access, Dataset
 from core.permissions import ProjectChecker, DatasetChecker, ContractChecker, AutoChecker
 from .utils import TextFieldWithInputWidget
@@ -218,31 +217,17 @@ class User(AbstractUser):
         return [access.dataset.elu_accession for access in accesses]
 
     def add_rems_entitlement(self, 
-        application: str, 
-        dataset_id: str, 
-        user_id: str,
-        email: str) -> bool:
+            application: str, 
+            dataset_id: str, 
+            user_id: str,
+            email: str,
+        ) -> bool:
         """
         Tries to find a dataset with `elu_accession` equal to `dataset_id`.
         If it exists, it will add a new logbook entry (Access object) set to the current user
         Assumes that the Dataset exists, otherwise will throw an exception.
-        Otherwise - it will raise an exception
         """
-        notes = f'Set automatically by REMS application #{application}'
-
-        dataset = Dataset.objects.get(elu_accession=dataset_id)
-
-        # TODO: add REMS user (e.g. `system::REMS`) to the system
-        # Then add this information to created_by of an Access
-        
-        new_logbook_entry = Access(
-            user=self,
-            dataset=dataset,
-            access_notes=notes,
-            granted_on=datetime.now(),
-            was_generated_automatically=True
-        )
-        new_logbook_entry.save()
+        create_rems_entitlement(self, application, dataset_id, user_id, email)
         return True
 
     @classmethod

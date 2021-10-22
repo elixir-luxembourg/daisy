@@ -1,7 +1,9 @@
 from django.db import models
 
 from .utils import CoreModel, TextFieldWithInputWidget
+from .contact_type import ContactType
 
+from core.lcsb.rems import create_rems_entitlement
 
 class Contact(CoreModel):
     """
@@ -120,10 +122,26 @@ class Contact(CoreModel):
                     message = f'There are either zero, or 2 and more contacts with such `email` and `oidc_id`!'
                     raise ValueError(message)
         except cls.DoesNotExist:
+            type = ContactType.objects.get_or_create(name='Other (imported from Keycloak)')
             new_object = cls(
                 email=email, 
                 first_name='IMPORTED BY REMS', 
-                last_name='IMPORTED BY REMS'
+                last_name='IMPORTED BY REMS',
+                type=type
             )
             new_object.save()
             return new_object
+
+        def add_rems_entitlement(self, 
+            application: str, 
+            dataset_id: str, 
+            user_id: str,
+            email: str
+        ) -> bool:
+            """
+            Tries to find a dataset with `elu_accession` equal to `dataset_id`.
+            If it exists, it will add a new logbook entry (Access object) set to the current user
+            Assumes that the Dataset exists, otherwise will throw an exception.
+            """
+            create_rems_entitlement(self, application, dataset_id, user_id, email)
+            return True
