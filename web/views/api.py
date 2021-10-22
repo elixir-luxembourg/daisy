@@ -37,28 +37,33 @@ def create_error_response(message: str, more: Optional[Dict]={}, status: int=500
     }
     return JsonResponse({**more, **body}, status=status)
 
-def protect_with_api_key(view):
-    """
-    Checks if there is a GET or POST parameter that:
-     * contains either GLOABAL_API_KEY from settings
-     * matches one of User's api_key attribute
-    """
-    @wraps(view)
-    def decorator(request, *args, **kwargs):
-        submitted_keys = [request.GET.get('API_KEY', '-'), request.POST.get('API_KEY', '-')]
-        error_message = 'API_KEY missing in POST or GET parameters, or its value is invalid!'
-        if 'API_KEY' not in request.GET and 'API_KEY' not in request.POST:
+def create_protect_with_api_key_decorator(global_api_key=None):
+    def protect_with_api_key(view):
+        """
+        Checks if there is a GET or POST parameter that:
+        * contains either GLOABAL_API_KEY from settings
+        * matches one of User's api_key attribute
+        """
+        @wraps(view)
+        def decorator(request, *args, **kwargs):
+            submitted_keys = [request.GET.get('API_KEY', '-'), request.POST.get('API_KEY', '-')]
+            error_message = 'API_KEY missing in POST or GET parameters, or its value is invalid!'
+            if 'API_KEY' not in request.GET and 'API_KEY' not in request.POST:
+                return create_error_response(error_message, status=403)
+            elif global_api_key is not None and global_api_key in submitted_keys:
+                return view(request, *args, **kwargs)
+            # Check the key from GET
+            elif submitted_keys[0] not in ['-', ''] and User.objects.filter(api_key=submitted_keys[0]).count() > 0:
+                return view(request, *args, **kwargs)
+            # Check the key from POST
+            elif submitted_keys[1] not in ['-', ''] and User.objects.filter(api_key=submitted_keys[1]).count() > 0:
+                return view(request, *args, **kwargs)
             return create_error_response(error_message, status=403)
-        elif hasattr(settings, 'GLOBAL_API_KEY') and getattr(settings, 'GLOBAL_API_KEY') in submitted_keys:
-            return view(request, *args, **kwargs)
-        # Check the key from GET
-        elif submitted_keys[0] not in ['-', ''] and User.objects.filter(api_key=submitted_keys[0]).count() > 0:
-            return view(request, *args, **kwargs)
-        # Check the key from POST
-        elif submitted_keys[1] not in ['-', ''] and User.objects.filter(api_key=submitted_keys[1]).count() > 0:
-            return view(request, *args, **kwargs)
-        return create_error_response(error_message, status=403)
-    return decorator
+        return decorator
+    return protect_with_api_key
+
+_global_api_key = getattr(settings, 'GLOBAL_API_KEY') if hasattr(settings, 'GLOBAL_API_KEY') else None
+protect_with_api_key = create_protect_with_api_key_decorator(_global_api_key)
 
 """
 Rapido API method, we should probably use django rest framework if we want to develop API further.
@@ -185,33 +190,46 @@ def rems_endpoint(request):
         if ip not in allowed_ips and not skip_check_setting:
             raise Warning(f'REMS - the IP is not in the whitelist, import failed!')
         
-        status = "Success" if handle_rems_callback(request) else "Failure"
-        logger.debug(f'REMS - import status: {status}!')
-        return JsonResponse({'status': f'{status}'}, status=200)
+        status = True if handle_rems_callback(request) else False
+        logger.debug(f'REMS - was import successful?: {status}!')
+        if status:
+            return JsonResponse({'status': 'Success'}, status=200)
+        else:
+            return JsonResponse({'status': 'Failure'}, status=500)
     except (Warning, ImproperlyConfigured) as ex:
-        logger.debug(ex.message)
+        message = f'REMS - something is wrong with the configuration!'
+        more = str(ex)
+        logger.debug(f'{message} ({more})')
         return create_error_response(ex.message)
     except Exception as ex:
         message = f'REMS - something went wrong during the import!'
-        logger.debug(message)
-        return create_error_response(message, {'more': str(ex)})
+        more = str(ex)
+        logger.debug(f'{message} ({more}')
+        return create_error_response(message, {'more': more})
 
 
 @public
 @csrf_exempt
 @protect_with_api_key
 def permissions(request, user_oidc_id: str) -> JsonResponse:
+    logger.debug('Permissions API endpoint called')
     try:
         user = User.objects.get(oidc_id=user_oidc_id)
         permissions = user.get_access_permissions()
         return JsonResponse(permissions, status=200, safe=False)
     except User.DoesNotExist as e:
+        message = 'User with such OIDC_ID was not found'
+        more = str(e)
+        logger.debug(f'{message} ({more})')
         return create_error_response(
-            'User with such OIDC_ID was not found',
+            message,
             status=404
         )
     except Exception as e:
+        message = 'Something went wrong during exporting the permissions'
+        more = str(e)
+        logger.debug(f'{message} ({more}')
         return create_error_response(
-            'Something went wrong during exporting the permissions',
-            {'more': str(e)}
+            message,
+            {'more': more}
         )
