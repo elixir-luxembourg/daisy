@@ -59,5 +59,5 @@ PREDEFINED_PIS_LIST = [
 REMS_ALLOWED_IP_ADDRESSES = []
 REMS_INTEGRATION_ENABLED = False
 
-# IDSERVICE_FUNCTION = 'core.lcsb.generate_identifier'
+# IDSERVICE_FUNCTION = 'core.lcsb.idservice.generate_identifier'
 IDSERVICE_ENDPOINT = 'https://10.240.16.199:8080/v1/api/id'

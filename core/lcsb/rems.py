@@ -7,7 +7,8 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest
 
-from core.lcsb import AccountSynchronizer, DummySynchronization, EmptyAccountSynchronizer, get_config_from_settings, KeycloakSynchronization
+from core.synchronizers import DummyAccountSynchronizer
+from core.lcsb.oidc import get_keycloak_config_from_settings, KeycloakSynchronizationMethod, KeycloakAccountSynchronizer
 from core.models.contact import Contact
 from core.models.dataset import Dataset
 from core.models.user import User
@@ -18,11 +19,12 @@ logger = DaisyLogger(__name__)
 
 
 if getattr(settings, 'KEYCLOAK_INTEGRATION', False) == True:
-    keycloak_backend = KeycloakSynchronization(get_config_from_settings())
-    synchronizer = AccountSynchronizer(keycloak_backend)
+    keycloak_config = get_keycloak_config_from_settings()
+    keycloak_backend = KeycloakSynchronizationMethod(keycloak_config)
+    synchronizer = KeycloakAccountSynchronizer(keycloak_backend)
 else:
-    keycloak_backend = DummySynchronization()
-    synchronizer = EmptyAccountSynchronizer(keycloak_backend)
+    synchronizer = DummyAccountSynchronizer()
+
 
 def handle_rems_callback(request: HttpRequest) -> bool:
     """
@@ -89,4 +91,3 @@ def handle_rems_entitlement(data: Dict) -> bool:
         return contact.add_rems_entitlement(application, resource, user_id, email)
     except Exception as ex:
         raise ValueError('Something went wrong during creating an entry for Access/Contact: ' + str(ex))
-

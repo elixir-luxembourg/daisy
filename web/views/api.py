@@ -17,11 +17,11 @@ from stronghold.decorators import public
 
 from core.importer.datasets_exporter import DatasetsExporter
 from core.importer.projects_exporter import ProjectsExporter
+from core.lcsb.rems import handle_rems_callback
 from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm
 from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneTerm
 from core.utils import DaisyLogger
 from elixir_daisy import settings
-from web.lcsb import handle_rems_callback
 from web.views.utils import get_client_ip
 
 

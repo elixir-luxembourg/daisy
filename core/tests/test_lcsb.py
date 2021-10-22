@@ -2,7 +2,7 @@ import pytest
 
 from typing import Dict, List
 
-from core.lcsb import KeycloakSynchronization
+from core.lcsb.oidc import KeycloakSynchronization
 
 class KeycloakSynchronizationMock(KeycloakSynchronization):
     def get_list_of_users(self) -> List[Dict]:

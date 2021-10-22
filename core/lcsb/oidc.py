@@ -1,55 +1,15 @@
 import json
 
-from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Tuple
-from urllib.request import urlopen, Request
+from typing import Dict, List, Tuple
 
 from django.conf import settings
 from keycloak import KeycloakAdmin
 
-from core.models.cohort import Cohort
-from core.models.dataset import Dataset
-from core.models.partner import Partner
-from core.models.project import Project
 from core.models import User
-from core.models.utils import CoreTrackedModel
+from core.synchronizers import AccountSynchronizationException, AccountSynchronizationMethod, AccountSynchronizer
 
 
-def _http_post(url: str, data: Dict, timeout: int=6):
-    encoded_data = json.dumps(data).encode('utf8')
-    request = Request(url, encoded_data)
-    request.add_header('Content-Type', 'application/json')
-    response = urlopen(request, timeout=timeout).read().decode('utf-8')
-    return response
-
-def _call_idservice(entity_type: str, name: Optional[str]=None):
-    url = getattr(settings, 'IDSERVICE_ENDPOINT')
-    data = {
-        "entity": entity_type,
-    }
-    if name is not None:
-        data['name'] = name
-    return _http_post(url, data)
-
-def generate_identifier(obj: CoreTrackedModel, save=True):
-    klass = type(obj).__name__
-    if not isinstance(obj, (Dataset, Project, Cohort, Partner)):
-        msg = f'Unrecognized entity! (Only Project, Dataset, Cohort and Partner are recognized; got - {klass})'
-        raise ValueError(msg)
-    
-    if hasattr(obj, 'title'):
-        title = obj.title
-    elif hasattr(obj, 'name'):
-        title = obj.name
-    else:
-        msg = f'Cannot find the object''s name! (The object of class {klass} does not have title nor name attribute!'
-        raise KeyError(msg)
-
-    the_id = _call_idservice(klass.lower(), title)
-    return the_id
-
-
-def get_config_from_settings() -> Dict:
+def get_keycloak_config_from_settings() -> Dict:
     return {
         'KEYCLOAK_URL': getattr(settings, 'KEYCLOAK_URL'),
         'KEYCLOAK_REALM': getattr(settings, 'KEYCLOAK_REALM'),
@@ -58,19 +18,7 @@ def get_config_from_settings() -> Dict:
     }
 
 
-class AccountSynchronizationMethod:
-    @abstractmethod
-    def get_list_of_users(self) -> List[Dict]:
-        pass
-
-    @abstractmethod
-    def test_connection(self) -> None:
-        pass
-
-class AccountSynchronizationException(Exception):
-    pass
-
-class KeycloakSynchronization(AccountSynchronizationMethod):
+class KeycloakSynchronizationMethod(AccountSynchronizationMethod):
     def __init__(self, config: Dict, connect=True) -> None:
         self.config = config
         self.keycloak_admin_connection = self._create_connection(config) if connect else None
@@ -120,30 +68,7 @@ class KeycloakSynchronization(AccountSynchronizationMethod):
         ]
 
 
-class EmptyAccountSynchronizer:
-    def __init__(self, synchronizer: AccountSynchronizationMethod=None):
-        pass
-
-    def test_connection(self):
-        return True
-
-    def compare(self) -> Tuple[List, List]:
-        return [], []
-
-    def synchronize(self) -> None:
-        pass
-
-class DummySynchronization(AccountSynchronizationMethod):
-    def __init__(self, config: Dict=None, connect=False) -> None:
-        pass
-
-    def test_connection(self) -> bool:
-        return True
-        
-    def get_list_of_users(self) -> List[Dict]:
-        return []
-
-class AccountSynchronizer:
+class KeycloakAccountSynchronizer(AccountSynchronizer):
     def __init__(self, synchronizer: AccountSynchronizationMethod):
         """We'll need a way to fetch accounts to synchronize"""
         self.synchronizer = synchronizer
@@ -192,10 +117,3 @@ class AccountSynchronizer:
             existing_user.first_name = new_user_info.get('first_name')
             existing_user.last_name = new_user_info.get('last_name')
             existing_user.save()
-
-
-# How to continue:
-# 5. Code that triggers whole the process
-# 6. Tests of process of comparation
-# 7. Tests of the whole process with mocks
-
