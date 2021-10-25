@@ -221,7 +221,7 @@ class User(AbstractUser):
         non_expired_accesses_names = [access.dataset.elu_accession for access in non_expired_accesses]
 
         # The ones that expire
-        accesses_without_expiration = accesses.filter(grand_expires_on__isnull=True)
+        accesses_without_expiration = accesses.filter(grant_expires_on__isnull=True)
         accesses_without_expiration_names = [access.dataset.elu_accession for access in accesses_without_expiration]
 
         return list(set(non_expired_accesses_names + accesses_without_expiration_names))  # remove duplicates
