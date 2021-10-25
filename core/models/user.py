@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -213,9 +215,16 @@ class User(AbstractUser):
         Finds Accesses of the user, and returns a list of their dataset IDs 
         """
         accesses = Access.objects.filter(user=self, dataset__is_published=True)
-        # TODO: Probably we should exclude the expired grants at certain point in time
-        accesses_names = [access.dataset.elu_accession for access in accesses]
-        return list(set(accesses_names))  # remove duplicates
+
+        # The ones that did not expire
+        non_expired_accesses = accesses.filter(grant_expires_on__gte=datetime.now())
+        non_expired_accesses_names = [access.dataset.elu_accession for access in non_expired_accesses]
+
+        # The ones that expire
+        accesses_without_expiration = accesses.filter(grand_expires_on__isnull=True)
+        accesses_without_expiration_names = [access.dataset.elu_accession for access in accesses_without_expiration]
+
+        return list(set(non_expired_accesses_names + accesses_without_expiration_names))  # remove duplicates
 
     @classmethod
     def find_user_by_email_or_oidc_id(cls, email, oidc_id, method):
