@@ -1,8 +1,10 @@
+from core.lcsb.rems import create_rems_entitlement
 import pytest
 
 from typing import Dict, List
 
 from core.lcsb.oidc import KeycloakSynchronizationMethod
+from test.factories import DatasetFactory, UserFactory
 
 class KeycloakSynchronizationMethodMock(KeycloakSynchronizationMethod):
     def get_list_of_users(self) -> List[Dict]:
@@ -34,3 +36,15 @@ def test_keycloak_synchronization_config_validation():
         kc = KeycloakSynchronizationMethod({}, False)
         kc._create_connection({})
 
+
+def test_add_rems_entitlements():
+    elu_accession='12345678'
+
+    user = UserFactory(oidc_id='12345', email='example@example.org')
+    user.save()
+
+    dataset = DatasetFactory(title='Test', local_custodians=[user], elu_accession=elu_accession)
+    dataset.save()
+
+    create_rems_entitlement(user, 'Test Application', elu_accession, user.oidc_id, user.email)
+    user.delete()

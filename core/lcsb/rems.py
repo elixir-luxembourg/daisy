@@ -109,24 +109,33 @@ def create_rems_entitlement(obj: Union[Access, User],
 
     dataset = Dataset.objects.get(elu_accession=dataset_id)
 
-    # TODO: add REMS user (e.g. `system::REMS`) to the system
-    # Then add this information to created_by of an Access
+    # The password is not a hash, therefore it is
+    # not possible to log into this account
+    system_rems_user, _ = User.objects.get_or_create(
+        username='system::REMS',
+        first_name=':REMS:',
+        last_name=':System Account:',
+        password='this_is_incorrect',
+        email='lcsb-sysadmins@uni.lu'
+    )
     
-    if type(object) == User:
+    if type(obj) == User:
         new_logbook_entry = Access(
             user=obj,
             dataset=dataset,
             access_notes=notes,
             granted_on=datetime.now(),
-            was_generated_automatically=True
+            was_generated_automatically=True,
+            created_by=system_rems_user
         )
-    elif type(object) == Contact:
+    elif type(obj) == Contact:
         new_logbook_entry = Access(
             contact=obj,
             dataset=dataset,
             access_notes=notes,
             granted_on=datetime.now(),
-            was_generated_automatically=True
+            was_generated_automatically=True,
+            created_by=system_rems_user
         )
     else:
         klass = obj.__class__.__name__
