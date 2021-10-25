@@ -26,7 +26,7 @@ services:
             - node
             - solr
             - mq
-        command: gunicorn -w 2 -b :5000 --pid /run/gunicorn.pid elixir_daisy.wsgi
+        command: gunicorn --reload -w 2 -b :5000 --pid /run/gunicorn.pid elixir_daisy.wsgi
     # database
     db:
         image: postgres:10.1
