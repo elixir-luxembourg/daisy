@@ -1,11 +1,12 @@
 from django.db import models
 
-from .utils import CoreModel, TextFieldWithInputWidget
-from .contact_type import ContactType
-
 from core.lcsb.rems import create_rems_entitlement
+from core.models.contact_type import ContactType
+from core.models.utils import CoreModel, TextFieldWithInputWidget
+
 
 class Contact(CoreModel):
+
     """
     Contact represents a contact person.
     For instance:
@@ -122,12 +123,12 @@ class Contact(CoreModel):
                     message = f'There are either zero, or 2 and more contacts with such `email` and `oidc_id`!'
                     raise ValueError(message)
         except cls.DoesNotExist:
-            type = ContactType.objects.get_or_create(name='Other (imported from Keycloak)')
+            contact_type = ContactType.objects.get_or_create(name='Other (imported from Keycloak)')
             new_object = cls(
                 email=email, 
                 first_name='IMPORTED BY REMS', 
                 last_name='IMPORTED BY REMS',
-                type=type
+                type=contact_type
             )
             new_object.save()
             return new_object
@@ -136,8 +137,7 @@ class Contact(CoreModel):
         application: str, 
         dataset_id: str, 
         user_id: str,
-        email: str
-    ) -> bool:
+        email: str) -> bool:
         """
         Tries to find a dataset with `elu_accession` equal to `dataset_id`.
         If it exists, it will add a new logbook entry (Access object) set to the current user
