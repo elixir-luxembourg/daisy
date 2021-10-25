@@ -5,7 +5,7 @@ from typing import Dict, List, Tuple
 from django.conf import settings
 from keycloak import KeycloakAdmin
 
-from core.models import User
+from core.models.user import User
 from core.synchronizers import AccountSynchronizationException, AccountSynchronizationMethod, AccountSynchronizer
 
 

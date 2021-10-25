@@ -218,12 +218,7 @@ class User(AbstractUser):
         accesses_names = [access.dataset.elu_accession for access in accesses]
         return list(set(accesses_names))  # remove duplicates
 
-    def add_rems_entitlement(self, 
-            application: str, 
-            dataset_id: str, 
-            user_id: str,
-            email: str,
-        ) -> bool:
+    def add_rems_entitlement(self, application: str, dataset_id: str, user_id: str, email: str) -> bool:
         """
         Tries to find a dataset with `elu_accession` equal to `dataset_id`.
         If it exists, it will add a new logbook entry (Access object) set to the current user
