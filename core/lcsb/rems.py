@@ -84,13 +84,13 @@ def handle_rems_entitlement(data: Dict) -> bool:
     
     try:
         user = User.find_user_by_email_or_oidc_id(email, user_id, method)
-        return user.add_rems_entitlement(application, resource, user_id, email)
+        return create_rems_entitlement(user, application, resource, user_id, email)
     except Exception as ex:
         logger.debug(' * Didn''t find the user with such oidc id or email, will add a contact instead: ' + str(ex))
     
     try:
         contact = Contact.get_or_create(email, user_id, resource, method)
-        return contact.add_rems_entitlement(application, resource, user_id, email)
+        return create_rems_entitlement(contact, application, resource, user_id, email)
     except Exception as ex:
         raise ValueError('Something went wrong during creating an entry for Access/Contact: ' + str(ex))
 

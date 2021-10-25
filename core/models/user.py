@@ -7,7 +7,6 @@ from enumchoicefield.enum import ChoiceEnum
 from guardian.shortcuts import assign_perm, remove_perm
 
 from core import constants
-from core.lcsb.rems import create_rems_entitlement
 from core.models import Access, Dataset
 from core.permissions import ProjectChecker, DatasetChecker, ContractChecker, AutoChecker
 from .utils import TextFieldWithInputWidget
@@ -217,15 +216,6 @@ class User(AbstractUser):
         # TODO: Probably we should exclude the expired grants at certain point in time
         accesses_names = [access.dataset.elu_accession for access in accesses]
         return list(set(accesses_names))  # remove duplicates
-
-    def add_rems_entitlement(self, application: str, dataset_id: str, user_id: str, email: str) -> bool:
-        """
-        Tries to find a dataset with `elu_accession` equal to `dataset_id`.
-        If it exists, it will add a new logbook entry (Access object) set to the current user
-        Assumes that the Dataset exists, otherwise will throw an exception.
-        """
-        create_rems_entitlement(self, application, dataset_id, user_id, email)
-        return True
 
     @classmethod
     def find_user_by_email_or_oidc_id(cls, email, oidc_id, method):
