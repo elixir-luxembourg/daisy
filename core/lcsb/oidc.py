@@ -62,8 +62,8 @@ class KeycloakSynchronizationMethod(AccountSynchronizationMethod):
             {
                 'id': user.get('id'), 
                 'email': user.get('email', 'EMAIL_MISSING'),
-                # TODO: First name
-                # TODO: Last name
+                'first_name': user.get('firstName', 'FIRST_NAME_MISSING'),
+                'last_name': user.get('lastName', 'FIRST_NAME_MISSING'),
             } for user in keycloak_response
         ]
 
