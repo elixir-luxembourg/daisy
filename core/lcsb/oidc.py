@@ -64,7 +64,8 @@ class KeycloakSynchronizationMethod(AccountSynchronizationMethod):
                 'email': user.get('email', 'EMAIL_MISSING'),
                 'first_name': user.get('firstName', 'FIRST_NAME_MISSING'),
                 'last_name': user.get('lastName', 'FIRST_NAME_MISSING'),
-            } for user in keycloak_response
+                'username': user.get('email')
+            } for user in keycloak_response if user.get('email', None) is not None
         ]
 
 
@@ -106,8 +107,9 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             first_name = user_to_be.get('first_name', '-')
             last_name = user_to_be.get('last_name', '-')
             email = user_to_be.get('email')
-            oidc_id = user_to_be.get('id')
-            new_user = User(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name)
+            oidc_id = user_to_be.get('id'), 
+            username = user_to_be.get('username')
+            new_user = User(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name, username=username)
             new_user.save()
 
     def _patch_users(self, list_of_users: List[Tuple[User, Dict]]):

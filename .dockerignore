@@ -4,16 +4,20 @@
 *.sqlite3
 *.iml
 elixir_daisy/settings_local.py
+core/fixtures/h*.json
+
+
+log/*.log
+log/*.log*
+documents
+
+static/*
 static/css/*
+
+
 web/static/vendor/node_modules/*
-
-
-
-/log/*.log
-/log/*.log*
-/documents
-/web/static/css/daisy.min.css
-/web/static/css/daisy.css
+web/static/css/daisy.min.css
+web/static/css/daisy.css
 
 datasets
 
