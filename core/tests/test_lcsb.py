@@ -8,83 +8,77 @@ from core.lcsb.rems import create_rems_entitlement
 from test.factories import DatasetFactory, UserFactory
 
 
+class KeycloakAdminConnectionMock:
+    def well_know(self) -> bool:
+        return True
+
+    def get_users(self, query) -> List[Dict]:
+        return [{
+            "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", 
+            "createdTimestamp": 1634231689999, 
+            "username": "0000-0001-2222-3333", 
+            "enabled": True, 
+            "totp": False, 
+            "emailVerified": True, 
+            "firstName": "TESTY", 
+            "lastName": "MCTesty", 
+            "email": "testy.mctesty@uni.lu",
+            "disableableCredentialTypes": [], 
+            "requiredActions": [], 
+            "notBefore": 0,
+            "access": {
+                "manageGroupMembership": False, 
+                "view": True, 
+                "mapRoles": False,
+                "impersonate": False, 
+                "manage": False
+            }
+        }, {
+            "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeef", 
+            "createdTimestamp": 1634231689998, 
+            "username": "0000-0001-2222-3334", 
+            "enabled": True, 
+            "totp": False, 
+            "emailVerified": True, 
+            "firstName": "BOBBY", 
+            "lastName": "FISCHER", 
+            "email": "bobby.fischer@gmail.com",
+            "disableableCredentialTypes": [], 
+            "requiredActions": [], 
+            "notBefore": 0,
+            "access": {
+                "manageGroupMembership": False, 
+                "view": True, 
+                "mapRoles": False,
+                "impersonate": False, 
+                "manage": False
+            }
+        }, {
+            "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeeg", 
+            "createdTimestamp": 1634231689997, 
+            "username": "0000-0001-2222-3335", 
+            "firstName": "Ann", 
+            "lastName": "Bann", 
+        }]
+    
+
 class KeycloakSynchronizationMethodMock(KeycloakSynchronizationMethod):
     def test_connection(self) -> bool:
         return True
 
-    def get_list_of_users(self) -> List[Dict]:            
-        if self.style == 1:
-            users = []
-        else:
-            users = [{
-                        "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", 
-                        "createdTimestamp": 1634231689999, 
-                        "username": "0000-0001-2222-3333", 
-                        "enabled": True, 
-                        "totp": False, 
-                        "emailVerified": True, 
-                        "firstName": "TESTY", 
-                        "lastName": "MCTesty", 
-                        "email": "testy.mctesty@uni.lu",
-                        "disableableCredentialTypes": [], 
-                        "requiredActions": [], 
-                        "notBefore": 0,
-                        "access": {
-                            "manageGroupMembership": False, 
-                            "view": True, 
-                            "mapRoles": False,
-                            "impersonate": False, 
-                            "manage": False
-                        }
-                    }, {
-                        "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeef", 
-                        "createdTimestamp": 1634231689998, 
-                        "username": "0000-0001-2222-3334", 
-                        "enabled": True, 
-                        "totp": False, 
-                        "emailVerified": True, 
-                        "firstName": "BOBBY", 
-                        "lastName": "FISCHER", 
-                        "email": "bobby.fischer@gmail.com",
-                        "disableableCredentialTypes": [], 
-                        "requiredActions": [], 
-                        "notBefore": 0,
-                        "access": {
-                            "manageGroupMembership": False, 
-                            "view": True, 
-                            "mapRoles": False,
-                            "impersonate": False, 
-                            "manage": False
-                        }
-                    }, {
-                        "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeeg", 
-                        "createdTimestamp": 1634231689997, 
-                        "username": "0000-0001-2222-3335", 
-                        "firstName": "Ann", 
-                        "lastName": "Bann", 
-                    }]
-        # TODO: this is not perfect; keycloak-admin should be mocked, and not the synchronizer
-        return [
-            {
-                'id': user.get('id'), 
-                'email': user.get('email'),
-                'first_name': user.get('firstName', 'FIRST_NAME_MISSING'),
-                'last_name': user.get('lastName', 'FIRST_NAME_MISSING'),
-                'username': user.get('email')
-            } for user in users if user.get('email', None) is not None
-        ]
+    def __init__(self, config: Dict, connect=True) -> None:
+        self.config = config
+        self.keycloak_admin_connection = KeycloakAdminConnectionMock()
 
-    @classmethod
-    def create_for_empty_list(cls):
-        obj = cls({}, False)
-        obj.style = 1
-        return obj
+    @staticmethod
+    def _validate_config(config: Dict) -> None:
+        pass
 
-    @classmethod
-    def create_for_filled_list(cls):
-        obj = cls({}, False)
-        obj.style = 0
-        return obj
+    def get_keycloak_admin_connection(self) -> None:
+        return KeycloakAdminConnectionMock()
+
+    def _create_connection(self, config:Dict=None) -> KeycloakAdminConnectionMock:
+        return KeycloakAdminConnectionMock()
 
 
 def test_keycloak_synchronization_config_validation():
@@ -97,7 +91,7 @@ def test_keycloak_synchronization_config_validation():
 
 
 def test_keycloak_synchronization():
-    mock = KeycloakSynchronizationMethodMock.create_for_filled_list()
+    mock = KeycloakSynchronizationMethodMock({}, False)
     synchronizer = KeycloakAccountSynchronizer(mock)
 
     current_external_accounts = mock.get_list_of_users()

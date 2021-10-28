@@ -119,3 +119,18 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             existing_user.first_name = new_user_info.get('first_name')
             existing_user.last_name = new_user_info.get('last_name')
             existing_user.save()
+
+
+class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
+    def synchronize(self) -> None:
+        """This will fetch the accounts from external source and use them to synchronize DAISY accounts"""
+        self._cached_external_accounts = self.current_external_accounts
+        self.current_external_accounts = self.synchronizer.get_list_of_users()
+
+        if self._cached_external_accounts is None or self._did_something_change():
+            accounts_to_be_created, accounts_to_be_patched = self.compare()
+            self._add_users(accounts_to_be_created)
+            self._patch_users(accounts_to_be_patched)
+
+    def _did_something_change(self):
+        return self._cached_external_accounts != self.current_external_accounts
