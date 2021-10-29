@@ -3,10 +3,14 @@ import json
 from typing import Dict, List, Tuple
 
 from django.conf import settings
+from core.utils import DaisyLogger
 from keycloak import KeycloakAdmin
 
 from core.models.user import User
 from core.synchronizers import AccountSynchronizationException, AccountSynchronizationMethod, AccountSynchronizer
+
+
+logger = DaisyLogger(__name__)
 
 
 def get_keycloak_config_from_settings() -> Dict:
@@ -92,7 +96,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
         to_be_patched = []
         for external_account in self.current_external_accounts:
             if external_account.get('email', None) is None:
-                raise AccountSynchronizationException(f"Received a record without an email!")
+                logger.debug('Received a record about a User without email from Keycloak')
             count_of_users = User.objects.filter(email=external_account.get('email')).count()
             if count_of_users == 1:
                 to_be_patched.append(external_account)

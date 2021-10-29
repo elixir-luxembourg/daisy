@@ -9,7 +9,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest
 
 from core.synchronizers import DummyAccountSynchronizer
-from core.lcsb.oidc import get_keycloak_config_from_settings, KeycloakSynchronizationMethod, KeycloakAccountSynchronizer
+from core.lcsb.oidc import get_keycloak_config_from_settings, KeycloakSynchronizationMethod, CachedKeycloakAccountSynchronizer
 from core.models.access import Access
 from core.models.contact import Contact
 from core.models.dataset import Dataset
@@ -23,7 +23,7 @@ logger = DaisyLogger(__name__)
 if getattr(settings, 'KEYCLOAK_INTEGRATION', False) == True:
     keycloak_config = get_keycloak_config_from_settings()
     keycloak_backend = KeycloakSynchronizationMethod(keycloak_config)
-    synchronizer = KeycloakAccountSynchronizer(keycloak_backend)
+    synchronizer = CachedKeycloakAccountSynchronizer(keycloak_backend)
 else:
     synchronizer = DummyAccountSynchronizer()
 
