@@ -113,15 +113,17 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             email = user_to_be.get('email')
             oidc_id = user_to_be.get('id'), 
             username = user_to_be.get('username')
-            new_user = User(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name, username=username)
+            new_user = User(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name, username=username, password='this won''t work')
             new_user.save()
 
     def _patch_users(self, list_of_users: List[Tuple[User, Dict]]):
         for (existing_user, new_user_info) in list_of_users:
+            # Update just OIDC ID
             existing_user.oidc_id = new_user_info.get('id')
-            existing_user.email = new_user_info.get('email')
-            existing_user.first_name = new_user_info.get('first_name')
-            existing_user.last_name = new_user_info.get('last_name')
+            # Don't actually patch these features
+            # existing_user.email = new_user_info.get('email')
+            # existing_user.first_name = new_user_info.get('first_name')
+            # existing_user.last_name = new_user_info.get('last_name')
             existing_user.save()
 
 
