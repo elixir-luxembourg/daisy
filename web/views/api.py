@@ -18,7 +18,7 @@ from stronghold.decorators import public
 from core.importer.datasets_exporter import DatasetsExporter
 from core.importer.projects_exporter import ProjectsExporter
 from core.lcsb.rems import handle_rems_callback
-from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm
+from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm, Contact
 from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneTerm
 from core.utils import DaisyLogger
 from elixir_daisy import settings
@@ -206,8 +206,20 @@ def permissions(request, user_oidc_id: str) -> JsonResponse:
         permissions = user.get_access_permissions()
         return JsonResponse(permissions, status=200, safe=False)
     except User.DoesNotExist as e:
+        pass
+    except Exception as e:
         return create_error_response(
-            'User with such OIDC_ID was not found',
+            'Something went wrong during exporting the permissions',
+            {'more': str(e)}
+        )
+
+    try:
+        contact = Contact.objects.get(oidc_id=user_oidc_id)
+        permissions = contact.get_access_permissions()
+        return JsonResponse(permissions, status=200, safe=False)
+    except Contact.DoesNotExist as e:
+        return create_error_response(
+            'No User nor Contact with such OIDC_ID was found',
             status=404
         )
     except Exception as e:

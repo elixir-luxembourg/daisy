@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from django.db import models
 
+from core.models.access import Access
 from core.models.contact_type import ContactType
 from core.models.utils import CoreModel, TextFieldWithInputWidget
 
@@ -131,3 +134,20 @@ class Contact(CoreModel):
             )
             new_object.save()
             return new_object
+
+    def get_access_permissions(self):
+        """
+        Finds Accesses of the user, and returns a list of their dataset IDs 
+        """
+        # TODO: This code is duplicated in core/models/User.py
+        accesses = Access.objects.filter(contact=self, dataset__is_published=True)
+
+        # The ones that did not expire
+        non_expired_accesses = accesses.filter(grant_expires_on__gte=datetime.now())
+        non_expired_accesses_names = [access.dataset.elu_accession for access in non_expired_accesses]
+
+        # The ones that expire
+        accesses_without_expiration = accesses.filter(grant_expires_on__isnull=True)
+        accesses_without_expiration_names = [access.dataset.elu_accession for access in accesses_without_expiration]
+
+        return list(set(non_expired_accesses_names + accesses_without_expiration_names))  # remove duplicates
