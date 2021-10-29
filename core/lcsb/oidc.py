@@ -46,10 +46,11 @@ class KeycloakSynchronizationMethod(AccountSynchronizationMethod):
         
         self._validate_config(self.config) 
         admin = KeycloakAdmin(
-            self.config.get('KEYCLOAK_URL'),
-            self.config.get('KEYCLOAK_REALM'),
-            self.config.get('KEYCLOAK_USER'),
-            self.config.get('KEYCLOAK_PASS')
+            server_url=self.config.get('KEYCLOAK_URL'),
+            realm_name=self.config.get('KEYCLOAK_REALM'),
+            username=self.config.get('KEYCLOAK_USER'),
+            password=self.config.get('KEYCLOAK_PASS'),
+            verify=False
         )
         return admin
 
