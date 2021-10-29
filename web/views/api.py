@@ -189,11 +189,12 @@ def rems_endpoint(request):
         logger.debug(f'REMS - import status: {status}!')
         return JsonResponse({'status': f'{status}'}, status=200)
     except (Warning, ImproperlyConfigured) as ex:
-        logger.debug(ex.message)
-        return create_error_response(ex.message)
+        logger.debug(str(ex))
+        return create_error_response(str(ex))
     except Exception as ex:
         message = f'REMS - something went wrong during the import!'
         logger.debug(message)
+        logger.debug(str(ex))
         return create_error_response(message, {'more': str(ex)})
 
 
@@ -206,8 +207,11 @@ def permissions(request, user_oidc_id: str) -> JsonResponse:
         permissions = user.get_access_permissions()
         return JsonResponse(permissions, status=200, safe=False)
     except User.DoesNotExist as e:
+        logger.debug('Permission API endpoint called, no User found. Will try to find a Contact instead')
         pass
     except Exception as e:
+        logger.debug('Something went wrong during exporting the permissions')
+        logger.debug(str(e))
         return create_error_response(
             'Something went wrong during exporting the permissions',
             {'more': str(e)}
@@ -215,14 +219,18 @@ def permissions(request, user_oidc_id: str) -> JsonResponse:
 
     try:
         contact = Contact.objects.get(oidc_id=user_oidc_id)
+        logger.debug('...found the Contact!')
         permissions = contact.get_access_permissions()
         return JsonResponse(permissions, status=200, safe=False)
     except Contact.DoesNotExist as e:
+        logger.debug('Permission API endpoint called, no Contact found, too')
         return create_error_response(
             'No User nor Contact with such OIDC_ID was found',
             status=404
         )
     except Exception as e:
+        logger.debug('Something went wrong during exporting the permissions')
+        logger.debug(str(e))
         return create_error_response(
             'Something went wrong during exporting the permissions',
             {'more': str(e)}
