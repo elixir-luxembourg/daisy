@@ -115,6 +115,9 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             username = user_to_be.get('username')
             new_user = User(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name, username=username, password='this won''t work')
             new_user.save()
+        logger.debug('Added ' + len(list_of_users) + ' new user entries:')
+        for user_to_be in list_of_users:
+            logger.debug('OIDC_ID = ' + user_to_be.get('id'))
 
     def _patch_users(self, list_of_users: List[Tuple[User, Dict]]):
         for (existing_user, new_user_info) in list_of_users:
@@ -125,6 +128,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             # existing_user.first_name = new_user_info.get('first_name')
             # existing_user.last_name = new_user_info.get('last_name')
             existing_user.save()
+        logger.debug('Updated ' + len(list_of_users) + ' user entries')
 
 
 class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
@@ -137,6 +141,8 @@ class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
             accounts_to_be_created, accounts_to_be_patched = self.compare()
             self._add_users(accounts_to_be_created)
             self._patch_users(accounts_to_be_patched)
+        else:
+            logger.debug('Skipping the keycloak account synchronization pass, no changes detected')
 
     def _did_something_change(self):
         return self._cached_external_accounts != self.current_external_accounts

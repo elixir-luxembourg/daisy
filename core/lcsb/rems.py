@@ -40,6 +40,7 @@ def handle_rems_callback(request: HttpRequest) -> bool:
     # Ensure the most recent account inforrmation by pulling it from Keycloak
     logger.debug('Refreshing the account information from Keycloak...')
     synchronizer.synchronize()
+    logger.debug('...successfully refreshed the information from Keycloak!')
 
     # TODO: Send an email to the Data Stewards or create a notification
 
