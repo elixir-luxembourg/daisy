@@ -111,7 +111,10 @@ class Access(CoreModel):
     )
 
     def __str__(self):
-        return f'Access given to dataset {self.dataset.title}: {self.user}/{self.access_notes}'
+        if self.contact:
+            return f'Access to dataset {self.dataset.title} given to a user: {self.user}/{self.access_notes}'
+        else:
+            return f'Access to dataset {self.dataset.title} given to a contact: {self.user}/{self.access_notes}'
 
     @property
     def display_locations(self):
