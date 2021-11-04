@@ -109,6 +109,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
 
     def _add_users(self, list_of_users: List[Dict]):
         for user_to_be in list_of_users:
+            logger.debug('Adding a new user')
             first_name = user_to_be.get('first_name', '-')
             last_name = user_to_be.get('last_name', '-')
             email = user_to_be.get('email')
@@ -122,6 +123,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
 
     def _patch_users(self, list_of_users: List[Tuple[User, Dict]]):
         for (existing_user, new_user_info) in list_of_users:
+            logger.debug('Patching the user')
             # Update just OIDC ID
             existing_user.oidc_id = new_user_info.get('id')
             # Don't actually patch these features
@@ -140,14 +142,20 @@ class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
 
     def synchronize(self) -> None:
         """This will fetch the accounts from external source and use them to synchronize DAISY accounts"""
+        logger.debug('Checking the cache...')
+
         if self.current_external_accounts is not None:
             self._cached_external_accounts = self.current_external_accounts
         self.current_external_accounts = self.synchronizer.get_list_of_users()
 
         if self._cached_external_accounts is None or self._did_something_change():
+            logger.debug('Updating the cache...')
             accounts_to_be_created, accounts_to_be_patched = self.compare()
+            logger.debug('...compared the accounts...')
             self._add_users(accounts_to_be_created)
+            logger.debug('...added the users...')
             self._patch_users(accounts_to_be_patched)
+            logger.debug('...patched the accounts...')
         else:
             logger.debug('Skipping the keycloak account synchronization pass, no changes detected')
 
