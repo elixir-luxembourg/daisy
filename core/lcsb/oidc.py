@@ -135,7 +135,10 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
 class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
     def synchronize(self) -> None:
         """This will fetch the accounts from external source and use them to synchronize DAISY accounts"""
-        self._cached_external_accounts = self.current_external_accounts
+        if self.current_external_accounts is not None:
+            self._cached_external_accounts = self.current_external_accounts
+        else:
+            self._cached_external_accounts = []
         self.current_external_accounts = self.synchronizer.get_list_of_users()
 
         if self._cached_external_accounts is None or self._did_something_change():
@@ -146,4 +149,7 @@ class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
             logger.debug('Skipping the keycloak account synchronization pass, no changes detected')
 
     def _did_something_change(self):
-        return self._cached_external_accounts != self.current_external_accounts
+        if self._cached_external_accounts is None or self.current_external_accounts is None:
+            return True
+        else:
+            return self._cached_external_accounts != self.current_external_accounts
