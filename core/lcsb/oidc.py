@@ -106,7 +106,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
                 raise AccountSynchronizationException(f"There is more than 1 account with such an email: {external_account.get('email')}")
             elif count_of_users == 0:
                 to_be_created.append(external_account)
-        logger.debug('Detected ' + str(len(to_be_created)) + ' accounts that are not existing in DAISY, and ' + str(len(to_be_patched)) + ' accounts that need patching.')
+        logger.debug('Detected ' + str(len(to_be_created)) + ' account(s) that are not existing in DAISY, and ' + str(len(to_be_patched)) + ' account(s) that need patching.')
         return to_be_created, to_be_patched
 
     def _add_users(self, list_of_users: List[Dict]):
@@ -118,7 +118,8 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             username = user_to_be.get('username')
             new_user = User(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name, username=username, password='this won''t work')
             new_user.save()
-        logger.debug('Added ' + str(len(list_of_users)) + ' new user entries:')
+        if len(list_of_users) > 0:
+            logger.debug('Added ' + str(len(list_of_users)) + ' new user entries:')
         for user_to_be in list_of_users:
             logger.debug('OIDC_ID = ' + user_to_be.get('id'))
 
@@ -126,7 +127,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
         logger.debug(str(list_of_users))
         for new_user_info in list_of_users:
             existing_user = User.objects.get(email=new_user_info.get('email'))
-            logger.debug('Patching the user ' + new_user_info.get('email'))
+            logger.debug('Patching the OIDC_ID of the user: ' + new_user_info.get('email'))
             # Update just OIDC ID
             existing_user.oidc_id = new_user_info.get('id')
             # Don't actually patch these features
@@ -134,7 +135,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             # existing_user.first_name = new_user_info.get('first_name')
             # existing_user.last_name = new_user_info.get('last_name')
             existing_user.save()
-        logger.debug('Updated ' + str(len(list_of_users)) + ' user entries')
+        logger.debug('Updated ' + str(len(list_of_users)) + ' user entry(entries)')
 
 
 class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
