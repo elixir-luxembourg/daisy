@@ -1,5 +1,6 @@
 import json
 import logging
+import urllib3
 
 from datetime import datetime
 from typing import Dict, Union
@@ -21,6 +22,7 @@ logger = DaisyLogger(__name__)
 
 
 if getattr(settings, 'KEYCLOAK_INTEGRATION', False) == True:
+    urllib3.disable_warnings()
     keycloak_config = get_keycloak_config_from_settings()
     keycloak_backend = KeycloakSynchronizationMethod(keycloak_config)
     synchronizer = CachedKeycloakAccountSynchronizer(keycloak_backend)
