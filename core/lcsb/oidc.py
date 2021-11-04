@@ -133,12 +133,15 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
 
 
 class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
+    def __init__(self, synchronizer: AccountSynchronizationMethod):
+        super().__init__(synchronizer)
+        self.current_external_accounts = []
+        self._cached_external_accounts = None
+
     def synchronize(self) -> None:
         """This will fetch the accounts from external source and use them to synchronize DAISY accounts"""
         if self.current_external_accounts is not None:
             self._cached_external_accounts = self.current_external_accounts
-        else:
-            self._cached_external_accounts = []
         self.current_external_accounts = self.synchronizer.get_list_of_users()
 
         if self._cached_external_accounts is None or self._did_something_change():
