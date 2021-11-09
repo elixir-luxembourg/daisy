@@ -136,7 +136,7 @@ class Contract(CoreModel):
         base_dict = {
             'id': self.id,
             'comments': self.comments,
-            'project': self.project,
+            'project': self.project.id,
             'local_custodians': contact_dicts,
             'OTHER_DATA': 'See models/contract.py'
             # TODO: Some fields are missing, this might need to be continued

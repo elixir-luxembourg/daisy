@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 
 from functools import wraps
 from io import StringIO
@@ -15,9 +16,10 @@ from ontobio import obograph_util, Ontology
 
 from stronghold.decorators import public
 
+from core.importer.contract_exporter import ContractExporter
 from core.importer.datasets_exporter import DatasetsExporter
 from core.importer.projects_exporter import ProjectsExporter
-from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm
+from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm, Contract
 from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneTerm
 from core.utils import DaisyLogger
 from elixir_daisy import settings
@@ -144,6 +146,38 @@ def datasets(request):
     except Exception as e:
         return create_error_response(
             'Something went wrong during exporting the datasets',
+            {'more': str(e)}
+        )
+
+
+def is_valid_field_in_model(klass_name, field_name):
+    getattr(klass_name, field_name, False)
+
+def get_filtered_entities(request, model_name):
+    filters = {}
+    for filter_key in request.GET:
+        if not is_valid_field_in_model(model_name, filter_key): continue
+        filters[filter_key] = request.GET.get(filter_key)
+
+    return getattr(sys.modules['core.models'], model_name).objects.filter(**filters)
+
+@public
+@csrf_exempt
+@protect_with_api_key
+def contracts(request):
+    objects = get_filtered_entities(request, 'Contract')
+    object_dicts = []
+    for contract in objects:
+        cd = contract.to_dict()
+        cd["source"] = settings.SERVER_URL
+        object_dicts.append(cd)
+    objects_json_buffer = StringIO()
+    json.dump({"items": object_dicts}, objects_json_buffer, indent=4)
+    try:
+        return HttpResponse(objects_json_buffer.getvalue())
+    except Exception as e:
+        return create_error_response(
+            'Something went wrong during exporting the contracts',
             {'more': str(e)}
         )
 
