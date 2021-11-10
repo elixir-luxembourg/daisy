@@ -181,4 +181,7 @@ web_urls = [
     path('publications/', PublicationListView.as_view(), name="publications"),
     path('publications/add/', PublicationCreateView.as_view(), name='publication_add'),
     path('publications/<int:pk>/edit', PublicationEditView.as_view(), name='publication_edit'),
+    
+    # Integrations
+    path('integrations/dsw/list-projects', dsw_list_projects, name="integrations_dsw_projects")
 ]
