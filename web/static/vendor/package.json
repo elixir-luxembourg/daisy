@@ -18,6 +18,7 @@
   "author": "LCSB",
   "license": "Apache-2.0",
   "dependencies": {
+    "@ds-wizard/integration-widget-sdk": "^0.2.0",
     "bootstrap": "4.2.1",
     "bootstrap-material-design": "4.1.1",
     "datatables.net": "1.10.19",
