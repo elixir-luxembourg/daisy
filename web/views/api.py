@@ -130,13 +130,15 @@ def termsearch(request, category):
 @csrf_exempt
 @protect_with_api_key
 def datasets(request):
+    objects = get_filtered_entities(request, 'Dataset')
+    objects = objects.filter(is_published=True)
+    if 'project_id' in request.GET:
+        project_id = request.GET.get('project_id', '')
+        objects = objects.filter(project__id=project_id)
     if 'project_title' in request.GET:
         project_title = request.GET.get('project_title', '')
-        datasets = Dataset.objects.filter(project__title__iexact=project_title, is_published=True)
-        exporter = DatasetsExporter(datasets)
-    else:
-        datasets = Dataset.objects.filter(is_published=True)
-        exporter = DatasetsExporter(datasets)
+        objects = objects.filter(project__title__iexact=project_title)
+    exporter = DatasetsExporter(objects)
 
     try:
         buffer = exporter.export_to_buffer(StringIO())
@@ -189,13 +191,13 @@ def contracts(request):
 @csrf_exempt
 @protect_with_api_key
 def projects(request):
-    if 'title' in request.GET:
-        title = request.GET.get('title', '')
-        projects = Project.objects.filter(title__iexact=title, is_published=True)
-        exporter = ProjectsExporter(projects)
-    else:
-        projects = Project.objects.filter(is_published=True)
-        exporter = ProjectsExporter(projects)
+    objects = get_filtered_entities(request, 'Project')
+    objects = objects.filter(is_published=True)
+    if 'project_id' in request.GET:
+        project_id = request.GET.get('project_id', '')
+        objects = objects.filter(id=project_id)
+
+    exporter = ProjectsExporter(objects)
 
     try:
         buffer = exporter.export_to_buffer(StringIO())
