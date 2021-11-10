@@ -166,6 +166,7 @@ def get_filtered_entities(request, model_name):
 @protect_with_api_key
 def contracts(request):
     objects = get_filtered_entities(request, 'Contract')
+    objects = objects.filter(project__is_published=True)
     object_dicts = []
     for contract in objects:
         cd = contract.to_dict()
