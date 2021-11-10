@@ -110,6 +110,10 @@ class Contract(CoreModel):
     @property
     def contacts(self):
         return Contact.objects.filter(partners_roles__contract=self)
+    
+    @property
+    def partner_roles(self):
+        return PartnerRole.objects.filter(contract=self)
 
     def __str__(self):
         return self.short_name()
