@@ -281,3 +281,14 @@ def unpublish_project(request, pk):
     project.is_published = False
     project.save()
     return redirect(reverse_lazy('project', kwargs={'pk': project.id}))
+
+
+def dsw_list_projects(request):
+    objects = Project.objects.all()
+    project_list = []
+    for project in objects:
+        if request.user in project.company_personnel or request.user in project.local_custodians:
+            project_list.apppend(project)
+    return render(request, 'integrations/dsw/projects.html', {
+        'projects': [project.title for project in objects],
+    })
