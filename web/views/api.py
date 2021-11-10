@@ -166,6 +166,9 @@ def get_filtered_entities(request, model_name):
 def contracts(request):
     objects = get_filtered_entities(request, 'Contract')
     objects = objects.filter(project__is_published=True)
+    if 'project_id' in request.GET:
+        project_id = request.GET.get('project_id', '')
+        objects = objects.filter(project__id=project_id)
     object_dicts = []
     for contract in objects:
         cd = contract.to_dict()
@@ -173,6 +176,7 @@ def contracts(request):
         object_dicts.append(cd)
     objects_json_buffer = StringIO()
     json.dump({"items": object_dicts}, objects_json_buffer, indent=4)
+
     try:
         return HttpResponse(objects_json_buffer.getvalue())
     except Exception as e:
