@@ -16,10 +16,9 @@ from ontobio import obograph_util, Ontology
 
 from stronghold.decorators import public
 
-from core.importer.contract_exporter import ContractExporter
 from core.importer.datasets_exporter import DatasetsExporter
 from core.importer.projects_exporter import ProjectsExporter
-from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm, Contract
+from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm
 from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneTerm
 from core.utils import DaisyLogger
 from elixir_daisy import settings
