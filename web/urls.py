@@ -24,7 +24,7 @@ from web.views.partner import PartnerCreateView, PartnerDelete, PartnerDetailVie
                               PartnerEditView, partner_search_view, \
                               publish_partner, unpublish_partner
 from web.views.projects import ProjectCreateView, ProjectEditView, ProjectDetailView, \
-                               ProjectDelete, publish_project, unpublish_project
+                               ProjectDelete, publish_project, unpublish_project, dsw_list_projects
 from web.views.publication import PublicationCreateView, PublicationListView, \
                                   PublicationEditView, add_publication_to_project, \
                                   remove_publication_from_project, pick_publication_for_project
