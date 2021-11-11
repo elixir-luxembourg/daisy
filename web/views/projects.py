@@ -288,7 +288,7 @@ def dsw_list_projects(request):
     # if(request.user.is_admin() | request.user.is_datasteward()):
     #     objects = Project.objects.all().filter(is_published=True)
     objects = Project.objects.filter(is_published=True) & (Project.objects.filter(local_custodians=request.user) | Project.objects.filter(company_personnel=request.user))
-    return render(request, 'integrations/dsw/projects.html', {
+    return render(request, 'integrations/dsw/project_list.html', {
         'projects': [{'url': reverse('project', args=[str(project.id)]),
                       'acronym':project.acronym,
                       'title':project.title,
