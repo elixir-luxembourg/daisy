@@ -284,11 +284,11 @@ def unpublish_project(request, pk):
 
 
 def dsw_list_projects(request):
-    objects = Project.objects.all()
-    project_list = []
-    for project in objects:
-        if request.user in project.company_personnel or request.user in project.local_custodians:
-            project_list.apppend(project)
+    #if data steward or admin -> list all the public projects
+    # if(request.user.is_admin() | request.user.is_datasteward()):
+    #     objects = Project.objects.all().filter(is_published=True)
+    objects = Project.objects.filter(local_custodians=request.user) | Project.objects.filter(company_personnel=request.user)
+    objects = objects.filter(is_published=True)
     return render(request, 'integrations/dsw/projects.html', {
         'projects': [project.title for project in objects],
     })
