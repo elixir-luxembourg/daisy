@@ -27,7 +27,7 @@
                         {% for project in projects %}<tr>
                             <td>{{project.id}}</td>
                             <td>{{ project.acronym }}</td>
-                            <td><a class="btn btn-secondary btn-outline">{{project.title}}</a></td>
+                            <td><a class="btn btn-secondary btn-outline" data-project-id="{{ project.id }}" data-project-url="/projects/{{ project.id }}">{{project.title}}</a></td>
                           </tr>{% endfor %}
                         </tbody>
                       </table>
@@ -35,6 +35,7 @@
             </div>
         </div>
     </div>
+    
     <script src="{% static 'vendor/node_modules/@ds-wizard/integration-widget-sdk/lib/index.js' %}"></script>
     <script>
         // DSW Widget: Instantiate the widget
@@ -46,8 +47,9 @@
             // Example: Clicking on item in the list group will send the values back
             document.querySelectorAll('.table a').forEach((el) => {
                 el.onclick = () => {
-                    const url = el.project.url // we need URL
-                    const value = el.project.id // and visible value
+                    const url = $(el).data("project-url");
+                    const value = $(el).data("project-id");
+                    console.log(url, value);
 
                     // DSW Widget: Send the values back to the DSW
                     dswWidget.send(value, url)
