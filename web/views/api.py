@@ -138,7 +138,7 @@ def datasets(request):
     if 'project_title' in request.GET:
         project_title = request.GET.get('project_title', '')
         objects = objects.filter(project__title__iexact=project_title)
-    exporter = DatasetsExporter(objects)
+    exporter = DatasetsExporter(objects=objects)
 
     try:
         buffer = exporter.export_to_buffer(StringIO())
@@ -197,7 +197,7 @@ def projects(request):
         project_id = request.GET.get('project_id', '')
         objects = objects.filter(id=project_id)
 
-    exporter = ProjectsExporter(objects)
+    exporter = ProjectsExporter(objects=objects)
 
     try:
         buffer = exporter.export_to_buffer(StringIO())
