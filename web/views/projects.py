@@ -22,7 +22,7 @@ from . import facet_view_utils
 
 FACET_FIELDS = settings.FACET_FIELDS['project']
 from core.models.utils import COMPANY
-
+from django.urls import reverse
 
 class ProjectListView(ListView):
     model = Project
@@ -290,5 +290,8 @@ def dsw_list_projects(request):
     objects = Project.objects.filter(local_custodians=request.user) | Project.objects.filter(company_personnel=request.user)
     objects = objects.filter(is_published=True)
     return render(request, 'integrations/dsw/projects.html', {
-        'projects': [project.title for project in objects],
+        'projects': [{'url': reverse('project', args=[str(project.id)]),
+                      'acronym':project.acronym,
+                      'title':project.title,
+                      'id':project.id} for project in objects],
     })
