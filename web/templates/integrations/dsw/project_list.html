@@ -39,7 +39,7 @@
     <script src="{% static 'vendor/node_modules/@ds-wizard/integration-widget-sdk/lib/index.js' %}"></script>
     <script>
         // DSW Widget: Instantiate the widget
-        const dswWidget = new DSWIntegrationWidget({{ 'dsw_origin' }})
+        const dswWidget = new DSWIntegrationWidget('{{ dsw_origin }}');
 
         // DSW Widget: Wait for the initialzation
         dswWidget.init().then(() => {

@@ -289,7 +289,7 @@ def dsw_list_projects(request):
     #     objects = Project.objects.all().filter(is_published=True)
     objects = (Project.objects.filter(local_custodians=request.user, is_published=True) | Project.objects.filter(company_personnel=request.user, is_published=True)).distinct()
     return render(request, 'integrations/dsw/project_list.html', {
-        'dsw_origin': settings.DSW_ORIGIN,
+        'dsw_origin': getattr(settings, 'DSW_ORIGIN', 'localhost'),
         'projects': [{'url': reverse('project', args=[str(project.id)]),
                       'acronym':project.acronym,
                       'title':project.title,
