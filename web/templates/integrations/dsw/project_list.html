@@ -3,10 +3,11 @@
 
 {% block content %}
 
-{% if projects|length > 0 %}
+{% if projects %}
     <div class="row mt-4">
         <div class="jumbotron col">
-            <h1 class="display-4">Daisy Projects:</h1>
+            <h1 class="display-4">DAISY projects</h1>
+            You're enlisted as a local custodian or a personnel in:
         </div>
     </div>
 
@@ -18,8 +19,8 @@
                         <thead>
                           <tr>
                             <th scope="col">ID</th>
-                            <th scope="col">Acronym</th>
-                            <th scope="col">Title</th>
+                            <th scope="col">Project's acronym</th>
+                            <th scope="col">Title (click to choose)</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -34,6 +35,7 @@
             </div>
         </div>
     </div>
+    <script src="{% static 'vendor/node_modules/@ds-wizard/integration-widget-sdk/lib/index.js' %}"></script>
     <script>
         // DSW Widget: Instantiate the widget
         const dswWidget = new DSWIntegrationWidget('localhost')
@@ -59,7 +61,14 @@
 {% else %}
     <div class="row mt-4">
         <div class="jumbotron col">
-            <h1 class="display-4">There are no published projects in Daisy for which you are local custodian or personnel!</h1>
+            <h1 class="display-4">
+                We are sorry! <br />
+                <small>There are no <strong>published</strong> projects in Daisy for which you are local custodian or personnel.</small>
+            </h1>
+            <hr /> 
+            <p>
+                Please ask your Data Steward in case you believe you should see some projects here. <br />It might have happened that the Projects were not published yet, too.
+            </p>
         </div>
     </div>
 {% endif %}
