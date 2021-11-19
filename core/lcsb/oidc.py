@@ -122,7 +122,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             email = user_to_be.get('email')
             oidc_id = user_to_be.get('id'), 
             username = user_to_be.get('username')
-            new_contact = Contact(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name, contact_type=contact_type)
+            new_contact = Contact(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name, type=contact_type)
             new_contact.save()
             new_contact.partners.add(partner)
             new_contact.save()
