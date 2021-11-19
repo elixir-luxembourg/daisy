@@ -72,7 +72,7 @@ class KeycloakSynchronizationMethod(AccountSynchronizationMethod):
                 'email': user.get('email', 'EMAIL_MISSING'),
                 'first_name': user.get('firstName', 'FIRST_NAME_MISSING'),
                 'last_name': user.get('lastName', 'FIRST_NAME_MISSING'),
-                'username': user.get('email')
+                'username': user.get('email', 'EMAIL_MISSING')
             } for user in keycloak_response if user.get('email', None) is not None
         ]
 
@@ -91,13 +91,15 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
     def synchronize(self) -> None:
         """This will fetch the accounts from external source and use them to synchronize DAISY accounts"""
         self.current_external_accounts = self.synchronizer.get_list_of_users()
-        accounts_to_be_created, accounts_to_be_patched = self.compare()
+        accounts_to_be_created, accounts_to_be_patched, contacts_to_be_patched = self.compare()
         self._add_users(accounts_to_be_created)
         self._patch_users(accounts_to_be_patched)
+        self._patch_contacts(contacts_to_be_patched)
 
-    def compare(self) -> Tuple[list, list]:
+    def compare(self) -> Tuple[list, list, list]:
         to_be_created = []
         to_be_patched = []
+        contacts_to_be_patched = []
         for external_account in self.current_external_accounts:
             if external_account.get('email', None) is None:
                 logger.debug('Received a record about a User without email from Keycloak')
@@ -108,9 +110,13 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             elif count_of_users > 1:
                 raise AccountSynchronizationException(f"There is more than 1 account with such an email: {external_account.get('email')}")
             elif count_of_users == 0:
-                to_be_created.append(external_account)
-        logger.debug('Detected ' + str(len(to_be_created)) + ' account(s) that are not existing in DAISY, and ' + str(len(to_be_patched)) + ' account(s) that need patching.')
-        return to_be_created, to_be_patched
+                count_of_contacts = Contact.objects.filter(email=external_account.get('email')).count()
+                if count_of_contacts == 1:
+                    contacts_to_be_patched.append(external_account)
+                else:                    
+                    to_be_created.append(external_account)
+        logger.debug('Detected ' + str(len(to_be_created)) + ' account(s) that are not existing in DAISY, and ' + str(len(to_be_patched)) + ' user account(s) that need patching, and ' + str(len(contacts_to_be_patched)) + ' contact account(s) that need patching.')
+        return to_be_created, to_be_patched, contacts_to_be_patched
 
     def _add_users(self, list_of_users: List[Dict]):
         if len(list_of_users):
@@ -120,7 +126,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             first_name = user_to_be.get('first_name', '-')
             last_name = user_to_be.get('last_name', '-')
             email = user_to_be.get('email')
-            oidc_id = user_to_be.get('id'), 
+            oidc_id = user_to_be.get('id').replace(',', '').replace('(', '').replace(')', '').replace("'", ''), 
             username = user_to_be.get('username')
             new_contact = Contact(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name, type=contact_type)
             new_contact.save()
@@ -136,8 +142,8 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             existing_user = User.objects.get(email=new_user_info.get('email'))
             email = new_user_info.get('email')
             previous_value = existing_user.oidc_id
-            new_value = new_user_info.get('id')
-            logger.debug(f'Patching the OIDC_ID of the user: {email} - {previous_value} => {new_value}')
+            new_value = new_user_info.get('id').replace(',', '').replace('(', '').replace(')', '').replace("'", ''), 
+            logger.debug(f'Patching the OIDC_ID of the User: {email} - {previous_value} => {new_value}')
             # Update just OIDC ID
             existing_user.oidc_id = new_user_info.get('id')
             # Don't actually patch these features
@@ -146,6 +152,18 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             # existing_user.last_name = new_user_info.get('last_name')
             existing_user.save()
         logger.debug('Updated ' + str(len(list_of_users)) + ' user entry(entries)')
+
+    def _patch_contacts(self, list_of_users: List[Dict]):
+        for new_user_info in list_of_users:
+            existing_contact = Contact.objects.get(email=new_user_info.get('email'))
+            email = new_user_info.get('email')
+            previous_value = existing_contact.oidc_id
+            new_value = new_user_info.get('id').replace(',', '').replace('(', '').replace(')', '').replace("'", ''), 
+            logger.debug(f'Patching the OIDC_ID of the Contact: {email} - {previous_value} => {new_value}')
+            # Update just OIDC ID
+            existing_contact.oidc_id = new_user_info.get('id')
+            existing_contact.save()
+        logger.debug('Updated ' + str(len(list_of_users)) + ' Contact entry(entries)')        
 
 
 class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
