@@ -214,6 +214,13 @@ def force_keycloak_synchronization(request) -> JsonResponse:
 @protect_with_api_key
 def permissions(request, user_oidc_id: str) -> JsonResponse:
     try:
+        logger.debug('Refreshing the account information from Keycloak...')
+        synchronizer.synchronize()
+        logger.debug('...successfully refreshed the information from Keycloak!')
+    except Exception as ex:
+        return JsonResponse('Something went wrong during Keycloak accounts synchronization: ' + str(ex), status=500, safe=False)
+
+    try:
         user = User.objects.get(oidc_id=user_oidc_id)
         permissions = user.get_access_permissions()
         return JsonResponse(permissions, status=200, safe=False)
