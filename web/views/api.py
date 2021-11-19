@@ -18,13 +18,12 @@ from stronghold.decorators import public
 from core.importer.datasets_exporter import DatasetsExporter
 from core.importer.projects_exporter import ProjectsExporter
 from core.lcsb.rems import handle_rems_callback
+from core.lcsb.rems import synchronizer
 from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm, Contact
 from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneTerm
 from core.utils import DaisyLogger
 from elixir_daisy import settings
 from web.views.utils import get_client_ip
-
-
 
 
 logger = DaisyLogger(__name__)
@@ -197,6 +196,18 @@ def rems_endpoint(request):
         logger.debug(str(ex))
         return create_error_response(message, {'more': str(ex)})
 
+
+@public
+@csrf_exempt
+@protect_with_api_key
+def force_keycloak_synchronization(request) -> JsonResponse:
+    try:
+        logger.debug('Forcing refreshing the account information from Keycloak...')
+        synchronizer.synchronize()
+        logger.debug('...successfully refreshed the information from Keycloak!')
+        return JsonResponse('OK', status=200, safe=False)
+    except Exception as ex:
+        return JsonResponse('Something went wrong: ' + str(ex), status=500, safe=False)
 
 @public
 @csrf_exempt

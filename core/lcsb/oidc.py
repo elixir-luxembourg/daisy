@@ -3,9 +3,12 @@ import json
 from typing import Dict, List, Tuple
 
 from django.conf import settings
+from core.models.contact_type import ContactType
 from core.utils import DaisyLogger
 from keycloak import KeycloakAdmin
 
+from core.models.contact import Contact
+from core.models.partner import Partner
 from core.models.user import User
 from core.synchronizers import AccountSynchronizationException, AccountSynchronizationMethod, AccountSynchronizer
 
@@ -110,14 +113,19 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
         return to_be_created, to_be_patched
 
     def _add_users(self, list_of_users: List[Dict]):
+        if len(list_of_users):
+            contact_type, _ = ContactType.objects.get_or_create(name='Other')
+            partner, _ = Partner.objects.get_or_create(acronym='Imported from Keycloak', name='Imported from Keycloak')
         for user_to_be in list_of_users:
             first_name = user_to_be.get('first_name', '-')
             last_name = user_to_be.get('last_name', '-')
             email = user_to_be.get('email')
             oidc_id = user_to_be.get('id'), 
             username = user_to_be.get('username')
-            new_user = User(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name, username=username, password='this won''t work')
-            new_user.save()
+            new_contact = Contact(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name, contact_type=contact_type)
+            new_contact.save()
+            new_contact.partners.add(partner)
+            new_contact.save()
         if len(list_of_users) > 0:
             logger.debug('Added ' + str(len(list_of_users)) + ' new user entries:')
         for user_to_be in list_of_users:

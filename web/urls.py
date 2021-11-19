@@ -42,6 +42,7 @@ web_urls = [
     # API urls
     path('api/cohorts', api.cohorts, name="api_cohorts"),
     path('api/datasets', api.datasets, name="api_datasets"),
+    path('api/keycloak/force', api.force_keycloak_synchronization, name='api_keycloak_force'),
     path('api/partners', api.partners, name="api_partners"),
     path('api/permissions/<str:user_oidc_id>', api.permissions, name='api_permissions'),
     path('api/projects', api.projects, name="api_projects"),
