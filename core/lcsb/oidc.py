@@ -127,15 +127,17 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             new_contact.partners.add(partner)
             new_contact.save()
         if len(list_of_users) > 0:
-            logger.debug('Added ' + str(len(list_of_users)) + ' new user entries:')
+            logger.debug('Added ' + str(len(list_of_users)) + ' new Contact entries:')
         for user_to_be in list_of_users:
-            logger.debug('OIDC_ID = ' + user_to_be.get('id'))
+            logger.debug('OIDC_ID = ' + user_to_be.get('id') + ' => ' + user_to_be.get('email'))
 
     def _patch_users(self, list_of_users: List[Dict]):
-        logger.debug(str(list_of_users))
         for new_user_info in list_of_users:
             existing_user = User.objects.get(email=new_user_info.get('email'))
-            logger.debug('Patching the OIDC_ID of the user: ' + new_user_info.get('email'))
+            email = new_user_info.get('email')
+            previous_value = existing_user.oidc_id
+            new_value = new_user_info.get('id')
+            logger.debug(f'Patching the OIDC_ID of the user: {email} - {previous_value} => {new_value}')
             # Update just OIDC ID
             existing_user.oidc_id = new_user_info.get('id')
             # Don't actually patch these features
