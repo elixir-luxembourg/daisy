@@ -5,6 +5,7 @@ from typing import Dict, List
 from core.models import User
 from core.lcsb.oidc import KeycloakAccountSynchronizer, KeycloakSynchronizationMethod
 from core.lcsb.rems import create_rems_entitlement
+from core.models.contact import Contact
 from test.factories import DatasetFactory, UserFactory
 
 
@@ -96,17 +97,18 @@ def test_keycloak_synchronization():
 
     current_external_accounts = mock.get_list_of_users()
     synchronizer.current_external_accounts = current_external_accounts
-    accounts_to_be_created, accounts_to_be_patched = synchronizer.compare()
+    accounts_to_be_created, accounts_to_be_patched, contacts_to_be_patched = synchronizer.compare()
 
     assert len(accounts_to_be_created) == 2, "There should be 2 new accounts to be added" 
     assert len(accounts_to_be_patched) == 0, "There should be no accounts to be patched"
+    assert len(contacts_to_be_patched) == 0, "There should be no contacts to be patched"
     
-    user_count = User.objects.count()
+    contact_count = Contact.objects.count()
     synchronizer._add_users(accounts_to_be_created)
     synchronizer._patch_users(accounts_to_be_patched)
-    new_user_count = User.objects.count()
+    new_contact_count = Contact.objects.count()
 
-    assert user_count + 2 == new_user_count
+    assert contact_count + 2 == new_contact_count
 
 def test_add_rems_entitlements():
     elu_accession='12345678'
