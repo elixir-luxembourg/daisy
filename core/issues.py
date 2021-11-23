@@ -24,9 +24,6 @@ def find_issues_in_dataset(dataset: Dataset) -> List[Issue]:
     issues = []
     local_url = reverse('dataset', args=[str(dataset.id)])
     url = get_absolute_uri(local_url)
-    
-    if dataset.legal_basis_definitions.count() == 0:
-        issues.append(Issue(url, '[D-1]', 'Missing legal bases for a dataset', dataset.title))
 
     if dataset.data_declarations.count() == 0:
         issues.append(Issue(url, '[D-2]', 'No data declarations for a dataset', dataset.title))
@@ -48,16 +45,17 @@ def find_issues_in_project(project: Project) -> List[Issue]:
     url = get_absolute_uri(local_url)
 
     if project.datasets.count() == 0:
-        issues.append(Issue(url, '[P-1]', 'No dataset in a project', project.acronym))
+        issues.append(Issue(url, '[P-1]', 'No datasets in a project', project.acronym))
 
-    if project.has_erp == False and len(project.erp_notes) == 0:
-        issues.append(Issue(url, '[P-2]', 'No ERP approval and no ERP notes', project.acronym))
+    if not project.has_erp and not project.has_cner:
+        if not project.cner_notes and not project.erp_notes:
+            issues.append(Issue(url, '[P-2]', 'Project ethical review status is missing', project.acronym))
 
     #If a project is marked as having Ethics,a document of type ethics approval should be uploaded
-    if project.has_erp:
+    if project.has_erp | project.has_cner:
         ethics_approval_docs = project.legal_documents.all().filter(domain_type = 'ethics_approval')
         if len(ethics_approval_docs) < 1:
-            issues.append(Issue(url, '[P-3]', 'Projet has an ERP approval but ethics approval document is not uploaded', project.acronym))
+            issues.append(Issue(url, '[P-3]', 'Project marked to have ethics approval(s) but no document attachment is provided', project.acronym))
 
     # Does the project have a data classification and a DPIA attachment.
     dpia_docs = project.legal_documents.all().filter(domain_type = 'data_protection_impact_assessment')

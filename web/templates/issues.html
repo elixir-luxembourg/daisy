@@ -6,7 +6,7 @@
 {% if issues|length > 0 %}
     <div class="row mt-4">
         <div class="jumbotron col">
-            <h1 class="display-4">Current issues</h1>
+            <h1 class="display-4">DAISY identified the following issues:</h1>
         </div>
     </div>
 
@@ -30,7 +30,7 @@
                             <td>{{ issue.code }}</td>
                             <td><strong>{{ issue.description }}</strong></td>
                             <td><a href="{{ issue.url }}">{{ issue.object_title }}</a></td>
-                            <td><a class="btn btn-secondary btn-outline" href="{{ issue.url }}">Fix</a></td>
+                            <td><a class="btn btn-secondary btn-outline" href="{{ issue.url }}">View record in DAISY</a></td>
                           </tr>{% endfor %}
                         </tbody>
                       </table>
@@ -43,7 +43,7 @@
 {% else %}
     <div class="row mt-4">
         <div class="jumbotron col">
-            <h1 class="display-4">No issues found!</h1>
+            <h1 class="display-4">No issues with your entities found!</h1>
         </div>
     </div>
 {% endif %}

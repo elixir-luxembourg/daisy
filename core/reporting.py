@@ -1,6 +1,6 @@
 from functools import reduce
 from operator import concat
-from typing import List, Type, Union
+from typing import List, Tuple, Type, Union
 
 from django.conf import settings
 from django.db.models import Model
@@ -119,7 +119,7 @@ class ReportRenderer:
 def get_users_to_receive_emails(force=False) -> List[User]:
     should_continue = getattr(settings, 'EMAIL_REPORTS_ENABLED', False)
     if force or should_continue:
-        return User.objects.filter(email__contains='@')
+        return User.objects.filter(email__contains='@', should_receive_email_reports=True)
     else:
         return []
 
@@ -129,10 +129,14 @@ def generate_and_send_reports(force=False) -> None:
     for user in list_of_users:
         generate_and_send_report_to(user)
 
-def generate_and_send_report_to(user: User) -> None:
+def generate_reports_for(user: User) -> Tuple[str, str]:
     report_params = ReportParametersCollector.generate_for_user(user)
     html_contents = ReportRenderer(report_params).render_html()
     txt_contents = ReportRenderer(report_params).render_txt()
+    return html_contents, txt_contents
+
+def generate_and_send_report_to(user: User) -> None:
+    html_contents, txt_contents = generate_reports_for(user)
     send_the_email(
         settings.EMAIL_DONOTREPLY,
         user.email,

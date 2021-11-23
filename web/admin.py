@@ -158,7 +158,7 @@ class UserAdmin(BaseUserAdmin):
 
     # Sections in the Edit page
     fieldsets = (
-        (None, {'fields': ('username', 'email', 'password', 'is_active', 'source')}),
+        (None, {'fields': ('username', 'email', 'password', 'is_active', 'should_receive_email_reports', 'source')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'full_name', 'oidc_id')}),
         ('Permissions', {'fields': ('is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Additional metdata', {'fields': ('date_joined', 'last_login', 'api_key')}),
