@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
@@ -119,3 +121,26 @@ class Access(CoreModel):
     @property
     def display_locations(self):
         return "\n".join([ str(loc) for loc in self.defined_on_locations.all()])
+
+    @classmethod
+    def find_for_user(cls, user):
+        accesses = cls.objects.filter(user=user, dataset__is_published=True)
+        return cls._filter_expired(accesses)
+
+    @classmethod
+    def find_for_contact(cls, contact):
+        accesses = cls.objects.filter(contact=contact, dataset__is_published=True)
+        return cls._filter_expired(accesses)
+        
+    @staticmethod
+    def _filter_expired(accesses):
+        # The ones that are not expired yet
+        non_expired_accesses = accesses.filter(grant_expires_on__gte=datetime.now())
+        non_expired_accesses_names = [access.dataset.elu_accession for access in non_expired_accesses]
+
+        # The ones that don't have the expiration date
+        accesses_without_expiration = accesses.filter(grant_expires_on__isnull=True)
+        accesses_without_expiration_names = [access.dataset.elu_accession for access in accesses_without_expiration]
+
+        # Remove the duplicates
+        return list(set(non_expired_accesses_names + accesses_without_expiration_names))

@@ -214,17 +214,7 @@ class User(AbstractUser):
         """
         Finds Accesses of the user, and returns a list of their dataset IDs 
         """
-        accesses = Access.objects.filter(user=self, dataset__is_published=True)
-
-        # The ones that did not expire
-        non_expired_accesses = accesses.filter(grant_expires_on__gte=datetime.now())
-        non_expired_accesses_names = [access.dataset.elu_accession for access in non_expired_accesses]
-
-        # The ones that expire
-        accesses_without_expiration = accesses.filter(grant_expires_on__isnull=True)
-        accesses_without_expiration_names = [access.dataset.elu_accession for access in accesses_without_expiration]
-
-        return list(set(non_expired_accesses_names + accesses_without_expiration_names))  # remove duplicates
+        return Access.find_for_user(self)
 
     @classmethod
     def find_user_by_email_or_oidc_id(cls, email, oidc_id, method):

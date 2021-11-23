@@ -139,15 +139,5 @@ class Contact(CoreModel):
         """
         Finds Accesses of the user, and returns a list of their dataset IDs 
         """
-        # TODO: This code is duplicated in core/models/User.py
-        accesses = Access.objects.filter(contact=self, dataset__is_published=True)
-
-        # The ones that did not expire
-        non_expired_accesses = accesses.filter(grant_expires_on__gte=datetime.now())
-        non_expired_accesses_names = [access.dataset.elu_accession for access in non_expired_accesses]
-
-        # The ones that expire
-        accesses_without_expiration = accesses.filter(grant_expires_on__isnull=True)
-        accesses_without_expiration_names = [access.dataset.elu_accession for access in accesses_without_expiration]
-
-        return list(set(non_expired_accesses_names + accesses_without_expiration_names))  # remove duplicates
+        return Access.find_for_contact(self)
+        

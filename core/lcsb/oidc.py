@@ -91,14 +91,14 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
     def synchronize(self) -> None:
         """This will fetch the accounts from external source and use them to synchronize DAISY accounts"""
         self.current_external_accounts = self.synchronizer.get_list_of_users()
-        accounts_to_be_created, accounts_to_be_patched, contacts_to_be_patched = self.compare()
-        self._add_users(accounts_to_be_created)
-        self._patch_users(accounts_to_be_patched)
+        contacts_to_be_created, users_to_be_patched, contacts_to_be_patched = self.compare()
+        self._add_contacts(contacts_to_be_created)
+        self._patch_users(users_to_be_patched)
         self._patch_contacts(contacts_to_be_patched)
 
     def compare(self) -> Tuple[list, list, list]:
-        to_be_created = []
-        to_be_patched = []
+        contacts_to_be_created = []
+        users_to_be_patched = []
         contacts_to_be_patched = []
         for external_account in self.current_external_accounts:
             if external_account.get('email', None) is None:
@@ -106,36 +106,38 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             count_of_users = User.objects.filter(email=external_account.get('email')).count()
             if count_of_users == 1:
                 User.objects.filter(email=external_account.get('email')).count()
-                to_be_patched.append(external_account)
+                users_to_be_patched.append(external_account)
             elif count_of_users > 1:
-                raise AccountSynchronizationException(f"There is more than 1 account with such an email: {external_account.get('email')}")
+                raise AccountSynchronizationException(f"There is more than 1 User account with such an email: {external_account.get('email')}")
             elif count_of_users == 0:
                 count_of_contacts = Contact.objects.filter(email=external_account.get('email')).count()
                 if count_of_contacts == 1:
                     contacts_to_be_patched.append(external_account)
+                elif count_of_contacts > 1:
+                    raise AccountSynchronizationException(f"There is more than 1 Contact with such an email: {external_account.get('email')}")
                 else:                    
-                    to_be_created.append(external_account)
-        logger.debug('Detected ' + str(len(to_be_created)) + ' account(s) that are not existing in DAISY, and ' + str(len(to_be_patched)) + ' user account(s) that need patching, and ' + str(len(contacts_to_be_patched)) + ' contact account(s) that need patching.')
-        return to_be_created, to_be_patched, contacts_to_be_patched
+                    contacts_to_be_created.append(external_account)
+        logger.debug('Detected ' + str(len(contacts_to_be_created)) + ' contact(s) that are not existing in DAISY, and ' + str(len(users_to_be_patched)) + ' user account(s) that need patching, and ' + str(len(contacts_to_be_patched)) + ' contact account(s) that need patching.')
+        return contacts_to_be_created, users_to_be_patched, contacts_to_be_patched
 
-    def _add_users(self, list_of_users: List[Dict]):
+    def _add_contacts(self, list_of_users: List[Dict]):
         if len(list_of_users):
             contact_type, _ = ContactType.objects.get_or_create(name='Other')
             partner, _ = Partner.objects.get_or_create(acronym='Imported from Keycloak', name='Imported from Keycloak')
-        for user_to_be in list_of_users:
-            first_name = user_to_be.get('first_name', '-')
-            last_name = user_to_be.get('last_name', '-')
-            email = user_to_be.get('email')
-            oidc_id = user_to_be.get('id').replace(',', '').replace('(', '').replace(')', '').replace("'", ''), 
-            username = user_to_be.get('username')
+        for contact_to_be in list_of_users:
+            first_name = contact_to_be.get('first_name', '-')
+            last_name = contact_to_be.get('last_name', '-')
+            email = contact_to_be.get('email')
+            oidc_id = contact_to_be.get('id').replace(',', '').replace('(', '').replace(')', '').replace("'", ''), 
+            username = contact_to_be.get('username')
             new_contact = Contact(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name, type=contact_type)
             new_contact.save()
             new_contact.partners.add(partner)
             new_contact.save()
         if len(list_of_users) > 0:
             logger.debug('Added ' + str(len(list_of_users)) + ' new Contact entries:')
-        for user_to_be in list_of_users:
-            logger.debug('OIDC_ID = ' + user_to_be.get('id') + ' => ' + user_to_be.get('email'))
+        for contact_to_be in list_of_users:
+            logger.debug('OIDC_ID = ' + contact_to_be.get('id') + ' => ' + contact_to_be.get('email'))
 
     def _patch_users(self, list_of_users: List[Dict]):
         for new_user_info in list_of_users:

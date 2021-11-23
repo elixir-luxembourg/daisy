@@ -104,7 +104,7 @@ def test_keycloak_synchronization():
     assert len(contacts_to_be_patched) == 0, "There should be no contacts to be patched"
     
     contact_count = Contact.objects.count()
-    synchronizer._add_users(accounts_to_be_created)
+    synchronizer._add_contacts(accounts_to_be_created)
     synchronizer._patch_users(accounts_to_be_patched)
     new_contact_count = Contact.objects.count()
 

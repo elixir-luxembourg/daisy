@@ -221,7 +221,7 @@ def permissions(request, user_oidc_id: str) -> JsonResponse:
         logger.debug('Permission API endpoint called, no User found. Will try to find a Contact instead')
         pass
     except Exception as e:
-        logger.debug('Something went wrong during exporting the permissions')
+        logger.debug('Something went wrong during exporting the permissions:')
         logger.debug(str(e))
         return create_error_response(
             'Something went wrong during exporting the permissions',
@@ -240,7 +240,7 @@ def permissions(request, user_oidc_id: str) -> JsonResponse:
             status=404
         )
     except Exception as e:
-        logger.debug('Something went wrong during exporting the permissions')
+        logger.debug('Something went wrong during exporting the permissions:')
         logger.debug(str(e))
         return create_error_response(
             'Something went wrong during exporting the permissions',
