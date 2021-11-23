@@ -23,7 +23,7 @@ from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm, Co
 from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneTerm
 from core.utils import DaisyLogger
 from elixir_daisy import settings
-from web.views.utils import get_client_ip
+from web.views.utils import get_client_ip, get_user_or_contact_by_oidc_id
 
 
 logger = DaisyLogger(__name__)
@@ -213,13 +213,23 @@ def force_keycloak_synchronization(request) -> JsonResponse:
 @csrf_exempt
 @protect_with_api_key
 def permissions(request, user_oidc_id: str) -> JsonResponse:
+    user_found, contact_found, user, contact = get_user_or_contact_by_oidc_id(user_oidc_id)
+    logger.debug('Permission API endpoint called:   Found User: ' + str(user_found) + ', found Contact: ' + str(contact_found))
+
+    if not user_found and not contact_found:
+        logger.debug('Will attempt to synchronize')
+        synchronizer.synchronize()
+
+        user_found, contact_found, user, contact = get_user_or_contact_by_oidc_id(user_oidc_id)
+        logger.debug('Permissions API endpoint:   Found User: ' + str(user_found) + ', found Contact: ' + str(contact_found))
+ 
     try:
-        user = User.objects.get(oidc_id=user_oidc_id)
-        permissions = user.get_access_permissions()
-        return JsonResponse(permissions, status=200, safe=False)
-    except User.DoesNotExist as e:
-        logger.debug('Permission API endpoint called, no User found. Will try to find a Contact instead')
-        pass
+        if user:
+            permissions = user.get_access_permissions()
+            return JsonResponse(permissions, status=200, safe=False)
+        elif contact:
+            permissions = contact.get_access_permissions()
+            return JsonResponse(permissions, status=200, safe=False)
     except Exception as e:
         logger.debug('Something went wrong during exporting the permissions:')
         logger.debug(str(e))
@@ -228,21 +238,8 @@ def permissions(request, user_oidc_id: str) -> JsonResponse:
             {'more': str(e)}
         )
 
-    try:
-        contact = Contact.objects.get(oidc_id=user_oidc_id)
-        logger.debug('...found the Contact!')
-        permissions = contact.get_access_permissions()
-        return JsonResponse(permissions, status=200, safe=False)
-    except Contact.DoesNotExist as e:
-        logger.debug('Permission API endpoint called, no Contact found, too')
-        return create_error_response(
-            'No User nor Contact with such OIDC_ID was found',
-            status=404
-        )
-    except Exception as e:
-        logger.debug('Something went wrong during exporting the permissions:')
-        logger.debug(str(e))
-        return create_error_response(
-            'Something went wrong during exporting the permissions',
-            {'more': str(e)}
-        )
+    logger.debug('No contact nor user found!')
+    return create_error_response(
+        'No User nor Contact with such OIDC_ID was found',
+        status=404
+    )

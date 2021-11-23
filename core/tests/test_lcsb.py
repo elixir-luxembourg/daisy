@@ -5,8 +5,10 @@ from typing import Dict, List
 from core.models import User
 from core.lcsb.oidc import KeycloakAccountSynchronizer, KeycloakSynchronizationMethod
 from core.lcsb.rems import create_rems_entitlement
+from core.models.access import Access
 from core.models.contact import Contact
-from test.factories import DatasetFactory, UserFactory
+from test.factories import ContactFactory, DatasetFactory, UserFactory
+from web.views.utils import get_user_or_contact_by_oidc_id
 
 
 class KeycloakAdminConnectionMock:
@@ -121,3 +123,45 @@ def test_add_rems_entitlements():
 
     create_rems_entitlement(user, 'Test Application', elu_accession, user.oidc_id, user.email)
     user.delete()
+
+def test_permissions():
+    user = UserFactory(oidc_id='12345')
+    user.save()
+
+    user2 = UserFactory(oidc_id='23456')
+    user2.save()
+
+    contact = ContactFactory()
+    contact.save()
+
+    dataset = DatasetFactory(title='Test', local_custodians=[user], elu_accession='123', is_published=True)
+    dataset.save()
+
+    access = Access(access_notes='Access contact', contact=contact, dataset=dataset)
+    access.save()
+
+    access2 = Access(access_notes='Access user', user=user, dataset=dataset)
+    access2.save()
+    
+    assert '123' in user.get_access_permissions()
+    assert '123' in contact.get_access_permissions()
+    assert len(user2.get_access_permissions()) == 0
+
+def test_get_user_or_contact_by_oidc_id():
+    user_found, contact_found, user, contact = get_user_or_contact_by_oidc_id('0')
+    assert not user_found
+    assert not contact_found
+
+    user = UserFactory(oidc_id='123456')
+    user.save()
+
+    user_found, contact_found, user, contact = get_user_or_contact_by_oidc_id('123456')
+    assert user_found
+    assert not contact_found
+
+    contact = ContactFactory(oidc_id='98765')
+    contact.save()
+
+    user_found, contact_found, user, contact = get_user_or_contact_by_oidc_id('98765')
+    assert not user_found
+    assert contact_found

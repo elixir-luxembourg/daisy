@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
@@ -210,7 +211,7 @@ class User(AbstractUser):
         """
         return ContractChecker(self).check(constants.Permissions.EDIT, contract)
 
-    def get_access_permissions(self):
+    def get_access_permissions(self) -> List[str]:
         """
         Finds Accesses of the user, and returns a list of their dataset IDs 
         """

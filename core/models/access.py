@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -123,17 +124,17 @@ class Access(CoreModel):
         return "\n".join([ str(loc) for loc in self.defined_on_locations.all()])
 
     @classmethod
-    def find_for_user(cls, user):
+    def find_for_user(cls, user) -> List[str]:
         accesses = cls.objects.filter(user=user, dataset__is_published=True)
         return cls._filter_expired(accesses)
 
     @classmethod
-    def find_for_contact(cls, contact):
+    def find_for_contact(cls, contact) -> List[str]:
         accesses = cls.objects.filter(contact=contact, dataset__is_published=True)
         return cls._filter_expired(accesses)
         
     @staticmethod
-    def _filter_expired(accesses):
+    def _filter_expired(accesses) -> List[str]:
         # The ones that are not expired yet
         non_expired_accesses = accesses.filter(grant_expires_on__gte=datetime.now())
         non_expired_accesses_names = [access.dataset.elu_accession for access in non_expired_accesses]
