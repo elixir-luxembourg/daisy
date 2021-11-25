@@ -185,14 +185,15 @@ class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
         self.current_external_accounts = self.synchronizer.get_list_of_users()
 
         if self._cached_external_accounts is None or self._did_something_change():
-            accounts_to_be_created, accounts_to_be_patched = self.compare()
+            contacts_to_be_created, users_to_be_patched, contacts_to_be_patched = self.compare()
             logger.debug('Keycloak Synchronization - (1/3) ...compared the accounts...')
 
-            self._add_users(accounts_to_be_created)
-            logger.debug('Keycloak Synchronization - (2/3) ...added the users...')
+            self._add_contacts(contacts_to_be_created)
+            logger.debug('Keycloak Synchronization - (2/3) ...added the contacts...')
             
-            self._patch_users(accounts_to_be_patched)
-            logger.debug('Keycloak Synchronization - (3/3) ...patched the accounts. Finished!')
+            self._patch_users(users_to_be_patched)
+            self._patch_contacts(contacts_to_be_patched)
+            logger.debug('Keycloak Synchronization - (3/3) ...patched the user accounts and contacts. Finished!')
         else:
             logger.debug('Keycloak Synchronization - ...Skipping the keycloak account synchronization pass, no changes detected')
 

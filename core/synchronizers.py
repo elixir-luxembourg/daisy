@@ -77,8 +77,8 @@ class DummyAccountSynchronizer(AccountSynchronizer):
     def test_connection(self):
         return True
 
-    def compare(self) -> Tuple[List, List]:
-        return [], []
+    def compare(self) -> Tuple[List, List, List]:
+        return [], [], []
 
     def synchronize(self) -> bool:
         return True
