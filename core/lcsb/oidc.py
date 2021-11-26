@@ -147,7 +147,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             new_value = new_user_info.get('id').replace(',', '').replace('(', '').replace(')', '').replace("'", ''), 
             logger.debug(f'Patching the OIDC_ID of the User: {email} - {previous_value} => {new_value}')
             # Update just OIDC ID
-            existing_user.oidc_id = new_user_info.get('id')
+            existing_user.oidc_id = new_value
             # Don't actually patch these features
             # existing_user.email = new_user_info.get('email')
             # existing_user.first_name = new_user_info.get('first_name')
