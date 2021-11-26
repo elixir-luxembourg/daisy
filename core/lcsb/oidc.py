@@ -129,7 +129,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             first_name = contact_to_be.get('first_name', '-')
             last_name = contact_to_be.get('last_name', '-')
             email = contact_to_be.get('email')
-            oidc_id = contact_to_be.get('id'), 
+            oidc_id = contact_to_be.get('id')
             username = contact_to_be.get('username')
             new_contact = Contact(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name, type=contact_type)
             new_contact.save()
@@ -146,7 +146,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             existing_user = User.objects.get(email=new_user_info.get('email'))
             email = new_user_info.get('email')
             previous_value = existing_user.oidc_id
-            new_value = new_user_info.get('id'), 
+            new_value = new_user_info.get('id')
             if new_value != previous_value:
                 logger.debug(f'Patching the OIDC_ID of the User: {email} - {previous_value} => {new_value}')
                 # Update just OIDC ID
@@ -165,7 +165,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             existing_contact = Contact.objects.get(email=new_user_info.get('email'))
             email = new_user_info.get('email')
             previous_value = existing_contact.oidc_id
-            new_value = new_user_info.get('id'), 
+            new_value = new_user_info.get('id')
             if previous_value != new_value:
                 logger.debug(f'Patching the OIDC_ID of the Contact: {email} - {previous_value} => {new_value}')
                 # Update just OIDC ID
