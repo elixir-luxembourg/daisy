@@ -5,6 +5,8 @@ Data Information System (DAISY) is a data bookkeeping application designed to he
 
 For more information, please refer to the official [Daisy documentation](https://elixir.pages.uni.lu/daisy-doc/).
 
+DAISY was published as an article [DAISY: A Data Information System for accountability under the General Data Protection Regulation](https://doi.org/10.1093/gigascience/giz140) in GigaScience journal.
+
 ## Demo deployment
 You are encouraged to try Daisy for yourself using our [DEMO deployment](https://daisy-demo.elixir-luxembourg.org/).
 
