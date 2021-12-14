@@ -9,4 +9,4 @@ class Command(ExportBaseCommand):
             self,
             include_unpublished=False
         ):
-        return DatasetsExporter(include_unpublished)
+        return DatasetsExporter(include_unpublished=include_unpublished)
