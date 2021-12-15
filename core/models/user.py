@@ -144,36 +144,38 @@ class User(AbstractUser):
 
     def assign_permissions_to_dataset(self, dataset_object):
         if self.is_part_of(constants.Groups.VIP.value):
-            self._assign_perm(constants.Permissions.PROTECTED.value, self, dataset_object)
             self._assign_perm(constants.Permissions.ADMIN.value, self, dataset_object)
+        self._assign_perm(constants.Permissions.PROTECTED.value, self, dataset_object)
         self._assign_perm(constants.Permissions.DELETE.value, self, dataset_object)
         self._assign_perm(constants.Permissions.EDIT.value, self, dataset_object)
         self._assign_perm(constants.Permissions.VIEW.value, self, dataset_object)
 
     def remove_permissions_to_dataset(self, dataset_object):
         self._remove_perm(constants.Permissions.ADMIN.value, self, dataset_object)
+        self._remove_perm(constants.Permissions.PROTECTED.value, self, dataset_object)
         self._remove_perm(constants.Permissions.DELETE.value, self, dataset_object)
         self._remove_perm(constants.Permissions.EDIT.value, self, dataset_object)
         self._remove_perm(constants.Permissions.VIEW.value, self, dataset_object)
 
     def assign_permissions_to_contract(self, contract):
         if self.is_part_of(constants.Groups.VIP.value):
-            self._assign_perm(constants.Permissions.PROTECTED.value, self, contract)
             self._assign_perm(constants.Permissions.ADMIN.value, self, contract)
+        self._assign_perm(constants.Permissions.PROTECTED.value, self, contract)
         self._assign_perm(constants.Permissions.DELETE.value, self, contract)
         self._assign_perm(constants.Permissions.EDIT.value, self, contract)
         self._assign_perm(constants.Permissions.VIEW.value, self, contract)
 
     def remove_permissions_to_contract(self, contract):
         self._remove_perm(constants.Permissions.ADMIN.value, self, contract)
+        self._remove_perm(constants.Permissions.PROTECTED.value, self, contract)
         self._remove_perm(constants.Permissions.DELETE.value, self, contract)
         self._remove_perm(constants.Permissions.EDIT.value, self, contract)
         self._remove_perm(constants.Permissions.VIEW.value, self, contract)
 
     def assign_permissions_to_project(self, project_object):
         if self.is_part_of(constants.Groups.VIP.value):
-            self._assign_perm(constants.Permissions.PROTECTED.value, self, project_object)
             self._assign_perm(constants.Permissions.ADMIN.value, self, project_object)
+        self._assign_perm(constants.Permissions.PROTECTED.value, self, project_object)
         self._assign_perm(constants.Permissions.DELETE.value, self, project_object)
         self._assign_perm(constants.Permissions.EDIT.value, self, project_object)
         self._assign_perm(constants.Permissions.VIEW.value, self, project_object)
