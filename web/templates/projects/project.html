@@ -211,7 +211,6 @@
 
     <div class="row mt-4">
         <div class="card mh-100 card m-2 col">
-
             <div class="card-body">
                 {% if can_edit %}
                 <div class="ml-1 float-right btn-group">
@@ -232,13 +231,15 @@
                     {% endfor %}
                 </ul>
                 {% else %}
-                <p class="text-center text-danger"><br/><em>Project is empty!</em></p>
-                <div class="arrow-click">
-                    <p>Click here to create a dataset</p>
-                    <p class="arrow-right"><i class="material-icons">
-                                arrow_right_alt
-                            </i></p>
-                </div>
+                    {% if can_edit %}
+                    <p class="text-center text-danger mt-4"><br/><em>Project is empty!</em></p>
+                    <div class="arrow-click mt-2">
+                        <p>Click here to create a dataset</p>
+                        <p class="arrow-right"><i class="material-icons">
+                                    arrow_right_alt
+                                </i></p>
+                    </div>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

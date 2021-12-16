@@ -143,7 +143,8 @@ class Dataset(CoreTrackedModel):
             "legal_bases": [x.to_dict() for x in self.legal_basis_definitions.all()],
             "storages": storage_dicts,
             "transfers": transfer_dicts,
-            "contacts": contact_dicts
+            "contacts": contact_dicts,
+            "metadata": self.scientific_metadata
         }
         return base_dict
 

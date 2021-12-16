@@ -19,6 +19,8 @@ if SECRET_KEY is None: raise NotImplementedError('You must specify SECRET_KEY in
 
 COMPANY = 'LCSB'  # Used for generating some models' verbose names
 
+HELPDESK_EMAIL = 'lcsb-sysadmins@uni.lu'
+
 # Placeholders on login page
 # LOGIN_USERNAME_PLACEHOLDER = ''
 # LOGIN_PASSWORD_PLACEHOLDER = ''

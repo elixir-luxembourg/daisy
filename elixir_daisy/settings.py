@@ -172,6 +172,9 @@ EMAIL_DONOTREPLY = 'do-not-reply@daisy.lcsb.uni.lu'
 SERVER_SCHEME = 'https'
 SERVER_URL = 'example.com'
 
+# email address to the support
+HELPDESK_EMAIL = 'support@example.com'
+
 # LOGGING settings
 # https://docs.djangoproject.com/en/2.0/topics/logging/
 LOGFILE_MAX_BYTES = 16777216  # 16MB
@@ -317,8 +320,11 @@ NOTIFICATIONS_DISABLED = True
 LOGIN_USERNAME_PLACEHOLDER = ''
 LOGIN_PASSWORD_PLACEHOLDER = ''
 
-# See: https://github.com/groveco/django-sql-explorer
+# Custom error view, see e.g. 
+# https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-CSRF_FAILURE_VIEW
+CSRF_FAILURE_VIEW = 'web.views.error_views.custom_csrf'
 
+# See: https://github.com/groveco/django-sql-explorer
 EXPLORER_CONNECTIONS = { 'Default': 'default' } 
 EXPLORER_DEFAULT_CONNECTION = 'default'
 

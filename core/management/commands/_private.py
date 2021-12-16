@@ -136,13 +136,10 @@ class ExportBaseCommand(BaseCommand):
             include_unpublished = options.get('include_unpublished')
             path_to_json_file = options.get('file')
 
-        
-
             with open(path_to_json_file,  mode="w+", encoding='utf-8') as json_file:
-                exp = self.get_exporter( include_unpublished = include_unpublished)
+                exp = self.get_exporter(include_unpublished=include_unpublished)
                 exp.export_to_file(json_file)
-                self.stdout.write(self.style.SUCCESS("Export complete!"))
-        
+                self.stdout.write(self.style.SUCCESS("Export complete!"))        
 
         except Exception as e:
             msg = f"Something went wrong during the export ({__file__}:class {self.__class__.__name__})! Details:"
