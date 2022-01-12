@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import List
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
@@ -111,8 +114,34 @@ class Access(CoreModel):
     )
 
     def __str__(self):
-        return f'Access given to dataset {self.dataset.title}: {self.user}/{self.access_notes}'
+        if self.contact:
+            return f'Access to dataset {self.dataset.title} given to a user: {self.user}/{self.access_notes}'
+        else:
+            return f'Access to dataset {self.dataset.title} given to a contact: {self.user}/{self.access_notes}'
 
     @property
     def display_locations(self):
         return "\n".join([ str(loc) for loc in self.defined_on_locations.all()])
+
+    @classmethod
+    def find_for_user(cls, user) -> List[str]:
+        accesses = cls.objects.filter(user=user, dataset__is_published=True)
+        return cls._filter_expired(accesses)
+
+    @classmethod
+    def find_for_contact(cls, contact) -> List[str]:
+        accesses = cls.objects.filter(contact=contact, dataset__is_published=True)
+        return cls._filter_expired(accesses)
+        
+    @staticmethod
+    def _filter_expired(accesses) -> List[str]:
+        # The ones that are not expired yet
+        non_expired_accesses = accesses.filter(grant_expires_on__gte=datetime.now())
+        non_expired_accesses_names = [access.dataset.elu_accession for access in non_expired_accesses]
+
+        # The ones that don't have the expiration date
+        accesses_without_expiration = accesses.filter(grant_expires_on__isnull=True)
+        accesses_without_expiration_names = [access.dataset.elu_accession for access in accesses_without_expiration]
+
+        # Remove the duplicates
+        return list(set(non_expired_accesses_names + accesses_without_expiration_names))
