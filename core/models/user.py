@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
@@ -210,40 +211,11 @@ class User(AbstractUser):
         """
         return ContractChecker(self).check(constants.Permissions.EDIT, contract)
 
-    def get_access_permissions(self):
+    def get_access_permissions(self) -> List[str]:
         """
         Finds Accesses of the user, and returns a list of their dataset IDs 
         """
-        accesses = Access.objects.filter(user=self, dataset__is_published=True)
-        return [access.dataset.elu_accession for access in accesses]
-
-    def add_rems_entitlement(self, 
-        application: str, 
-        dataset_id: str, 
-        user_id: str,
-        email: str) -> bool:
-        """
-        Tries to find a dataset with `elu_accession` equal to `dataset_id`.
-        If it exists, it will add a new logbook entry (Access object) set to the current user
-        Assumes that the Dataset exists, otherwise will throw an exception.
-        Otherwise - it will raise an exception
-        """
-        notes = f'Set automatically by REMS application #{application}'
-
-        dataset = Dataset.objects.get(elu_accession=dataset_id)
-
-        # TODO: add REMS user (e.g. `system::REMS`) to the system
-        # Then add this information to created_by of an Access
-        
-        new_logbook_entry = Access(
-            user=self,
-            dataset=dataset,
-            access_notes=notes,
-            granted_on=datetime.now(),
-            was_generated_automatically=True
-        )
-        new_logbook_entry.save()
-        return True
+        return Access.find_for_user(self)
 
     @classmethod
     def find_user_by_email_or_oidc_id(cls, email, oidc_id, method):

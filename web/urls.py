@@ -49,6 +49,7 @@ web_urls = [
     path('api/rems', api.rems_endpoint, name='api_rems_endpoint'),
     path('api/termsearch/<slug:category>', api.termsearch, name="api_termsearch"),
     path('api/users', api.users, name="api_users"),
+    path('api/keycloak/force', api.force_keycloak_synchronization, name='api_keycloak_force'),
 
     # Contracts and partner roles
     path('contracts/', contract_list, name="contracts"),

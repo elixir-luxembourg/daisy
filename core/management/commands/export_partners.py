@@ -11,4 +11,4 @@ class Command(ExportBaseCommand):
         include_unpublished=False
     
     ):
-        return PartnersExporter(include_unpublished)
+        return PartnersExporter(include_unpublished=include_unpublished)

@@ -1,9 +1,14 @@
+from datetime import datetime
+
 from django.db import models
 
-from .utils import CoreModel, TextFieldWithInputWidget
+from core.models.access import Access
+from core.models.contact_type import ContactType
+from core.models.utils import CoreModel, TextFieldWithInputWidget
 
 
 class Contact(CoreModel):
+
     """
     Contact represents a contact person.
     For instance:
@@ -120,10 +125,19 @@ class Contact(CoreModel):
                     message = f'There are either zero, or 2 and more contacts with such `email` and `oidc_id`!'
                     raise ValueError(message)
         except cls.DoesNotExist:
+            contact_type = ContactType.objects.get_or_create(name='Other (imported from Keycloak)')
             new_object = cls(
                 email=email, 
                 first_name='IMPORTED BY REMS', 
-                last_name='IMPORTED BY REMS'
+                last_name='IMPORTED BY REMS',
+                type=contact_type
             )
             new_object.save()
             return new_object
+
+    def get_access_permissions(self):
+        """
+        Finds Accesses of the user, and returns a list of their dataset IDs 
+        """
+        return Access.find_for_contact(self)
+        

@@ -1,12 +1,17 @@
 import json
 import logging
+import urllib3
 
-from typing import Dict
+from datetime import datetime
+from typing import Dict, Union
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest
 
+from core.synchronizers import DummyAccountSynchronizer
+from core.lcsb.oidc import get_keycloak_config_from_settings, KeycloakSynchronizationMethod, CachedKeycloakAccountSynchronizer
+from core.models.access import Access
 from core.models.contact import Contact
 from core.models.dataset import Dataset
 from core.models.user import User
@@ -14,6 +19,16 @@ from core.utils import DaisyLogger
 
 
 logger = DaisyLogger(__name__)
+
+
+if getattr(settings, 'KEYCLOAK_INTEGRATION', False) == True:
+    urllib3.disable_warnings()
+    keycloak_config = get_keycloak_config_from_settings()
+    keycloak_backend = KeycloakSynchronizationMethod(keycloak_config)
+    synchronizer = CachedKeycloakAccountSynchronizer(keycloak_backend)
+else:
+    synchronizer = DummyAccountSynchronizer()
+
 
 def handle_rems_callback(request: HttpRequest) -> bool:
     """
@@ -23,6 +38,11 @@ def handle_rems_callback(request: HttpRequest) -> bool:
 
     :returns: True if everything was processed, False if not
     """
+
+    # Ensure the most recent account inforrmation by pulling it from Keycloak
+    logger.debug('Refreshing the account information from Keycloak...')
+    synchronizer.synchronize()
+    logger.debug('...successfully refreshed the information from Keycloak!')
 
     # TODO: Send an email to the Data Stewards or create a notification
 
@@ -67,13 +87,62 @@ def handle_rems_entitlement(data: Dict) -> bool:
     
     try:
         user = User.find_user_by_email_or_oidc_id(email, user_id, method)
-        return user.add_rems_entitlement(application, resource, user_id, email)
+        return create_rems_entitlement(user, application, resource, user_id, email)
     except Exception as ex:
         logger.debug(' * Didn''t find the user with such oidc id or email, will add a contact instead: ' + str(ex))
     
     try:
         contact = Contact.get_or_create(email, user_id, resource, method)
-        return contact.add_rems_entitlement(application, resource, user_id, email)
+        return create_rems_entitlement(contact, application, resource, user_id, email)
     except Exception as ex:
         raise ValueError('Something went wrong during creating an entry for Access/Contact: ' + str(ex))
 
+
+def create_rems_entitlement(obj: Union[Access, User], 
+        application: str, 
+        dataset_id: str, 
+        user_id: str, 
+        email: str) -> bool:
+    """
+    Tries to find a dataset with `elu_accession` equal to `dataset_id`.
+    If it exists, it will add a new logbook entry (Access object) set to the current user/contact
+    Assumes that the Dataset exists, otherwise will throw an exception.
+    """
+    notes = f'Set automatically by REMS application #{application}'
+
+    dataset = Dataset.objects.get(elu_accession=dataset_id)
+
+    # The password is not a hash, therefore it is
+    # not possible to log into this account
+    system_rems_user, _ = User.objects.get_or_create(
+        username='system::REMS',
+        first_name=':REMS:',
+        last_name=':System Account:',
+        password='this_is_incorrect',
+        email='lcsb-sysadmins@uni.lu'
+    )
+    
+    if type(obj) == User:
+        new_logbook_entry = Access(
+            user=obj,
+            dataset=dataset,
+            access_notes=notes,
+            granted_on=datetime.now(),
+            was_generated_automatically=True,
+            created_by=system_rems_user
+        )
+    elif type(obj) == Contact:
+        new_logbook_entry = Access(
+            contact=obj,
+            dataset=dataset,
+            access_notes=notes,
+            granted_on=datetime.now(),
+            was_generated_automatically=True,
+            created_by=system_rems_user
+        )
+    else:
+        klass = obj.__class__.__name__
+        raise TypeError(f'Wrong type of the object - should be Contact or User, is: {klass} instead')
+        
+    new_logbook_entry.save()
+    return True
