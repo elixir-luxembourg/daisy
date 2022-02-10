@@ -115,10 +115,22 @@ class Dataset(CoreTrackedModel):
 
         storage_dicts = []
         for dl in self.data_locations.all():
+            accesses = [ acc.access_notes for acc in dl.accesses.all()]
+            # users
+            users_with_access = [acc.user for acc in dl.accesses.all()]
+            users_with_access.extend([acc.contact for acc in dl.accesses.all()])
+            
+            users_with_access_dicts = []
+            for user in users_with_access:
+                if user:
+                    users_with_access_dicts.append(user.to_dict())
+
+            # contacts
+            accesses.extend(users_with_access_dicts)
             storage_dicts.append({
                 "platform": dl.category.name,
-                 "location": dl.location_description,
-                 "accesses": [ acc.access_notes for acc in dl.accesses.all()]
+                "location": dl.location_description,
+                "accesses": accesses
             })
 
         transfer_dicts = []
