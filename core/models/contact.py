@@ -88,10 +88,11 @@ class Contact(CoreModel):
 
         base_dict = {
             "pk": self.id.__str__(),
-            "address": self.address,
             "email": self.email,
+            "oidc_id": self.oidc_id,
             "first_name": self.first_name,
             "last_name": self.last_name,
+            "address": self.address,
             "phone": self.phone,
             "type": self.type.name if self.type else '',
             "partners": partners_dict if len(partners_dict) else ''
