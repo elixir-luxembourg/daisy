@@ -128,7 +128,7 @@ class Dataset(CoreTrackedModel):
             # contacts
             accesses.extend(users_with_access_dicts)
             storage_dicts.append({
-                "platform": dl.category.name,
+                "platform": dl.backend.name,
                 "location": dl.location_description,
                 "accesses": accesses
             })
