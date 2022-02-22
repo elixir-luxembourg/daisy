@@ -25,7 +25,7 @@ requirements = [
     'django-widget-tweaks==1.4.3',
     'django-countries==5.3.3',
     'gunicorn==19.9.0',
-    'ipython==7.3.0',
+    'ipython==7.16.3',
     'libsass==0.17.0',
     'ontobio==1.7.2',
     'yamldown>=0.1.8',
