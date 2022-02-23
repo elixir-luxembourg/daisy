@@ -49,7 +49,7 @@ class StorageResourceAdmin(admin.ModelAdmin):
 
 class ContactAdmin(admin.ModelAdmin):
     search_fields = ['first_name', 'last_name', 'oidc_id']
-    list_display = ('id', 'first_name', 'last_name', 'oidc_id', 'type')
+    list_display = ('id', 'email', 'first_name', 'last_name', 'oidc_id', 'type')
 
 class DatasetAdmin(admin.ModelAdmin):
     search_fields = ['title']
