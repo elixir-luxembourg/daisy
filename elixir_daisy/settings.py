@@ -341,6 +341,9 @@ REMS_ALLOWED_IP_ADDRESSES = []  # use '*' to allow all, otherwise e.g. '127.0.0.
 # ID service
 IDSERVICE_FUNCTION = 'web.views.utils.generate_elu_accession'
 
+# Should the superuser be able to change the passwords in django-admin
+ENABLE_PASSWORD_CHANGE_IN_ADMIN = False
+
 # Import local settings to override those values based on the deployment environment
 try:
     from .settings_local import *
