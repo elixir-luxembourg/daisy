@@ -14,6 +14,7 @@ from core.models import Access, Dataset
 from core.permissions import ProjectChecker, DatasetChecker, ContractChecker, AutoChecker
 from .utils import TextFieldWithInputWidget
 
+from typing import Dict
 
 def create_api_key(length=48):
     allowed_chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
@@ -117,6 +118,15 @@ class User(AbstractUser):
     def __str__(self):
         fullname = self.get_full_name()
         return fullname or self.username
+            
+    def to_dict(self) -> Dict:
+        base_dict = {
+            "pk": str(self.id),
+            "email": self.email,
+            "oidc_id": self.oidc_id,
+            "full_name": self.full_name,
+        }
+        return base_dict
 
     def save(self, *args, **kw):
         self.full_name = f'{self.first_name} {self.last_name}'
