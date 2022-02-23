@@ -87,7 +87,7 @@ class Contact(CoreModel):
             })
 
         base_dict = {
-            "pk": self.id.__str__(),
+            "pk": str(self.id),
             "email": self.email,
             "oidc_id": self.oidc_id,
             "first_name": self.first_name,

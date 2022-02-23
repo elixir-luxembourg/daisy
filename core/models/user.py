@@ -121,7 +121,7 @@ class User(AbstractUser):
             
     def to_dict(self) -> Dict:
         base_dict = {
-            "pk": self.id.__str__(),
+            "pk": str(self.id),
             "email": self.email,
             "oidc_id": self.oidc_id,
             "full_name": self.full_name,
