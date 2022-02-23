@@ -162,6 +162,10 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
     def _patch_contacts(self, list_of_users: List[Dict]):
         patched_count = 0
         for new_user_info in list_of_users:
+            contacts_with_the_same_oidc_id = Contact.objects.filter(oidc_id=new_user_info.get('id'))
+            if contacts_with_the_same_oidc_id.count() > 0:
+                logger.error(f'Patching the OIDC_ID of the Contact halted, because there is already the contact with the same OIDC_ID: {contacts_with_the_same_oidc_id}!')
+                continue
             existing_contact = Contact.objects.get(email=new_user_info.get('email'))
             email = new_user_info.get('email')
             previous_value = existing_contact.oidc_id
