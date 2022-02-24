@@ -190,7 +190,8 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
 class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
     def __init__(self, synchronizer: AccountSynchronizationMethod):
         super().__init__(synchronizer)
-        logger.debug('Keycloak Cached Synchronization - initialized with an empty cache')
+        cid = id(self)
+        logger.debug(f'Keycloak Cached Synchronization #{cid} - initialized with an empty cache')
         self.current_external_accounts = []
         self._cached_external_accounts = None
         self.lock = Lock()
@@ -227,6 +228,8 @@ class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
         except Exception as ex:
             logger.error(f'Exception while synchronizing... {ex}')
         finally:
+            idl = id(self.lock)
+            logger.debug(f'Keycloak Synchronization - Freeing the lock #{idl}')
             self.lock.release()
 
     def _did_something_change(self):
