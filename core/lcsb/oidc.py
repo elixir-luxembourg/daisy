@@ -97,13 +97,20 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
         self._patch_users(users_to_be_patched)
         self._patch_contacts(contacts_to_be_patched)
 
-    def compare(self) -> Tuple[list, list, list]:
+    def compare(self) -> Tuple[List[Contact], List[User], List[Contact]]:
         contacts_to_be_created = []
         users_to_be_patched = []
         contacts_to_be_patched = []
         for external_account in self.current_external_accounts:
             if external_account.get('email', None) is None:
-                logger.debug('Received a record about a User without email from Keycloak')
+                logger.warning('! Received a record about a User without email from Keycloak - skipping')
+                continue
+            if User.objects.filter(oidc_id=external_account.get('id')).count() > 0:
+                logger.debug('Found an existing User account with this OIDC ID - skipping')
+                continue
+            if Contact.objects.filter(oidc_id=external_account.get('id')).count() > 0:
+                logger.debug('Found an existing Contact with this OIDC ID - skipping')
+                continue
             count_of_users = User.objects.filter(email=external_account.get('email')).count()
             if count_of_users == 1:
                 User.objects.filter(email=external_account.get('email')).count()
@@ -182,6 +189,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
 class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
     def __init__(self, synchronizer: AccountSynchronizationMethod):
         super().__init__(synchronizer)
+        logger.debug('Keycloak Cached Synchronization - initialized with an empty cache')
         self.current_external_accounts = []
         self._cached_external_accounts = None
 
