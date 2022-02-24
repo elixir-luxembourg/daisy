@@ -1,5 +1,6 @@
 import json
 
+from multiprocessing import Lock
 from typing import Dict, List, Tuple
 
 from django.conf import settings
@@ -192,33 +193,41 @@ class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
         logger.debug('Keycloak Cached Synchronization - initialized with an empty cache')
         self.current_external_accounts = []
         self._cached_external_accounts = None
+        self.lock = Lock()
 
     @transaction.atomic
     def synchronize(self) -> None:
         """This will fetch the accounts from external source and use them to synchronize DAISY accounts"""
         logger.debug('Keycloak Synchronization - Using the CachedKeycloakAccountSynchronizer')
 
-        _ = User.objects.select_for_update().all()
-        logger.debug('Keycloak Synchronization - Acquired the lock')
+        try:
+            self.lock.acquire()
+            _ = User.objects.select_for_update().all()
+            idl = id(self.lock)
+            logger.debug(f'Keycloak Synchronization - Acquired the lock #{idl}')
 
-        if self.current_external_accounts is not None:
-            self._cached_external_accounts = self.current_external_accounts
-        
-        logger.debug('Keycloak Synchronization - Updating the cache...')
-        self.current_external_accounts = self.synchronizer.get_list_of_users()
-
-        if self._cached_external_accounts is None or self._did_something_change():
-            contacts_to_be_created, users_to_be_patched, contacts_to_be_patched = self.compare()
-            logger.debug('Keycloak Synchronization - (1/3) ...compared the accounts...')
-
-            self._add_contacts(contacts_to_be_created)
-            logger.debug('Keycloak Synchronization - (2/3) ...added the contacts...')
+            if self.current_external_accounts is not None:
+                self._cached_external_accounts = self.current_external_accounts
             
-            self._patch_users(users_to_be_patched)
-            self._patch_contacts(contacts_to_be_patched)
-            logger.debug('Keycloak Synchronization - (3/3) ...patched the user accounts and contacts. Finished!')
-        else:
-            logger.debug('Keycloak Synchronization - ...Skipping the keycloak account synchronization pass, no changes detected')
+            logger.debug('Keycloak Synchronization - Updating the cache...')
+            self.current_external_accounts = self.synchronizer.get_list_of_users()
+
+            if self._cached_external_accounts is None or self._did_something_change():
+                contacts_to_be_created, users_to_be_patched, contacts_to_be_patched = self.compare()
+                logger.debug('Keycloak Synchronization - (1/3) ...compared the accounts...')
+
+                self._add_contacts(contacts_to_be_created)
+                logger.debug('Keycloak Synchronization - (2/3) ...added the contacts...')
+                
+                self._patch_users(users_to_be_patched)
+                self._patch_contacts(contacts_to_be_patched)
+                logger.debug('Keycloak Synchronization - (3/3) ...patched the user accounts and contacts. Finished!')
+            else:
+                logger.debug('Keycloak Synchronization - ...Skipping the keycloak account synchronization pass, no changes detected')
+        except Exception as ex:
+            logger.error(f'Exception while synchronizing... {ex}')
+        finally:
+            self.lock.release()
 
     def _did_something_change(self):
         if self._cached_external_accounts is None or self.current_external_accounts is None:
