@@ -51,6 +51,15 @@ class AccountSynchronizer(ABC):
         """
         pass
 
+    @abstractmethod
+    def check_for_problems(self) -> bool:
+        """
+        Should go through the incoming information
+        and see if there will be any problems with updates
+        (e.g. duplicated entry)
+        """
+        pass
+
 
 class DummySynchronizationMethod(AccountSynchronizationMethod):
     """

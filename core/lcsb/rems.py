@@ -33,75 +33,118 @@ else:
 def handle_rems_callback(request: HttpRequest) -> bool:
     """
     Handles an entitlements request coming from REMS
-    More information on:
+
+    More information:
     https://rems2docs.rahtiapp.fi/configuration/#entitlements
 
     :returns: True if everything was processed, False if not
     """
 
     # Ensure the most recent account inforrmation by pulling it from Keycloak
-    logger.debug('Refreshing the account information from Keycloak...')
+    logger.debug('REMS :: Requesting refreshing the account information from Keycloak Synchronizer...')
     synchronizer.synchronize()
-    logger.debug('...successfully refreshed the information from Keycloak!')
+    logger.debug('REMS :: ...assuming that the OIDC account information has been synchronized')
 
-    # TODO: Send an email to the Data Stewards or create a notification
-
-    logger.debug('Unpacking the data received from REMS...')
+    logger.debug('REMS :: Unpacking the data received from REMS...')
     body_unicode = request.body.decode('utf-8')
-    request_post_data = json.loads(body_unicode)
+
+    try:
+        request_post_data = json.loads(body_unicode)
+    except:
+        message = f'REMS :: Received data in wrong format, because deserializing request''s POST body failed!)!'
+        raise ValueError(message)
 
     if not isinstance(request_post_data, list):
         the_type = type(request_post_data)
-        message = f'Received data with wrong format (it is not a list, but {the_type})!'
+        message = f'REMS :: Received data with wrong format (it is not a list, but "{the_type}" instead)!'
         raise TypeError(message)
 
     statuses = [handle_rems_entitlement(item) for item in request_post_data]
     return all(statuses)
 
-def handle_rems_entitlement(data: Dict) -> bool:
+def handle_rems_entitlement(data: Dict[str, str]) -> bool:
     """
     Handles a single information about the entitlement from REMS.
-    Relies on settings['REMS_MATCH_USERS_BY'] for a method of matching users (id/email)
 
     :returns: True if the user was found and the entitlement processed, False if not
     """
     application = data.get('application')
     resource = data.get('resource')
-    user_id = data.get('user')
+    user_oidc_id = data.get('user')
     email = data.get('mail')
 
-    logger.debug(f'* application_id: {application}, user_id: {user_id}, user_email: {email}, resource: {resource}')
-
-    method = getattr(settings, 'REMS_MATCH_USERS_BY', '-').lower()
-    if method not in ['email', 'id', 'auto']:
-        message = f"'REMS_MATCH_USERS_BY' must contain either 'id', 'email' or 'auto', but is: {method} instead!"
-        logger.warn(message)
-        raise ImproperlyConfigured(message)
+    logger.debug(f'REMS :: * application_id: {application}, user_oidc_id: {user_oidc_id}, user_email: {email}, resource: {resource}')
 
     try:
         Dataset.objects.get(elu_accession=resource)
     except Dataset.DoesNotExist:
-        message = f'Dataset with such `elu_accession` ({resource}) does not exist! Quitting'
-        logger.debug(f' * {message}')
+        message = f'REMS :: Dataset with such `elu_accession` ({resource}) does not exist! Quitting'
+        logger.error(f' * {message}')
+        # TODO: E2E: Save and display a notification to DataStewards
         raise ValueError(message)
     
-    try:
-        user = User.find_user_by_email_or_oidc_id(email, user_id, method)
-        return create_rems_entitlement(user, application, resource, user_id, email)
-    except Exception as ex:
-        logger.debug(' * Didn''t find the user with such oidc id or email, will add a contact instead: ' + str(ex))
+    # First, tries to find a user with given OIDC ID
+    # Then, it tries to find a contact with given OIDC ID
+    # Then, it tries to find a user with given email address
+    # Then, it tries to find a contact with given email address
+    # If no account was found that far, then it will raise an error
+
+    users_by_oidc = User.objects.filter(oidc_id=user_oidc_id)
+    contacts_by_oidc = Contact.objects.filter(oidc_id=user_oidc_id)
+    users_by_email = User.objects.filter(email=email)
+    contacts_by_email = Contact.objects.filter(email=email)
+
+    logger.debug(f'REMS :: Locating the User/Contact for the given Access information...')
     
-    try:
-        contact = Contact.get_or_create(email, user_id, resource, method)
-        return create_rems_entitlement(contact, application, resource, user_id, email)
-    except Exception as ex:
-        raise ValueError('Something went wrong during creating an entry for Access/Contact: ' + str(ex))
+
+    if users_by_oidc.count() + contacts_by_oidc.count() > 1:
+        logger.error(f'REMS :: error, found multiple users or contacts with given OIDC_ID: {user_oidc_id}!')
+        # Something is wrong - there are multiple users or contacts with given OIDC ID
+        # TODO: E2E: Save and display a notification to DataStewards
+        return False
+
+    if users_by_oidc.count() == 1:
+        logger.debug(f'REMS :: OK, found a user with given OIDC_ID')
+        user = users_by_oidc.first()
+        return create_rems_entitlement(user, application, resource, user_oidc_id, email)
+    logger.debug(f'REMS :: no users with given OIDC_ID')
+
+    if contacts_by_oidc.count() == 1:
+        contact = contacts_by_oidc.first()
+        logger.debug(f'REMS :: OK, found a contact with given OIDC_ID')
+        return create_rems_entitlement(contact, application, resource, user_oidc_id, email)
+    logger.debug(f'REMS :: no contacts with given OIDC_ID')
+
+    if users_by_email.count() + contacts_by_oidc.email() > 1:
+        logger.error(f'REMS :: error, found multiple users or contacts with given email: {email}!')
+        # Something is wrong - there are multiple users or contacts with given OIDC ID
+        # TODO: E2E: Save and display a notification to DataStewards
+        return False
+
+    if users_by_email.count() == 1:
+        logger.debug(f'REMS :: OK, found a user with given email')
+        user = users_by_email.first()
+        return create_rems_entitlement(user, application, resource, user_oidc_id, email)
+    logger.debug(f'REMS :: no users with given email')
+
+    if contacts_by_email.count() == 1:
+        contact = contacts_by_email.first()
+        logger.debug(f'REMS :: OK, found a contact with given email')
+        return create_rems_entitlement(contact, application, resource, user_oidc_id, email)
+    logger.debug(f'REMS :: no contacts with given email')
+    
+    # At this moment, we didn't find any User nor Contact with given OIDC_ID nor email
+    # Will attempt to create a new contact then
+    Contact.get_or_create(email, user_oidc_id, resource)
+
+    # TODO: E2E: Save and display a notification to DataStewards
+    return True
 
 
 def create_rems_entitlement(obj: Union[Access, User], 
         application: str, 
         dataset_id: str, 
-        user_id: str, 
+        user_oidc_id: str, 
         email: str) -> bool:
     """
     Tries to find a dataset with `elu_accession` equal to `dataset_id`.
@@ -119,7 +162,7 @@ def create_rems_entitlement(obj: Union[Access, User],
         first_name=':REMS:',
         last_name=':System Account:',
         password='this_is_incorrect',
-        email='lcsb-sysadmins@uni.lu'
+        email='lcsb-sysadmins+REMS@uni.lu'
     )
     
     if type(obj) == User:
