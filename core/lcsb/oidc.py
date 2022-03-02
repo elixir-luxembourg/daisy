@@ -104,7 +104,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
         user.email = ''
         user.save()
 
-    def synchronize_single_account(self, acc: Dict[str, Optional[str]]) -> Optional[Tuple(str, str)]:
+    def synchronize_single_account(self, acc: Dict[str, Optional[str]]) -> Optional[Tuple[str, str]]:
         # First, check if this is a special case of system accounts - in such case create the account if needed
         if acc.get('username', '').startswith('system::'):
             self.synchronize_system_account(acc)
