@@ -91,3 +91,6 @@ class DummyAccountSynchronizer(AccountSynchronizer):
 
     def synchronize(self) -> bool:
         return True
+
+    def check_for_problems(self) -> bool:
+        return True

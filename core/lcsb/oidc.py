@@ -1,7 +1,7 @@
 import json
 
 from multiprocessing import Lock
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from django.conf import settings
 from django.db import transaction
@@ -71,7 +71,7 @@ class KeycloakSynchronizationMethod(AccountSynchronizationMethod):
         return [
             {
                 'id': user.get('id').replace(',', '').replace('(', '').replace(')', '').replace("'", ''), 
-                'email': user.get('email', 'EMAIL_MISSING'),
+                'email': user.get('email', None),
                 'first_name': user.get('firstName', 'FIRST_NAME_MISSING'),
                 'last_name': user.get('lastName', 'LAST_NAME_MISSING'),
                 'username': user.get('email', 'EMAIL_MISSING')
@@ -93,101 +93,79 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
     def synchronize(self) -> None:
         """This will fetch the accounts from external source and use them to synchronize DAISY accounts"""
         self.current_external_accounts = self.synchronizer.get_list_of_users()
-        contacts_to_be_created, users_to_be_patched, contacts_to_be_patched = self.compare()
-        self._add_contacts(contacts_to_be_created)
-        self._patch_users(users_to_be_patched)
-        self._patch_contacts(contacts_to_be_patched)
-
-    def compare(self) -> Tuple[List[Contact], List[User], List[Contact]]:
-        contacts_to_be_created = []
-        users_to_be_patched = []
-        contacts_to_be_patched = []
         for external_account in self.current_external_accounts:
-            if external_account.get('email', None) is None:
-                logger.warning('KC :: Received a record about a User without email from Keycloak - skipping')
-                continue
-            if User.objects.filter(oidc_id=external_account.get('id')).count() > 0:
-                logger.debug('KC :: Found an existing User account with this OIDC ID - skipping')
-                continue
-            if Contact.objects.filter(oidc_id=external_account.get('id')).count() > 0:
-                logger.debug('KC :: Found an existing Contact with this OIDC ID - skipping')
-                continue
-            count_of_users = User.objects.filter(email=external_account.get('email')).count()
-            if count_of_users == 1:
-                User.objects.filter(email=external_account.get('email')).count()
-                users_to_be_patched.append(external_account)
-            elif count_of_users > 1:
-                raise AccountSynchronizationException(f"There is more than 1 User account with such an email: {external_account.get('email')}")
-            elif count_of_users == 0:
-                count_of_contacts = Contact.objects.filter(email=external_account.get('email')).count()
-                if count_of_contacts == 1:
-                    contacts_to_be_patched.append(external_account)
-                elif count_of_contacts > 1:
-                    raise AccountSynchronizationException(f"There is more than 1 Contact with such an email: {external_account.get('email')}")
-                else:                    
-                    contacts_to_be_created.append(external_account)
-        logger.debug(f'KC :: Detected {len(contacts_to_be_created)} contact(s) that are not existing in DAISY, and {len(users_to_be_patched)} user account(s) that might need patching, and {len(contacts_to_be_patched)} contact account(s) that might need patching.')
-        return contacts_to_be_created, users_to_be_patched, contacts_to_be_patched
+            self.synchronize_single_account(external_account)
 
-    def _add_contacts(self, list_of_users: List[Dict]):
-        if len(list_of_users):
-            contact_type, _ = ContactType.objects.get_or_create(name='Other')
-            partner, _ = Partner.objects.get_or_create(acronym='Imported from Keycloak', name='Imported from Keycloak')
-        for contact_to_be in list_of_users:
-            first_name = contact_to_be.get('first_name', '-')
-            last_name = contact_to_be.get('last_name', '-')
-            email = contact_to_be.get('email')
-            oidc_id = contact_to_be.get('id')
-            username = contact_to_be.get('username')
-            new_contact = Contact(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name, type=contact_type)
-            new_contact.save()
-            new_contact.partners.add(partner)
-            new_contact.save()
-        if len(list_of_users) > 0:
-            logger.debug('KC :: Added ' + str(len(list_of_users)) + ' new Contact entries:')
-        for contact_to_be in list_of_users:
-            logger.debug('KC :: OIDC_ID = ' + contact_to_be.get('id') + ' => ' + contact_to_be.get('email'))
+    def synchronize_system_account(self, acc):
+        user, _ = User.objects.get_or_create(
+            username=acc.get('username'),
+        )
+        user.oidc_id = acc.get('id')
+        user.email = ''
+        user.save()
 
-    def _patch_users(self, list_of_users: List[Dict]):
-        patched_count = 0
-        for new_user_info in list_of_users:
-            existing_user = User.objects.get(email=new_user_info.get('email'))
-            email = new_user_info.get('email')
-            previous_value = existing_user.oidc_id
-            new_value = new_user_info.get('id')
-            if new_value != previous_value:
-                logger.debug(f'KC :: Patching the OIDC_ID of the User: {email} - {previous_value} => {new_value}')
-                # Update just OIDC ID
-                existing_user.oidc_id = new_value
-                # Don't actually patch these features
-                # existing_user.email = new_user_info.get('email')
-                # existing_user.first_name = new_user_info.get('first_name')
-                # existing_user.last_name = new_user_info.get('last_name')
-                existing_user.save()
-                patched_count += 1
-        logger.debug('KC :: Updated ' + str(patched_count) + ' user entry(entries)')
+    def synchronize_single_account(self, acc: Dict[str, Optional[str]]) -> Optional[Tuple(str, str)]:
+        # First, check if this is a special case of system accounts - in such case create the account if needed
+        if acc.get('username', '').startswith('system::'):
+            self.synchronize_system_account(acc)
 
-    def _patch_contacts(self, list_of_users: List[Dict]):
-        patched_count = 0
-        for new_user_info in list_of_users:
-            contacts_with_the_same_oidc_id = Contact.objects.filter(oidc_id=new_user_info.get('id'))
-            if contacts_with_the_same_oidc_id.count() > 0:
-                logger.error(f'Patching the OIDC_ID of the Contact halted, because there is already the contact with the same OIDC_ID: {contacts_with_the_same_oidc_id}!')
-                continue
-            existing_contact = Contact.objects.get(email=new_user_info.get('email'))
-            email = new_user_info.get('email')
-            previous_value = existing_contact.oidc_id
-            new_value = new_user_info.get('id')
-            if previous_value != new_value:
-                logger.debug(f'KC :: Patching the OIDC_ID of the Contact: {email} - {previous_value} => {new_value}')
-                # Update just OIDC ID
-                existing_contact.oidc_id = new_value
-                existing_contact.save()
-                patched_count += 1
-        logger.debug('KC :: Updated ' + str(patched_count) + ' Contact entry(entries)')      
+        # Then, check if a User with given OIDC exists - skip in such case
+        user_count = User.objects.filter(oidc_id=acc.get('id')).count()
+        if user_count == 1:
+            return None
+        if user_count > 1:
+            logger.warning(f'KC :: Found multiple User accounts with this OIDC ID: {acc.get("id")}!')
+            return None
 
+        # Then. check if Contact with given OIDC exists - skip in such case
+        contact_count = Contact.objects.filter(oidc_id=acc.get('id')).count()
+        if contact_count == 1:
+            return None
+        if contact_count > 1:
+            logger.warning(f'KC :: Found multiple Contact accounts with this OIDC ID: {acc.get("id")}!')
+            return None
+
+        # If we didn't exit so far, we can assume that we need to patch a User or a Contact, if they have already an account with set email address
+        # Let's try to find user with given e-mail
+        user_by_email = User.objects.filter(email=acc.get('email'))
+        if user_by_email.count() == 1:
+            user:User = user_by_email.first()
+            user.oidc_id = acc.get('id')
+            user.save()
+            logger.debug(f'KC :: Set OIDC_ID ({acc.get("id")}) of a existing User (matched by email)')
+            return ('User', 'patched',)
+        elif user_by_email.count() > 1:
+            logger.error(f'KC :: Found multiple User accounts with this email: {acc.get("email")}!')
+            raise KeyError(f'KC :: Found multiple User accounts with this email: {acc.get("email")}!')
+
+        # Then, let's try to find a contact with a given email - if it's there, let's patch it
+        contacts_by_email = Contact.objects.filter(email=acc.get('email'))
+        if contacts_by_email.count() == 1:
+            contact:Contact = contacts_by_email.first()
+            contact.oidc_id = acc.get('id')
+            contact.save()
+            return ('Contact', 'patched',)
+
+        # If we didn't exit so far, then we need to add a Contact with the new information
+        logger.debug(f'KC :: Created a new Contact for {acc.get("id")}')
+        self.add_contact(acc)
+        return ('Contact', 'created')
+
+    def add_contact(self, contact_to_be: Dict[str, Optional[str]]):
+        contact_type, _ = ContactType.objects.get_or_create(name='Other')
+        partner, _ = Partner.objects.get_or_create(acronym='Imported from Keycloak', name='Imported from Keycloak')
+        first_name = contact_to_be.get('first_name', '-')
+        last_name = contact_to_be.get('last_name', '-')
+        email = contact_to_be.get('email')
+        oidc_id = contact_to_be.get('id')
+        username = contact_to_be.get('username')
+        new_contact = Contact(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name, type=contact_type)
+        new_contact.save()
+        new_contact.partners.add(partner)
+        new_contact.save()
     
     def check_for_problems(self) -> bool:
+        status = False
         logger.debug(f'KC :: checking for problems in {len(self.current_external_accounts)} incoming entries')
 
         if len(self.current_external_accounts) == 0:
@@ -201,12 +179,15 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             c = Contact.objects.filter(email=email)
             if u.count() + c.count() > 1:
                 logger.warning(f'KC :: problem found - multiple accounts with the same email address ({email}) found!')
+                status = True
 
             u2 = User.objects.filter(oidc_id=oidc_id)
             c2 = Contact.objects.filter(oidc_id=oidc_id)
             if u2.count() + c2.count() > 1:
                 logger.warning(f'KC :: problem found - multiple accounts with the same oidc_id ({oidc_id}) found!')
+                status = True
 
+        return status
 
 class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
     def __init__(self, synchronizer: AccountSynchronizationMethod):
@@ -238,15 +219,10 @@ class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
                 logger.debug('KC :: Keycloak Synchronization - 4. Checking for problems')
                 self.check_for_problems()
 
-                contacts_to_be_created, users_to_be_patched, contacts_to_be_patched = self.compare()
-                logger.debug('KC :: Keycloak Synchronization - 5a (1/3) ...compared the accounts...')
+                # Perform the actual synchronization
+                for external_account in self.current_external_accounts:
+                    self.synchronize_single_account(external_account)
 
-                self._add_contacts(contacts_to_be_created)
-                logger.debug('KC :: Keycloak Synchronization - 5a (2/3) ...added the contacts...')
-                
-                self._patch_users(users_to_be_patched)
-                self._patch_contacts(contacts_to_be_patched)
-                logger.debug('KC :: Keycloak Synchronization - 5a (3/3) ...patched the user accounts and contacts. Finished!')
             else:
                 logger.debug('KC :: Keycloak Synchronization - 5b Skipping the keycloak account synchronization pass, no changes detected')
         except Exception as ex:

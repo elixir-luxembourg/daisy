@@ -223,6 +223,11 @@ def force_keycloak_synchronization(request) -> JsonResponse:
 @csrf_exempt
 @protect_with_api_key
 def permissions(request, user_oidc_id: str) -> JsonResponse:
+    system_daisy_user, _ = User.objects.get_or_create(
+        username='system::daisy',        
+        email=''
+    )
+
     logger.debug('Permission API endpoint called...') 
     user_found, contact_found, user, contact = get_user_or_contact_by_oidc_id(user_oidc_id)
     logger.debug('...found User: ' + str(user_found) + ', found Contact: ' + str(contact_found))
