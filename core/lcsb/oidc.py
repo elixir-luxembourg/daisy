@@ -75,7 +75,7 @@ class KeycloakSynchronizationMethod(AccountSynchronizationMethod):
                 'first_name': user.get('firstName', 'FIRST_NAME_MISSING'),
                 'last_name': user.get('lastName', 'LAST_NAME_MISSING'),
                 'username': user.get('email', 'EMAIL_MISSING')
-            } for user in keycloak_response if user.get('email', None) is not None
+            } for user in keycloak_response
         ]
 
 
