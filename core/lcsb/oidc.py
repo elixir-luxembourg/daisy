@@ -158,11 +158,12 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
     def add_contact(self, contact_to_be: Dict[str, Optional[str]]):
         contact_type, _ = ContactType.objects.get_or_create(name='Other')
         partner, _ = Partner.objects.get_or_create(acronym='Imported from Keycloak', name='Imported from Keycloak')
+
+        email_value = contact_to_be.get('email', None)
         first_name = contact_to_be.get('first_name', '-')
         last_name = contact_to_be.get('last_name', '-')
-        email = contact_to_be.get('email')
+        email = email_value or f"lcsb.sysadmins+{contact_to_be.get('id')}@uni.lu"
         oidc_id = contact_to_be.get('id')
-        username = contact_to_be.get('username')
         new_contact = Contact(email=email, oidc_id=oidc_id, first_name=first_name, last_name=last_name, type=contact_type)
         new_contact.save()
         new_contact.partners.add(partner)
