@@ -98,7 +98,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
 
     def synchronize_system_account(self, acc):
         user, _ = User.objects.get_or_create(
-            username=acc.get('username').replace('"', '').replace("'"),
+            username=acc.get('username').replace('"', '').replace("'", '').replace('(', '').replace(')', '').replace(",", ''),
         )
         user.oidc_id = acc.get('id')
         user.email = ''
@@ -107,12 +107,13 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
     def synchronize_single_account(self, acc: Dict[str, Optional[str]]) -> Optional[Tuple[str, str]]:
         # First, check if this is a special case of system accounts - in such case create the account if needed
         if 'system::' in acc.get('username', ''):
-            logger.warning(f'KC :: Found system account with this OIDC ID: {acc.get("id")}!')
+            logger.debug(f'KC :: Found system account with this OIDC ID: {acc.get("id")}!')
             self.synchronize_system_account(acc)
 
         # Then, check if a User with given OIDC exists - skip in such case
         user_count = User.objects.filter(oidc_id=acc.get('id')).count()
         if user_count == 1:
+            logger.debug(f'KC :: Found the User with this OIDC ID: {acc.get("id")}.')
             return None
         if user_count > 1:
             logger.warning(f'KC :: Found multiple User accounts with this OIDC ID: {acc.get("id")}!')
@@ -121,6 +122,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
         # Then. check if Contact with given OIDC exists - skip in such case
         contact_count = Contact.objects.filter(oidc_id=acc.get('id')).count()
         if contact_count == 1:
+            logger.debug(f'KC :: Found the Contact with this OIDC ID: {acc.get("id")}.')
             return None
         if contact_count > 1:
             logger.warning(f'KC :: Found multiple Contact accounts with this OIDC ID: {acc.get("id")}!')
@@ -141,14 +143,15 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
 
         # Then, let's try to find a contact with a given email - if it's there, let's patch it
         contacts_by_email = Contact.objects.filter(email=acc.get('email'))
-        if contacts_by_email.count() == 1:
+        if contacts_by_email.count() >= 1:
+            logger.debug(f'KC :: Found the Contact with this OIDC ID (matched by email): {acc.get("id")}.')
             contact:Contact = contacts_by_email.first()
             contact.oidc_id = acc.get('id')
             contact.save()
             return ('Contact', 'patched',)
 
         # If we didn't exit so far, then we need to add a Contact with the new information
-        logger.debug(f'KC :: Created a new Contact for {acc.get("id")}')
+        logger.debug(f'KC :: Creating a new Contact for {acc.get("id")}')
         self.add_contact(acc)
         return ('Contact', 'created')
 
@@ -221,11 +224,12 @@ class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
                 self.check_for_problems()
 
                 # Perform the actual synchronization
+                logger.debug(f'KC :: Keycloak Synchronization - 5. Iterating over the incoming information ({len(self.current_external_accounts)})')
                 for external_account in self.current_external_accounts:
                     self.synchronize_single_account(external_account)
 
             else:
-                logger.debug('KC :: Keycloak Synchronization - 5b Skipping the keycloak account synchronization pass, no changes detected')
+                logger.debug('KC :: Keycloak Synchronization - 5b No changes detected, skipping the account synchronization')
         except Exception as ex:
             logger.error(f'KC :: Exception while synchronizing... {ex}')
         finally:
