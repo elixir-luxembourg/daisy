@@ -74,7 +74,7 @@ class KeycloakSynchronizationMethod(AccountSynchronizationMethod):
                 'email': user.get('email', None),
                 'first_name': user.get('firstName', 'FIRST_NAME_MISSING'),
                 'last_name': user.get('lastName', 'LAST_NAME_MISSING'),
-                'username': user.get('email', 'EMAIL_MISSING')
+                'username': user.get('email', 'USERNAME_MISSING')
             } for user in keycloak_response
         ]
 
@@ -101,7 +101,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
             username=acc.get('username').replace('"', '').replace("'", '').replace('(', '').replace(')', '').replace(",", ''),
         )
         user.oidc_id = acc.get('id')
-        user.email = ''
+        user.email = f'lcsb.sysadmins+{acc.get("id")}@uni.lu'
         user.save()
 
     def synchronize_single_account(self, acc: Dict[str, Optional[str]]) -> Optional[Tuple[str, str]]:
