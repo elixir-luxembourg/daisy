@@ -98,7 +98,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
 
     def synchronize_system_account(self, acc):
         user, _ = User.objects.get_or_create(
-            username=acc.get('username'),
+            username=acc.get('username').replace('"', '').replace("'"),
         )
         user.oidc_id = acc.get('id')
         user.email = ''
@@ -106,7 +106,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
 
     def synchronize_single_account(self, acc: Dict[str, Optional[str]]) -> Optional[Tuple[str, str]]:
         # First, check if this is a special case of system accounts - in such case create the account if needed
-        if acc.get('username', '').startswith('system::'):
+        if 'system::' in acc.get('username', ''):
             logger.warning(f'KC :: Found system account with this OIDC ID: {acc.get("id")}!')
             self.synchronize_system_account(acc)
 
