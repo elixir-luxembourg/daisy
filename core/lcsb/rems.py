@@ -115,7 +115,7 @@ def handle_rems_entitlement(data: Dict[str, str]) -> bool:
         return create_rems_entitlement(contact, application, resource, user_oidc_id, email)
     logger.debug(f'REMS :: no contacts with given OIDC_ID')
 
-    if users_by_email.count() + contacts_by_oidc.email() > 1:
+    if users_by_email.count() + contacts_by_email.count() > 1:
         logger.error(f'REMS :: error, found multiple users or contacts with given email: {email}!')
         # Something is wrong - there are multiple users or contacts with given OIDC ID
         # TODO: E2E: Save and display a notification to DataStewards
