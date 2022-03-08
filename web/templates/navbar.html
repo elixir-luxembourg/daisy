@@ -67,6 +67,7 @@
                             {% endif %}
                             {% if request.user.is_superuser %}
                                 <a class="dropdown-item" href="{% url 'users' %}">manage users</a>
+                                <a class="dropdown-item" href="{% url 'admin:index' %}">django-admin</a>
                             {% endif %}
                             {% if request.user.source.name == 'MANUAL' %}
                                 <a class="dropdown-item" href="{% url 'users_change_password'%}">change password</a>

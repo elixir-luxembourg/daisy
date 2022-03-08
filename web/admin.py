@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
@@ -111,37 +112,51 @@ class UserCreationForm(forms.ModelForm):
         return user
 
 
+user_change_form_fields = (
+    'username', 'email', 'password', 'is_active', 
+    'source', 'first_name', 'last_name', 'full_name', 
+    'is_staff', 'is_superuser', 'groups', 
+    'user_permissions', 'date_joined', 'last_login'
+)
+user_admin_fieldset_row = (None, {'fields': ('username', 'email', 'password', 'is_active', 'source')}, )
+
+if getattr(settings, 'ENABLE_PASSWORD_CHANGE_IN_ADMIN', False):
+    user_change_form_fields = user_change_form_fields + ('change_password', )
+    user_admin_fieldset_row = (None, {'fields': ('username', 'email', 'password', 'change_password', 'is_active', 'source')}, )
+
+
 class UserChangeForm(forms.ModelForm):
     """A form for updating users. Includes all the fields on
     the user, but replaces the password field with admin's
     password hash display field.
     """
     password = ReadOnlyPasswordHashField(help_text='This field contains hashed and salted value')
-    #change_password = forms.CharField(label='Set new password:', 
-    #                                  help_text='Leave empty if no change is needed',
-    #                                  widget=forms.PasswordInput)
+
+    
+    if getattr(settings, 'ENABLE_PASSWORD_CHANGE_IN_ADMIN', False):
+        change_password = forms.CharField(
+            label='Set new password:', 
+            help_text='Leave empty if no change is needed',
+            required=False,
+            widget=forms.PasswordInput
+        )
 
     class Meta:
         model = User
-        fields = (
-            'username', 'email', 'password', 'is_active', 
-            'source', 'first_name', 'last_name', 'full_name', 
-            'is_staff', 'is_superuser', 'groups', 
-            'user_permissions', 'date_joined', 'last_login'
-        )
+        fields = user_change_form_fields
 
     def clean_password(self):
        # Regardless of what the user provides, return the initial value.
         # This is done here, rather than on the field, because the
         # field does not have access to the initial value
-        print(self.initial["password"])
         return self.initial["password"]
 
     def save(self, commit=True):
         user = super(UserChangeForm, self).save(commit=False)
 
-        # if len(self.cleaned_data["change_password"]):
-        #    user.set_password(self.cleaned_data["change_password"])
+        if getattr(settings, 'ENABLE_PASSWORD_CHANGE_IN_ADMIN', False):
+            if len(self.cleaned_data["change_password"]):
+                user.set_password(self.cleaned_data["change_password"])
 
         if commit:
             user.save()
@@ -154,11 +169,11 @@ class UserAdmin(BaseUserAdmin):
     add_form = UserCreationForm  # Form to add new user
 
     # The fields to be used in displaying the User model in `/admin/core/user/`
-    list_display = ('email', 'full_name', 'source', 'is_staff', 'is_superuser')
+    list_display = ('id', 'full_name', 'email', 'source', 'is_staff', 'is_superuser', 'oidc_id')
 
     # Sections in the Edit page
     fieldsets = (
-        (None, {'fields': ('username', 'email', 'password', 'is_active', 'source')}),
+        user_admin_fieldset_row,
         ('Personal info', {'fields': ('first_name', 'last_name', 'full_name', 'oidc_id')}),
         ('Permissions', {'fields': ('is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Additional metdata', {'fields': ('date_joined', 'last_login', 'api_key')}),
@@ -173,8 +188,8 @@ class UserAdmin(BaseUserAdmin):
         ),
     )
 
-    search_fields = ('email',)
-    ordering = ('email',)
+    search_fields = ('full_name', 'email',)
+    ordering = ('full_name',)
     filter_horizontal = ()
 
 # User
