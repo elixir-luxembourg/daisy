@@ -67,7 +67,8 @@ class KeycloakSynchronizationMethod(AccountSynchronizationMethod):
             return False
 
     def get_list_of_users(self) -> List[Dict]:
-        keycloak_response = self.get_keycloak_admin_connection().get_users({})
+        keycloak_response = self.get_keycloak_admin_connection().get_users({'emailVerified': True})
+        print(keycloak_response)
         return [
             {
                 'id': user.get('id').replace(',', '').replace('(', '').replace(')', '').replace("'", ''), 
@@ -75,7 +76,7 @@ class KeycloakSynchronizationMethod(AccountSynchronizationMethod):
                 'first_name': user.get('firstName', 'FIRST_NAME_MISSING'),
                 'last_name': user.get('lastName', 'LAST_NAME_MISSING'),
                 'username': user.get('email', 'USERNAME_MISSING')
-            } for user in keycloak_response
+            } for user in keycloak_response if user.get('emailVerified', False)
         ]
 
 
