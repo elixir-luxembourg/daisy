@@ -13,6 +13,7 @@ from django.views.decorators.http import require_http_methods
 
 log = DaisyLogger(__name__)
 
+
 class AccessCreateView(CreateView, AjaxViewMixin):
     model = Access
     template_name = 'accesses/access_form.html'
