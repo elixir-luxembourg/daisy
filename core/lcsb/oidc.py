@@ -68,7 +68,7 @@ class KeycloakSynchronizationMethod(AccountSynchronizationMethod):
 
     def get_list_of_users(self) -> List[Dict]:
         keycloak_response = self.get_keycloak_admin_connection().get_users({'emailVerified': True})
-        print(keycloak_response)
+        logger.debug(keycloak_response)
         return [
             {
                 'id': user.get('id').replace(',', '').replace('(', '').replace(')', '').replace("'", ''), 

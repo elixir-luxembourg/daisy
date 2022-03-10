@@ -235,12 +235,13 @@ def permissions(request, user_oidc_id: str) -> JsonResponse:
     logger.debug('...found User: ' + str(user_found) + ', found Contact: ' + str(contact_found))
 
     if not user_found and not contact_found:
-        logger.debug('Will attempt to synchronize')
-        synchronizer.synchronize()
+        message = 'No contact nor user found!'
+        logger.debug(message)
+        return create_error_response(
+            message,
+            status=404
+        )
 
-        user_found, contact_found, user, contact = get_user_or_contact_by_oidc_id(user_oidc_id)
-        logger.debug('Permissions API endpoint:   Found User: ' + str(user_found) + ', found Contact: ' + str(contact_found))
- 
     try:
         if user:
             permissions = user.get_access_permissions()
@@ -257,9 +258,4 @@ def permissions(request, user_oidc_id: str) -> JsonResponse:
             {'more': more},
             status=404
         )
-
-    logger.debug('No contact nor user found!')
-    return create_error_response(
-        'No User nor Contact with such OIDC_ID was found',
-        status=404
-    )
+    
