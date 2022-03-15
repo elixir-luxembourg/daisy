@@ -7,7 +7,7 @@ class AccessForm(ModelForm):
     class Meta:
         model = Access
         fields = '__all__'
-        exclude = ['was_generated_automatically']
+        exclude = ['was_generated_automatically', 'created_by']
         widgets = {
             # Date pickers
             'granted_on': DateInput(attrs={'class': 'datepicker'}),
@@ -25,9 +25,11 @@ class AccessForm(ModelForm):
 
 
     field_order = [
+        'contact',
+        'user',
+        'project',
         'defined_on_locations',
         'access_notes',
-        'project',
         'granted_on'
         'grant_expires_on'
     ]
