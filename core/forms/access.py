@@ -7,7 +7,7 @@ class AccessForm(ModelForm):
     class Meta:
         model = Access
         fields = '__all__'
-        exclude = []
+        exclude = ['was_generated_automatically']
         widgets = {
             # Date pickers
             'granted_on': DateInput(attrs={'class': 'datepicker'}),
