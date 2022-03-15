@@ -34,6 +34,8 @@ class AccessCreateView(CreateView, AjaxViewMixin):
         self.object = form.save(commit=False)
         if self.dataset:
             self.object.dataset = self.dataset
+        if not self.request.user.is_anonymous:
+            self.object.created_by = self.request.user
         self.object.save()
         messages.add_message(self.request, messages.SUCCESS, "Access created")
         return super().form_valid(form)
