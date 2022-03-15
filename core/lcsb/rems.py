@@ -24,8 +24,13 @@ logger = DaisyLogger(__name__)
 if getattr(settings, 'KEYCLOAK_INTEGRATION', False) == True:
     urllib3.disable_warnings()
     keycloak_config = get_keycloak_config_from_settings()
-    keycloak_backend = KeycloakSynchronizationMethod(keycloak_config)
-    synchronizer = CachedKeycloakAccountSynchronizer(keycloak_backend)
+    try:
+        keycloak_backend = KeycloakSynchronizationMethod(keycloak_config)
+        synchronizer = CachedKeycloakAccountSynchronizer(keycloak_backend)
+    except Exception as ex:
+        logger.error(f'Keycloak integration failed to initialize!  {ex}')
+        logger.error('Falling back to the dummy synchronizer...')
+        synchronizer = DummyAccountSynchronizer()    
 else:
     synchronizer = DummyAccountSynchronizer()
 
