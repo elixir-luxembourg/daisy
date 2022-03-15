@@ -137,16 +137,6 @@ class Access(CoreModel):
         else:
             return f'Access ({self.status}) to dataset {self.dataset.title} given to a contact: {self.user}/{self.access_notes}'
 
-
-    def is_active(self):
-        if self.status != StatusChoices.active:
-            return False
-
-        if self.grant_expires_on != None and self.grant_expires_on < datetime.now():
-            return False
-        
-        return True
-
     def delete(self, force:bool=False):
         self.status = StatusChoices.terminated
         self.save()
@@ -170,15 +160,24 @@ class Access(CoreModel):
         
     @staticmethod
     def _filter_expired(accesses) -> List[str]:
-        # TODO: Change to is_active
+        # For the performance reasons it does not use is active
 
         # The ones that are not expired yet
-        non_expired_accesses = accesses.filter(grant_expires_on__gte=datetime.now())
+        non_expired_accesses = accesses.filter(grant_expires_on__gte=datetime.now(), status=StatusChoices.active)
         non_expired_accesses_names = [access.dataset.elu_accession for access in non_expired_accesses]
 
         # The ones that don't have the expiration date
-        accesses_without_expiration = accesses.filter(grant_expires_on__isnull=True)
+        accesses_without_expiration = accesses.filter(grant_expires_on__isnull=True, status=StatusChoices.active)
         accesses_without_expiration_names = [access.dataset.elu_accession for access in accesses_without_expiration]
 
         # Remove the duplicates
         return list(set(non_expired_accesses_names + accesses_without_expiration_names))
+
+    def is_active(self):
+        if self.status != StatusChoices.active:
+            return False
+
+        if self.grant_expires_on != None and self.grant_expires_on < datetime.now():
+            return False
+        
+        return True

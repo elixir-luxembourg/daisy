@@ -11,7 +11,7 @@ from django.http import HttpRequest
 
 from core.synchronizers import DummyAccountSynchronizer
 from core.lcsb.oidc import get_keycloak_config_from_settings, KeycloakSynchronizationMethod, CachedKeycloakAccountSynchronizer
-from core.models.access import Access
+from core.models.access import Access, StatusChoices
 from core.models.contact import Contact
 from core.models.dataset import Dataset
 from core.models.user import User
@@ -172,7 +172,8 @@ def create_rems_entitlement(obj: Union[Access, User],
             access_notes=notes,
             granted_on=datetime.now(),
             was_generated_automatically=True,
-            created_by=system_rems_user
+            created_by=system_rems_user,
+            status=StatusChoices.active
         )
     elif type(obj) == Contact:
         new_logbook_entry = Access(
@@ -181,7 +182,8 @@ def create_rems_entitlement(obj: Union[Access, User],
             access_notes=notes,
             granted_on=datetime.now(),
             was_generated_automatically=True,
-            created_by=system_rems_user
+            created_by=system_rems_user,
+            status=StatusChoices.active
         )
     else:
         klass = obj.__class__.__name__
