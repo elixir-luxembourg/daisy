@@ -215,9 +215,9 @@ def force_keycloak_synchronization(request) -> JsonResponse:
         logger.debug('Forcing refreshing the account information from Keycloak...')
         synchronizer.synchronize()
         logger.debug('...successfully refreshed the information from Keycloak!')
-        return JsonResponse('OK', status=200, safe=False)
+        return JsonResponse(f'OK ({synchronizer.__class__.__name__})', status=200, safe=False)
     except Exception as ex:
-        return JsonResponse('Something went wrong: ' + str(ex), status=500, safe=False)
+        return JsonResponse(f'Something went wrong (using: {synchronizer.__class__.__name__}): {ex}', status=500, safe=False)
 
 @public
 @csrf_exempt
