@@ -61,7 +61,7 @@ class KeycloakSynchronizationMethod(AccountSynchronizationMethod):
 
     def test_connection(self) -> bool:
         try:
-            config_well_know = self.get_keycloak_admin_connection().well_know()
+            _ = self.get_keycloak_admin_connection().users_count()
             return True
         except:
             return False
