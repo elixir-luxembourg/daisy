@@ -43,7 +43,7 @@ requirements = [
 ]
 
 test_requirements = [
-    'coverage==5.0a5', 'factory_boy==2.12.0', 'mockldap==0.3.0', 'pytest-django==3.10.0', 'pytest-solr==1.0a1'
+    'coverage==5.0a5', 'factory_boy==2.12.0', 'mockldap==0.3.0', 'pytest-django==4.5.2', 'pytest-solr==1.0a1'
 ]
 
 dev_requirements = [
