@@ -68,7 +68,7 @@ services:
 
     # task monitoring
     flower:
-        image: mher/flower:0.9.5
+        image: mher/flower:0.9.7
         command: --broker=amqp://guest:guest@mq:5672// --broker_api=http://guest:guest@mq:15672/api/
         ports:
             - "5555:5555"
@@ -84,7 +84,7 @@ services:
         depends_on:
             - db
             - mq
-        command: "celery worker -A elixir_daisy.celery_app --loglevel=DEBUG"
+        command: "celery -A elixir_daisy.celery_app worker --loglevel=DEBUG"
     # celery beat
     beat:
         build: .
@@ -95,7 +95,7 @@ services:
         depends_on:
             - db
             - mq
-        command: " celery -A elixir_daisy beat -l debug --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+        command: " celery -A elixir_daisy beat --loglevel=DEBUG --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler"
 
 
 volumes:

@@ -18,7 +18,7 @@ requirements = [
     'xlsxwriter==1.2.9',
     'django-formtools==2.1',
     'django-guardian==1.5.0',
-    'django-haystack==2.8.1',
+    'django-haystack==3.1',
     'django-reversion==3.0.3',
     'django-stronghold==0.3.0',
     'django-sql-explorer==1.1.3',
@@ -34,8 +34,8 @@ requirements = [
     'pytest-runner==5.1',
     'python-keycloak==0.26.1',
     'pytz==2018.9',
-    'celery==5.2.2',
-    'celery-haystack==0.10',
+    'celery==5.1.2',
+    'celery-haystack-ng',
     'setuptools-scm==3.3.3',
     'django-model-utils==3.1.2',
     'django-sequences==2.2',
@@ -43,7 +43,7 @@ requirements = [
 ]
 
 test_requirements = [
-    'coverage==5.0a5', 'factory_boy==2.12.0', 'mockldap==0.3.0', 'pytest==7.0.1', 'pytest-django==3.10.0', 'pytest-solr==1.0a1'
+    'coverage==5.0a5', 'factory_boy==2.12.0', 'mockldap==0.3.0', 'pytest==7.0.1', 'pytest-django==3.10.0', 'pytest-solr==1.0a1', 'pytest-celery'
 ]
 
 dev_requirements = [
