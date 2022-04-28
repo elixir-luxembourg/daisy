@@ -34,7 +34,7 @@ requirements = [
     'pytest-runner==5.1',
     'python-keycloak==0.26.1',
     'pytz==2018.9',
-    'celery==4.4.7',
+    'celery==5.2.2',
     'celery-haystack==0.10',
     'setuptools-scm==3.3.3',
     'django-model-utils==3.1.2',
