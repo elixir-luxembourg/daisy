@@ -1,0 +1,41 @@
+                <h2 class="card-title"><span><i class="material-icons">link</i></span> Documents</h2>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th style="max-width: 200px; overflow: auto">Document Type</th>
+                        <th style="max-width: 200px; min-width:120px; overflow: auto">Expiry</th>
+                        <th>Notes</th>
+                        <th style="max-width: 400px; overflow: auto">File</th>
+                        <th style="max-width: 200px; overflow: auto"><small>Size<small></th>
+                        
+                        
+                        {% if can_edit %}
+                            <th style="width:7em">Actions</th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for file in datafiles %}
+                        <tr>
+                            <td style="max-width: 200px; overflow: auto"><span class="col-xs-4 text-center">{{ file.domain_type  }}</span></td>
+                            <td style="max-width: 200px; overflow: auto"><span class="col-xs-4 text-center">{{ file.expiry_date | default:'-' }}</span></td>
+                            <td><span class="col-xs-4 text-center">{{ file.content_notes | default:'-' }}</span>
+                            <td style="max-width: 400px; overflow: auto"><a href="{% url 'document_download' pk=file.id %}">{{ file.shortname}}</a></td>
+                            <td><small><span class="col-xs-4 text-center">{{ file.size | filesizeformat  }}</span></small></td>
+                            <td>
+                                <a data-toggle="modal" id="btnupdate" class="jsBtn clickable"
+                                   data-target="#modal"
+                                   data-modal-title="Update document"
+                                   data-ajax-url="{% url "document_edit" pk=file.id %}"
+                                   title="Update document">
+                                    <i class="material-icons">edit</i>
+                                </a>
+                                <i title="Delete document" class="material-icons red clickable" data-method="delete"
+                                   data-confirmation = "delete"
+                                   data-parent-to-remove="tr"
+                                   data-url="{% url 'document_delete' pk=file.id  %}">delete_forever</i>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
