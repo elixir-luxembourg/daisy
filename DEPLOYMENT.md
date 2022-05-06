@@ -174,14 +174,17 @@ User=daisy
 Group=daisy
 EnvironmentFile=/home/daisy/config/celery.conf
 WorkingDirectory=/home/daisy/daisy
-ExecStart=/bin/sh -c '${CELERY_BIN} multi start ${CELERYD_NODES} \
-  -A ${CELERY_APP} --pidfile=${CELERYD_PID_FILE} \
-  --logfile=${CELERYD_LOG_FILE} --loglevel=${CELERYD_LOG_LEVEL} ${CELERYD_OPTS}'
-ExecStop=/bin/sh -c '${CELERY_BIN} multi stopwait ${CELERYD_NODES} \
+ExecStart=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP} \
+  multi start ${CELERYD_NODES} --loglevel=${CELERYD_LOG_LEVEL} \
+  --pidfile=${CELERYD_PID_FILE} \
+  --logfile=${CELERYD_LOG_FILE} ${CELERYD_OPTS}'
+ExecStop=/bin/sh -c '${CELERY_BIN} \
+  multi stopwait ${CELERYD_NODES} \
   --pidfile=${CELERYD_PID_FILE}'
-ExecReload=/bin/sh -c '${CELERY_BIN} multi restart ${CELERYD_NODES} \
-  -A ${CELERY_APP} --pidfile=${CELERYD_PID_FILE} \
-  --logfile=${CELERYD_LOG_FILE} --loglevel=${CELERYD_LOG_LEVEL} ${CELERYD_OPTS}'
+ExecReload=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP} \
+  multi restart ${CELERYD_NODES} --loglevel=${CELERYD_LOG_LEVEL} 
+  --pidfile=${CELERYD_PID_FILE} \
+  --logfile=${CELERYD_LOG_FILE} ${CELERYD_OPTS}'
 
 [Install]
 WantedBy=multi-user.target
@@ -231,8 +234,9 @@ User=daisy
 Group=daisy
 EnvironmentFile=/home/daisy/config/celerybeat.conf
 WorkingDirectory=/home/daisy/daisy
-ExecStart=/bin/sh -c '${CELERY_BIN} beat -A ${CELERY_APP} --pidfile=${CELERYBEAT_PID_FILE} \
-  --logfile=${CELERYBEAT_LOG_FILE} --loglevel=${CELERYBEAT_LOG_LEVEL} ${CELERYBEAT_OPTS}'
+ExecStart=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP} beat \
+  --pidfile=${CELERYBEAT_PID_FILE} --logfile=${CELERYBEAT_LOG_FILE} \
+  ${CELERYBEAT_OPTS} --loglevel=${CELERYBEAT_LOG_LEVEL}'
 ExecStop=/bin/kill -s TERM $MAINPID
 
 [Install]
@@ -661,3 +665,7 @@ systemctl start gunicorn
 systemctl start celery_worker
 systemctl start celery_beat 
 ```
+
+# Migration
+## DAISY 1.6.0 to 1.7.0
+ * Due to the change of Celery to 5.X, you must update Celery service definitions (please take a look on Celery section in this document). Luckily this is only a small change - it's just the order of parameters that has changed.
