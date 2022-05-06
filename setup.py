@@ -7,7 +7,7 @@ except ImportError:
     from distutils.core import setup
 
 requirements = [
-    'Django==2.2.24',
+    'Django==2.2.28',
     'django-auth-ldap==1.7.0',
     'django-celery-beat==2.2.0',
     'django-celery-results==2.0.1',
@@ -25,7 +25,7 @@ requirements = [
     'django-widget-tweaks==1.4.3',
     'django-countries==5.3.3',
     'gunicorn==19.9.0',
-    'ipython==7.3.0',
+    'ipython==7.16.3',
     'libsass==0.17.0',
     'ontobio==1.7.2',
     'yamldown>=0.1.8',
@@ -43,7 +43,7 @@ requirements = [
 ]
 
 test_requirements = [
-    'coverage==5.0a5', 'factory_boy==2.12.0', 'mockldap==0.3.0', 'pytest-django==3.10.0', 'pytest-solr==1.0a1'
+    'coverage==5.0a5', 'factory_boy==2.12.0', 'mockldap==0.3.0', 'pytest==7.0.1', 'pytest-django==3.10.0', 'pytest-solr==1.0a1'
 ]
 
 dev_requirements = [
