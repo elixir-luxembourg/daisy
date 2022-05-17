@@ -17,7 +17,7 @@
                     <tbody>
                     {% for file in datafiles %}
                         <tr>
-                            <td style="max-width: 200px; overflow: auto"><span class="col-xs-4 text-center">{{ file.domain_type  }}</span></td>
+                            <td style="max-width: 200px; overflow: auto"><span class="col-xs-4 text-center">{{ file.get_domain_type_display }}</span></td>
                             <td style="max-width: 200px; overflow: auto"><span class="col-xs-4 text-center">{{ file.expiry_date | default:'-' }}</span></td>
                             <td><span class="col-xs-4 text-center">{{ file.content_notes | default:'-' }}</span>
                             <td style="max-width: 400px; overflow: auto"><a href="{% url 'document_download' pk=file.id %}">{{ file.shortname}}</a></td>
