@@ -7,7 +7,7 @@ except ImportError:
     from distutils.core import setup
 
 requirements = [
-    'Django==2.2.27',
+    'Django==2.2.28',
     'django-auth-ldap==1.7.0',
     'django-celery-beat==2.2.0',
     'django-celery-results==2.0.1',
@@ -18,7 +18,7 @@ requirements = [
     'xlsxwriter==1.2.9',
     'django-formtools==2.1',
     'django-guardian==1.5.0',
-    'django-haystack==2.8.1',
+    'django-haystack==3.1',
     'django-reversion==3.0.3',
     'django-stronghold==0.3.0',
     'django-sql-explorer==1.1.3',
@@ -36,8 +36,8 @@ requirements = [
     'pytz==2018.9',
     'requests==2.25.1',
     'urllib3==1.26.5',
-    'celery==4.4.7',
-    'celery-haystack==0.10',
+    'celery==5.1.2',
+    'celery-haystack-ng',
     'setuptools-scm==3.3.3',
     'django-model-utils==3.1.2',
     'django-sequences==2.2',
@@ -45,7 +45,7 @@ requirements = [
 ]
 
 test_requirements = [
-    'coverage==5.0a5', 'factory_boy==2.12.0', 'mockldap==0.3.0', 'pytest-django==3.10.0', 'pytest-solr==1.0a1'
+    'coverage==5.0a5', 'factory_boy==2.12.0', 'mockldap==0.3.0', 'pytest==7.0.1', 'pytest-django==3.10.0', 'pytest-solr==1.0a1', 'pytest-celery'
 ]
 
 dev_requirements = [
