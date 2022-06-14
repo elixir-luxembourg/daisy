@@ -3,6 +3,7 @@ import pytest
 from typing import Dict, List
 
 from core.models import User
+from core.models.access import StatusChoices
 from core.lcsb.oidc import KeycloakAccountSynchronizer, KeycloakSynchronizationMethod
 from core.lcsb.rems import create_rems_entitlement
 from core.models.access import Access
@@ -93,25 +94,6 @@ def test_keycloak_synchronization_config_validation():
         kc._create_connection({})
 
 
-def test_keycloak_synchronization():
-    mock = KeycloakSynchronizationMethodMock({}, False)
-    synchronizer = KeycloakAccountSynchronizer(mock)
-
-    current_external_accounts = mock.get_list_of_users()
-    synchronizer.current_external_accounts = current_external_accounts
-    accounts_to_be_created, accounts_to_be_patched, contacts_to_be_patched = synchronizer.compare()
-
-    assert len(accounts_to_be_created) == 2, "There should be 2 new accounts to be added" 
-    assert len(accounts_to_be_patched) == 0, "There should be no accounts to be patched"
-    assert len(contacts_to_be_patched) == 0, "There should be no contacts to be patched"
-    
-    contact_count = Contact.objects.count()
-    synchronizer._add_contacts(accounts_to_be_created)
-    synchronizer._patch_users(accounts_to_be_patched)
-    new_contact_count = Contact.objects.count()
-
-    assert contact_count + 2 == new_contact_count
-
 def test_add_rems_entitlements():
     elu_accession='12345678'
 
@@ -137,10 +119,10 @@ def test_permissions():
     dataset = DatasetFactory(title='Test', local_custodians=[user], elu_accession='123', is_published=True)
     dataset.save()
 
-    access = Access(access_notes='Access contact', contact=contact, dataset=dataset)
+    access = Access(access_notes='Access contact', contact=contact, dataset=dataset, status=StatusChoices.active)
     access.save()
 
-    access2 = Access(access_notes='Access user', user=user, dataset=dataset)
+    access2 = Access(access_notes='Access user', user=user, dataset=dataset, status=StatusChoices.active)
     access2.save()
     
     assert '123' in user.get_access_permissions()

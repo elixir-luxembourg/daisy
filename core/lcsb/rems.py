@@ -160,15 +160,22 @@ def create_rems_entitlement(obj: Union[Access, User],
 
     dataset = Dataset.objects.get(elu_accession=dataset_id)
 
+    system_rems_user = User.objects.filter(
+        username='system::REMS'
+    )
+
     # The password is not a hash, therefore it is
     # not possible to log into this account
-    system_rems_user, _ = User.objects.get_or_create(
-        username='system::REMS',
-        first_name=':REMS:',
-        last_name=':System Account:',
-        password='this_is_incorrect',
-        email='lcsb-sysadmins+REMS@uni.lu'
-    )
+    if system_rems_user.count() == 0:
+        system_rems_user = User.objects.create(
+            username='system::REMS',
+            first_name=':REMS:',
+            last_name=':System Account:',
+            password='this is an invalid hash',
+            email='lcsb-sysadmins+REMS@uni.lu'
+        )
+    else:
+        system_rems_user = system_rems_user.first()
     
     if type(obj) == User:
         new_logbook_entry = Access(
