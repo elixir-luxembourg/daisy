@@ -140,7 +140,7 @@ def handle_rems_entitlement(data: Dict[str, str]) -> bool:
     
     # At this moment, we didn't find any User nor Contact with given OIDC_ID nor email
     # Will attempt to create a new contact then
-    Contact.get_or_create(email, user_oidc_id, resource)
+    Contact.get_or_create_from_rems(email, user_oidc_id)
 
     # TODO: E2E: Save and display a notification to DataStewards
     return True

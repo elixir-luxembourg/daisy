@@ -111,7 +111,7 @@ class Contact(CoreModel):
         return d
 
     @classmethod
-    def get_or_create(cls, email: str, oidc_id: str, resource: str):
+    def get_or_create_from_rems(cls, email: str, oidc_id: str):
         try:
             if cls.objects.filter(oidc_id=oidc_id).count() == 1:
                 return cls.objects.get(oidc_id=oidc_id)
