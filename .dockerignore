@@ -4,17 +4,22 @@
 *.sqlite3
 *.iml
 elixir_daisy/settings_local.py
+core/fixtures/h*.json
+
+
+log/*.log
+log/*.log*
+documents
+
+static/*
 static/css/*
+
+
 web/static/vendor/node_modules/*
+web/static/css/daisy.min.css
+web/static/css/daisy.css
 
-
-
-/log/*.log
-/log/*.log*
-/documents
-/web/static/css/daisy.min.css
-/web/static/css/daisy.css
-
+datasets
 
 # The rest was created by https://www.gitignore.io/api/python
 
@@ -174,6 +179,5 @@ fabric.properties
 
 # Sonarlint plugin
 .idea/sonarlint
-
 
 # End of https://www.gitignore.io/api/intellij

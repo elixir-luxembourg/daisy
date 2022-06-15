@@ -116,9 +116,9 @@ class Dataset(CoreTrackedModel):
         storage_dicts = []
         for dl in self.data_locations.all():
             storage_dicts.append({
-                "platform": dl.category.name,
-                 "location": dl.location_description,
-                 "accesses": [ acc.access_notes for acc in dl.accesses.all()]
+                "platform": dl.backend.name,
+                "location": dl.location_description,
+                "accesses": [ acc.access_notes for acc in dl.accesses.all()]
             })
 
         transfer_dicts = []
@@ -143,7 +143,8 @@ class Dataset(CoreTrackedModel):
             "legal_bases": [x.to_dict() for x in self.legal_basis_definitions.all()],
             "storages": storage_dicts,
             "transfers": transfer_dicts,
-            "contacts": contact_dicts
+            "contacts": contact_dicts,
+            "metadata": self.scientific_metadata
         }
         return base_dict
 

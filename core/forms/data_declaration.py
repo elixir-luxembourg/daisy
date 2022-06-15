@@ -72,7 +72,7 @@ class DataDeclarationEditForm(forms.ModelForm):
         return title
 
 
-RestrictionFormset = forms.formset_factory(UseRestrictionForm, extra=1, min_num=0, max_num=10)
+RestrictionFormset = forms.formset_factory(UseRestrictionForm, extra=1, min_num=0, max_num=25)
 
 
 class BaseDataDeclarationSubForm(forms.Form):

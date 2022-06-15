@@ -1,7 +1,11 @@
+from typing import Tuple, Optional
+
 from django.http import JsonResponse
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.views.generic.edit import FormMixin
 from sequences import get_next_value
+
+from core.models import Contact, User
 
 
 class AjaxViewMixin(SingleObjectTemplateResponseMixin, FormMixin):
@@ -38,3 +42,20 @@ def get_client_ip(request):
 def generate_elu_accession(_=None):
     elu_accession = 'ELU_I_' + str(get_next_value('elu_accession', initial_value=100))
     return elu_accession
+
+def get_user_or_contact_by_oidc_id(user_oidc_id) -> Tuple[bool, bool, Optional[User], Optional[Contact]]:
+    user, contact = None, None
+    
+    try:
+        user = User.objects.get(oidc_id=user_oidc_id)
+        user_found = True
+    except User.DoesNotExist as e:
+        user_found = False
+
+    try:
+        contact = Contact.objects.get(oidc_id=user_oidc_id)
+        contact_found = True
+    except Contact.DoesNotExist as e:
+        contact_found = False
+
+    return user_found, contact_found, user, contact

@@ -25,7 +25,7 @@ from web.views.partner import PartnerCreateView, PartnerDelete, PartnerDetailVie
                               PartnerEditView, partner_search_view, \
                               publish_partner, unpublish_partner
 from web.views.projects import ProjectCreateView, ProjectEditView, ProjectDetailView, \
-                               ProjectDelete, publish_project, unpublish_project
+                               ProjectDelete, publish_project, unpublish_project, dsw_list_projects
 from web.views.publication import PublicationCreateView, PublicationListView, \
                                   PublicationEditView, add_publication_to_project, \
                                   remove_publication_from_project, pick_publication_for_project
@@ -46,12 +46,14 @@ web_urls = [
     # API urls
     path('api/cohorts', api.cohorts, name="api_cohorts"),
     path('api/datasets', api.datasets, name="api_datasets"),
+    path('api/contracts', api.contracts, name="api_contracts"),
     path('api/partners', api.partners, name="api_partners"),
     path('api/permissions/<str:user_oidc_id>', api.permissions, name='api_permissions'),
     path('api/projects', api.projects, name="api_projects"),
     path('api/rems', api.rems_endpoint, name='api_rems_endpoint'),
     path('api/termsearch/<slug:category>', api.termsearch, name="api_termsearch"),
     path('api/users', api.users, name="api_users"),
+    path('api/keycloak/force', api.force_keycloak_synchronization, name='api_keycloak_force'),
 
     # Contracts and partner roles
     path('contracts/', contract_list, name="contracts"),
@@ -189,4 +191,7 @@ web_urls = [
     path('publications/', PublicationListView.as_view(), name="publications"),
     path('publications/add/', PublicationCreateView.as_view(), name='publication_add'),
     path('publications/<int:pk>/edit', PublicationEditView.as_view(), name='publication_edit'),
+    
+    # Integrations
+    path('integrations/dsw/list-projects', dsw_list_projects, name="integrations_dsw_projects")
 ]

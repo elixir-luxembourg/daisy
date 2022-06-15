@@ -47,6 +47,7 @@ class ProjectsImporter(BaseImporter):
         has_erp = project_dict.get('has_institutional_ethics_approval', False)
         cner_notes = project_dict.get('national_ethics_approval_notes', None)
         erp_notes = project_dict.get('institutional_ethics_approval_notes', None)
+        metadata = project_dict.get('metadata', '{}') or '{}'
 
         try:
             project = get_project(elu_accession=elu_accession,
@@ -85,6 +86,7 @@ class ProjectsImporter(BaseImporter):
         self._process_date_attribute(project, project_dict, "start_date")
         self._process_date_attribute(project, project_dict, "end_date")
 
+        project.scientific_metadata = metadata
         project.save()
 
         local_custodians, local_personnel, external_contacts = self.process_contacts(project_dict.get('contacts', []))

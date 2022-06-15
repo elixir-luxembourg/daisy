@@ -174,6 +174,9 @@ EMAIL_DONOTREPLY = 'do-not-reply@daisy.lcsb.uni.lu'
 SERVER_SCHEME = 'https'
 SERVER_URL = 'example.com'
 
+# email address to the support
+HELPDESK_EMAIL = 'support@example.com'
+
 # LOGGING settings
 # https://docs.djangoproject.com/en/2.0/topics/logging/
 LOGFILE_MAX_BYTES = 16777216  # 16MB
@@ -319,8 +322,11 @@ NOTIFICATIONS_DISABLED = True
 LOGIN_USERNAME_PLACEHOLDER = ''
 LOGIN_PASSWORD_PLACEHOLDER = ''
 
-# See: https://github.com/groveco/django-sql-explorer
+# Custom error view, see e.g. 
+# https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-CSRF_FAILURE_VIEW
+CSRF_FAILURE_VIEW = 'web.views.error_views.custom_csrf'
 
+# See: https://github.com/groveco/django-sql-explorer
 EXPLORER_CONNECTIONS = { 'Default': 'default' } 
 EXPLORER_DEFAULT_CONNECTION = 'default'
 
@@ -330,15 +336,37 @@ IMPORT_JSON_SCHEMAS_DIR = os.path.join(BASE_DIR, 'core', 'fixtures', 'json_schem
 
 # REMS (http://rems2docs.rahtiapp.fi/) Integration
 REMS_INTEGRATION_ENABLED = False
-REMS_MATCH_USERS_BY = 'auto'  # 'email', 'id' or 'auto'
 REMS_SKIP_IP_CHECK = False
 REMS_ALLOWED_IP_ADDRESSES = []  # use '*' to allow all, otherwise e.g. '127.0.0.1'...
 
 # ID service
 IDSERVICE_FUNCTION = 'web.views.utils.generate_elu_accession'
 
+# Data Stewardship Wizard - pop up integration
+DSW_ORIGIN = 'localhost'
+
+# Should the superuser be able to change the passwords in django-admin
+ENABLE_PASSWORD_CHANGE_IN_ADMIN = False
+
 # Import local settings to override those values based on the deployment environment
 try:
     from .settings_local import *
 except ImportError as e:
     pass
+
+if DEBUG:
+    # Removing staticfiles panel from Django Debug Toolbar
+    DEBUG_TOOLBAR_PANELS = [
+        'debug_toolbar.panels.versions.VersionsPanel',
+        'debug_toolbar.panels.timer.TimerPanel',
+        'debug_toolbar.panels.settings.SettingsPanel',
+        'debug_toolbar.panels.headers.HeadersPanel',
+        'debug_toolbar.panels.request.RequestPanel',
+        'debug_toolbar.panels.sql.SQLPanel',
+        'debug_toolbar.panels.templates.TemplatesPanel',
+        'debug_toolbar.panels.cache.CachePanel',
+        'debug_toolbar.panels.signals.SignalsPanel',
+        'debug_toolbar.panels.logging.LoggingPanel',
+        'debug_toolbar.panels.redirects.RedirectsPanel',
+        'debug_toolbar.panels.profiling.ProfilingPanel',
+    ]

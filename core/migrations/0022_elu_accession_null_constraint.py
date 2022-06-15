@@ -17,6 +17,15 @@ class Migration(migrations.Migration):
                     obj.elu_accession = None
                     obj.save()
 
+    def reverse_set_empty_elu_accession_to_null(apps, schema_editor):
+        classes_to_update = ['Cohort', 'Dataset', 'Partner', 'Project']
+        for class_to_update in classes_to_update:
+            model_to_update = apps.get_model('core', class_to_update)
+            for obj in model_to_update.objects.all():
+                if obj.elu_accession is None or obj.elu_accession == '':
+                    obj.elu_accession = '-'
+                    obj.save()
+
     operations = [
     # Make the elu_accession attribute nullable
         migrations.AlterField(
@@ -41,7 +50,7 @@ class Migration(migrations.Migration):
         ),
 
     # Set all elu_accession == '-' to null
-        migrations.RunPython(set_empty_elu_accession_to_null),
+        migrations.RunPython(set_empty_elu_accession_to_null, reverse_set_empty_elu_accession_to_null),
 
     # Make the elu_accession attribute nullable and unique
         migrations.AlterField(
