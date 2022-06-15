@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 
 from functools import wraps
 from io import StringIO
@@ -128,13 +129,15 @@ def termsearch(request, category):
 @csrf_exempt
 @protect_with_api_key
 def datasets(request):
+    objects = get_filtered_entities(request, 'Dataset')
+    objects = objects.filter(is_published=True)
+    if 'project_id' in request.GET:
+        project_id = request.GET.get('project_id', '')
+        objects = objects.filter(project__id=project_id)
     if 'project_title' in request.GET:
         project_title = request.GET.get('project_title', '')
-        datasets = Dataset.objects.filter(project__title__iexact=project_title, is_published=True)
-        exporter = DatasetsExporter(datasets)
-    else:
-        datasets = Dataset.objects.filter(is_published=True)
-        exporter = DatasetsExporter(datasets)
+        objects = objects.filter(project__title__iexact=project_title)
+    exporter = DatasetsExporter(objects=objects)
 
     try:
         buffer = exporter.export_to_buffer(StringIO())
@@ -146,17 +149,54 @@ def datasets(request):
             {'more': str(e)}
         )
 
+
+def is_valid_field_in_model(klass_name, field_name):
+    getattr(klass_name, field_name, False)
+
+def get_filtered_entities(request, model_name):
+    filters = {}
+    for filter_key in request.GET:
+        if not is_valid_field_in_model(model_name, filter_key): continue
+        filters[filter_key] = request.GET.get(filter_key)
+
+    return getattr(sys.modules['core.models'], model_name).objects.filter(**filters)
+
+@public
+@csrf_exempt
+@protect_with_api_key
+def contracts(request):
+    objects = get_filtered_entities(request, 'Contract')
+    objects = objects.filter(project__is_published=True)
+    if 'project_id' in request.GET:
+        project_id = request.GET.get('project_id', '')
+        objects = objects.filter(project__id=project_id)
+    object_dicts = []
+    for contract in objects:
+        cd = contract.to_dict()
+        cd["source"] = settings.SERVER_URL
+        object_dicts.append(cd)
+    objects_json_buffer = StringIO()
+    json.dump({"items": object_dicts}, objects_json_buffer, indent=4)
+
+    try:
+        return HttpResponse(objects_json_buffer.getvalue())
+    except Exception as e:
+        return create_error_response(
+            'Something went wrong during exporting the contracts',
+            {'more': str(e)}
+        )
+
 @public
 @csrf_exempt
 @protect_with_api_key
 def projects(request):
-    if 'title' in request.GET:
-        title = request.GET.get('title', '')
-        projects = Project.objects.filter(title__iexact=title, is_published=True)
-        exporter = ProjectsExporter(projects)
-    else:
-        projects = Project.objects.filter(is_published=True)
-        exporter = ProjectsExporter(projects)
+    objects = get_filtered_entities(request, 'Project')
+    objects = objects.filter(is_published=True)
+    if 'project_id' in request.GET:
+        project_id = request.GET.get('project_id', '')
+        objects = objects.filter(id=project_id)
+
+    exporter = ProjectsExporter(objects=objects)
 
     try:
         buffer = exporter.export_to_buffer(StringIO())
