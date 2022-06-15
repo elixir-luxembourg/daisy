@@ -25,7 +25,7 @@ other necessary information required for compliance with GDPR.
 
 {% if issues|length > 0 %}
  *** Issues found: *** {% for issue in issues %}
-    {{ issue.code }}: {{ issue.description }}  {{ issue.object_title }}  {{ issue.url }}
+    {{ issue.code }}: {{ issue.description }}  {{ issue.object_title }}  ({{ issue.url }})
 {% endfor %}
 {% endif %}
         

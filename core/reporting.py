@@ -18,7 +18,7 @@ from notification.email_sender import send_the_email
 
 def cast_to_queryset(object: Union[Model, List[Model], QuerySet], klass: Type = None) -> QuerySet:
     """
-    Casts the parameter to a queryset.
+    A helper function that casts the parameter to a queryset.
     Accepts:
      - the object (of Model)
      - a list of objects
@@ -107,7 +107,7 @@ class ReportRenderer:
     def render_txt(self) -> str:
         return self._render('report_email.txt')
     
-    def _render(self, template_name) -> str:
+    def _render(self, template_name: str) -> str:
         context = {
             'projects': self.projects,
             'datasets': self.datasets,
