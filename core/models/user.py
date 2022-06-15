@@ -228,18 +228,14 @@ class User(AbstractUser):
         return Access.find_for_user(self)
 
     @classmethod
-    def find_user_by_email_or_oidc_id(cls, email, oidc_id, method):
-        if method == 'email':
-            return cls.objects.get(email=email)
-        elif method == 'id':
+    def find_user_by_email_or_oidc_id(cls, email: str, oidc_id: str):
+        if cls.objects.filter(oidc_id=oidc_id).count() == 1:
             return cls.objects.get(oidc_id=oidc_id)
-        elif method == 'auto':
-            if cls.objects.filter(oidc_id=oidc_id).count() == 1:
-                return cls.objects.get(oidc_id=oidc_id)
-            if cls.objects.filter(email=email).count() == 1:
-                return cls.objects.get(email=email)
-            else:
-                message = f'There are either zero, or 2 and more users with such `email` and `oidc_id`!'
-                raise cls.DoesNotExist(message)
+        elif cls.objects.filter(oidc_id=oidc_id).count() > 1:
+            # TODO: E2E: Send a notification to the Data stewards
+            pass
+        if cls.objects.filter(email=email).count() == 1:
+            return cls.objects.get(email=email)
         else:
-            raise KeyError('Wrong method! Only `id`, `email` and `auto` implemented!')
+            message = f'There are either zero, or 2 and more users with such `email` and `oidc_id`!'
+            raise cls.DoesNotExist(message)

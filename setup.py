@@ -34,6 +34,8 @@ requirements = [
     'pytest-runner==5.1',
     'python-keycloak==0.26.1',
     'pytz==2018.9',
+    'requests==2.25.1',
+    'urllib3==1.26.5',
     'celery==5.1.2',
     'celery-haystack-ng',
     'setuptools-scm==3.3.3',

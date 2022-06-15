@@ -47,6 +47,10 @@ class StorageResourceAdmin(admin.ModelAdmin):
     form = StorageResourceForm
 
 
+class ContactAdmin(admin.ModelAdmin):
+    search_fields = ['first_name', 'last_name', 'oidc_id']
+    list_display = ('id', 'email', 'first_name', 'last_name', 'oidc_id', 'type')
+
 class DatasetAdmin(admin.ModelAdmin):
     search_fields = ['title']
     list_display = ('title', 'project', 'unique_id', 'elu_accession', 'is_published')
@@ -62,7 +66,7 @@ class ProjectAdmin(admin.ModelAdmin):
 admin.site.site_header = 'DAISY administration'
 admin.site.register(Access)
 admin.site.register(Cohort)
-admin.site.register(Contact)
+admin.site.register(Contact, ContactAdmin)
 admin.site.register(ContactType)
 admin.site.register(Contract)
 admin.site.register(DataDeclaration)

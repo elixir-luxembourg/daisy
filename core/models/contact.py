@@ -111,20 +111,15 @@ class Contact(CoreModel):
         return d
 
     @classmethod
-    def get_or_create(cls, email: str, oidc_id: str, resource: str, method: str):
+    def get_or_create_from_rems(cls, email: str, oidc_id: str):
         try:
-            if method == 'email':
-                return cls.objects.get(email=email)
-            elif method == 'id':
+            if cls.objects.filter(oidc_id=oidc_id).count() == 1:
                 return cls.objects.get(oidc_id=oidc_id)
-            elif method == 'auto':
-                if cls.objects.filter(oidc_id=oidc_id).count() == 1:
-                    return cls.objects.get(oidc_id=oidc_id)
-                if cls.objects.filter(email=email).count() == 1:
-                    return cls.objects.get(email=email)
-                else:
-                    message = f'There are either zero, or 2 and more contacts with such `email` and `oidc_id`!'
-                    raise ValueError(message)
+            if cls.objects.filter(email=email).count() == 1:
+                return cls.objects.get(email=email)
+            else:
+                message = f'There are either zero, or 2 and more contacts with such `email` and `oidc_id`!'
+                raise ValueError(message)
         except cls.DoesNotExist:
             contact_type = ContactType.objects.get_or_create(name='Other (imported from Keycloak)')
             new_object = cls(

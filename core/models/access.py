@@ -5,7 +5,17 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 
+from enumchoicefield import EnumChoiceField, ChoiceEnum
+
 from .utils import CoreModel
+from model_utils import Choices
+
+
+class StatusChoices(ChoiceEnum):
+    precreated = "Pre-created"
+    active = "Active"
+    suspended = "Suspended"
+    terminated = "Terminated"
 
 
 class Access(CoreModel):
@@ -98,6 +108,14 @@ class Access(CoreModel):
         help_text='If the access was given in the scope of a particular Project please specify.'
     )
 
+    status = EnumChoiceField(
+        StatusChoices,
+        blank=False,
+        null=False,
+        default=StatusChoices.precreated,
+        help_text='The status of the Access'
+    )
+
     user = models.ForeignKey('core.User', 
         related_name='user', 
         verbose_name='User that has the access',
@@ -115,9 +133,16 @@ class Access(CoreModel):
 
     def __str__(self):
         if self.contact:
-            return f'Access to dataset {self.dataset.title} given to a user: {self.user}/{self.access_notes}'
+            return f'Access ({self.status}) to dataset {self.dataset.title} given to a user: {self.user}/{self.access_notes}'
         else:
-            return f'Access to dataset {self.dataset.title} given to a contact: {self.user}/{self.access_notes}'
+            return f'Access ({self.status}) to dataset {self.dataset.title} given to a contact: {self.user}/{self.access_notes}'
+
+    def delete(self, force:bool=False):
+        self.status = StatusChoices.terminated
+        self.save()
+        if force:
+            super().delete()
+
 
     @property
     def display_locations(self):
@@ -135,13 +160,24 @@ class Access(CoreModel):
         
     @staticmethod
     def _filter_expired(accesses) -> List[str]:
+        # For the performance reasons it does not use is active
+
         # The ones that are not expired yet
-        non_expired_accesses = accesses.filter(grant_expires_on__gte=datetime.now())
+        non_expired_accesses = accesses.filter(grant_expires_on__gte=datetime.now(), status=StatusChoices.active)
         non_expired_accesses_names = [access.dataset.elu_accession for access in non_expired_accesses]
 
         # The ones that don't have the expiration date
-        accesses_without_expiration = accesses.filter(grant_expires_on__isnull=True)
+        accesses_without_expiration = accesses.filter(grant_expires_on__isnull=True, status=StatusChoices.active)
         accesses_without_expiration_names = [access.dataset.elu_accession for access in accesses_without_expiration]
 
         # Remove the duplicates
         return list(set(non_expired_accesses_names + accesses_without_expiration_names))
+
+    def is_active(self):
+        if self.status != StatusChoices.active:
+            return False
+
+        if self.grant_expires_on != None and self.grant_expires_on < datetime.now():
+            return False
+        
+        return True

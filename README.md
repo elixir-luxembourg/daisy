@@ -283,7 +283,6 @@ On the `Users` section, you can give any user a `staff` status and he will be ab
 | Key | Description | Expected values | Example value |
 |---|---|---|---|
 | `REMS_INTEGRATION_ENABLED` | A feature flag for REMS integration. In practice, there's a dedicated endpoint which processes the information from REMS about dataset entitlements | str | `True` |
-| `REMS_MATCH_USERS_BY` | A method of how the information from REMS is mapped to the Users - via emails (`email`) or OIDC ID (`id`), or both (`auto`) | str['auto','email','id'] | `False` |
 | `REMS_SKIP_IP_CHECK` | If set to `True`, there will be no IP checking if the request comes from trusted REMS instance. | bool | `False` |
 | `REMS_ALLOWED_IP_ADDRESSES` | A list of IP addresses that should be considered trusted REMS instances. Beware of configuration difficulties when using reverse proxies. The check can be skipped with `REMS_SKIP_IP_CHECK` | dict[str] | `['127.0.0.1', '192.168.1.101']` |
 

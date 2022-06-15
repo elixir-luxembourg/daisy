@@ -255,25 +255,33 @@ def force_keycloak_synchronization(request) -> JsonResponse:
         logger.debug('Forcing refreshing the account information from Keycloak...')
         synchronizer.synchronize()
         logger.debug('...successfully refreshed the information from Keycloak!')
-        return JsonResponse('OK', status=200, safe=False)
+        return JsonResponse(f'OK ({synchronizer.__class__.__name__})', status=200, safe=False)
     except Exception as ex:
-        return JsonResponse('Something went wrong: ' + str(ex), status=500, safe=False)
+        return JsonResponse(f'Something went wrong (using: {synchronizer.__class__.__name__}): {ex}', status=500, safe=False)
 
 @public
 @csrf_exempt
 @protect_with_api_key
 def permissions(request, user_oidc_id: str) -> JsonResponse:
+    system_daisy_user, created = User.objects.get_or_create(
+        username='system::daisy',
+    )
+    if created:
+        system_daisy_user.email = 'lcsb.sysadmins+daisy@uni.lu'
+        system_daisy_user.save()
+
     logger.debug('Permission API endpoint called...') 
     user_found, contact_found, user, contact = get_user_or_contact_by_oidc_id(user_oidc_id)
     logger.debug('...found User: ' + str(user_found) + ', found Contact: ' + str(contact_found))
 
     if not user_found and not contact_found:
-        logger.debug('Will attempt to synchronize')
-        synchronizer.synchronize()
+        message = 'No contact nor user found!'
+        logger.debug(message)
+        return create_error_response(
+            message,
+            status=404
+        )
 
-        user_found, contact_found, user, contact = get_user_or_contact_by_oidc_id(user_oidc_id)
-        logger.debug('Permissions API endpoint:   Found User: ' + str(user_found) + ', found Contact: ' + str(contact_found))
- 
     try:
         if user:
             permissions = user.get_access_permissions()
@@ -290,9 +298,4 @@ def permissions(request, user_oidc_id: str) -> JsonResponse:
             {'more': more},
             status=404
         )
-
-    logger.debug('No contact nor user found!')
-    return create_error_response(
-        'No User nor Contact with such OIDC_ID was found',
-        status=404
-    )
+    
