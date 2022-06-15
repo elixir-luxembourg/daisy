@@ -78,7 +78,7 @@ def handle_rems_entitlement(data: Dict[str, str]) -> bool:
     user_oidc_id = data.get('user')
     email = data.get('mail')
 
-    logger.debug(f'REMS :: * application_id: {application}, user_oidc_id: {user_oidc_id}, user_email: {email}, resource: {resource}')
+    logger.debug(f'REMS :: * data access request id: {application}, user_oidc_id: {user_oidc_id}, user_email: {email}, resource: {resource}')
 
     try:
         Dataset.objects.get(elu_accession=resource)
@@ -156,7 +156,7 @@ def create_rems_entitlement(obj: Union[Access, User],
     If it exists, it will add a new logbook entry (Access object) set to the current user/contact
     Assumes that the Dataset exists, otherwise will throw an exception.
     """
-    notes = f'Set automatically by REMS application #{application}'
+    notes = f'Set automatically by REMS data access request #{application}'
 
     dataset = Dataset.objects.get(elu_accession=dataset_id)
 
