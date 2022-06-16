@@ -30,7 +30,7 @@ def find_last_datasets_and_projects(the_user: AbstractBaseUser) -> Tuple[List[Da
 def dashboard(request: HttpRequest) -> HttpResponse:
     the_user = request.user
 
-    if the_user.is_anonymous():
+    if the_user.is_anonymous:
         last_datasets = last_projects = []
     else:
         last_datasets, last_projects = find_last_datasets_and_projects(the_user)
