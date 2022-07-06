@@ -58,26 +58,43 @@
     <div class="row mt-4">
         {#    Contracts    #}
         {% if contact.partners_roles.all %}
-            <div class="card ml-0 col-md-6">
+            <div class="card ml-0 col-md-12">
                 <div class="card-body">
                     <h2 class="card-title">Contracts with this contact</h2>
-                    <ul class="card-text list-group">
-                        {% for partner_role in contact.partners_roles.all %}
-                            <li class="list-group-item">
-                                <ul style="border:2px solid #a1a1a1;">
-                                    <li class="list-group-item">
-                                        <i class="material-icons">link</i><a
-                                            href="{% url 'contract' pk=partner_role.contract.id %}"><strong>{{ partner_role.contract|truncatechars:200 }}</strong></a>
-                                    </li>
-                                    <li class="list-group-item">
+                    <div class="card-text">
+                        <table class="table table-condensed">
+                            <tr>
+                                <th>Contract</th>
+                                <th>Partner</th>
+                                <th>Project</th>
+                                <th>Local custodians</th>
+                                <th>Remarks</th>
+                            </tr>
+                            <tbody>
+                                {% for partner_role in contact.partners_roles.all %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'contract' pk=partner_role.contract.id %}" class="btn btn-outline btn-primary">Go to contract</a>
+                                    </td>
+                                    <td>
+                                        {{ partner_role.partner.name }}
+                                    </td>
+                                    <td>
+                                        <strong alt="{{ partner_role.contract.project.title|truncatechars:75 }}">{{ partner_role.contract.project.acronym }}</strong>
+                                    </td>
+                                    <td>
                                         {% for custodian in partner_role.contract.local_custodians.all %}
                                             {{ custodian|truncatechars:100 }}
                                         {% endfor %}
-                                    </li>
-                                </ul>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                                    </td>
+                                    <td>
+                                        {{ partner_role.contract.comments }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         {% endif %}
