@@ -11,47 +11,133 @@
                     <dl>
                         <dt>Parent Dataset</dt>
                         <dd><a href="{% url 'dataset' pk=object.dataset.id %}">{{ object.dataset.title }}</a></dd>
+
                         {% if object.dataset.project %}
                             <dt>Project</dt>
                             <dd>
                                 <a href="{% url 'project' pk=object.dataset.project.pk %}">{{ object.dataset.project }}</a>
                             </dd>
                         {% endif %}
+
+                        <dt>Source Contract</dt>
+                        {% if object.contract %}
+                            <dd><a href="{% url 'contract' pk=object.contract.id %}">{{ object.contract }}</a></dd>
+                        {% else %}
+                            <dd>No source contract</dd>
+                        {% endif %}
+
+                        {% if object.partner %}
+                        <dt>Partner:</dt>
+                        <dd><a href="{% url 'partner' pk=object.partner.id %}">{{ object.partner | default:"-" }}</a></dd>
+                        {% endif %}
+
+                        <dt>Derived/re-used from:</dt>
+                        <dd>{{ object.data_types_generated.all | join:', '| default:"-" }}</dd>
+                        
+                        <dt>Source Notes</dt>
+                        <dd>{{ object.comments | default:"-" }}</dd>
+
+                        <dt>Source Cohort(s)</dt>
+                        <dd>{{ object.cohorts.all | join:', '| default:"-" }}</dd>
+                        
+                        {% if object.submission_id %}
+                        <dt>Submission ID</dt>
+                        <dd>{{ object.submission_id| default:"-" }}</dd>
+                        {% endif %}
+
+                        {% if object.other_external_id %}
+                        <dt>Other external IDs</dt>
+                        <dd>{{ object.other_external_id| default:"-" }}</dd>
+                        {% endif %}
+                    </dl>
+                </div>
+                <div class="col">
+                    <dl>
                         <dt>Data Types</dt>
                         <dd>
                             {% for data_type in object.data_types %}
                                 <span class="badge badge-pill badge-primary">{{ data_type }}</span>
                             {% endfor %}
                         </dd>
+
+                        <dt>Remarks on data types</dt>
+                        <dd>{{ object.data_types_notes }}</dd>
+
                         <dt>Subject Categories</dt>
-                        <dd>{{ object.subjects_category  | default:"" }}</dd>
+                        <dd>{{ object.subjects_category  | default:"-" }}</dd>
+
                         <dt>Special Subjects</dt>
                         <dd>{{ subjects_category.special_subjects | yesno:"yes,no,unknown" }}</dd>
 
-                    </dl>
-                </div>
-                <div class="col">
-                    <dl>
-                        {% if object.contract %}
-                            <dt>Source Contract</dt>
-                            <dd><a href="{% url 'contract' pk=object.contract.id %}">{{ object.contract }}</a></dd>
+                        {% if object.special_subjects_description %}
+                        <dt>Description of the nature of special subjects</dt>
+                        <dd>{{ object.special_subjects_description }}</dd>
                         {% endif %}
-                        {% if object.comments %}
-                            <dt>Source Notes</dt>
-                            <dd>{{ object.comments | default:"" }}</dd>
-                        {% endif %}
-                        <dt>Source Cohort(s)</dt>
-                        <dd>{{ object.cohorts.all | join:', ' }}</dd>
 
+                        <dt>Share category</dt>
+                        <dd>{{ object.share_category | default:"-" }}</dd> 
+
+                        <dt>Access procedure</dt>
+                        <dd>{{ object.access_procedure | default:"-" }}</dd>
+
+                        <dt>Consent status</dt>
+                        <dd>{{ object.consent_status | default:"-" }}</dd>
+
+                        <dt>Deidentification method</dt>
+                        <dd>{{ object.deidentification_method | default:"-" }}</dd>
                     </dl>
                 </div>
+
                 <div class="floating-buttons-absolute">
                     {% if can_edit %}
                         <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'data_declaration_edit' pk=object.id %}"><i
                                 class="material-icons">edit</i>
                         </a>
                     {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="row card-deck mt-4">
+        <div class="card ml-0 mr-0 col-md-12">
+            <div class="card-body">
+                <h2 class="card-title">Use restrictions</h2>
+                <hr />
+                <div class="card-text">
+                    <dt>Embargo date</dt>
+                    <dd>{{ object.embargo_date | default:"-" }}</dd>
+
+                    <dt>End of storage duration</dt>
+                    <dd>{{ object.end_of_storage_duration | default:"-" }}</dd>
+
+                    <dt>Storage duration criteria</dt>
+                    <dd>{{ object.storage_duration_criteria }}</dd>
+
+                    {% if object.data_use_restrictions %}
+                    <hr />
+                    
+                    <table class="table table-bordered table-condensed table-striped">
+                        <thead>
+                            <tr>
+                                <th>Use Category</th>
+                                <th>Use Restriction Rule</th>
+                                <th>Use Category note</th>
+                                <th>Use Restriction note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for use_restriction in object.data_use_restrictions.all %}
+                            <tr>
+                                <td>{{ use_restriction.restriction_class }}</td>
+                                <td>{{ use_restriction.use_restriction_rule }}</td>
+                                <td>{{ use_restriction.use_class_note }}</td>
+                                <td>{{ use_restriction.notes }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
                 </div>
             </div>
         </div>
