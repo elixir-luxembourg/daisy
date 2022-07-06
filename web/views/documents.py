@@ -98,13 +98,18 @@ def download_document(request, pk):
 @permission_required(Permissions.PROTECTED, (Document, 'pk', 'pk'))
 def delete_document(request, pk):
     document = get_object_or_404(Document, pk=pk)
+    
+    if not request.user.is_superuser and not document.can_user_delete(request.user):
+        msg = 'you are not a local custodian of the project/contract related to this document'
+        return JsonResponse({'message': msg}, status=403)
+
     # perm = PERMISSION_MAPPING[document.content_type.name].DELETE.value
     # if not request.user.has_perm(perm, document.content_object):
     #     raise PermissionDenied
     try:
         document.delete()
     except Exception as e:
-        return JsonResponse({'message': str(e)})
+        return JsonResponse({'message': str(e)}, status=403)
     return JsonResponse({'message': 'document deleted'})
 
 

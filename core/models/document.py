@@ -72,6 +72,18 @@ class Document(CoreModel):
     def size(self):
         return self.content.size
 
+    def can_user_delete(self, user):
+        # Don't allow people who are not local custodians to delete
+        if self.contracts.count():
+            for contract in self.contracts.all():
+                if user in contract.local_custodians.all():
+                    return True
+        if self.projects.count():
+            for project in self.projects.all():
+                if user in project.local_custodians.all():
+                    return True
+        return False
+
 @receiver(post_delete, sender=Document, dispatch_uid='document_delete')
 def document_cleanup(sender, instance, **kwargs):
     if hasattr(instance.content, 'path') and os.path.exists(instance.content.path):
