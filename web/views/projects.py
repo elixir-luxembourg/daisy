@@ -238,7 +238,7 @@ def project_contract_create(request, pk):
                     return redirect('project', pk=project.pk)
 
             messages.add_message(request, messages.SUCCESS, 'Contract created')
-            return redirect('project', pk=project.pk)
+            return redirect('contract', pk=contract.id)
         return render(request, 'projects/create_contract.html', {
             'project': project,
             'form': form,
