@@ -10,7 +10,7 @@ from django.contrib import messages
 from core.constants import Permissions, Groups
 from core.forms import DocumentForm
 from core.models import Document
-from core.permissions import permission_required
+from core.permissions import permission_required, permission_required_from_content_type
 from core.utils import DaisyLogger
 
 
@@ -26,7 +26,7 @@ def rfc5987_content_disposition(file_name):
     return header
 
 
-@permission_required(Permissions.PROTECTED, (Document, 'pk', 'pk'))
+@permission_required_from_content_type(Permissions.PROTECTED, content_type_attr='content_type', object_id_attr='object_id')
 def upload_document(request, object_id, content_type):
     log.debug('uploading document', post=request.POST, files=request.FILES)
     
