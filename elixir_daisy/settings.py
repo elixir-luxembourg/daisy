@@ -349,6 +349,11 @@ ENABLE_PASSWORD_CHANGE_IN_ADMIN = False
 # Note, that there are more implications regarding `is_authenticated` and `is_anonymous` etc.
 ANONYMOUS_USER_NAME = 'AnonymousUser'
 
+# Because of how Django-Guardian deals with AnonymousUsers, we need to provide
+# our own way of specifying which user is authenticated and which is not
+STRONGHOLD_USER_TEST_FUNC = lambda user: user.is_authenticated and  user.username != ANONYMOUS_USER_NAME
+
+
 # Import local settings to override those values based on the deployment environment
 try:
     from .settings_local import *
