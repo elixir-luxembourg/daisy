@@ -133,7 +133,7 @@ class User(AbstractUser):
         self.full_name = f'{self.first_name} {self.last_name}'
         super(User, self).save(*args, **kw)
 
-    def is_part_of(self, *args):
+    def is_part_of(self, *args) -> bool:
         """
         Check if user is part of the group or goups given.
         """
@@ -142,12 +142,12 @@ class User(AbstractUser):
         return self.groups.filter(name__in=args).exists()
 
     @property
-    def is_anonymous(self) -> False:
+    def is_anonymous(self) -> bool:
         anonymous_username = getattr(settings, 'ANONYMOUS_USER_NAME', 'AnonymousUser')
         return super().is_anonymous and self.username != anonymous_username
 
     @property
-    def is_authenticated(self) -> True:
+    def is_authenticated(self) -> bool:
         anonymous_username = getattr(settings, 'ANONYMOUS_USER_NAME', 'AnonymousUser')
         return super().is_authenticated and self.username != anonymous_username
 
