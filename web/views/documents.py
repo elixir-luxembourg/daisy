@@ -29,6 +29,11 @@ def rfc5987_content_disposition(file_name):
 @permission_required(Permissions.PROTECTED, (Document, 'pk', 'pk'))
 def upload_document(request, object_id, content_type):
     log.debug('uploading document', post=request.POST, files=request.FILES)
+    
+    if request.user.is_part_of(Groups.AUDITOR.value):
+        msg = 'You cannot upload document as AUDITOR.'
+        return JsonResponse({'message': msg}, status=403)
+    
     if request.method == 'POST':
         print(object_id, content_type)
         if not request.FILES:
