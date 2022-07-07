@@ -26,6 +26,7 @@ def rfc5987_content_disposition(file_name):
     return header
 
 
+@permission_required(Permissions.PROTECTED, (Document, 'pk', 'pk'))
 def upload_document(request, object_id, content_type):
     log.debug('uploading document', post=request.POST, files=request.FILES)
     if request.method == 'POST':
