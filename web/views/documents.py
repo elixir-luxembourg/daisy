@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404 , redirect, render
 from django.utils.http import urlquote
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
-from core.constants import Permissions, Groups
+from core.constants import Permissions
 from core.forms import DocumentForm
 from core.models import Document
 from core.permissions import permission_required, permission_required_from_content_type
@@ -27,13 +27,9 @@ def rfc5987_content_disposition(file_name):
 
 
 @permission_required_from_content_type(Permissions.PROTECTED, content_type_attr='content_type', object_id_attr='object_id')
+@permission_required_from_content_type(Permissions.EDIT, content_type_attr='content_type', object_id_attr='object_id')
 def upload_document(request, object_id, content_type):
     log.debug('uploading document', post=request.POST, files=request.FILES)
-    
-    if request.user.is_part_of(Groups.AUDITOR.value):
-        msg = 'You cannot upload document as AUDITOR.'
-        return JsonResponse({'message': msg}, status=403)
-    
     if request.method == 'POST':
         print(object_id, content_type)
         if not request.FILES:
@@ -102,13 +98,9 @@ def download_document(request, pk):
 
 @require_http_methods(["DELETE"])
 @permission_required(Permissions.PROTECTED, (Document, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, (Document, 'pk', 'pk'))
 def delete_document(request, pk):
     document = get_object_or_404(Document, pk=pk)
-    
-    if request.user.is_part_of(Groups.AUDITOR.value):
-        msg = 'You cannot delete document as AUDITOR.'
-        return JsonResponse({'message': msg}, status=403)
-
     # perm = PERMISSION_MAPPING[document.content_type.name].DELETE.value
     # if not request.user.has_perm(perm, document.content_object):
     #     raise PermissionDenied
