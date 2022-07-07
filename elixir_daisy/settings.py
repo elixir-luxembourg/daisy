@@ -344,6 +344,11 @@ IDSERVICE_FUNCTION = 'web.views.utils.generate_elu_accession'
 # Should the superuser be able to change the passwords in django-admin
 ENABLE_PASSWORD_CHANGE_IN_ADMIN = False
 
+# This is related to Django-Guardian, which needs to create an instance for AnonymousUser.
+# This value will be used for the user's username (most likely the ID will be equal to 1)
+# Note, that there are more implications regarding `is_authenticated` and `is_anonymous` etc.
+ANONYMOUS_USER_NAME = 'AnonymousUser'
+
 # Import local settings to override those values based on the deployment environment
 try:
     from .settings_local import *

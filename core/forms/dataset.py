@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.forms import ValidationError
 from core.models import Dataset, User, Project
@@ -20,7 +21,8 @@ class DatasetForm(forms.ModelForm):
         if 'dataset' in kwargs:
             dataset = kwargs.pop('dataset')
         super().__init__(*args, **kwargs)
-        self.fields['local_custodians'].queryset = User.objects.exclude(username='AnonymousUser')
+        anonymous_username = getattr(settings, 'ANONYMOUS_USER_NAME', 'AnonymousUser')
+        self.fields['local_custodians'].queryset = User.objects.exclude(username=anonymous_username)
         self.fields['elu_accession'].disabled = True
         projects = Project.objects.filter().all()
         project_choices = [(None, "---------------------")]

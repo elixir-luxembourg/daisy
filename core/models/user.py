@@ -1,6 +1,7 @@
 from datetime import datetime
-from typing import List
+from typing import List, Literal
 
+from django.conf import settings
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -139,6 +140,14 @@ class User(AbstractUser):
         if len(args) == 1:
             return self.groups.filter(name=args[0]).exists()
         return self.groups.filter(name__in=args).exists()
+
+    def is_anonymous(self) -> Literal[False]:
+        anonymous_username = getattr(settings, 'ANONYMOUS_USER_NAME', 'AnonymousUser')
+        return super().is_anonymous and self.username != anonymous_username
+
+    def is_authenticated(self) -> Literal[True]:
+        anonymous_username = getattr(settings, 'ANONYMOUS_USER_NAME', 'AnonymousUser')
+        return super().is_authenticated and self.username != anonymous_username
 
     # Permission management
     # ======================================================================
