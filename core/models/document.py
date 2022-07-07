@@ -72,6 +72,7 @@ class Document(CoreModel):
     def size(self):
         return self.content.size
 
+
 @receiver(post_delete, sender=Document, dispatch_uid='document_delete')
 def document_cleanup(sender, instance, **kwargs):
     if hasattr(instance.content, 'path') and os.path.exists(instance.content.path):

@@ -114,7 +114,6 @@ class DataDeclaration(CoreModel):
         null=False, 
         help_text='How has the data been de-identified, is it pseudonymized or anonymized?')
 
-
     embargo_date = models.DateField(verbose_name='Embargo date',
         blank=True,
         null=True,
