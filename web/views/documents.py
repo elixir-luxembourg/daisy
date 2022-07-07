@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404 , redirect, render
 from django.utils.http import urlquote
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
-from core.constants import Permissions
+from core.constants import Permissions, Groups
 from core.forms import DocumentForm
 from core.models import Document
 from core.permissions import permission_required
@@ -100,8 +100,8 @@ def download_document(request, pk):
 def delete_document(request, pk):
     document = get_object_or_404(Document, pk=pk)
     
-    if not request.user.is_superuser and not document.can_user_delete(request.user):
-        msg = 'you are not a local custodian of the project/contract related to this document'
+    if request.user.is_part_of(Groups.AUDITOR.value):
+        msg = 'You cannot delete document as AUDITOR.'
         return JsonResponse({'message': msg}, status=403)
 
     # perm = PERMISSION_MAPPING[document.content_type.name].DELETE.value
