@@ -181,7 +181,6 @@ LOGFILE_MAX_BYTES = 16777216  # 16MB
 LOG_DIR = os.path.join(BASE_DIR, 'log')
 LOG_LEVEL = DEBUG and 'DEBUG' or 'ERROR'
 
-STRONGHOLD_DEFAULTS = True
 STRONGHOLD_USER_TEST_FUNC = lambda user: user.is_authenticated and not user.username == 'AnonymousUser'
 
 LOGGING = {
