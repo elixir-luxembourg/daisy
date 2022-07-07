@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Literal
+from typing import List
 
 from django.conf import settings
 from django.contrib.auth.base_user import BaseUserManager
@@ -141,11 +141,13 @@ class User(AbstractUser):
             return self.groups.filter(name=args[0]).exists()
         return self.groups.filter(name__in=args).exists()
 
-    def is_anonymous(self) -> Literal[False]:
+    @property
+    def is_anonymous(self) -> False:
         anonymous_username = getattr(settings, 'ANONYMOUS_USER_NAME', 'AnonymousUser')
         return super().is_anonymous and self.username != anonymous_username
 
-    def is_authenticated(self) -> Literal[True]:
+    @property
+    def is_authenticated(self) -> True:
         anonymous_username = getattr(settings, 'ANONYMOUS_USER_NAME', 'AnonymousUser')
         return super().is_authenticated and self.username != anonymous_username
 
