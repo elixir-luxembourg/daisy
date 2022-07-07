@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.forms import ModelForm, DateInput, ValidationError
 from django.urls import reverse_lazy
 
@@ -59,6 +60,8 @@ class ProjectForm(ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs['label_suffix'] = ""
         super().__init__(*args, **kwargs)
+        anonymous_username = getattr(settings, 'ANONYMOUS_USER_NAME', 'AnonymousUser')
+
         instance = kwargs.get('instance', None)
 
         if 'data' not in kwargs:
@@ -83,8 +86,8 @@ class ProjectForm(ModelForm):
 
         self.fields['elu_accession'].disabled = True
         
-        self.fields['company_personnel'].queryset = User.objects.exclude(username='AnonymousUser')
-        self.fields['local_custodians'].queryset = User.objects.exclude(username='AnonymousUser')
+        self.fields['company_personnel'].queryset = User.objects.exclude(username=anonymous_username)
+        self.fields['local_custodians'].queryset = User.objects.exclude(username=anonymous_username)
 
         self.fields['disease_terms'].widget.attrs['class'] = 'ontocomplete'+ ' '+ self.fields['disease_terms'].widget.attrs.get('class','')
         self.fields['disease_terms'].widget.attrs['data-url'] = reverse_lazy('api_termsearch', kwargs={'category': TermCategory.disease.value})

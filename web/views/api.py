@@ -69,9 +69,14 @@ protect_with_api_key = create_protect_with_api_key_decorator(_global_api_key)
 Rapido API method, we should probably use django rest framework if we want to develop API further.
 """
 def users(request):
+    anonymous_username = getattr(settings, 'ANONYMOUS_USER_NAME', 'AnonymousUser')
     return JsonResponse({
-        "results": [{"id": user.pk, "text": str(user)}
-                    for user in User.objects.all() if not user.username == 'AnonymousUser']
+        "results": [
+            {
+                "id": user.pk, 
+                "text": str(user)
+            } for user in User.objects.all() if not user.username == anonymous_username
+        ]
     })
 
 @public

@@ -1,17 +1,19 @@
 from django import forms
+from django.conf import settings
 
 from guardian.shortcuts import get_objects_for_user, assign_perm, remove_perm
 
 from core.models import Dataset, User
 from core import constants
 
+anonymous_username = getattr(settings, 'ANONYMOUS_USER_NAME', 'AnonymousUser')
 
 def generate_user_permission_form(permission_cls):
     """
     Generate user/permissions form based on a permission set
     """
     class UserPermForm(forms.Form):
-        user = forms.ModelChoiceField(required=True, queryset=User.objects.exclude(username='AnonymousUser'))
+        user = forms.ModelChoiceField(required=True, queryset=User.objects.exclude(username=anonymous_username))
 
         def __init__(self, *args, **kwargs):
             """

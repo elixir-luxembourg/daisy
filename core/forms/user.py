@@ -5,6 +5,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from core.models import User
 
 
+anonymous_username = getattr(settings, 'ANONYMOUS_USER_NAME', 'AnonymousUser')
+
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
@@ -44,9 +46,10 @@ class UserEditFormManual(forms.ModelForm):
 class PickUserForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['personnel'] = forms.ChoiceField(label='Select user',
-                                                     choices=[(d.id, str(d)) for d in
-                                                              User.objects.exclude(username='AnonymousUser').all()])
+        self.fields['personnel'] = forms.ChoiceField(
+            label='Select user',
+            choices=[(d.id, str(d)) for d in
+                User.objects.exclude(username=anonymous_username).all()])
 
 
 class UserAuthForm(AuthenticationForm):

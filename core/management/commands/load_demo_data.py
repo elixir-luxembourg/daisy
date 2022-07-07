@@ -36,9 +36,11 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS("The `admin` superuser already existed."))
 
     def _reset_passwords(self):
+        anonymous_username = getattr(settings, 'ANONYMOUS_USER_NAME', 'AnonymousUser')
+
         users = User.objects.all()
         for user in users:
-            if not user.username == 'AnonymousUser':
+            if not user.username == anonymous_username:
                 user.is_active = True
                 user.is_staff = True
                 user.set_password('demo')
