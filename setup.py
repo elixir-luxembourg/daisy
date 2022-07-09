@@ -8,7 +8,7 @@ except ImportError:
 
 requirements = [
     'Django==3.2.0',
-    'django-auth-ldap==1.7.0',
+    'django-auth-ldap==3.0.0',
     'django-celery-beat==2.2.0',
     'django-celery-results==2.0.1',
     'django-compressor==2.2',
