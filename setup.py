@@ -36,7 +36,7 @@ requirements = [
     
     'gunicorn==19.9.0',
     'ipython==7.16.3',
-    'ontobio==2.7',
+    'ontobio==2.8.2',
     'yamldown>=0.1.8',
     'psycopg2-binary==2.9.3',
     'pysolr==3.8.1',
@@ -47,7 +47,6 @@ requirements = [
     'urllib3==1.26.5',
     'setuptools-scm==3.3.3',
     'jsonschema==3.2.0',
-    'marshmallow==3.17.0'
 ]
 
 test_requirements = [
