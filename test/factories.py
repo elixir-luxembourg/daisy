@@ -149,7 +149,7 @@ class DatasetFactory(factory.django.DjangoModelFactory):
                 self.local_custodians.add(user)
 
 
-class ContactTypeFactory(factory.DjangoModelFactory):
+class ContactTypeFactory(factory.django.DjangoModelFactory):
     """
     ContactType factory
     """
@@ -161,7 +161,7 @@ class ContactTypeFactory(factory.DjangoModelFactory):
     name = factory.Faker('job')
 
 
-class ContactFactory(factory.DjangoModelFactory):
+class ContactFactory(factory.django.DjangoModelFactory):
     """
     Contact factory
     """
@@ -178,7 +178,7 @@ class ContactFactory(factory.DjangoModelFactory):
     type = factory.SubFactory(ContactTypeFactory)
 
 
-class PartnerFactory(factory.DjangoModelFactory):
+class PartnerFactory(factory.django.DjangoModelFactory):
     """
     Partner factory
     """
@@ -194,7 +194,7 @@ class PartnerFactory(factory.DjangoModelFactory):
     name = factory.Faker('company')
 
 
-class GDPRRoleFactory(factory.DjangoModelFactory):
+class GDPRRoleFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'core.GDPRRole'
 
@@ -202,7 +202,7 @@ class GDPRRoleFactory(factory.DjangoModelFactory):
     name = factory.Iterator(["joint_controller", "controller", "processor"])
 
 
-class ContractFactory(factory.DjangoModelFactory):
+class ContractFactory(factory.django.DjangoModelFactory):
     """
     Collaboration factory
     """
