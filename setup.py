@@ -50,7 +50,13 @@ requirements = [
 ]
 
 test_requirements = [
-    'coverage==5.0a5', 'factory_boy==2.12.0', 'mockldap==0.3.0', 'pytest==7.0.1', 'pytest-django==3.10.0', 'pytest-solr==1.0a1', 'pytest-celery'
+    'coverage==6.4.1', 
+    'factory_boy==3.2.1', 
+    'mockldap==0.3.0', 
+    'pytest==7.1.2', 
+    'pytest-django==4.5.2', 
+    'pytest-solr==1.0a1', 
+    'pytest-celery',
 ]
 
 dev_requirements = [
