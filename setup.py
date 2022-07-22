@@ -51,7 +51,7 @@ requirements = [
 test_requirements = [
     'coverage==6.4.1', 
     'factory_boy==3.2.1',
-    'mockldap@git+https://github.com/isabella232/mockldap-1.git==0.3.0.post1',
+    'mockldap @ git+https://github.com/isabella232/mockldap-1.git==0.3.0.post1',
     'pytest==7.1.2', 
     'pytest-django==4.5.2', 
     'pytest-solr==1.0a1', 
