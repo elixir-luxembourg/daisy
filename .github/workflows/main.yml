@@ -28,7 +28,7 @@ jobs:
       run: docker-compose up -d --build
 
     - name: Execute the tests
-      run: docker-compose exec -T web "pip3 install git+https://github.com/jLebioda/mockldap2.git && python setup.py pytest"
+      run: docker-compose exec -T web python setup.py pytest
 
     - name: Stop containers
       if: always()
