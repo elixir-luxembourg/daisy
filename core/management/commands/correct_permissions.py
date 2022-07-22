@@ -9,7 +9,7 @@ from core.constants import Permissions
 
 
 class Command(BaseCommand):
-    help = 'applies the changes to permissions system (local custodians will receive PRIVILLEGED permission to a resource)'
+    help = 'applies the changes to permissions system (local custodians will receive PROTECTED permission to a resource)'
 
     def add_arguments(self, parser):
         parser.add_argument(
