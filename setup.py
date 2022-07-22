@@ -52,10 +52,11 @@ requirements = [
 test_requirements = [
     'coverage==6.4.1', 
     'factory_boy==3.2.1',
+    'mockldap==0.3.0',
     'pytest==7.1.2', 
     'pytest-django==4.5.2', 
     'pytest-solr==1.0a1', 
-    'pytest-celery',
+    'pytest-celery'
 ]
 
 dev_requirements = [

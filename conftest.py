@@ -62,7 +62,14 @@ directory = dict([
     make_fake_ldap_user('Data', 'Steward'),
     make_fake_ldap_user('External', 'User', is_external=True),
 ])
-    
+ 
+@pytest.fixture(autouse=True)
+def configure_mock_ldap():
+    from mockldap import MockLdap
+    mockldap = MockLdap(directory)
+    mockldap.start()
+    yield
+    mockldap.stop()   
 
 @pytest.fixture(autouse=True)
 def enable_db_access_for_all_tests(db):
