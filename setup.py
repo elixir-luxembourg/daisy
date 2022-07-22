@@ -46,12 +46,12 @@ requirements = [
     'urllib3==1.26.5',
     'setuptools-scm==3.3.3',
     'jsonschema==3.2.0',
+    'mockldap@git+https://github.com/jLebioda/mockldap2.git==0.3.0.post1lcsb',
 ]
 
 test_requirements = [
     'coverage==6.4.1', 
     'factory_boy==3.2.1',
-    'mockldap==0.3.0.post1',
     'pytest==7.1.2', 
     'pytest-django==4.5.2', 
     'pytest-solr==1.0a1', 
@@ -73,7 +73,7 @@ setup(
                      'elixir_daisy'},
     include_package_data=True,
     install_requires=requirements,
-    dependency_links=["https://codeload.github.com/isabella232/mockldap-1/legacy.tar.gz/master"],
+    dependency_links=["https://github.com/jLebioda/mockldap2.git"],
     zip_safe=False,
     keywords=['elixir', 'gdpr', 'data protection'],
     classifiers=[
