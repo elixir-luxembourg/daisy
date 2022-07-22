@@ -46,7 +46,7 @@ requirements = [
     'urllib3==1.26.5',
     'setuptools-scm==3.3.3',
     'jsonschema==3.2.0',
-    'mockldap@git+https://github.com/jLebioda/mockldap2.git',
+    'mockldap@git+https://github.com/elixir-luxembourg/mockldap2.git',
 ]
 
 test_requirements = [
