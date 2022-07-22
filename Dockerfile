@@ -2,7 +2,7 @@ FROM python:3.9.13-slim
 ENV PYTHONUNBUFFERED 1
 RUN mkdir -p /code/log /static \
     && apt-get update \
-    && apt-get install -yq libsasl2-dev python-dev libldap2-dev libssl-dev build-essential \
+    && apt-get install -yq libsasl2-dev python-dev libldap2-dev git libssl-dev build-essential \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /code
 
