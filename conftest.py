@@ -12,6 +12,10 @@ from core.constants import Groups as GroupConstants
 from core.management.commands.load_initial_data import Command as CommandLoadInitialData
 from core.permissions import PERMISSION_MAPPING
 
+from fakeldap import MockLDAP
+from unittest import mock
+
+
 FIXTURE_DIR = os.path.join(settings.BASE_DIR, 'core', 'fixtures')
 
 ## FAKE LDAP DIRECTORY
@@ -63,13 +67,20 @@ directory = dict([
     make_fake_ldap_user('External', 'User', is_external=True),
 ])
  
+_mock_ldap = MockLDAP(directory)
+ 
 @pytest.fixture(autouse=True)
 def configure_mock_ldap():
-    from mockldap import MockLdap
-    mockldap = MockLdap(directory)
-    mockldap.start()
+    # mock_ldap = MockLDAP(directory)
+    # mock_ldap.start()
+    ldap_patcher = mock.patch('ldap.initialize')
+    mock_ldap = ldap_patcher.start()
+    mock_ldap.return_value = _mock_ldap
+    
     yield
-    mockldap.stop()   
+    mock_ldap.reset()
+    mock_ldap.stop()
+
 
 @pytest.fixture(autouse=True)
 def enable_db_access_for_all_tests(db):
