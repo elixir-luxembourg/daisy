@@ -35,7 +35,7 @@ requirements = [
     'django-stronghold==0.3.0',
     'gunicorn==19.9.0',
     'ipython==7.16.3',
-    'ontobio==2.8.2',
+    'ontobio==2.8.3',
     'yamldown>=0.1.8',
     'psycopg2-binary==2.9.3',
     'pysolr==3.8.1',
@@ -51,8 +51,7 @@ requirements = [
 test_requirements = [
     'coverage==6.4.1', 
     'factory_boy==3.2.1',
-    'python-ldap==3.4.2',
-    'mockldap==0.3.0',
+    'mockldap@git+https://github.com/isabella232/mockldap-1.git==0.3.0.post1',
     'pytest==7.1.2', 
     'pytest-django==4.5.2', 
     'pytest-solr==1.0a1', 
