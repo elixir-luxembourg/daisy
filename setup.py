@@ -33,7 +33,6 @@ requirements = [
     'django-reversion==3.0.3',
     'django-guardian==2.4.0',
     'django-stronghold==0.3.0',
-    
     'gunicorn==19.9.0',
     'ipython==7.16.3',
     'ontobio==2.8.2',
@@ -52,6 +51,7 @@ requirements = [
 test_requirements = [
     'coverage==6.4.1', 
     'factory_boy==3.2.1',
+    'python-ldap==3.4.2',
     'mockldap==0.3.0',
     'pytest==7.1.2', 
     'pytest-django==4.5.2', 
