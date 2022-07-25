@@ -1,6 +1,6 @@
 # Elixir Daisy
 ![Build Status](https://github.com/elixir-luxembourg/daisy/actions/workflows/main.yml/badge.svg)
-[![Python 3.9](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-390/)
+[![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3105/)
 
 Data Information System (DAISY) is a data bookkeeping application designed to help Biomedical Research institutions with their GDPR compliance.
 

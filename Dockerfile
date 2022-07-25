@@ -1,4 +1,4 @@
-FROM python:3.9.13-slim
+FROM python:3.10.5-slim
 ENV PYTHONUNBUFFERED 1
 RUN mkdir -p /code/log /static \
     && apt-get update \
