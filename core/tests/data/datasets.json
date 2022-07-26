@@ -81,7 +81,7 @@
                         "Paul Mauve"
                     ],
                     "platform": "application",
-                    "locations": [
+                    "location": [
                         "RedCap sevrver at http://address"
                     ],
                     "category": "master"
