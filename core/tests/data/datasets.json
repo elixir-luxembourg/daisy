@@ -148,7 +148,7 @@
                         "Paul Antony"
                     ],
                     "platform": "Other",
-                    "locations": [
+                    "location": [
                         "\\\\someserver.edu\\LCSB_HCS\\OperaQEHS",
                         "\\\\someserver.edu\\users\\PA\\PrecisionMedicine",
                         "\\\\someserver.edu\\Images\\groups"
@@ -157,7 +157,7 @@
                 },
                 {
                     "platform": "sample-storage",
-                    "locations": [
+                    "location": [
                         "Hospital ABCDFE"
                     ],
                     "category": "master"
@@ -174,7 +174,7 @@
                         "John Doe"
                     ],
                     "platform": "lcsb_group_server",
-                    "locations": [
+                    "location": [
                         "some_server_directory:/work/projects/wgs/cohort"
                     ],
                     "category": "master"
@@ -238,7 +238,7 @@
             "storages": [
                 {
                     "platform": "lcsb_group_server",
-                    "locations": [
+                    "location": [
                         "\\\\some_server\\GROUP\\Projects\\SUB_FOLDER",
                         "\\\\some_server\\GROUP\\General"
                     ],
@@ -246,14 +246,14 @@
                 },
                 {
                     "platform": "Other",
-                    "locations": [
+                    "location": [
                         "this server is backed-up by IT"
                     ],
                     "category": "backup"
                 },
                 {
                     "platform": "atlas_personal",
-                    "locations": [
+                    "location": [
                         "\\\\some_server\\users\\first.user",
                         "\\\\some_server\\users\\second.user ",
                         "\\\\some_server\\users\\third.user",
@@ -267,7 +267,7 @@
                 },
                 {
                     "platform": "lcsb_laptop",
-                    "locations": [
+                    "location": [
                         "first.user",
                         "second.user",
                         "third.user",
@@ -281,7 +281,7 @@
                 },
                 {
                     "platform": "External Storage  (e.g. Hard disk, DVD)",
-                    "locations": [
+                    "location": [
                         "first.user",
                         "second.user",
                         "third.user",
@@ -295,7 +295,7 @@
                 },
                 {
                     "platform": "Owncloud",
-                    "locations": [
+                    "location": [
                         "first.user",
                         "second.user",
                         "third.user",
@@ -309,7 +309,7 @@
                 },
                 {
                     "platform": "sample-storage",
-                    "locations": [
+                    "location": [
                         "Hospital/Institute Floor X Cabinet Y"
                     ],
                     "category": "master"
