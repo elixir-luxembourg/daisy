@@ -129,7 +129,7 @@ class DataDeclaration(CoreModel):
         null=True, 
         help_text='Please describe criteria used to determine storage duration.')
 
-    has_special_subjects = models.NullBooleanField(
+    has_special_subjects = models.BooleanField(
         null=True,
         blank=True,
         default=None,

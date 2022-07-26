@@ -12,8 +12,6 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 
-from ontobio import obograph_util, Ontology
-
 from stronghold.decorators import public
 
 from core.importer.datasets_exporter import DatasetsExporter
