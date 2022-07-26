@@ -73,7 +73,7 @@ setup(
                      'elixir_daisy'},
     include_package_data=True,
     install_requires=requirements,
-    dependency_links=["https://github.com/jLebioda/mockldap2.git"],
+    dependency_links=["https://github.com/elixir-luxembourg/mockldap2.git"],
     zip_safe=False,
     keywords=['elixir', 'gdpr', 'data protection'],
     classifiers=[
