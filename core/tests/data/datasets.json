@@ -25,7 +25,7 @@
                         "Igor Teal"
                     ],
                     "platform": "Other",
-                    "locations": [
+                    "location": [
                         "https://someserver.edu/Studies/Gambia",
                         "https://someserver.edu/Studies/Gambia_additional"
                     ],

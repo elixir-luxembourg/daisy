@@ -149,7 +149,7 @@ class DatasetsImporter(BaseImporter):
                 category = self.process_location_category(storage_location_dict)
 
 
-                location_delimeted = '\n'.join(storage_location_dict['locations'])
+                location_delimeted = '\n'.join(storage_location_dict['location'])
 
                 dl = DataLocation.objects.create(
                     category=category,
