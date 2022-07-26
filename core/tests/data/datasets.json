@@ -25,10 +25,7 @@
                         "Igor Teal"
                     ],
                     "platform": "Other",
-                    "location": [
-                        "https://someserver.edu/Studies/Gambia",
-                        "https://someserver.edu/Studies/Gambia_additional"
-                    ],
+                    "location": "https://someserver.edu/Studies/Gambia",
                     "category": "master"
                 }
             ],
@@ -81,9 +78,7 @@
                         "Paul Mauve"
                     ],
                     "platform": "application",
-                    "location": [
-                        "RedCap sevrver at http://address"
-                    ],
+                    "location": "RedCap sevrver at http://address",
                     "category": "master"
                 }
             ],
@@ -148,18 +143,12 @@
                         "Paul Antony"
                     ],
                     "platform": "Other",
-                    "location": [
-                        "\\\\someserver.edu\\LCSB_HCS\\OperaQEHS",
-                        "\\\\someserver.edu\\users\\PA\\PrecisionMedicine",
-                        "\\\\someserver.edu\\Images\\groups"
-                    ],
+                    "location": "\\\\someserver.edu\\LCSB_HCS\\OperaQEHS",
                     "category": "master"
                 },
                 {
                     "platform": "sample-storage",
-                    "location": [
-                        "Hospital ABCDFE"
-                    ],
+                    "location": "Hospital ABCDFE",
                     "category": "master"
                 }
             ]
@@ -174,9 +163,7 @@
                         "John Doe"
                     ],
                     "platform": "lcsb_group_server",
-                    "location": [
-                        "some_server_directory:/work/projects/wgs/cohort"
-                    ],
+                    "location": "some_server_directory:/work/projects/wgs/cohort",
                     "category": "master"
                 }
             ],
@@ -238,80 +225,37 @@
             "storages": [
                 {
                     "platform": "lcsb_group_server",
-                    "location": [
-                        "\\\\some_server\\GROUP\\Projects\\SUB_FOLDER",
-                        "\\\\some_server\\GROUP\\General"
-                    ],
+                    "location": "\\\\some_server\\GROUP\\Projects\\SUB_FOLDER",
                     "category": "master"
                 },
                 {
                     "platform": "Other",
-                    "location": [
-                        "this server is backed-up by IT"
-                    ],
+                    "location": "this server is backed-up by IT",
                     "category": "backup"
                 },
                 {
                     "platform": "atlas_personal",
-                    "location": [
-                        "\\\\some_server\\users\\first.user",
-                        "\\\\some_server\\users\\second.user ",
-                        "\\\\some_server\\users\\third.user",
-                        "\\\\some_server\\users\\fourth.user",
-                        "\\\\some_server\\users\\fifth.user",
-                        "\\\\some_server\\users\\sixth.user",
-                        "\\\\some_server\\users\\seventh.user",
-                        "\\\\some_server\\users\\eighth.user"
-                    ],
+                    "location": "\\\\some_server\\users\\first.user",
                     "category": "copy"
                 },
                 {
                     "platform": "lcsb_laptop",
-                    "location": [
-                        "first.user",
-                        "second.user",
-                        "third.user",
-                        "fourth.user",
-                        "fifth.user",
-                        "sixth.user",
-                        "seventh.user",
-                        "eighth.user"
-                    ],
+                    "location": "first.user",
                     "category": "copy"
                 },
                 {
                     "platform": "External Storage  (e.g. Hard disk, DVD)",
-                    "location": [
-                        "first.user",
-                        "second.user",
-                        "third.user",
-                        "fourth.user",
-                        "fifth.user",
-                        "sixth.user",
-                        "seventh.user",
-                        "eighth.user"
-                    ],
+                    "location":"first.user",
                     "category": "copy"
                 },
                 {
                     "platform": "Owncloud",
-                    "location": [
-                        "first.user",
-                        "second.user",
-                        "third.user",
-                        "fourth.user",
-                        "fifth.user",
-                        "sixth.user",
-                        "seventh.user",
-                        "eighth.user"
-                    ],
+                    "location": "first.user",
                     "category": "copy"
                 },
                 {
                     "platform": "sample-storage",
-                    "location": [
-                        "Hospital/Institute Floor X Cabinet Y"
-                    ],
+                    "location": "Hospital/Institute Floor X Cabinet Y",
                     "category": "master"
                 }
             ],
