@@ -63,7 +63,8 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'celery_haystack',
     'sequences.apps.SequencesConfig',
-    'explorer'
+    'explorer',
+    'auditlog'
 ]
 
 MIDDLEWARE = [
@@ -75,6 +76,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'auditlog.middleware.AuditlogMiddleware',
     'stronghold.middleware.LoginRequiredMiddleware',
 ]
 

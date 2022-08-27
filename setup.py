@@ -47,6 +47,7 @@ requirements = [
     'setuptools-scm==3.3.3',
     'jsonschema==3.2.0',
     'mockldap@git+https://github.com/elixir-luxembourg/mockldap2.git',
+    'django-auditlog==2.1.1',
 ]
 
 test_requirements = [
