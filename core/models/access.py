@@ -10,6 +10,8 @@ from enumchoicefield import EnumChoiceField, ChoiceEnum
 from .utils import CoreModel
 from model_utils import Choices
 
+from auditlog.registry import auditlog
+
 
 class StatusChoices(ChoiceEnum):
     precreated = "Pre-created"
@@ -181,3 +183,5 @@ class Access(CoreModel):
             return False
         
         return True
+
+auditlog.register(Access)
