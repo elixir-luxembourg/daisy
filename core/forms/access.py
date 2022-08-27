@@ -29,9 +29,9 @@ class AccessForm(ModelForm):
         'user',
         'project',
         'defined_on_locations',
-        'access_notes',
         'granted_on'
         'grant_expires_on'
+        'access_notes',
     ]
 
 
@@ -50,11 +50,14 @@ class AccessEditForm(ModelForm):
         }
 
     field_order = [
+        'contact',
+        'user',
+        'project',
         'defined_on_locations',
-        'access_notes',
         'project',
         'granted_on'
         'grant_expires_on'
+        'access_notes',
     ]
 
     def __init__(self, *args, **kwargs):
