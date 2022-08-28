@@ -29,8 +29,8 @@ class AccessForm(ModelForm):
         'user',
         'project',
         'defined_on_locations',
-        'granted_on'
-        'grant_expires_on'
+        'granted_on',
+        'grant_expires_on',
         'access_notes',
     ]
 
@@ -55,9 +55,9 @@ class AccessEditForm(ModelForm):
         'project',
         'defined_on_locations',
         'project',
-        'granted_on'
-        'grant_expires_on'
-        'access_notes',
+        'granted_on',
+        'grant_expires_on',
+        'access_notes'
     ]
 
     def __init__(self, *args, **kwargs):
