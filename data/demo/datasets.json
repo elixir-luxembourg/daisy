@@ -47,9 +47,7 @@
             "storages": [
                 {
                     "platform": "application",
-                    "locations": [
-                        "https://webdav-r3lab.uni.lu/"
-                    ],
+                    "location": "https://webdav-r3lab.uni.lu/",
                     "category": "master",
                     "accesses": [
                         "The data is available on the sequencing platform's webdav server."
