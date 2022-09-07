@@ -54,7 +54,6 @@ class AccessEditForm(ModelForm):
         'user',
         'project',
         'defined_on_locations',
-        'project',
         'granted_on',
         'grant_expires_on',
         'access_notes'
