@@ -342,6 +342,7 @@
                             <th>To whom</th>
                             <th style="width:7em">Actions</th>
                         {% endif %}
+                        <th>History</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -375,6 +376,8 @@
                                        data-url="{% url 'dataset_access_remove' dataset_pk=dataset.id access_pk=access.id %}">delete_forever</i>
                                 </td>
                             {% endif %}
+                            {% url 'dataset_access_history_list' access.pk as access_history %}
+                            <td><a href="{{ access_history }}"><i class="material-icons">history</i></a></td>
                         </tr>
                     {% endfor %}
                     </tbody>

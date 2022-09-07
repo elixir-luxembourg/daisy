@@ -2,7 +2,7 @@ from django.urls import path
 
 from web.views import access, api, contracts, data_declarations, datasets, \
                       documents, legalbasis, notifications, permissions, \
-                      profile, projects, share, storage_locations
+                      profile, projects, share, storage_locations, access_log
 from web.views.access import AccessCreateView
 from web.views.about import about
 from web.views.cohorts import CohortCreateView, CohortEditView, \
@@ -91,6 +91,8 @@ web_urls = [
     path('dataset/<int:dataset_pk>/access/add/', AccessCreateView.as_view(), name='dataset_access_add'),
     path('dataset/<int:dataset_pk>/access/remove/<int:access_pk>/', access.remove_access, name='dataset_access_remove'),
     path('dataset/<int:dataset_pk>/access/<int:pk>/edit', access.edit_access, name="dataset_access_edit"),
+    path('access/<int:pk>/history', access_log.access_history_list, name="dataset_access_history_list"),
+
     # Dataset's LegalBasis
     path('dataset/<int:dataset_pk>/legalbasis/add/', legalbasis.LegalBasisCreateView.as_view(), name='dataset_legalbasis_add'),
     path('dataset/<int:dataset_pk>/legalbasis/remove/<int:legalbasis_pk>/', legalbasis.remove_legalbasis, name='dataset_legalbasis_remove'),
