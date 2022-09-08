@@ -2,7 +2,7 @@ import json
 import logging
 import urllib3
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, Union
 
 from django.conf import settings
@@ -77,6 +77,7 @@ def handle_rems_entitlement(data: Dict[str, str]) -> bool:
     resource = data.get('resource')
     user_oidc_id = data.get('user')
     email = data.get('mail')
+    expiration_date = data.get('end')
 
     logger.debug(f'REMS :: * data access request id: {application}, user_oidc_id: {user_oidc_id}, user_email: {email}, resource: {resource}')
 
@@ -111,13 +112,13 @@ def handle_rems_entitlement(data: Dict[str, str]) -> bool:
     if users_by_oidc.count() == 1:
         logger.debug(f'REMS :: OK, found a user with given OIDC_ID')
         user = users_by_oidc.first()
-        return create_rems_entitlement(user, application, resource, user_oidc_id, email)
+        return create_rems_entitlement(user, application, resource, user_oidc_id, email, expiration_date)
     logger.debug(f'REMS :: no users with given OIDC_ID')
 
     if contacts_by_oidc.count() == 1:
         contact = contacts_by_oidc.first()
         logger.debug(f'REMS :: OK, found a contact with given OIDC_ID')
-        return create_rems_entitlement(contact, application, resource, user_oidc_id, email)
+        return create_rems_entitlement(contact, application, resource, user_oidc_id, email, expiration_date)
     logger.debug(f'REMS :: no contacts with given OIDC_ID')
 
     if users_by_email.count() + contacts_by_email.count() > 1:
@@ -129,13 +130,13 @@ def handle_rems_entitlement(data: Dict[str, str]) -> bool:
     if users_by_email.count() == 1:
         logger.debug(f'REMS :: OK, found a user with given email')
         user = users_by_email.first()
-        return create_rems_entitlement(user, application, resource, user_oidc_id, email)
+        return create_rems_entitlement(user, application, resource, user_oidc_id, email, expiration_date)
     logger.debug(f'REMS :: no users with given email')
 
     if contacts_by_email.count() == 1:
         contact = contacts_by_email.first()
         logger.debug(f'REMS :: OK, found a contact with given email')
-        return create_rems_entitlement(contact, application, resource, user_oidc_id, email)
+        return create_rems_entitlement(contact, application, resource, user_oidc_id, email, expiration_date)
     logger.debug(f'REMS :: no contacts with given email')
     
     # At this moment, we didn't find any User nor Contact with given OIDC_ID nor email
@@ -150,7 +151,8 @@ def create_rems_entitlement(obj: Union[Access, User],
         application: str, 
         dataset_id: str, 
         user_oidc_id: str, 
-        email: str) -> bool:
+        email: str,
+        expiration_date: str) -> bool:
     """
     Tries to find a dataset with `elu_accession` equal to `dataset_id`.
     If it exists, it will add a new logbook entry (Access object) set to the current user/contact
@@ -176,7 +178,12 @@ def create_rems_entitlement(obj: Union[Access, User],
         )
     else:
         system_rems_user = system_rems_user.first()
-    
+
+    if expiration_date is None:
+        entitlement_end = datetime.now() + timedelta(days=90)
+    else:
+        entitlement_end = datetime.strptime(expiration_date, "%Y-%M-%dT%H:%B:%S")
+
     if type(obj) == User:
         new_logbook_entry = Access(
             user=obj,
@@ -185,7 +192,8 @@ def create_rems_entitlement(obj: Union[Access, User],
             granted_on=datetime.now(),
             was_generated_automatically=True,
             created_by=system_rems_user,
-            status=StatusChoices.active
+            status=StatusChoices.active,
+            grant_expires_on=entitlement_end,
         )
     elif type(obj) == Contact:
         new_logbook_entry = Access(
@@ -195,7 +203,8 @@ def create_rems_entitlement(obj: Union[Access, User],
             granted_on=datetime.now(),
             was_generated_automatically=True,
             created_by=system_rems_user,
-            status=StatusChoices.active
+            status=StatusChoices.active,
+            grant_expires_on=entitlement_end,
         )
     else:
         klass = obj.__class__.__name__
