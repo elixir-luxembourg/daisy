@@ -2,7 +2,8 @@ import json
 import logging
 import urllib3
 
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
+from dateutil.parser import isoparse
 from typing import Dict, Union
 
 from django.conf import settings
@@ -52,6 +53,9 @@ def handle_rems_callback(request: HttpRequest) -> bool:
 
     logger.debug('REMS :: Unpacking the data received from REMS...')
     body_unicode = request.body.decode('utf-8')
+    logger.debug('REMS :: Got the following request body: {}'.format(request.body.decode("utf-8")))
+    logger.debug('REMS :: Here is the request headers: {}'.format(request.headers))
+    logger.debug('REMS :: Here is the request data: {}'.format(request.POST))
 
     try:
         request_post_data = json.loads(body_unicode)
@@ -180,9 +184,9 @@ def create_rems_entitlement(obj: Union[Access, User],
         system_rems_user = system_rems_user.first()
 
     if expiration_date is None:
-        entitlement_end = datetime.now() + timedelta(days=90)
+        entitlement_end = date.today() + timedelta(days=90)
     else:
-        entitlement_end = datetime.strptime(expiration_date, "%Y-%M-%dT%H:%B:%S")
+        entitlement_end = isoparse(expiration_date).date()
 
     if type(obj) == User:
         new_logbook_entry = Access(
