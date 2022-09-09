@@ -7,44 +7,48 @@
         <h1 class="display-4">History</h1>
     </div>
     <div class="row fullwidth">
-        <div id="sidebar-left" class="d-none d-md-block mt-5 col-xs-12 col-md-12 col-lg-3 col-xl-4">
-            {# include '_includes/facets_sidebar.html' with facets=facets url=search_url #}
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h6 class="card-title">Model</h6>
-                    <ul class="facets card-text">
-                        <li class="active}"><a href="#"><i class="material-icons">radio_button_unchecked</i><span>Access</span></a></li>
-                        <li class="active}"><a href="#"><i class="material-icons">radio_button_unchecked</i><span>Dataset</span></a></li>
-                        <li class="active}"><a href="#"><i class="material-icons">radio_button_unchecked</i><span>Project</span></a></li>
-                    </ul>
+        <div class="accordion w-100 mb-4 ml-3" id="filtersAccordion">
+            <div class="card">
+                <div class="card-header p-0" id="logFiltersHeader">
+                    <button class="btn btn-link btn-block text-left pt-4" type="button" data-toggle="collapse" data-target="#logFilters" aria-expanded="true" aria-controls="logFilters">
+                        <h6>
+                            Filters
+                        </h6>
+                    </button>
                 </div>
             </div>
-
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h6 class="card-title">Date range</h6>
-                    <div class="form-group bg-white border-white">
-                        <div class='d-inline-flex justify-content-around align-items-center'><label>Start date</label><input id="log_entry_start_date" type="text" class="datepicker form-control w-50" name="start_date" /></div>
-                        <div class='d-inline-flex justify-content-around align-items-center'><label>End date</label><input id="log_entry_end_date" type="text" class="datepicker form-control w-50" name="end_date" /></div>
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h6 class="card-title">User</h6>
-                    <div class="form-group bg-white border-white">
-                        <div class="d-inline-flex justify-content-around align-items-center">
-                            <label>User name</label>
-                            <select class="form-control w-50">
-                                <option>Admin</option>
-                                <option>Alice White</option>
+            <form id="logFilters" class="collapse show card" aria-labelledby="logFiltersHeader" data-parent="filtersAccordion">
+                {# include '_includes/facets_sidebar.html' with facets=facets url=search_url #}
+                <div class="d-flex p-4">
+                    <div class="card-body m-1 w-30">
+                        <h6>Model</h6>
+                        <div class="form-group bg-white border-0">
+                            <select class="form-control" name="entity_name">
+                                <option value="none" selected disabled hidden>Choose a model...</option>
+                                {% for model in models_list %}
+                                    <option value="{{ model }}">{{ model | title }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
+                    <div class="card-body m-1 w-30">
+                        <h6>Date range</h6>
+                        <div class="d-flex flex-column form-group border-0 bg-white">
+                            <div class="d-inline-flex align-items-center justify-content-around">
+                                <span>Start date</span>
+                                <input id="log_entry_start_date" type="text" class="datepicker form-control w-50" name="start_date" value="{{ start_date }}" />
+                            </div>
+                            <div class="d-inline-flex align-items-center justify-content-around">
+                                <span>End date</span>
+                                <input id="log_entry_end_date" type="text" class="datepicker form-control w-50" name="end_date" value="{{ end_date }}"/>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+                <button class="btn" type="submit" action="{% url 'history' %}">Filter</button>
+            </form>
         </div>
-        <div class="card-rows col-lg-9 col-xl-8">
+        <div class="card-rows w-100 ml-3">
             {% for object in object_list %}
             <div class="card mb-4">
                 <div class="card-body">
