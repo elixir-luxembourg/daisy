@@ -2,7 +2,7 @@ from django.urls import path
 
 from web.views import access, api, contracts, data_declarations, datasets, \
                       documents, legalbasis, notifications, permissions, \
-                      profile, projects, share, storage_locations, access_log
+                      profile, projects, share, storage_locations
 from web.views.access import AccessCreateView
 from web.views.about import about
 from web.views.cohorts import CohortCreateView, CohortEditView, \
@@ -31,7 +31,7 @@ from web.views.publication import PublicationCreateView, PublicationListView, \
 from web.views.user import change_password, UserCreateView, UserDetailView, \
                            UserDelete, UserEditView, UsersListView, UserPasswordChange 
 from web.views.users import add_personnel_to_project, remove_personnel_from_project
-
+from web.views.log_entry import LogEntryListView
 
 web_urls = [
     # Single pages
@@ -91,7 +91,6 @@ web_urls = [
     path('dataset/<int:dataset_pk>/access/add/', AccessCreateView.as_view(), name='dataset_access_add'),
     path('dataset/<int:dataset_pk>/access/remove/<int:access_pk>/', access.remove_access, name='dataset_access_remove'),
     path('dataset/<int:dataset_pk>/access/<int:pk>/edit', access.edit_access, name="dataset_access_edit"),
-    path('access/<int:pk>/history', access_log.access_history_list, name="dataset_access_history_list"),
 
     # Dataset's LegalBasis
     path('dataset/<int:dataset_pk>/legalbasis/add/', legalbasis.LegalBasisCreateView.as_view(), name='dataset_legalbasis_add'),
@@ -186,5 +185,11 @@ web_urls = [
     path('publications/<int:pk>/edit', PublicationEditView.as_view(), name='publication_edit'),
     
     # Integrations
-    path('integrations/dsw/list-projects', dsw_list_projects, name="integrations_dsw_projects")
+    path('integrations/dsw/list-projects', dsw_list_projects, name="integrations_dsw_projects"),
+
+    # Activity log
+    path('history/', LogEntryListView.as_view(), name="history"),
+    # path('history/<str:entity_name>/', LogEntryListView.as_view(), name="entity_history"),
+    # path('history/<str:entity_name>/<int:pk>', LogEntryListView.as_view(), name="object_history")
 ]
+

@@ -328,7 +328,12 @@
                         </button>
                     </div>
                 {% endif %}
-                <h2 class="card-title">Accesses</h2>
+                <h2 class="card-title">
+                    Accesses
+                    <a href="{% url 'history' %}?entity_name=access&parent_entity_name=dataset&parent_entity_id={{ dataset.pk }}">
+                        <i class="material-icons">history</i>
+                    </a>
+                </h2>
                 <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
@@ -376,8 +381,7 @@
                                        data-url="{% url 'dataset_access_remove' dataset_pk=dataset.id access_pk=access.id %}">delete_forever</i>
                                 </td>
                             {% endif %}
-                            {% url 'dataset_access_history_list' access.pk as access_history %}
-                            <td><a href="{{ access_history }}"><i class="material-icons">history</i></a></td>
+                            <td><a href="{% url 'history' %}?entity_name=access&entity_id={{ access.pk }}"><i class="material-icons">history</i></a></td>
                         </tr>
                     {% endfor %}
                     </tbody>
