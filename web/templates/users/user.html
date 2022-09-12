@@ -46,6 +46,12 @@
                 </a>
 
                 {% endif %}
+                <a class="btn btn-primary bmd-btn-fab float-right"
+                   href="{% url 'history' %}?user={{ user.pk }}"
+                   title="See user actions"
+                >
+                    <i class="material-icons">history</i>
+                </a>
 
             </div>
         </div>
