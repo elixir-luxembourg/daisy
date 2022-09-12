@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.views.generic import ListView
 from django.contrib.contenttypes.models import ContentType
+from core.models.user import User
 from guardian.mixins import PermissionRequiredMixin
 from auditlog.models import LogEntry
 import datetime
@@ -49,7 +50,12 @@ class LogEntryListView(PermissionRequiredMixin, ListView):
 
         models_list_fk = LogEntry.objects.values("content_type").distinct().all()
         models_list_names = [ct["model"] for ct in ContentType.objects.values("model").filter(pk__in=models_list_fk).all()]
+        users_list_fk = LogEntry.objects.values("actor").distinct().all()
+        users_list_names = User.objects.values("pk", "full_name").filter(pk__in=users_list_fk).all()
+        print(users_list_fk)
+        print(users_list_names)
         context["models_list"] = models_list_names
+        context["users_list"] = users_list_names
         context["start_date"] = start_date.strftime(self.DATE_FORMAT)
         context["end_date"] = end_date.strftime(self.DATE_FORMAT)
         return context
