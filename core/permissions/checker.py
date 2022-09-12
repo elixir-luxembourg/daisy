@@ -139,9 +139,17 @@ class DocumentChecker(AbstractChecker):
                 **kwargs
             )
 
+
 class UserChecker(AbstractChecker):
     def _check(self, perm, obj, **kwargs):
         return self.user_or_group.is_staff
+
+
+class AccessChecker(AbstractChecker):
+    def _check(self, perm, obj, **kwargs):
+        parent_dataset = obj.dataset
+        return DatasetChecker(self.user_or_group, checker=self.checker).check(perm, parent_dataset)
+
 
 class AutoChecker(AbstractChecker):
     """
@@ -155,6 +163,7 @@ class AutoChecker(AbstractChecker):
         'Document': DocumentChecker,
         'DataDeclaration': DataDeclarationChecker,
         'User': UserChecker,
+        'Access': AccessChecker,
     }
 
     # override default check method
