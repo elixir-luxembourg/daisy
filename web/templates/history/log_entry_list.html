@@ -1,53 +1,53 @@
 {% extends 'layout.html' %}
 
+
 {% block title %}Access logs of access {{ request.args.pk }}{% endblock %}
 
 {% block content %}
-    <div class="jumbotron mt-4">
-        <h1 class="display-4">History</h1>
+    <div class="card bg-light text-dark mt-4 mb-4">
+        <div class="card-body">
+            <div class="card-title">
+                <h1 class="display-4">
+                    <i class="material-icons text-secondary clickable" data-toggle="collapse" data-target="#logFilters" aria-expanded="true" aria-controls="logFilters">search</i></button>
+                    History
+                </h1>
+            </div>
+            <p>Click on the search button to reveal the options to filter the list of history logs</p>
+        </div>
     </div>
-    <div class="row fullwidth">
-        <div class="accordion w-100 mb-4 ml-3" id="filtersAccordion">
-            <div class="card">
-                <div class="card-header p-0" id="logFiltersHeader">
-                    <button class="btn btn-link btn-block text-left pt-4" type="button" data-toggle="collapse" data-target="#logFilters" aria-expanded="true" aria-controls="logFilters">
-                        <h6>
-                            Filters
-                        </h6>
-                    </button>
+    <div id="logFilters" class="collapse" aria-labelledby="logFiltersHeader" data-parent="filtersAccordion">
+        <form class="card w-100">
+            {# include '_includes/facets_sidebar.html' with facets=facets url=search_url #}
+            <div class="d-flex p-4">
+                <div class="card-body m-1 w-30">
+                    <h6>Model</h6>
+                    <div class="form-group bg-white border-0">
+                        <select class="form-control" name="entity_name">
+                            <option value="none" selected disabled hidden>Choose a model...</option>
+                            {% for model in models_list %}
+                                <option value="{{ model }}">{{ model | title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body m-1 w-30">
+                    <h6>Date range</h6>
+                    <div class="d-flex flex-column form-group border-0 bg-white">
+                        <div class="d-inline-flex align-items-center justify-content-around">
+                            <span>Start date</span>
+                            <input id="log_entry_start_date" type="text" class="datepicker form-control w-50" name="start_date" value="{{ start_date }}" />
+                        </div>
+                        <div class="d-inline-flex align-items-center justify-content-around">
+                            <span>End date</span>
+                            <input id="log_entry_end_date" type="text" class="datepicker form-control w-50" name="end_date" value="{{ end_date }}"/>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <form id="logFilters" class="collapse show card" aria-labelledby="logFiltersHeader" data-parent="filtersAccordion">
-                {# include '_includes/facets_sidebar.html' with facets=facets url=search_url #}
-                <div class="d-flex p-4">
-                    <div class="card-body m-1 w-30">
-                        <h6>Model</h6>
-                        <div class="form-group bg-white border-0">
-                            <select class="form-control" name="entity_name">
-                                <option value="none" selected disabled hidden>Choose a model...</option>
-                                {% for model in models_list %}
-                                    <option value="{{ model }}">{{ model | title }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="card-body m-1 w-30">
-                        <h6>Date range</h6>
-                        <div class="d-flex flex-column form-group border-0 bg-white">
-                            <div class="d-inline-flex align-items-center justify-content-around">
-                                <span>Start date</span>
-                                <input id="log_entry_start_date" type="text" class="datepicker form-control w-50" name="start_date" value="{{ start_date }}" />
-                            </div>
-                            <div class="d-inline-flex align-items-center justify-content-around">
-                                <span>End date</span>
-                                <input id="log_entry_end_date" type="text" class="datepicker form-control w-50" name="end_date" value="{{ end_date }}"/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button class="btn" type="submit" action="{% url 'history' %}">Filter</button>
-            </form>
-        </div>
+            <button class="btn" type="submit" action="{% url 'history' %}">Filter</button>
+        </form>
+    </div>
+    <div class="row mr-auto">
         <div class="card-rows w-100 ml-3">
             {% for object in object_list %}
             <div class="card mb-4">
