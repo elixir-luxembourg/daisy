@@ -8,16 +8,34 @@ from core.models.dataset import Dataset
 from core.permissions import constants, CheckerMixin
 from auditlog.models import LogEntry
 import datetime
-
+import json
+import re
 
 class LogEntryListView(CheckerMixin, ListView):
     DATE_FORMAT = "%Y-%m-%d"
     model = LogEntry
     paginate_by = 5
     allow_empty = True
-    permission_required = constants.Permissions.EDIT
+    permission_required = constants.Permissions.PROTECTED
 
     template_name = 'history/log_entry_list.html'
+
+    def get_list_of_model_fields(self):
+        fields_per_model = LogEntry.objects.values("content_type", "changes").distinct().all()
+        test = {}
+        for entry in fields_per_model:
+            entry_model = ContentType.objects.get(pk=entry["content_type"]).name
+            if entry_model not in test:
+                test.update({entry_model: {}})
+
+            for key in json.loads(entry["changes"]).keys():
+                test[entry_model].update({key: 1})
+
+        model_fields_dict = {
+            key: [value for value in values]
+            for key, values in test.items()
+        }
+        return model_fields_dict
 
     def get_context_data(self, object_list=None, filters=None, **kwargs):
         query_filters = {}
@@ -30,6 +48,9 @@ class LogEntryListView(CheckerMixin, ListView):
             if "end_date" in filters.keys() \
             else datetime.datetime.now()
         query_filters.update({"timestamp__date__lte": end_date})
+
+        if "action" in filters.keys():
+            query_filters.update({"action__exact": filters.get("action")})
 
         if "entity_name" in filters.keys() and "entity_id" in filters.keys():
             entity_class = get_object_or_404(ContentType, model=filters.get("entity_name")).model_class()
@@ -49,10 +70,17 @@ class LogEntryListView(CheckerMixin, ListView):
                     ]
                     query_filters.update({"object_id__in": entity_ids_list})
 
+                if "entity_attr" in filters.keys():
+                    field = filters.get("entity_attr")
+                    print(LogEntry.objects.filter(changes__regex=r'{}'.format(field)).all())
+                    # print([re.search(r'{}'.format(field), changes) for changes in LogEntry.objects.values("changes").all()])
+                    query_filters.update({"changes__regex": rf'"{field}": \['})
+
             if "user_name" in filters.keys():
                 query_filters.update({"actor__exact": filters.get("user_name")})
 
             self.object_list = [{"action": log.Action.choices[log.action], "log": log} for log in LogEntry.objects.filter(**query_filters).all()]
+
 
         context = super().get_context_data(**kwargs)
 
@@ -64,6 +92,8 @@ class LogEntryListView(CheckerMixin, ListView):
         context["users_list"] = users_list_names
         context["start_date"] = start_date.strftime(self.DATE_FORMAT)
         context["end_date"] = end_date.strftime(self.DATE_FORMAT)
+        context["log_actions"] = LogEntry.Action.choices
+        context["model_fields"] = self.get_list_of_model_fields()
         return context
 
     def check_permissions(self, request):

@@ -15,33 +15,33 @@
             <p>Click on the search button to reveal the options to filter the list of history logs</p>
         </div>
     </div>
-    <div id="logFilters" class="collapse" aria-labelledby="logFiltersHeader" data-parent="filtersAccordion">
+    <div id="logFilters" class="collapse show" aria-labelledby="logFiltersHeader" data-parent="filtersAccordion">
         <form class="card w-100">
             {# include '_includes/facets_sidebar.html' with facets=facets url=search_url #}
             <div class="d-flex flex-wrap p-4">
-                <div class="card-body m-1 w-25">
-                    <h6>Model</h6>
-                    <div class="form-group bg-white border-0">
-                        <select class="form-control" name="entity_name">
-                            <option value="none" selected disabled hidden>Choose a model...</option>
-                            {% for model in models_list %}
-                                <option value="{{ model }}">{{ model | title }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="card-body m-1 w-25">
+                <div class="card-body m-1 w-25 flex-grow-1">
                     <h6>Log author</h6>
                     <div class="form-group bg-white border-0">
                         <select class="form-control" name="user_name">
-                            <option value="none" selected disabled hidden>Choose a user...</option>
+                            <option value="none" selected hidden disabled>Choose a user...</option>
                             {% for user in users_list %}
                                 <option value="{{ user.pk }}">{{ user.full_name | title }}</option>
                             {% endfor %}
                         </select>
                     </div>
                 </div>
-                <div class="card-body m-1 w-25">
+                <div class="card-body m-1 w-25 flex-grow-1">
+                    <h6>Action performed</h6>
+                    <div class="form-group bg-white border-0">
+                        <select class="form-control" name="action">
+                            <option value="none" selected hidden disabled>Choose an action...</option>
+                            {% for action in log_actions %}
+                                <option value="{{ action.0 }}">{{ action.1 | title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body m-1 w-25 flex-grow-1">
                     <h6>Date range</h6>
                     <div class="d-flex flex-column form-group border-0 bg-white">
                         <div class="d-inline-flex align-items-center justify-content-around">
@@ -54,6 +54,28 @@
                         </div>
                     </div>
                 </div>
+                <div class="card-body m-1 w-25 flex-grow-0">
+                    <h6>Model</h6>
+                    <div class="form-group bg-white border-0">
+                        <select id="model-select" class="form-control" name="entity_name">
+                            <option value="none" selected hidden disabled>Choose a model...</option>
+                            {% for model in models_list %}
+                                <option value="{{ model }}">{{ model | title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div id="model-fields-filter" class="card-body m-1 w-25 flex-grow-0 d-none">
+                    <h6>Model fields</h6>
+                    <div class="form-group bg-white border-0">
+                        <select class="form-control" name="entity_attr">
+                            <option value="none" selected hidden disabled>Choose a field...</option>
+                            {% for attr in model_attributes %}
+                                <option value="{{ attr }}">{{ attr | title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
             </div>
             <button class="btn" type="submit" action="{% url 'history' %}">Filter</button>
         </form>
@@ -62,10 +84,13 @@
         <div class="card-rows w-100 ml-3">
             {% for object in object_list %}
             <div class="card mb-4">
-                <div class="card-body clickable" data-toggle="collapse" data-target="#changesTable{{object.log.pk}}" aria-expanded="true" aria-controls="changesTable{{object.log.pk}}">
-                    <h2 class="card-title text-capitalize">{{ object.log.content_type.model }} #{{ object.log.object_id }}</h2>
+                <div id="{{ object.log.pk }}" class="card-body clickable table-toggle" data-toggle="collapse" data-target="#changesTable{{object.log.pk}}" aria-expanded="true" aria-controls="changesTable{{object.log.pk}}">
+                    <div class="d-flex justify-content-between">
+                        <h2 class="card-title text-capitalize">{{ object.log.content_type.model }} #{{ object.log.object_id }}</h2>
+                        <i id="expand-arrow-{{ object.log.pk }}" class="material-icons hidden">expand_less</i>
+                    </div>
                     <h6 class="card-subtitle mb-2 text-muted">
-                        {{ object.log.actor }} ({{ object.log.remote_addr }}) {{ object.action.1 }}d {{ object.log.content_type.model }} #{{ object.log.object_id }} on {{ object.log.timestamp }}
+                        {{ object.log.actor }} {{ object.action.1 }}d {{ object.log.content_type.model }} #{{ object.log.object_id }} on {{ object.log.timestamp }}
                     </h6>
                     <div class="accordion collapse" id="changesTable{{object.log.pk}}" aria-labelledby="changesTable{{object.log.pk}}" data-parent="tableTogle{{object.log.pk}}">
                         <table class="table-striped table table-sm">
@@ -85,10 +110,55 @@
                         {% endfor %}
                     </table>
                     </div>
-
                 </div>
             </div>
             {% endfor %}
         </div>
     </div>
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    {{ model_fields | json_script:"model-data"}}
+    <script>
+        $("document").ready(
+            function() {
+                var modelSelect = $("#model-select");
+                var modelFieldFilter = $("#model-fields-filter");
+                console.log("modelSelect value:", modelSelect.children("option:selected").val());
+                if (modelSelect.children("option:selected").val() !== "none") {
+                    modelFieldFilter.toggleClass('d-none');
+                }
+
+                $('.table-toggle').click(
+                    function () {
+                        var expandIcon = $(`#expand-arrow-${this.id}`)
+                        expandIcon.hasClass("hidden") ? expandIcon.text("expand_more") : expandIcon.text("expand_less");
+                        expandIcon.toggleClass("hidden");
+                    }
+                );
+                modelSelect.change(
+                    function () {
+                        let selectedValue = modelSelect.children("option:selected").val(),
+                            modelFieldSelect = modelFieldFilter.children("div").children("select"),
+                            newOptions = Array(),
+                            modelFieldsList = JSON.parse($("#model-data").text())[selectedValue];
+
+                        defaultOption = new Option("Choose a field...", "none",)
+                        defaultOption.disabled = true;
+                        defaultOption.hidden = true;
+                        defaultOption.selected = true;
+                        newOptions.push(defaultOption);
+                        for (field of modelFieldsList) {
+                            newOptions.push(new Option(field, field))
+                        }
+                        modelFieldSelect.children("option").remove();
+                        modelFieldSelect.append(newOptions);
+                        modelFieldFilter.hasClass('d-none') && modelFieldFilter.toggleClass('d-none');
+                    }
+                );
+            }
+        )
+
+    </script>
 {% endblock %}
