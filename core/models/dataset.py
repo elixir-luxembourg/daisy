@@ -116,9 +116,9 @@ class Dataset(CoreTrackedModel):
         storage_dicts = []
         for dl in self.data_locations.all():
             storage_dicts.append({
-                "platform": dl.category.name,
-                 "location": dl.location_description,
-                 "accesses": [ acc.access_notes for acc in dl.accesses.all()]
+                "platform": dl.backend.name,
+                "location": dl.location_description,
+                "accesses": [ acc.access_notes for acc in dl.accesses.all()]
             })
 
         transfer_dicts = []

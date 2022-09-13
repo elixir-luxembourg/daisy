@@ -35,7 +35,6 @@ class UseRestriction(CoreModel):
 
     # Use Restriction Note
     notes = models.TextField(verbose_name='Use Restriction note',
-                             max_length=255,
                              blank=True,
                              null=True,
                              help_text='Provide a free text description of the restriction.')

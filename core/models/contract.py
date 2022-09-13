@@ -110,6 +110,10 @@ class Contract(CoreModel):
     @property
     def contacts(self):
         return Contact.objects.filter(partners_roles__contract=self)
+    
+    @property
+    def partner_roles(self):
+        return PartnerRole.objects.filter(contract=self)
 
     def __str__(self):
         return self.short_name()
@@ -133,13 +137,21 @@ class Contract(CoreModel):
                  "role":  "Principal_Investigator" if lc.is_part_of(constants.Groups.VIP.name) else "Researcher",
                  "affiliations": [HomeOrganisation().name]})
 
+        partners_dicts = []
+        for partner_role in self.partner_roles:
+            pd = {}
+            pd['partner'] = partner_role.partner.name
+            pd['partner_roles'] = [role.name for role in partner_role.roles.all()]
+            pd['comments'] = partner_role.comments
+            pd['contacts'] = [contact.to_dict() for contact in partner_role.contacts.all()]
+            partners_dicts.append(pd)
+
         base_dict = {
             'id': self.id,
             'comments': self.comments,
-            'project': self.project,
+            'project_id': self.project.id,
             'local_custodians': contact_dicts,
-            'OTHER_DATA': 'See models/contract.py'
-            # TODO: Some fields are missing, this might need to be continued
+            'partners': partners_dicts
         }
         return base_dict
 

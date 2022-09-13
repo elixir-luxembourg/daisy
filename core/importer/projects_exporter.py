@@ -16,8 +16,8 @@ logger = DaisyLogger(__name__)
 class ProjectsExporter:
     def __init__(
             self, 
-            include_unpublished=False,
-            objects=None):
+            objects=None,
+            include_unpublished=False):
         self.include_unpublished = include_unpublished   
         """
         objects would be Django obejct manager containing projects to export,
@@ -30,7 +30,7 @@ class ProjectsExporter:
         else:
             self.objects = None
 
-    def set_objects(objects):
+    def set_objects(self, objects):
         self.objects = objects
 
     def export_to_file(self, file_handle, stop_on_error=False, verbose=False):

@@ -245,9 +245,9 @@
             </div>
         </div>
     </div>
-    <div class="row card-deck mt-4">
+    <div class="row mt-4">
         {#    STORAGE LOCATION definitions for the DATASET  #}
-        <div class="card with-max-height col-md-6 ml-0">
+        <div class="card with-max-height col-md-12 ml-0">
             <div class="card-body">
                 {% if can_edit %}
                     <div class="ml-1 float-right btn-group">
@@ -307,9 +307,10 @@
                 </div>
             </div>
         </div>
-
+    </div>
+    <div class="row mt-4">
         {#    (INTERNAL) ACCESS GIVEN TO DATA FILES     #}
-        <div class="card with-max-height col-md-6 mr-0">
+        <div class="card with-max-height col-md-12 mr-0">
             <div class="card-body">
                 {% if can_edit %}
                     <div class="ml-1 float-right btn-group">
@@ -332,11 +333,13 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
+                        <th>Status</th>
                         <th>Location</th>
                         <th>Remarks</th>
                         <th>Granted on</th>
+                        <th>Expires on</th>
                         {% if can_edit %}
-                            <th>User</th>
+                            <th>To whom</th>
                             <th style="width:7em">Actions</th>
                         {% endif %}
                     </tr>
@@ -344,11 +347,21 @@
                     <tbody>
                     {% for access in dataset.accesses.all %}
                         <tr>
+                            <td>{{ access.status }}</td>
                             <td><p>{{ access.display_locations |truncatechars:90 }}</p></td>
-                            <td>{{ access.access_notes |truncatechars:45  }}</td>
+                            <td>{{ access.access_notes |truncatechars:45  }}<br /><small>(Created {% if access.was_generated_automatically %}automatically{% endif %} by user: {{access.created_by}})</small></td>
                             <td><p>{{ access.granted_on | default:"-"  }}</p></td>
+                            <td><p>{{ access.grant_expires_on | default:"-"  }}</p></td>
                             {% if can_edit %}
-                                <td>{% if access.user %}{{ access.user.full_name }}{% else %}-{% endif %}</td>
+                                <td>
+                                    {% if access.user %}
+                                        {{ access.user.full_name }} (user)
+                                    {% elif access.contact %}
+                                        {{ access.contact.full_name }} (contact)
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
                                 <td>
                                     <i class="material-icons clickable"
                                        id="editaccess"
@@ -359,7 +372,6 @@
                                        data-ajax-url="{% url 'dataset_access_edit' pk=access.id dataset_pk=dataset.id %}">edit</i>
                                     <i class="red material-icons clickable" data-method="delete"
                                        title="Delete access"
-                                       data-parent-to-remove="tr"
                                        data-url="{% url 'dataset_access_remove' dataset_pk=dataset.id access_pk=access.id %}">delete_forever</i>
                                 </td>
                             {% endif %}

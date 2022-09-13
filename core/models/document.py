@@ -28,7 +28,7 @@ class Document(CoreModel):
                    ("agreement", "Agreement"),
                    ("ethics_approval", "Ethics Approval"),
                    ("consent_form", "Consent Form"),
-                   ("subject_informationsheet", "Subject InformationSheet"),
+                   ("subject_information_sheet", "Subject Information Sheet"),
                    ("project_proposal", "Project Proposal"),
                    ('data_protection_impact_assessment', 'Data Protection Impact Assessment'),
                    ("other", "Other"))
@@ -71,6 +71,7 @@ class Document(CoreModel):
     @property
     def size(self):
         return self.content.size
+
 
 @receiver(post_delete, sender=Document, dispatch_uid='document_delete')
 def document_cleanup(sender, instance, **kwargs):

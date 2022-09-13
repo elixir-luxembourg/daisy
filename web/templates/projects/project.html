@@ -298,49 +298,17 @@
             <div class="card-body">
                 <div class="ml-1 float-right btn-group">
                     <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button" id="adddocument" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Add document to project">
-                                <i class="material-icons">add</i>
-                            </button>
+                        <i class="material-icons">add</i>
+                    </button>
                     <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="adddocument">
 
                         <button data-toggle="modal" data-target="#modal" data-modal-title="Add document to project" data-ajax-url="{% url 'document_add' object_id=object_id content_type=content_type %}" class="dropdown-item" type="button" title="Add document to project">
-                                    Upload new document
-                                </button>
+                            Upload new document
+                        </button>
                     </div>
                 </div>
-                <h2 class="card-title"><span><i class="material-icons">link</i></span> Documents</h2>
 
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>File</th>
-                            <th>Size</th>
-                            <th>Expiry</th>
-                            <th>Document Type</th>
-                            {% if can_edit %}
-                            <th style="width:7em">Actions</th>{% endif %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for file in datafiles %}
-                        <tr>
-                            <td><a href="{% url 'document_download' pk=file.id %}">{{ file.shortname}}</a></td>
-                            <td><span class="col-xs-4 text-center">{{ file.size | filesizeformat  }}</span></td>
-                            <td><span class="col-xs-4 text-center">{{ file.expiry_date | default:'-' }}</span></td>
-                            <td><span class="col-xs-4 text-center">{{ file.domain_type  }}</span></td>
-                            {% if can_edit %}
-                            <td>
-                                <a data-toggle="modal" id="btnupdate" class="jsBtn clickable" data-target="#modal" data-modal-title="Update document" data-ajax-url="{% url "document_edit" pk=file.id %}" title="Update document"></a>
-                                <i class="material-icons">edit</i>
-                                </a>
-                                <i title="Delete document" class="material-icons red clickable" data-method="delete" data-parent-to-remove="tr" data-url="{% url 'document_delete' pk=file.id  %}">delete_forever</i>
-                            </td>
-                            {% endif %}
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-
-                </table>
-
+                {% include "_includes/documents_table.html" %}
             </div>
         </div>
     </div>

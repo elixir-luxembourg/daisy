@@ -8,7 +8,7 @@ sudo yum install python36-devel openldap-devel nginx
 sudo yum group install "Development Tools"
 
 wget https://bootstrap.pypa.io/get-pip.py
-sudo python3.6 get-pip.py
+sudo python3.10 get-pip.py
 ```
 
 
@@ -174,14 +174,17 @@ User=daisy
 Group=daisy
 EnvironmentFile=/home/daisy/config/celery.conf
 WorkingDirectory=/home/daisy/daisy
-ExecStart=/bin/sh -c '${CELERY_BIN} multi start ${CELERYD_NODES} \
-  -A ${CELERY_APP} --pidfile=${CELERYD_PID_FILE} \
-  --logfile=${CELERYD_LOG_FILE} --loglevel=${CELERYD_LOG_LEVEL} ${CELERYD_OPTS}'
-ExecStop=/bin/sh -c '${CELERY_BIN} multi stopwait ${CELERYD_NODES} \
+ExecStart=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP} \
+  multi start ${CELERYD_NODES} --loglevel=${CELERYD_LOG_LEVEL} \
+  --pidfile=${CELERYD_PID_FILE} \
+  --logfile=${CELERYD_LOG_FILE} ${CELERYD_OPTS}'
+ExecStop=/bin/sh -c '${CELERY_BIN} \
+  multi stopwait ${CELERYD_NODES} \
   --pidfile=${CELERYD_PID_FILE}'
-ExecReload=/bin/sh -c '${CELERY_BIN} multi restart ${CELERYD_NODES} \
-  -A ${CELERY_APP} --pidfile=${CELERYD_PID_FILE} \
-  --logfile=${CELERYD_LOG_FILE} --loglevel=${CELERYD_LOG_LEVEL} ${CELERYD_OPTS}'
+ExecReload=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP} \
+  multi restart ${CELERYD_NODES} --loglevel=${CELERYD_LOG_LEVEL} 
+  --pidfile=${CELERYD_PID_FILE} \
+  --logfile=${CELERYD_LOG_FILE} ${CELERYD_OPTS}'
 
 [Install]
 WantedBy=multi-user.target
@@ -231,8 +234,9 @@ User=daisy
 Group=daisy
 EnvironmentFile=/home/daisy/config/celerybeat.conf
 WorkingDirectory=/home/daisy/daisy
-ExecStart=/bin/sh -c '${CELERY_BIN} beat -A ${CELERY_APP} --pidfile=${CELERYBEAT_PID_FILE} \
-  --logfile=${CELERYBEAT_LOG_FILE} --loglevel=${CELERYBEAT_LOG_LEVEL} ${CELERYBEAT_OPTS}'
+ExecStart=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP} beat \
+  --pidfile=${CELERYBEAT_PID_FILE} --logfile=${CELERYBEAT_LOG_FILE} \
+  ${CELERYBEAT_OPTS} --loglevel=${CELERYBEAT_LOG_LEVEL}'
 ExecStop=/bin/kill -s TERM $MAINPID
 
 [Install]
@@ -463,19 +467,19 @@ To do this run the following.
 ```bash
 sudo su - daisy
 cd /home/daisy/daisy
-python3.6 manage.py collectstatic 
-python3.6 manage.py migrate 
-python3.6 manage.py build_solr_schema -c /var/solr/data/daisy/conf -r daisy  
+python3.10 manage.py collectstatic 
+python3.10 manage.py migrate 
+python3.10 manage.py build_solr_schema -c /var/solr/data/daisy/conf -r daisy  
 cd /home/daisy/daisy/core/fixtures/
 wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json
 cd /home/daisy/daisy
-python3.6 manage.py load_initial_data
+python3.10 manage.py load_initial_data
 ```
 The load_initial_data command needs several minutes to complete.
 DAISY has a demo data loader. With example records of Projects Datasets and Users. If you want to deploy DAISY  demo data, then do 
 
 ```bash
-python3.6 manage.py load_demo_data
+python3.10 manage.py load_demo_data
 ```
 
 The above command will create an 'admin' and other users such as 'alice.white', 'john.doe' 'jane.doe'. The password for all  is 'demo'.
@@ -484,13 +488,13 @@ The above command will create an 'admin' and other users such as 'alice.white', 
 If you do not want to load the demo data and work with your own definitions, then you'd still need to create super user for the application, with which you can logon and create other users as well as records. To create a super user, do the following and respond to the questions. 
 
 ```bash
-python3.6 manage.py createsuperuser
+python3.10 manage.py createsuperuser
 ```
 
 Trigger a reindex with:
 
 ```bash
-python3.6 manage.py rebuild_index
+python3.10 manage.py rebuild_index
 ```
 
 # Validate the installation
@@ -571,7 +575,7 @@ As daisy user:
 
 ```bash
 cd /home/daisy/daisy
-python3.6 manage.py migrate && python3.6 manage.py build_solr_schema -c /var/solr/data/daisy/conf/ -r daisy && yes | python3.6 manage.py clear_index && yes "yes" | python3.6 manage.py collectstatic;
+python3.10 manage.py migrate && python3.10 manage.py build_solr_schema -c /var/solr/data/daisy/conf/ -r daisy && yes | python3.10 manage.py clear_index && yes "yes" | python3.10 manage.py collectstatic;
 ```
 
 
@@ -587,7 +591,7 @@ cd /home/daisy/daisy/core/fixtures/
 wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json -O edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json -O hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json -O hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json -O hgnc.json
 
 cd /home/daisy/daisy
-python3.6 manage.py load_initial_data
+python3.10 manage.py load_initial_data
 ```     
   
 **IMPORTANT NOTE:** This step can take several minutes to complete. 
@@ -598,7 +602,7 @@ python3.6 manage.py load_initial_data
 If LDAP was used to import users, they have to be imported again.
 As daisy user:
 ```bash
-python3.6 manage.py import_users
+python3.10 manage.py import_users
 ```
 
 6) Rebuild Solr search index.
@@ -606,7 +610,7 @@ python3.6 manage.py import_users
 As daisy user:
  ```bash
  cd /home/daisy/daisy
- python3.6 manage.py rebuild_index
+ python3.10 manage.py rebuild_index
 ```
 
 7) Restart services.
@@ -661,3 +665,7 @@ systemctl start gunicorn
 systemctl start celery_worker
 systemctl start celery_beat 
 ```
+
+# Migration
+## DAISY 1.6.0 to 1.7.0
+ * Due to the change of Celery to 5.X, you must update Celery service definitions (please take a look on Celery section in this document). Luckily this is only a small change - it's just the order of parameters that has changed.

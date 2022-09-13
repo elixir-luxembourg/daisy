@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
@@ -13,6 +14,7 @@ from core.models import Access, Dataset
 from core.permissions import ProjectChecker, DatasetChecker, ContractChecker, AutoChecker
 from .utils import TextFieldWithInputWidget
 
+from typing import Dict
 
 def create_api_key(length=48):
     allowed_chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
@@ -116,6 +118,15 @@ class User(AbstractUser):
     def __str__(self):
         fullname = self.get_full_name()
         return fullname or self.username
+            
+    def to_dict(self) -> Dict:
+        base_dict = {
+            "pk": str(self.id),
+            "email": self.email,
+            "oidc_id": self.oidc_id,
+            "full_name": self.full_name,
+        }
+        return base_dict
 
     def save(self, *args, **kw):
         self.full_name = f'{self.first_name} {self.last_name}'
@@ -212,54 +223,21 @@ class User(AbstractUser):
         """
         return ContractChecker(self).check(constants.Permissions.EDIT, contract)
 
-    def get_access_permissions(self):
+    def get_access_permissions(self) -> List[str]:
         """
         Finds Accesses of the user, and returns a list of their dataset IDs 
         """
-        accesses = Access.objects.filter(user=self, dataset__is_published=True)
-        return [access.dataset.elu_accession for access in accesses]
-
-    def add_rems_entitlement(self, 
-        application: str, 
-        dataset_id: str, 
-        user_id: str,
-        email: str) -> bool:
-        """
-        Tries to find a dataset with `elu_accession` equal to `dataset_id`.
-        If it exists, it will add a new logbook entry (Access object) set to the current user
-        Assumes that the Dataset exists, otherwise will throw an exception.
-        Otherwise - it will raise an exception
-        """
-        notes = f'Set automatically by REMS application #{application}'
-
-        dataset = Dataset.objects.get(elu_accession=dataset_id)
-
-        # TODO: add REMS user (e.g. `system::REMS`) to the system
-        # Then add this information to created_by of an Access
-        
-        new_logbook_entry = Access(
-            user=self,
-            dataset=dataset,
-            access_notes=notes,
-            granted_on=datetime.now(),
-            was_generated_automatically=True
-        )
-        new_logbook_entry.save()
-        return True
+        return Access.find_for_user(self)
 
     @classmethod
-    def find_user_by_email_or_oidc_id(cls, email, oidc_id, method):
-        if method == 'email':
-            return cls.objects.get(email=email)
-        elif method == 'id':
+    def find_user_by_email_or_oidc_id(cls, email: str, oidc_id: str):
+        if cls.objects.filter(oidc_id=oidc_id).count() == 1:
             return cls.objects.get(oidc_id=oidc_id)
-        elif method == 'auto':
-            if cls.objects.filter(oidc_id=oidc_id).count() == 1:
-                return cls.objects.get(oidc_id=oidc_id)
-            if cls.objects.filter(email=email).count() == 1:
-                return cls.objects.get(email=email)
-            else:
-                message = f'There are either zero, or 2 and more users with such `email` and `oidc_id`!'
-                raise cls.DoesNotExist(message)
+        elif cls.objects.filter(oidc_id=oidc_id).count() > 1:
+            # TODO: E2E: Send a notification to the Data stewards
+            pass
+        if cls.objects.filter(email=email).count() == 1:
+            return cls.objects.get(email=email)
         else:
-            raise KeyError('Wrong method! Only `id`, `email` and `auto` implemented!')
+            message = f'There are either zero, or 2 and more users with such `email` and `oidc_id`!'
+            raise cls.DoesNotExist(message)

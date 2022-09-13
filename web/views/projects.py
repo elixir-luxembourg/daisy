@@ -22,7 +22,7 @@ from . import facet_view_utils
 
 FACET_FIELDS = settings.FACET_FIELDS['project']
 from core.models.utils import COMPANY
-
+from django.urls import reverse
 
 class ProjectListView(ListView):
     model = Project
@@ -238,7 +238,7 @@ def project_contract_create(request, pk):
                     return redirect('project', pk=project.pk)
 
             messages.add_message(request, messages.SUCCESS, 'Contract created')
-            return redirect('project', pk=project.pk)
+            return redirect('contract', pk=contract.id)
         return render(request, 'projects/create_contract.html', {
             'project': project,
             'form': form,
@@ -281,3 +281,17 @@ def unpublish_project(request, pk):
     project.is_published = False
     project.save()
     return redirect(reverse_lazy('project', kwargs={'pk': project.id}))
+
+
+def dsw_list_projects(request):
+    #if data steward or admin -> list all the public projects
+    # if(request.user.is_admin() | request.user.is_datasteward()):
+    #     objects = Project.objects.all().filter(is_published=True)
+    objects = (Project.objects.filter(local_custodians=request.user, is_published=True) | Project.objects.filter(company_personnel=request.user, is_published=True)).distinct()
+    return render(request, 'integrations/dsw/project_list.html', {
+        'dsw_origin': getattr(settings, 'DSW_ORIGIN', 'localhost'),
+        'projects': [{'url': reverse('project', args=[str(project.id)]),
+                      'acronym':project.acronym,
+                      'title':project.title,
+                      'id':project.id} for project in objects],
+    })

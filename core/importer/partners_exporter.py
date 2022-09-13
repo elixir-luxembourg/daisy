@@ -31,7 +31,6 @@ class PartnersExporter:
         logger.info(f'Partner export complete see file: {file_handle}')
         return result
 
-
     def export_to_buffer(self, buffer, stop_on_error=False, verbose=False):
 
             partner_dicts = []
@@ -60,5 +59,3 @@ class PartnersExporter:
                 "$schema": urljoin(JSONSCHEMA_BASE_REMOTE_URL, 'elu-institution.json'),
                 "items": partner_dicts}, buffer , indent=4)
             return buffer
-
-

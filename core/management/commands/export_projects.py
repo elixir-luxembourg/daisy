@@ -9,4 +9,4 @@ class Command(ExportBaseCommand):
             self,
             include_unpublished=False
         ):
-        return ProjectsExporter(include_unpublished)
+        return ProjectsExporter(include_unpublished=include_unpublished)
