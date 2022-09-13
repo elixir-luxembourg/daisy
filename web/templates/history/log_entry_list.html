@@ -8,7 +8,7 @@
         <div class="card-body">
             <div class="card-title">
                 <h1 class="display-4">
-                    <i class="material-icons text-secondary clickable" data-toggle="collapse" data-target="#logFilters" aria-expanded="true" aria-controls="logFilters">search</i></button>
+                    <i id="filtersAccordion" class="material-icons text-secondary clickable" data-toggle="collapse" data-target="#logFilters" aria-expanded="true" aria-controls="logFilters">search</i></button>
                     History
                 </h1>
             </div>
@@ -62,12 +62,13 @@
         <div class="card-rows w-100 ml-3">
             {% for object in object_list %}
             <div class="card mb-4">
-                <div class="card-body">
+                <div class="card-body clickable" data-toggle="collapse" data-target="#changesTable{{object.log.pk}}" aria-expanded="true" aria-controls="changesTable{{object.log.pk}}">
                     <h2 class="card-title text-capitalize">{{ object.log.content_type.model }} #{{ object.log.object_id }}</h2>
                     <h6 class="card-subtitle mb-2 text-muted">
                         {{ object.log.actor }} ({{ object.log.remote_addr }}) {{ object.action.1 }}d {{ object.log.content_type.model }} #{{ object.log.object_id }} on {{ object.log.timestamp }}
                     </h6>
-                    <table class="table-striped table">
+                    <div class="accordion collapse" id="changesTable{{object.log.pk}}" aria-labelledby="changesTable{{object.log.pk}}" data-parent="tableTogle{{object.log.pk}}">
+                        <table class="table-striped table table-sm">
                         <thead>
                             <tr>
                                 <th>Attribute</th>
@@ -83,6 +84,8 @@
                             </tr>
                         {% endfor %}
                     </table>
+                    </div>
+
                 </div>
             </div>
             {% endfor %}

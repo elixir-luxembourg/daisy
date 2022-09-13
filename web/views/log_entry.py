@@ -24,12 +24,12 @@ class LogEntryListView(CheckerMixin, ListView):
         start_date = datetime.datetime.strptime(filters.get("start_date"), self.DATE_FORMAT) \
             if "start_date" in filters.keys() \
             else datetime.date.today() - datetime.timedelta(days=90)
-        query_filters.update({"timestamp__gte": start_date})
+        query_filters.update({"timestamp__date__gte": start_date})
 
         end_date = datetime.datetime.strptime(filters.get("end_date"), self.DATE_FORMAT) \
             if "end_date" in filters.keys() \
             else datetime.datetime.now()
-        query_filters.update({"timestamp__lte": end_date})
+        query_filters.update({"timestamp__date__lte": end_date})
 
         if "entity_name" in filters.keys() and "entity_id" in filters.keys():
             entity_class = get_object_or_404(ContentType, model=filters.get("entity_name")).model_class()
@@ -50,13 +50,10 @@ class LogEntryListView(CheckerMixin, ListView):
                     query_filters.update({"object_id__in": entity_ids_list})
 
             if "user_name" in filters.keys():
-                print(f"Searching for data modified by user {filters.get('user_name')}")
                 query_filters.update({"actor__exact": filters.get("user_name")})
 
-            print(f"Filters used: {query_filters}")
             self.object_list = [{"action": log.Action.choices[log.action], "log": log} for log in LogEntry.objects.filter(**query_filters).all()]
 
-        print(f"Loaded data for user 12 {LogEntry.objects.filter(actor='12')}")
         context = super().get_context_data(**kwargs)
 
         models_list_fk = LogEntry.objects.values("content_type").distinct().all()
@@ -73,13 +70,10 @@ class LogEntryListView(CheckerMixin, ListView):
         if request.user.is_superuser or request.user.is_part_of(constants.Groups.DATA_STEWARD.value) or request.user.is_part_of(constants.Groups.AUDITOR.value):
             return None
         else:
-            print(f"User is not admin staff")
             if "entity_name" in request.GET.keys() and "entity_id" in request.GET.keys():
-                print(f"Checking permissions of user on {request.GET.get('entity_name')} objects")
                 self.referenced_class = get_object_or_404(ContentType, model=request.GET.get("entity_name")).model_class()
                 self.object = get_object_or_404(self.referenced_class, pk=request.GET.get("entity_id"))
             elif "parent_entity_name" in request.GET.keys() and "parent_entity_id" in request.GET.keys():
-                print(f"Checking permissions of user on {request.GET.get('parent_entity_name')} parent objects")
                 self.referenced_class = get_object_or_404(ContentType, model=request.GET.get("parent_entity_name")).model_class()
                 self.object = get_object_or_404(self.referenced_class, pk=request.GET.get("parent_entity_id"))
             else:
