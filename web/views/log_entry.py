@@ -5,16 +5,17 @@ from django.core.exceptions import PermissionDenied
 
 from core.models.user import User
 from core.models.dataset import Dataset
-from core.permissions import constants
+from core.permissions import constants, CheckerMixin
 from auditlog.models import LogEntry
 import datetime
 
 
-class LogEntryListView(ListView):
+class LogEntryListView(CheckerMixin, ListView):
     DATE_FORMAT = "%Y-%m-%d"
     model = LogEntry
     paginate_by = 5
     allow_empty = True
+    permission_required = constants.Permissions.EDIT
 
     template_name = 'history/log_entry_list.html'
 
@@ -27,7 +28,7 @@ class LogEntryListView(ListView):
 
         end_date = datetime.datetime.strptime(filters.get("end_date"), self.DATE_FORMAT) \
             if "end_date" in filters.keys() \
-            else datetime.date.today()
+            else datetime.datetime.now()
         query_filters.update({"timestamp__lte": end_date})
 
         if "entity_name" in filters.keys() and "entity_id" in filters.keys():
@@ -35,7 +36,7 @@ class LogEntryListView(ListView):
             entity_object = get_object_or_404(entity_class, pk=filters.get("entity_id"))
             self.object_list = [
                 {"action": log.Action.choices[log.action], "log": log}
-                for log in entity_object.history.filter(timestamp__gte=start_date, timestamp__lte=end_date).all()
+                for log in entity_object.history.filter(**query_filters).all()
             ]
 
         else:
@@ -48,11 +49,14 @@ class LogEntryListView(ListView):
                     ]
                     query_filters.update({"object_id__in": entity_ids_list})
 
-            if "user" in filters.keys():
-                query_filters.update({"actor__exact": filters.get("user")})
+            if "user_name" in filters.keys():
+                print(f"Searching for data modified by user {filters.get('user_name')}")
+                query_filters.update({"actor__exact": filters.get("user_name")})
 
-            self.object_list = [{"action": log.Action.choices[log.action], "log": log} for log in LogEntry.objects.filter(**query_filters)]
+            print(f"Filters used: {query_filters}")
+            self.object_list = [{"action": log.Action.choices[log.action], "log": log} for log in LogEntry.objects.filter(**query_filters).all()]
 
+        print(f"Loaded data for user 12 {LogEntry.objects.filter(actor='12')}")
         context = super().get_context_data(**kwargs)
 
         models_list_fk = LogEntry.objects.values("content_type").distinct().all()
@@ -67,23 +71,22 @@ class LogEntryListView(ListView):
 
     def check_permissions(self, request):
         if request.user.is_superuser or request.user.is_part_of(constants.Groups.DATA_STEWARD.value) or request.user.is_part_of(constants.Groups.AUDITOR.value):
-            return True
-
-        elif "entity_name" in request.GET.keys() and "entity_id" in request.GET.keys():
-            model = get_object_or_404(ContentType, model=request.GET.get("entity_name")).model_class()
-            obj = get_object_or_404(model, pk=request.GET.get("entity_id"))
-            return request.user.has_permission_on_object(constants.Permissions.EDIT, obj)
-
-        elif request.GET.get("parent_entity_name") == "dataset" and "parent_entity_id" in request.GET.keys():
-            obj = get_object_or_404(Dataset, pk=request.GET.get("parent_entity_id"))
-            return request.user in obj.local_custodians.all()
-
+            return None
         else:
-            return False
+            print(f"User is not admin staff")
+            if "entity_name" in request.GET.keys() and "entity_id" in request.GET.keys():
+                print(f"Checking permissions of user on {request.GET.get('entity_name')} objects")
+                self.referenced_class = get_object_or_404(ContentType, model=request.GET.get("entity_name")).model_class()
+                self.object = get_object_or_404(self.referenced_class, pk=request.GET.get("entity_id"))
+            elif "parent_entity_name" in request.GET.keys() and "parent_entity_id" in request.GET.keys():
+                print(f"Checking permissions of user on {request.GET.get('parent_entity_name')} parent objects")
+                self.referenced_class = get_object_or_404(ContentType, model=request.GET.get("parent_entity_name")).model_class()
+                self.object = get_object_or_404(self.referenced_class, pk=request.GET.get("parent_entity_id"))
+            else:
+                raise PermissionDenied()
+            super().check_permissions(request)
 
     def get(self, request, *args, **kwargs):
-        if self.check_permissions(request):
-            context = self.get_context_data(filters=request.GET)
-            return self.render_to_response(context)
-        else:
-            raise PermissionDenied
+        self.check_permissions(request)
+        context = self.get_context_data(filters=request.GET)
+        return self.render_to_response(context)
