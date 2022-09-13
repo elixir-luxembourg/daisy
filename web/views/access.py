@@ -68,6 +68,7 @@ def edit_access(request, pk, dataset_pk):
                      {'type': 'Edit error', 'messages': [str(e) for e in form.errors]
                       }}, status=405)
     else:
+        access.access_notes = None
         form = AccessEditForm(instance=access)
 
     log.debug(submit_url=request.get_full_path())
