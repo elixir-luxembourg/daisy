@@ -2,13 +2,24 @@
 
 ## Base
 
+As root:
 ```bash
-sudo yum update
-sudo yum install python36-devel openldap-devel nginx
-sudo yum group install "Development Tools"
+# Update
+yum update
+# Install Python3.10
+dnf install wget make gcc bzip2-devel openssl-devel zlib-devel libffi-devel
+wget https://www.python.org/ftp/python/3.10.7/Python-3.10.7.tgz
+tar -xvf Python-3.10.7.tgz
+cd Python-3.10.0
+./configure --enable-optimizations
+make
+make altinstall
+# Verify the installation
+python3.10 --version
+pip3.10 -V
 
-wget https://bootstrap.pypa.io/get-pip.py
-sudo python3.10 get-pip.py
+yum install openldap-devel sqlite-devel
+yum group install "Development Tools"
 ```
 
 
@@ -24,14 +35,14 @@ sudo su - daisy
 mkdir config log
 git clone https://github.com/elixir-luxembourg/daisy.git
 exit
-sudo /usr/local/bin/pip install -e /home/daisy/daisy
-sudo /usr/local/bin/pip install gunicorn
+sudo /usr/local/bin/pip3.10 install -e /home/daisy/daisy
+sudo /usr/local/bin/pip3.10 install gunicorn
 ```
 
 ## NPM and Node.js
 
 ```bash
-curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
+curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
 sudo yum install nodejs
 ```
 
@@ -56,16 +67,17 @@ sudo yum install lsof java-1.8.0-openjdk
 sudo solr-7.7.1/bin/install_solr_service.sh solr-7.7.1.tgz
 sudo su - solr
 /opt/solr-7.7.1/bin/solr create_core -c daisy
-cd /var/solr/data/daisy/conf
-wget "https://raw.githubusercontent.com/apache/lucene-solr/master/solr/example/files/conf/currency.xml"  
-wget "https://raw.githubusercontent.com/apache/lucene-solr/master/solr/example/files/conf/elevate.xml"  
+#cd /var/solr/data/daisy/conf
+#wget "https://raw.githubusercontent.com/apache/lucene-solr/master/solr/example/files/conf/currency.xml"  
+#wget "https://raw.githubusercontent.com/apache/lucene-solr/master/solr/example/files/conf/elevate.xml"  
 /opt/solr-7.7.1/bin/solr stop  
 exit
 ```
 It is possible that by this time solr-7.7.1 is not anymore proposed for download on solr mirrors.
 In this case check for last solr version available and adapt the instructions above accordingly.
+
 You need configure the solr core 'daisy'. To do so you need to create 'schema.xml' and 'solrconfig.xml' files under 
-'/var/solr/data/daisy/conf'. 
+'/var/solr/data/daisy/conf'.
 ```bash
 sudo cp /home/daisy/daisy/docker/solr/schema.xml /var/solr/data/daisy/conf/
 sudo cp /home/daisy/daisy/docker/solr/solrconfig.xml /var/solr/data/daisy/conf/
@@ -87,7 +99,7 @@ You can restart solr and check that it is working with the following commands
 
 ```bash
 sudo systemctl enable solr
-sudo systemctl restart solr
+sudo systemctl restart solr # SELiux issue. disable with `setenforce 0`
 ```
 
 ## Gunicorn
@@ -116,7 +128,12 @@ WantedBy=multi-user.target
 ## Rabbitmq
 
 ```bash
-sudo yum install rabbitmq-server  
+yum install -y epel-release
+curl -s https://packagecloud.io/install/repositories/rabbitmq/rabbitmq-server/script.rpm.sh | sudo bash
+curl -s https://packagecloud.io/install/repositories/rabbitmq/erlang/script.rpm.sh | sudo bash
+yum -y update
+yum -y install erlang
+yum -y install rabbitmq-server
 sudo systemctl start rabbitmq-server  
 sudo systemctl enable gunicorn  
 ```
@@ -129,7 +146,7 @@ We use systemd to create two services, celery_worker to run the worker (notifica
 
 As daisy user, create the file /home/daisy/config/celery.conf with the following content:
 
-```
+```bash
 # Name of nodes to start
 # here we have a single node
 CELERYD_NODES="daisy_worker"
@@ -174,17 +191,9 @@ User=daisy
 Group=daisy
 EnvironmentFile=/home/daisy/config/celery.conf
 WorkingDirectory=/home/daisy/daisy
-ExecStart=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP} \
-  multi start ${CELERYD_NODES} --loglevel=${CELERYD_LOG_LEVEL} \
-  --pidfile=${CELERYD_PID_FILE} \
-  --logfile=${CELERYD_LOG_FILE} ${CELERYD_OPTS}'
-ExecStop=/bin/sh -c '${CELERY_BIN} \
-  multi stopwait ${CELERYD_NODES} \
-  --pidfile=${CELERYD_PID_FILE}'
-ExecReload=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP} \
-  multi restart ${CELERYD_NODES} --loglevel=${CELERYD_LOG_LEVEL} 
-  --pidfile=${CELERYD_PID_FILE} \
-  --logfile=${CELERYD_LOG_FILE} ${CELERYD_OPTS}'
+ExecStart=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP}  multi start ${CELERYD_NODES} --loglevel=${CELERYD_LOG_LEVEL} --pidfile=${CELERYD_PID_FILE}  --logfile=${CELERYD_LOG_FILE} ${CELERYD_OPTS}'
+ExecStop=/bin/sh -c '${CELERY_BIN}  multi stopwait ${CELERYD_NODES}  --pidfile=${CELERYD_PID_FILE}'
+ExecReload=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP} multi restart ${CELERYD_NODES} --loglevel=${CELERYD_LOG_LEVEL} --pidfile=${CELERYD_PID_FILE}  --logfile=${CELERYD_LOG_FILE} ${CELERYD_OPTS}'
 
 [Install]
 WantedBy=multi-user.target
@@ -193,13 +202,15 @@ WantedBy=multi-user.target
 Then do the following:
 
 ```bash
+chown daisy:daisy /var/run/celery/
 sudo systemctl enable celery_worker  
 sudo systemctl start celery_worker  
 ```
 
 2) Celery beat
 
-Create the file /home/daisy/config/celerybeat.conf with the following content:
+Create the folder /var/run/celerybeat/ as _root_ user.
+Create file /home/daisy/config/celerybeat.conf as _daisy_ user with the following content:
 
 ```
 # Absolute or relative path to the 'celery' command:
@@ -234,9 +245,7 @@ User=daisy
 Group=daisy
 EnvironmentFile=/home/daisy/config/celerybeat.conf
 WorkingDirectory=/home/daisy/daisy
-ExecStart=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP} beat \
-  --pidfile=${CELERYBEAT_PID_FILE} --logfile=${CELERYBEAT_LOG_FILE} \
-  ${CELERYBEAT_OPTS} --loglevel=${CELERYBEAT_LOG_LEVEL}'
+ExecStart=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP} beat --pidfile=${CELERYBEAT_PID_FILE} --logfile=${CELERYBEAT_LOG_FILE} ${CELERYBEAT_OPTS} --loglevel=${CELERYBEAT_LOG_LEVEL}'
 ExecStop=/bin/kill -s TERM $MAINPID
 
 [Install]
@@ -246,6 +255,7 @@ WantedBy=multi-user.target
 Then do the following:
 
 ```bash
+chown daisy:daisy /var/run/celerybeat/
 sudo systemctl enable celery_beat 
 sudo systemctl start celery_beat  
 ```
@@ -255,12 +265,11 @@ sudo systemctl start celery_beat
 ### Install database server
 
 ```bash
-sudo yum install https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm
-sudo yum install postgresql10
-sudo yum install postgresql10-server
-sudo /usr/pgsql-10/bin/postgresql-10-setup initdb
-sudo systemctl enable postgresql-10
-sudo systemctl start postgresql-10
+sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpmsudo yum install postgresql10
+sudo dnf -qy module disable postgresql
+sudo postgresql-setup --initdb
+sudo systemctl enable postgresql.service
+sudo systemctl start postgresql.service
 ```
 
 In case the installation fails, follow steps in the [official documentation](https://www.postgresql.org/download/linux/redhat/) for installation of Postgresql 10 on your platform.
@@ -270,7 +279,7 @@ In case the installation fails, follow steps in the [official documentation](htt
 
 ```bash
 sudo su - postgres
-vi ./10/data/pg_hba.conf
+vi /var/lib/pgsql/data/pg_hba.conf
 ```
 Change METHOD ident of IPv4 and IPv6 to md5 and add rule for daisy and postgres users.
 We recommend to only allow local connection from the daisy user to the daisy database.  
@@ -302,7 +311,7 @@ exit
 Restart PostgreSQL:
 
 ```bash
-sudo systemctl restart postgresql-10
+sudo systemctl restart postgresql
 ```
 
 # Application Config File
@@ -566,7 +575,7 @@ npm ci
 As root user:
 
 ```bash
-/usr/local/bin/pip install -e /home/daisy/daisy --upgrade
+/usr/local/bin/pip3.10 install -e /home/daisy/daisy --upgrade
 ```
 
 3) Update the database and solr schemas, collect static files.
@@ -669,3 +678,4 @@ systemctl start celery_beat
 # Migration
 ## DAISY 1.6.0 to 1.7.0
  * Due to the change of Celery to 5.X, you must update Celery service definitions (please take a look on Celery section in this document). Luckily this is only a small change - it's just the order of parameters that has changed.
+ * Python version was migrated from 3.6 to 3.10 - new python and pip version need to be installed (see section **Base** of deployment instructions)
