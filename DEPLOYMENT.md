@@ -1,14 +1,19 @@
-# Installation
+# Installationpython3.9
 
 ## Base
 
 ```bash
 sudo yum update
-sudo yum install python36-devel openldap-devel nginx
 sudo yum group install "Development Tools"
+sudo yum install wget make gcc bzip2-devel openssl-devel zlib-devel libffi-devel openssl
+wget https://www.python.org/ftp/python/3.9.6/Python-3.9.6.tgz
+tar -xvf Python-3.9.6.tgz
+cd Python-3.9.6
+./configure --enable-optimizations
+make
+make altinstall
 
-wget https://bootstrap.pypa.io/get-pip.py
-sudo python3.10 get-pip.py
+sudo yum install openldap-devel nginx
 ```
 
 
@@ -24,8 +29,8 @@ sudo su - daisy
 mkdir config log
 git clone https://github.com/elixir-luxembourg/daisy.git
 exit
-sudo /usr/local/bin/pip install -e /home/daisy/daisy
-sudo /usr/local/bin/pip install gunicorn
+sudo /usr/local/bin/pip3.9 install -e /home/daisy/daisy
+sudo /usr/local/bin/pip3.9 install gunicorn
 ```
 
 ## NPM and Node.js
@@ -57,8 +62,6 @@ sudo solr-7.7.1/bin/install_solr_service.sh solr-7.7.1.tgz
 sudo su - solr
 /opt/solr-7.7.1/bin/solr create_core -c daisy
 cd /var/solr/data/daisy/conf
-wget "https://raw.githubusercontent.com/apache/lucene-solr/master/solr/example/files/conf/currency.xml"  
-wget "https://raw.githubusercontent.com/apache/lucene-solr/master/solr/example/files/conf/elevate.xml"  
 /opt/solr-7.7.1/bin/solr stop  
 exit
 ```
@@ -69,6 +72,8 @@ You need configure the solr core 'daisy'. To do so you need to create 'schema.xm
 ```bash
 sudo cp /home/daisy/daisy/docker/solr/schema.xml /var/solr/data/daisy/conf/
 sudo cp /home/daisy/daisy/docker/solr/solrconfig.xml /var/solr/data/daisy/conf/
+sudo cp /home/daisy/daisy/docker/solr/currency.xml /var/solr/data/daisy/conf/
+sudo cp /home/daisy/daisy/docker/solr/elevate.xml /var/solr/data/daisy/conf/
 ```
 
 Grant ownership and change privileges of `/var/solr` folder
@@ -193,13 +198,15 @@ WantedBy=multi-user.target
 Then do the following:
 
 ```bash
+chown daisy:daisy /var/run/celery/
 sudo systemctl enable celery_worker  
 sudo systemctl start celery_worker  
 ```
 
 2) Celery beat
 
-Create the file /home/daisy/config/celerybeat.conf with the following content:
+Create the folder /var/run/celerybeat/ as _root_ user.
+Create file /home/daisy/config/celerybeat.conf as _daisy_ user with the following content:
 
 ```
 # Absolute or relative path to the 'celery' command:
@@ -246,6 +253,7 @@ WantedBy=multi-user.target
 Then do the following:
 
 ```bash
+chown daisy:daisy /var/run/celerybeat/
 sudo systemctl enable celery_beat 
 sudo systemctl start celery_beat  
 ```
@@ -467,19 +475,19 @@ To do this run the following.
 ```bash
 sudo su - daisy
 cd /home/daisy/daisy
-python3.10 manage.py collectstatic 
-python3.10 manage.py migrate 
-python3.10 manage.py build_solr_schema -c /var/solr/data/daisy/conf -r daisy  
+python3.9 manage.py collectstatic 
+python3.9 manage.py migrate 
+python3.9 manage.py build_solr_schema -c /var/solr/data/daisy/conf -r daisy  
 cd /home/daisy/daisy/core/fixtures/
 wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json
 cd /home/daisy/daisy
-python3.10 manage.py load_initial_data
+python3.9 manage.py load_initial_data
 ```
 The load_initial_data command needs several minutes to complete.
 DAISY has a demo data loader. With example records of Projects Datasets and Users. If you want to deploy DAISY  demo data, then do 
 
 ```bash
-python3.10 manage.py load_demo_data
+python3.9 manage.py load_demo_data
 ```
 
 The above command will create an 'admin' and other users such as 'alice.white', 'john.doe' 'jane.doe'. The password for all  is 'demo'.
@@ -488,13 +496,13 @@ The above command will create an 'admin' and other users such as 'alice.white', 
 If you do not want to load the demo data and work with your own definitions, then you'd still need to create super user for the application, with which you can logon and create other users as well as records. To create a super user, do the following and respond to the questions. 
 
 ```bash
-python3.10 manage.py createsuperuser
+python3.9 manage.py createsuperuser
 ```
 
 Trigger a reindex with:
 
 ```bash
-python3.10 manage.py rebuild_index
+python3.9 manage.py rebuild_index
 ```
 
 # Validate the installation
@@ -566,7 +574,7 @@ npm ci
 As root user:
 
 ```bash
-/usr/local/bin/pip install -e /home/daisy/daisy --upgrade
+/usr/local/bin/pip3.9 install -e /home/daisy/daisy --upgrade
 ```
 
 3) Update the database and solr schemas, collect static files.
@@ -575,7 +583,7 @@ As daisy user:
 
 ```bash
 cd /home/daisy/daisy
-python3.10 manage.py migrate && python3.10 manage.py build_solr_schema -c /var/solr/data/daisy/conf/ -r daisy && yes | python3.10 manage.py clear_index && yes "yes" | python3.10 manage.py collectstatic;
+python3.9 manage.py migrate && python3.9 manage.py build_solr_schema -c /var/solr/data/daisy/conf/ -r daisy && yes | python3.9 manage.py clear_index && yes "yes" | python3.9 manage.py collectstatic;
 ```
 
 
@@ -591,7 +599,7 @@ cd /home/daisy/daisy/core/fixtures/
 wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json -O edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json -O hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json -O hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json -O hgnc.json
 
 cd /home/daisy/daisy
-python3.10 manage.py load_initial_data
+python3.9 manage.py load_initial_data
 ```     
   
 **IMPORTANT NOTE:** This step can take several minutes to complete. 
@@ -602,7 +610,7 @@ python3.10 manage.py load_initial_data
 If LDAP was used to import users, they have to be imported again.
 As daisy user:
 ```bash
-python3.10 manage.py import_users
+python3.9 manage.py import_users
 ```
 
 6) Rebuild Solr search index.
@@ -610,7 +618,7 @@ python3.10 manage.py import_users
 As daisy user:
  ```bash
  cd /home/daisy/daisy
- python3.10 manage.py rebuild_index
+ python3.9 manage.py rebuild_index
 ```
 
 7) Restart services.
@@ -669,3 +677,4 @@ systemctl start celery_beat
 # Migration
 ## DAISY 1.6.0 to 1.7.0
  * Due to the change of Celery to 5.X, you must update Celery service definitions (please take a look on Celery section in this document). Luckily this is only a small change - it's just the order of parameters that has changed.
+ * Python version was migrated from 3.6 to 3.9 - new python and pip version need to be installed (see section **Base** of deployment instructions)
