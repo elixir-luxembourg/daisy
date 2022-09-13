@@ -162,6 +162,7 @@ class User(AbstractUser):
         self._assign_perm(constants.Permissions.VIEW.value, self, dataset_object)
 
     def remove_permissions_to_dataset(self, dataset_object):
+        self._remove_perm(constants.Permissions.PROTECTED.value, self, dataset_object)
         self._remove_perm(constants.Permissions.ADMIN.value, self, dataset_object)
         self._remove_perm(constants.Permissions.DELETE.value, self, dataset_object)
         self._remove_perm(constants.Permissions.EDIT.value, self, dataset_object)
@@ -176,6 +177,7 @@ class User(AbstractUser):
         self._assign_perm(constants.Permissions.VIEW.value, self, contract)
 
     def remove_permissions_to_contract(self, contract):
+        self._remove_perm(constants.Permissions.PROTECTED.value, self, contract)
         self._remove_perm(constants.Permissions.ADMIN.value, self, contract)
         self._remove_perm(constants.Permissions.DELETE.value, self, contract)
         self._remove_perm(constants.Permissions.EDIT.value, self, contract)
