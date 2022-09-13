@@ -3,7 +3,7 @@ from django.apps import apps
 
 
 class Command(BaseCommand):
-    help = 'Applies changes to permissions system (all local custodians will receive PROTECTED permission to a resource)'
+    help = 'Applies changes to permissions system (all local custodians will receive permission to a resource)'
 
     def add_arguments(self, parser):
         parser.add_argument(
