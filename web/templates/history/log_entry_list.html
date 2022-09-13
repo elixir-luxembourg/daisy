@@ -144,13 +144,9 @@
                             newOptions = Array(),
                             modelFieldsList = JSON.parse($("#model-data").text())[selectedValue];
 
-                        defaultOption = new Option("Choose a field...", "none",)
-                        defaultOption.disabled = true;
-                        defaultOption.hidden = true;
-                        defaultOption.selected = true;
-                        newOptions.push(defaultOption);
-                        for (field of modelFieldsList) {
-                            newOptions.push(new Option(field, field))
+                        newOptions.push("<option value='none' selected disabled hidden>Choose a field...</option>");
+                        for (let attr in modelFieldsList) {
+                            newOptions.push(new Option(modelFieldsList[attr], attr));
                         }
                         modelFieldSelect.children("option").remove();
                         modelFieldSelect.append(newOptions);

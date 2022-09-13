@@ -7,6 +7,7 @@ from core.models.user import User
 from core.models.dataset import Dataset
 from core.permissions import constants, CheckerMixin
 from auditlog.models import LogEntry
+from auditlog.registry import auditlog
 import datetime
 import json
 import re
@@ -20,22 +21,39 @@ class LogEntryListView(CheckerMixin, ListView):
 
     template_name = 'history/log_entry_list.html'
 
+    # TODO
+    #  - Make cleaner
     def get_list_of_model_fields(self):
         fields_per_model = LogEntry.objects.values("content_type", "changes").distinct().all()
         test = {}
         for entry in fields_per_model:
-            entry_model = ContentType.objects.get(pk=entry["content_type"]).name
-            if entry_model not in test:
-                test.update({entry_model: {}})
+            entry_content_type = ContentType.objects.get(pk=entry["content_type"])
+            entry_model = entry_content_type.model_class()
+            entry_model_name = entry_content_type.name
+            model_fields = auditlog.get_model_fields(entry_model._meta.model)
+
+            if entry_model_name not in test:
+                test.update({entry_model_name: {}})
 
             for key in json.loads(entry["changes"]).keys():
-                test[entry_model].update({key: 1})
+                field = entry_model._meta.get_field(key)
+                field_name = model_fields["mapping_fields"].get(field.name, getattr(field, "verbose_name", field.name))
+                test[entry_model_name].update({key: field_name})
 
         model_fields_dict = {
-            key: [value for value in values]
+            key: {name: verbose_name for name, verbose_name in values.items()}
             for key, values in test.items()
         }
         return model_fields_dict
+
+    def get_verbose_field_name(self, model, field_name):
+        # Copy of method used by LogEntry.changes_display_dict
+        model_fields = auditlog.get_model_fields(model._meta.model)
+        field = model._meta.get_field(field_name)
+        verbose_name = model_fields["mappings_fields"].get(
+            field.name, getattr(field, "verbose_name", field.name)
+        )
+        return verbose_name
 
     def get_context_data(self, object_list=None, filters=None, **kwargs):
         query_filters = {}
@@ -72,15 +90,12 @@ class LogEntryListView(CheckerMixin, ListView):
 
                 if "entity_attr" in filters.keys():
                     field = filters.get("entity_attr")
-                    print(LogEntry.objects.filter(changes__regex=r'{}'.format(field)).all())
-                    # print([re.search(r'{}'.format(field), changes) for changes in LogEntry.objects.values("changes").all()])
                     query_filters.update({"changes__regex": rf'"{field}": \['})
 
             if "user_name" in filters.keys():
                 query_filters.update({"actor__exact": filters.get("user_name")})
 
             self.object_list = [{"action": log.Action.choices[log.action], "log": log} for log in LogEntry.objects.filter(**query_filters).all()]
-
 
         context = super().get_context_data(**kwargs)
 
