@@ -153,7 +153,7 @@ def create_rems_entitlement(obj: Union[Access, User],
         dataset_id: str, 
         user_oidc_id: str, 
         email: str,
-        expiration_date: str) -> bool:
+        expiration_date: str = None) -> bool:
     """
     Tries to find a dataset with `elu_accession` equal to `dataset_id`.
     If it exists, it will add a new logbook entry (Access object) set to the current user/contact
@@ -181,7 +181,9 @@ def create_rems_entitlement(obj: Union[Access, User],
         system_rems_user = system_rems_user.first()
 
     if expiration_date is None:
-        entitlement_end = date.today() + timedelta(days=90)
+        entitlement_end = date.today() + timedelta(
+            days=getattr(settings, 'ACCESS_DEFAULT_EXPIRATION_DAYS', 90)
+        )
     else:
         entitlement_end = isoparse(expiration_date).date()
 
