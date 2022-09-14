@@ -1,5 +1,5 @@
-# Installationpython3.9
-
+# Installation
+Following instructions are for CentOS Linux 7 (Core).
 ## Base
 
 ```bash
