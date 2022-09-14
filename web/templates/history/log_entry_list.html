@@ -22,7 +22,7 @@
                 <div class="card-body m-1 w-25 flex-grow-1">
                     <h6>Log author</h6>
                     <div class="form-group bg-white border-0">
-                        <select class="form-control" name="user_name">
+                        <select class="form-control" name="user">
                             <option value="none" selected hidden disabled>Choose a user...</option>
                             {% for user in users_list %}
                                 <option value="{{ user.pk }}">{{ user.full_name | title }}</option>
@@ -121,40 +121,44 @@
     {{ block.super }}
     {{ model_fields | json_script:"model-data"}}
     <script>
-        $("document").ready(
-            function() {
-                var modelSelect = $("#model-select");
-                var modelFieldFilter = $("#model-fields-filter");
-                console.log("modelSelect value:", modelSelect.children("option:selected").val());
-                if (modelSelect.children("option:selected").val() !== "none") {
-                    modelFieldFilter.toggleClass('d-none');
+        const modelSelect = $("#model-select");
+        const modelFieldFilter = $("#model-fields-filter");
+
+        // Function to build the list of model fields and display the filter
+        function buildModelFieldsOptions() {
+            const selectedValue = modelSelect.children("option:selected").val()
+            if (selectedValue !== "none"){
+                const modelFieldSelect = modelFieldFilter.children("div").children("select"),
+                    newOptions = Array(),
+                    modelFieldsList = JSON.parse($("#model-data").text())[selectedValue];
+
+                newOptions.push("<option value='none' selected disabled hidden>Choose a field...</option>");
+                for (let attr in modelFieldsList) {
+                    newOptions.push(new Option(modelFieldsList[attr], attr));
                 }
-
-                $('.table-toggle').click(
-                    function () {
-                        var expandIcon = $(`#expand-arrow-${this.id}`)
-                        expandIcon.hasClass("hidden") ? expandIcon.text("expand_more") : expandIcon.text("expand_less");
-                        expandIcon.toggleClass("hidden");
-                    }
-                );
-                modelSelect.change(
-                    function () {
-                        let selectedValue = modelSelect.children("option:selected").val(),
-                            modelFieldSelect = modelFieldFilter.children("div").children("select"),
-                            newOptions = Array(),
-                            modelFieldsList = JSON.parse($("#model-data").text())[selectedValue];
-
-                        newOptions.push("<option value='none' selected disabled hidden>Choose a field...</option>");
-                        for (let attr in modelFieldsList) {
-                            newOptions.push(new Option(modelFieldsList[attr], attr));
-                        }
-                        modelFieldSelect.children("option").remove();
-                        modelFieldSelect.append(newOptions);
-                        modelFieldFilter.hasClass('d-none') && modelFieldFilter.toggleClass('d-none');
-                    }
-                );
+                modelFieldSelect.children("option").remove();
+                modelFieldSelect.append(newOptions);
+                modelFieldFilter.hasClass('d-none') && modelFieldFilter.toggleClass('d-none');
             }
-        )
+        }
 
+        // Making the accordion status button toggable
+        $('.table-toggle').click(
+            function () {
+                const collapsingTable = $(`#changesTable${this.id}`);
+                if (collapsingTable.hasClass('collapsing')) {
+                    return;
+                }
+                const expandIcon = $(`#expand-arrow-${this.id}`)
+                expandIcon.toggleClass("hidden") && expandIcon.hasClass("hidden") ? expandIcon.text("expand_less") : expandIcon.text("expand_more");
+            }
+        );
+
+        // Building the list of fields for a given model when selected in the model filter
+        modelSelect.change( () => buildModelFieldsOptions() );
+
+        // Displaying the model fields filter if a model is already selected when page loads
+        // (i.e. if user actualise the page)
+        buildModelFieldsOptions();
     </script>
 {% endblock %}

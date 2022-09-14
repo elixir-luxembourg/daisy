@@ -189,7 +189,5 @@ web_urls = [
 
     # Activity log
     path('history/', LogEntryListView.as_view(), name="history"),
-    # path('history/<str:entity_name>/', LogEntryListView.as_view(), name="entity_history"),
-    # path('history/<str:entity_name>/<int:pk>', LogEntryListView.as_view(), name="object_history")
 ]
 
