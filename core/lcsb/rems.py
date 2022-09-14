@@ -53,9 +53,6 @@ def handle_rems_callback(request: HttpRequest) -> bool:
 
     logger.debug('REMS :: Unpacking the data received from REMS...')
     body_unicode = request.body.decode('utf-8')
-    logger.debug('REMS :: Got the following request body: {}'.format(request.body.decode("utf-8")))
-    logger.debug('REMS :: Here is the request headers: {}'.format(request.headers))
-    logger.debug('REMS :: Here is the request data: {}'.format(request.POST))
 
     try:
         request_post_data = json.loads(body_unicode)
