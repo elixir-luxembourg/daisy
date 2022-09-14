@@ -4,7 +4,7 @@ import urllib3
 
 from datetime import datetime, date, timedelta
 from dateutil.parser import isoparse
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -153,7 +153,7 @@ def create_rems_entitlement(obj: Union[Access, User],
         dataset_id: str, 
         user_oidc_id: str, 
         email: str,
-        expiration_date: str = None) -> bool:
+        expiration_date: Optional[str] = None) -> bool:
     """
     Tries to find a dataset with `elu_accession` equal to `dataset_id`.
     If it exists, it will add a new logbook entry (Access object) set to the current user/contact
