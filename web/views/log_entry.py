@@ -4,13 +4,11 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 
 from core.models.user import User
-from core.models.dataset import Dataset
 from core.permissions import constants, CheckerMixin
 from auditlog.models import LogEntry
 from auditlog.registry import auditlog
 import datetime
 import json
-import re
 
 class LogEntryListView(CheckerMixin, ListView):
     DATE_FORMAT = "%Y-%m-%d"
@@ -25,24 +23,24 @@ class LogEntryListView(CheckerMixin, ListView):
     #  - Make cleaner
     def get_list_of_model_fields(self):
         fields_per_model = LogEntry.objects.values("content_type", "changes").distinct().all()
-        test = {}
+        tmp_dict = {}
         for entry in fields_per_model:
             entry_content_type = ContentType.objects.get(pk=entry["content_type"])
             entry_model = entry_content_type.model_class()
             entry_model_name = entry_content_type.name
-            model_fields = auditlog.get_model_fields(entry_model._meta.model)
 
-            if entry_model_name not in test:
-                test.update({entry_model_name: {}})
+            if entry_model_name not in tmp_dict:
+                tmp_dict.update({entry_model_name: {}})
 
-            for key in json.loads(entry["changes"]).keys():
-                field = entry_model._meta.get_field(key)
-                field_name = model_fields["mapping_fields"].get(field.name, getattr(field, "verbose_name", field.name))
-                test[entry_model_name].update({key: field_name})
+            changed_fields = json.loads(entry["changes"]).keys()
+
+            for key in changed_fields:
+                field_name = self.get_verbose_field_name(entry_model, key)
+                tmp_dict[entry_model_name].update({key: field_name})
 
         model_fields_dict = {
-            key: {name: verbose_name for name, verbose_name in values.items()}
-            for key, values in test.items()
+            key: {name: verbose_name for name, verbose_name in sorted(values.items(), key=lambda x: x[1])}
+            for key, values in tmp_dict.items()
         }
         return model_fields_dict
 
@@ -50,10 +48,10 @@ class LogEntryListView(CheckerMixin, ListView):
         # Copy of method used by LogEntry.changes_display_dict
         model_fields = auditlog.get_model_fields(model._meta.model)
         field = model._meta.get_field(field_name)
-        verbose_name = model_fields["mappings_fields"].get(
+        verbose_name = model_fields.get("mappings_fields", {}).get(
             field.name, getattr(field, "verbose_name", field.name)
         )
-        return verbose_name
+        return verbose_name.title()
 
     def get_context_data(self, object_list=None, filters=None, **kwargs):
         query_filters = {}
@@ -92,8 +90,8 @@ class LogEntryListView(CheckerMixin, ListView):
                     field = filters.get("entity_attr")
                     query_filters.update({"changes__regex": rf'"{field}": \['})
 
-            if "user_name" in filters.keys():
-                query_filters.update({"actor__exact": filters.get("user_name")})
+            if "user" in filters.keys():
+                query_filters.update({"actor__exact": filters.get("user")})
 
             self.object_list = [{"action": log.Action.choices[log.action], "log": log} for log in LogEntry.objects.filter(**query_filters).all()]
 
