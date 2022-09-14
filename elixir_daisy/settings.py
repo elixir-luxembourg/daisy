@@ -264,6 +264,9 @@ LOGGING = {
             'propagate': False,
             'level': LOG_LEVEL,
         },
+        'django.utils.autoreload': {
+            'level': 'INFO',
+        },
         'daisy': {
             'handlers': ['mail_admins', 'console', 'logfile'],
             'level': LOG_LEVEL,
