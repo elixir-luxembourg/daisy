@@ -4,7 +4,7 @@ import urllib3
 
 from datetime import datetime, date, timedelta
 from dateutil.parser import isoparse
-from typing import Dict, Union, Optional
+from typing import Dict, Union
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -80,6 +80,13 @@ def handle_rems_entitlement(data: Dict[str, str]) -> bool:
     email = data.get('mail')
     expiration_date = data.get('end')
 
+    if expiration_date is None:
+        expiration_date = date.today() + timedelta(
+            days=getattr(settings, 'ACCESS_DEFAULT_EXPIRATION_DAYS', 90)
+        )
+    else:
+        expiration_date = isoparse(expiration_date).date()
+
     logger.debug(f'REMS :: * data access request id: {application}, user_oidc_id: {user_oidc_id}, user_email: {email}, resource: {resource}')
 
     try:
@@ -153,7 +160,7 @@ def create_rems_entitlement(obj: Union[Access, User],
         dataset_id: str, 
         user_oidc_id: str, 
         email: str,
-        expiration_date: Optional[str] = None) -> bool:
+        expiration_date: date) -> bool:
     """
     Tries to find a dataset with `elu_accession` equal to `dataset_id`.
     If it exists, it will add a new logbook entry (Access object) set to the current user/contact
@@ -180,13 +187,6 @@ def create_rems_entitlement(obj: Union[Access, User],
     else:
         system_rems_user = system_rems_user.first()
 
-    if expiration_date is None:
-        entitlement_end = date.today() + timedelta(
-            days=getattr(settings, 'ACCESS_DEFAULT_EXPIRATION_DAYS', 90)
-        )
-    else:
-        entitlement_end = isoparse(expiration_date).date()
-
     if type(obj) == User:
         new_logbook_entry = Access(
             user=obj,
@@ -196,7 +196,7 @@ def create_rems_entitlement(obj: Union[Access, User],
             was_generated_automatically=True,
             created_by=system_rems_user,
             status=StatusChoices.active,
-            grant_expires_on=entitlement_end,
+            grant_expires_on=expiration_date,
         )
     elif type(obj) == Contact:
         new_logbook_entry = Access(
@@ -207,7 +207,7 @@ def create_rems_entitlement(obj: Union[Access, User],
             was_generated_automatically=True,
             created_by=system_rems_user,
             status=StatusChoices.active,
-            grant_expires_on=entitlement_end,
+            grant_expires_on=expiration_date,
         )
     else:
         klass = obj.__class__.__name__
