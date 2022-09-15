@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 
 from typing import Dict, List
@@ -95,7 +97,8 @@ def test_keycloak_synchronization_config_validation():
 
 
 def test_add_rems_entitlements():
-    elu_accession='12345678'
+    elu_accession = '12345678'
+    expiration_date = datetime.date.today() + datetime.timedelta(days=1)
 
     user = UserFactory(oidc_id='12345', email='example@example.org')
     user.save()
@@ -103,8 +106,9 @@ def test_add_rems_entitlements():
     dataset = DatasetFactory(title='Test', local_custodians=[user], elu_accession=elu_accession)
     dataset.save()
 
-    create_rems_entitlement(user, 'Test Application', elu_accession, user.oidc_id, user.email)
+    create_rems_entitlement(user, 'Test Application', elu_accession, user.oidc_id, user.email, expiration_date)
     user.delete()
+
 
 def test_permissions():
     user = UserFactory(oidc_id='12345')

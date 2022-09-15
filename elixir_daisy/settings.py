@@ -340,7 +340,7 @@ IMPORT_JSON_SCHEMAS_DIR = os.path.join(BASE_DIR, 'core', 'fixtures', 'json_schem
 REMS_INTEGRATION_ENABLED = False
 REMS_SKIP_IP_CHECK = False
 REMS_ALLOWED_IP_ADDRESSES = []  # use '*' to allow all, otherwise e.g. '127.0.0.1'...
-
+ACCESS_DEFAULT_EXPIRATION_DAYS = 90
 # ID service
 IDSERVICE_FUNCTION = 'web.views.utils.generate_elu_accession'
 
