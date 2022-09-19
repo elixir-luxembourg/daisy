@@ -1,9 +1,14 @@
+from datetime import datetime
+
 from django.db import models
 
-from .utils import CoreModel, TextFieldWithInputWidget
+from core.models.access import Access
+from core.models.contact_type import ContactType
+from core.models.utils import CoreModel, TextFieldWithInputWidget
 
 
 class Contact(CoreModel):
+
     """
     Contact represents a contact person.
     For instance:
@@ -82,11 +87,12 @@ class Contact(CoreModel):
             })
 
         base_dict = {
-            "pk": self.id.__str__(),
-            "address": self.address,
+            "pk": str(self.id),
             "email": self.email,
+            "oidc_id": self.oidc_id,
             "first_name": self.first_name,
             "last_name": self.last_name,
+            "address": self.address,
             "phone": self.phone,
             "type": self.type.name if self.type else '',
             "partners": partners_dict if len(partners_dict) else ''
@@ -105,25 +111,29 @@ class Contact(CoreModel):
         return d
 
     @classmethod
-    def get_or_create(cls, email: str, oidc_id: str, resource: str, method: str):
+    def get_or_create_from_rems(cls, email: str, oidc_id: str):
         try:
-            if method == 'email':
-                return cls.objects.get(email=email)
-            elif method == 'id':
+            if cls.objects.filter(oidc_id=oidc_id).count() == 1:
                 return cls.objects.get(oidc_id=oidc_id)
-            elif method == 'auto':
-                if cls.objects.filter(oidc_id=oidc_id).count() == 1:
-                    return cls.objects.get(oidc_id=oidc_id)
-                if cls.objects.filter(email=email).count() == 1:
-                    return cls.objects.get(email=email)
-                else:
-                    message = f'There are either zero, or 2 and more contacts with such `email` and `oidc_id`!'
-                    raise ValueError(message)
+            if cls.objects.filter(email=email).count() == 1:
+                return cls.objects.get(email=email)
+            else:
+                message = f'There are either zero, or 2 and more contacts with such `email` and `oidc_id`!'
+                raise ValueError(message)
         except cls.DoesNotExist:
+            contact_type = ContactType.objects.get_or_create(name='Other (imported from Keycloak)')
             new_object = cls(
                 email=email, 
                 first_name='IMPORTED BY REMS', 
-                last_name='IMPORTED BY REMS'
+                last_name='IMPORTED BY REMS',
+                type=contact_type
             )
             new_object.save()
             return new_object
+
+    def get_access_permissions(self):
+        """
+        Finds Accesses of the user, and returns a list of their dataset IDs 
+        """
+        return Access.find_for_contact(self)
+        

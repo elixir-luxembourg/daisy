@@ -22,6 +22,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(create_log_types),
-        migrations.RunPython(set_null_datalogs_to_transfer)
+        migrations.RunPython(create_log_types, migrations.RunPython.noop),
+        migrations.RunPython(set_null_datalogs_to_transfer, migrations.RunPython.noop)
     ]

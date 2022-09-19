@@ -114,7 +114,6 @@ class DataDeclaration(CoreModel):
         null=False, 
         help_text='How has the data been de-identified, is it pseudonymized or anonymized?')
 
-
     embargo_date = models.DateField(verbose_name='Embargo date',
         blank=True,
         null=True,
@@ -130,7 +129,7 @@ class DataDeclaration(CoreModel):
         null=True, 
         help_text='Please describe criteria used to determine storage duration.')
 
-    has_special_subjects = models.NullBooleanField(
+    has_special_subjects = models.BooleanField(
         null=True,
         blank=True,
         default=None,

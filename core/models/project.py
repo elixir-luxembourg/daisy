@@ -1,5 +1,7 @@
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
+from django.utils.safestring import mark_safe
+
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from core import constants
@@ -67,7 +69,7 @@ class Project(CoreTrackedModel):
                                            related_name='projects_w_term',
                                            verbose_name='Disease terms',
                                            blank=True,
-                                           help_text='Provide keywords/terms that would characterize the disease that fall in project\'s scope.')
+                                           help_text=mark_safe('Provide keywords/terms that would characterize the disease that fall in project\'s scope. Please use terms from <a href="https://www.ebi.ac.uk/ols/ontologies/doid">HDO</a> ontology.'))
 
     end_date = models.DateField(verbose_name='End date',
                                 blank=True,
@@ -89,7 +91,7 @@ class Project(CoreTrackedModel):
     gene_terms = models.ManyToManyField('core.GeneTerm',
                                         verbose_name='List of gene terms',
                                         blank=True,
-                                        help_text='Select one or more terms that would characterize the genes that fall in project\'s scope.')
+                                        help_text=mark_safe('Select one or more terms that would characterize the genes that fall in project\'s scope. Please use terms from <a href="https://www.genenames.org">HGNO ontology</a>.'))
 
     has_cner = models.BooleanField(default=False,
                                    verbose_name='Has National Ethics Approval?',
@@ -117,7 +119,7 @@ class Project(CoreTrackedModel):
                                              related_name='projects_w_term',
                                              verbose_name='Phenotype terms',
                                              blank=True,
-                                             help_text='Select one or more terms that would characterize the phenotypes that fall in project\'s scope.')
+                                             help_text=mark_safe('Select one or more terms that would characterize the phenotypes that fall in project\'s scope. Please use terms from <a href="https://hpo.jax.org/">HPO ontology</a>.'))
 
     project_web_page = models.URLField(verbose_name='Project''s URL page',
                                        help_text='If the project has a webpage, please provide its URL link here.',
@@ -136,7 +138,7 @@ class Project(CoreTrackedModel):
                                          blank=True,
                                          related_name='projects_w_type',
                                          verbose_name='Study features',
-                                         help_text='Select one or more features that would characterize the project.')
+                                         help_text=mark_safe('Select one or more features that would characterize the project. Please use terms from <a href="https://bioportal.bioontology.org/ontologies/EDDA">EDDA Study Designs Taxonomy</a>'))
 
     title = models.CharField(blank=False,
                              null=True,
@@ -205,6 +207,7 @@ class Project(CoreTrackedModel):
             "end_date": self.end_date.strftime('%Y-%m-%d') if self.end_date else None,
             "contacts": contact_dicts,
             "publications": pub_dicts,
+            "metadata": self.scientific_metadata
         }
 
         return base_dict

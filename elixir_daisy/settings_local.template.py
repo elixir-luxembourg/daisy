@@ -19,6 +19,8 @@ if SECRET_KEY is None: raise NotImplementedError('You must specify SECRET_KEY in
 
 COMPANY = 'LCSB'  # Used for generating some models' verbose names
 
+HELPDESK_EMAIL = 'lcsb-sysadmins@uni.lu'
+
 # Placeholders on login page
 # LOGIN_USERNAME_PLACEHOLDER = ''
 # LOGIN_PASSWORD_PLACEHOLDER = ''
@@ -56,8 +58,14 @@ PREDEFINED_PIS_LIST = [
 ]
 
 # REMS Integration
-REMS_ALLOWED_IP_ADDRESSES = []
 REMS_INTEGRATION_ENABLED = False
+REMS_ALLOWED_IP_ADDRESSES = []
 
-# IDSERVICE_FUNCTION = 'core.lcsb.generate_identifier'
+# IDSERVICE_FUNCTION = 'core.lcsb.idservice.generate_identifier'
 IDSERVICE_ENDPOINT = 'https://10.240.16.199:8080/v1/api/id'
+
+# Keycloak integration, uncomment and fill the values below
+# KEYCLOAK_URL = 'https://root-address-to-your-keycloak.com:443'
+# KEYCLOAK_REALM = 'master'
+# KEYCLOAK_USER = 'your service user for daisy'
+# KEYCLOAK_PASS = 'the password for the service user' 

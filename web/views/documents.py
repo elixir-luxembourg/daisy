@@ -10,7 +10,7 @@ from django.contrib import messages
 from core.constants import Permissions
 from core.forms import DocumentForm
 from core.models import Document
-from core.permissions import permission_required
+from core.permissions import permission_required, permission_required_from_content_type
 from core.utils import DaisyLogger
 
 
@@ -26,6 +26,8 @@ def rfc5987_content_disposition(file_name):
     return header
 
 
+@permission_required_from_content_type(Permissions.PROTECTED, content_type_attr='content_type', object_id_attr='object_id')
+@permission_required_from_content_type(Permissions.EDIT, content_type_attr='content_type', object_id_attr='object_id')
 def upload_document(request, object_id, content_type):
     log.debug('uploading document', post=request.POST, files=request.FILES)
     if request.method == 'POST':
@@ -96,6 +98,7 @@ def download_document(request, pk):
 
 @require_http_methods(["DELETE"])
 @permission_required(Permissions.PROTECTED, (Document, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, (Document, 'pk', 'pk'))
 def delete_document(request, pk):
     document = get_object_or_404(Document, pk=pk)
     # perm = PERMISSION_MAPPING[document.content_type.name].DELETE.value
@@ -104,7 +107,7 @@ def delete_document(request, pk):
     try:
         document.delete()
     except Exception as e:
-        return JsonResponse({'message': str(e)})
+        return JsonResponse({'message': str(e)}, status=403)
     return JsonResponse({'message': 'document deleted'})
 
 

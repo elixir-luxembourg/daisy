@@ -1,0 +1,79 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block content %}
+
+{% if projects %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1 class="display-4">DAISY projects</h1>
+            You're enlisted as a local custodian or a personnel in:
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="card col">
+            <div class="card-body">
+                <div id="form-container" class="card-text">
+                    <table class="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Project's acronym</th>
+                            <th scope="col">Title (click to choose)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        {% for project in projects %}<tr>
+                            <td>{{project.id}}</td>
+                            <td>{{ project.acronym }}</td>
+                            <td><a class="btn btn-secondary btn-outline" data-project-title="{{ project.title }}" data-project-id="{{ project.id }}" data-project-url="/projects/{{ project.id }}">{{project.title}}</a></td>
+                          </tr>{% endfor %}
+                        </tbody>
+                      </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{% static 'vendor/node_modules/@ds-wizard/integration-widget-sdk/lib/index.js' %}"></script>
+    <script>
+        // DSW Widget: Instantiate the widget
+        const dswWidget = new DSWIntegrationWidget('{{ dsw_origin }}');
+
+        // DSW Widget: Wait for the initialzation
+        dswWidget.init().then(() => {
+
+            // Example: Clicking on item in the list group will send the values back
+            document.querySelectorAll('.table a').forEach((el) => {
+                el.onclick = () => {
+                    const url = $(el).data("project-url");
+                    const id = $(el).data("project-id");
+                    const value = $(el).data("project-title"); 
+                    console.log(url, value);
+
+                    // DSW Widget: Send the values back to the DSW
+                    dswWidget.send(value, id)
+
+                    // Example: Close the popup window after the selection is done
+                    window.close()
+                }
+            })
+        })
+    </script>
+{% else %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1 class="display-4">
+                We are sorry! <br />
+                <small>There are no <strong>published</strong> projects in Daisy for which you are local custodian or personnel.</small>
+            </h1>
+            <hr /> 
+            <p>
+                Please ask your Data Steward in case you believe you should see some projects here. <br />It might have happened that the Projects were not published yet, too.
+            </p>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock content %}

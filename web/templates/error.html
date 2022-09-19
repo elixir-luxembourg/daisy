@@ -1,0 +1,78 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1 class="display-4">
+                <strong>We are sorry</strong>, there was something wrong with the page you requested! <small>(error code: {{ reason }})</small>
+            </h1>
+        </div>
+    </div>
+
+    <div class="card row">
+        <div class="card-body">
+            <div class="col">
+                {% if reason == "404" %}
+                    <p class="display-4">
+                        <strong>The page does not exist. Let us guide you back!</strong>
+                    </p>
+                    <p>
+                        Maybe you received a link to an obsolete resource or didn't copy the whole link?
+                    </p>
+                {% elif reason == "400" %}
+                    <p class="display-4">
+                        <strong>Your browser sent a bad request, and DAISY couldn't understand that.</strong>
+                    </p>
+                    <p>
+                        In practice it usually means, that there's a temporary error in the application. <strong>Can you reload the page (hit the refresh button), please?</strong>
+                    </p>
+                    <p>
+                        If the error persists after refreshing the page, please <a href="mailto:{{ helpdesk_email }}?subject=DAISY+error">contact us</a> about it.
+                    </p>
+                {% elif reason == "csrf" %}
+                    <p class="display-4">
+                        <strong>The CSRF validation failed.</strong> 
+                    </p>     
+                    <p>
+                        In practice it usually means, that filling the form took you slightly too long time (more than an hour). <strong>Go back and try to fill the form once again, please.</strong>
+                    </p>
+                    <p>
+                        If you see this page in effect of clicking on any link you received from someone via mail or any other message, please <a href="mailto:{{ helpdesk_email }}?subject=DAISY+error">let us know</a>.
+                    </p>
+                {% elif reason == "500" %}
+                    <p class="display-4">
+                        <strong>The application has encountered an error.</strong> 
+                    </p>
+                    <p>
+                        It might have happened because of the data you entered. If you'd like, you can <a href="mailto:{{ helpdesk_email }}?subject=DAISY+error">let us know</a>.
+                    </p>
+                {% elif reason == "403" %}
+                    <p class="display-4">
+                        <strong>The page you requested is restricted, and your user cannot access the resource.</strong> 
+                    </p>
+                    <p>
+                        If you are sure that you should be able to access the document, please contact your Data Steward.
+                    </p>
+                {% endif %}
+
+                <hr />
+
+                <div class="media">
+                    <div class="media-body">
+                      <h5 class="mt-0">You might want to:</h5>
+                      <ul>
+                        <li>go <a href="#" onclick="window.history.back()">back</a></li>
+                        <li>go to <a href="{% url 'dashboard' %}">the index page</a></li>
+                        {% if user.is_authenticated %}
+                        <li>go to <a href="{% url 'login' %}">the login page</a></li>
+                        {% endif %}
+                      </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
