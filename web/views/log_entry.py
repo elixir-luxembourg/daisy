@@ -13,7 +13,6 @@ import json
 class LogEntryListView(CheckerMixin, ListView):
     DATE_FORMAT = "%Y-%m-%d"
     model = LogEntry
-    paginate_by = 5
     allow_empty = True
     permission_required = constants.Permissions.PROTECTED
 
@@ -93,6 +92,7 @@ class LogEntryListView(CheckerMixin, ListView):
             if "user" in filters.keys():
                 query_filters.update({"actor__exact": filters.get("user")})
 
+            print(f"Filters: {query_filters}")
             self.object_list = [{"action": log.Action.choices[log.action], "log": log} for log in LogEntry.objects.filter(**query_filters).all()]
 
         context = super().get_context_data(**kwargs)
