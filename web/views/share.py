@@ -5,7 +5,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, UpdateView
 from django.shortcuts import get_object_or_404 , redirect, render
 
-from core.forms.share import ShareForm, shareFormFactory, ShareFormEdit
+from core.forms.share import ShareForm, shareFormFactory, ShareEditForm
 from core.models import Share, Dataset, Partner
 from core.constants import Permissions
 from core.permissions import permission_required, CheckerMixin
@@ -58,7 +58,7 @@ class ShareCreateView(CreateView, AjaxViewMixin):
 class ShareEditView(CheckerMixin, UpdateView, AjaxViewMixin):
     model = Share
     template_name = 'shares/share_form.html'
-    form_class = ShareFormEdit
+    form_class = ShareEditForm
     permission_required = Permissions.EDIT
 
     def get_permission_object(self):

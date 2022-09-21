@@ -38,9 +38,7 @@ class ShareForm(ModelForm):
     ]
 
 
-
-
-class ShareFormEdit(ShareForm):
+class ShareEditForm(ShareForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['partner'].disabled = True
