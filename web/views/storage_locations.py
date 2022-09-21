@@ -3,41 +3,19 @@ from django.http import HttpResponse,  JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
-
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView
 
 from core.forms.storage_location import StorageLocationForm, StorageLocationEditForm
 from core.models import Dataset
 from core.models.storage_location import DataLocation
-from core.permissions import permission_required
+from core.permissions import permission_required, CheckerMixin
 from core.constants import Permissions
-from web.views.utils import AjaxViewMixin
 from core.utils import DaisyLogger
+
+from web.views.utils import AjaxViewMixin
 
 
 log = DaisyLogger(__name__)
-
-@permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
-def edit_storagelocation(request, pk, dataset_pk):
-    loc = get_object_or_404(DataLocation, pk=pk)
-    if request.method == 'POST':
-        form = StorageLocationEditForm(request.POST,  request.FILES, instance=loc)
-        if form.is_valid():
-            form.save()
-            messages.add_message(request, messages.SUCCESS, "Storage location definition updated")
-            redirecturl = reverse_lazy('dataset', kwargs={'pk': dataset_pk})
-            return redirect(to=redirecturl)
-        else:
-            return JsonResponse(
-                {'error':
-                     {'type': 'Edit error', 'messages': [str(e) for e in form.errors]
-                      }}, status=405)
-    else:
-        form = StorageLocationEditForm(instance=loc)
-
-    log.debug(submit_url=request.get_full_path())
-    return render(request, 'modal_form.html', {'form': form, 'submit_url': request.get_full_path() })
-
 
 
 class StorageLocationCreateView(CreateView, AjaxViewMixin):
@@ -53,6 +31,7 @@ class StorageLocationCreateView(CreateView, AjaxViewMixin):
         dataset_pk = kwargs.get('dataset_pk')
         if dataset_pk:
             self.dataset = get_object_or_404(Dataset, pk=dataset_pk)
+
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -60,7 +39,7 @@ class StorageLocationCreateView(CreateView, AjaxViewMixin):
         self.object = form.save(commit=False)
         self.object.dataset = self.dataset
         self.object.save()
-        messages.add_message(self.request, messages.SUCCESS, "Storage definition created")
+        messages.add_message(self.request, messages.SUCCESS, 'Storage definition created')
         return super().form_valid(form)
 
     def get_form_kwargs(self):
@@ -71,6 +50,31 @@ class StorageLocationCreateView(CreateView, AjaxViewMixin):
 
     def get_success_url(self, **kwargs):
         return reverse_lazy('dataset', kwargs={'pk': self.dataset.pk})
+
+
+class StorageLocationEditView(CheckerMixin, UpdateView, AjaxViewMixin):
+    model = DataLocation
+    form_class = StorageLocationEditForm
+    template_name = 'storage_locations/storage_location_form.html'
+    permission_required = Permissions.EDIT
+
+    def get_permission_object(self, queryset=None):
+        obj = super().get_permission_object()
+        log.debug(obj)
+        return obj.dataset
+
+    def form_valid(self, form):
+        """If the form is valid, save the associated model and add to the dataset"""
+        self.object = form.save(commit=False)
+        self.object.save()
+        messages.add_message(self.request, messages.SUCCESS, 'Storage definition updated')
+        return super().form_valid(form)
+
+    def get_success_url(self, **kwargs):
+        if self.object.dataset:
+            return reverse_lazy('dataset', kwargs={'pk': self.object.dataset.pk})
+        return super().get_success_url()
+
 
 @require_http_methods(["DELETE"])
 @permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
