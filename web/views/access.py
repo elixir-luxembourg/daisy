@@ -68,7 +68,11 @@ class AccessEditView(CheckerMixin, UpdateView, AjaxViewMixin):
         return obj.dataset
 
     def form_valid(self, form):
-        """If the form is valid, save the associated model and add to the dataset"""
+        """If the form is valid, check that remark is updated then save the associated model and add to the dataset"""
+        if "access_notes" not in form.changed_data:
+            form.add_error("access_notes", "This field must be updated")
+            return super().form_invalid(form)
+
         self.object = form.save(commit=False)
         if not self.request.user.is_anonymous:
             self.object.created_by = self.request.user
