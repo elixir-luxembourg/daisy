@@ -41,7 +41,7 @@ class Access(CoreModel):
     def clean(self):
         if self.user and self.contact:
             raise ValidationError(
-                "The Access is granted either to an User, or to a Contact. If you need both, please create two separate entries."
+                "The Access is granted either to a User, or to a Contact. If you need both, please create two separate entries."
             )
 
     history = AuditlogHistoryField()

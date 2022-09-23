@@ -7,6 +7,8 @@ from core.models.user import User
 from core.permissions import constants, CheckerMixin
 from auditlog.models import LogEntry
 from auditlog.registry import auditlog
+
+from collections import defaultdict
 import datetime
 import json
 
@@ -22,15 +24,11 @@ class LogEntryListView(CheckerMixin, ListView):
     #  - Make cleaner
     def get_list_of_model_fields(self):
         fields_per_model = LogEntry.objects.values("content_type", "changes").distinct().all()
-        tmp_dict = {}
+        tmp_dict = defaultdict(lambda: {})
         for entry in fields_per_model:
             entry_content_type = ContentType.objects.get(pk=entry["content_type"])
             entry_model = entry_content_type.model_class()
             entry_model_name = entry_content_type.name
-
-            if entry_model_name not in tmp_dict:
-                tmp_dict.update({entry_model_name: {}})
-
             changed_fields = json.loads(entry["changes"]).keys()
 
             for key in changed_fields:
@@ -54,43 +52,43 @@ class LogEntryListView(CheckerMixin, ListView):
 
     def get_context_data(self, object_list=None, filters=None, **kwargs):
         query_filters = {}
-        start_date = datetime.datetime.strptime(filters.get("start_date"), self.DATE_FORMAT) \
-            if "start_date" in filters.keys() \
+        start_date = datetime.datetime.strptime(filters["start_date"], self.DATE_FORMAT) \
+            if "start_date" in filters \
             else datetime.date.today() - datetime.timedelta(days=90)
         query_filters.update({"timestamp__date__gte": start_date})
 
-        end_date = datetime.datetime.strptime(filters.get("end_date"), self.DATE_FORMAT) \
-            if "end_date" in filters.keys() \
+        end_date = datetime.datetime.strptime(filters["end_date"], self.DATE_FORMAT) \
+            if "end_date" in filters \
             else datetime.datetime.now()
         query_filters.update({"timestamp__date__lte": end_date})
 
-        if "action" in filters.keys():
-            query_filters.update({"action__exact": filters.get("action")})
+        if "action" in filters:
+            query_filters.update({"action__exact": filters["action"]})
 
-        if "entity_name" in filters.keys() and "entity_id" in filters.keys():
-            entity_class = get_object_or_404(ContentType, model=filters.get("entity_name")).model_class()
-            entity_object = get_object_or_404(entity_class, pk=filters.get("entity_id"))
+        if "entity_name" in filters and "entity_id" in filters:
+            entity_class = get_object_or_404(ContentType, model=filters["entity_name"]).model_class()
+            entity_object = get_object_or_404(entity_class, pk=filters["entity_id"])
             self.object_list = [
                 {"action": log.Action.choices[log.action], "log": log}
                 for log in entity_object.history.filter(**query_filters).all()
             ]
 
         else:
-            if "entity_name" in filters.keys():
-                query_filters.update({"content_type__model": filters.get("entity_name")})
-                if "parent_entity_name" in filters.keys() and "parent_entity_id" in filters.keys():
-                    entity_class = get_object_or_404(ContentType, model=filters.get("entity_name")).model_class()
+            if "entity_name" in filters:
+                query_filters.update({"content_type__model": filters["entity_name"]})
+                if "parent_entity_name" in filters and "parent_entity_id" in filters:
+                    entity_class = get_object_or_404(ContentType, model=filters["entity_name"]).model_class()
                     entity_ids_list = [
-                        o.pk for o in entity_class.objects.filter(**{filters.get("parent_entity_name"): filters.get("parent_entity_id")})
+                        o.pk for o in entity_class.objects.filter(**{filters["parent_entity_name"]: filters["parent_entity_id"]})
                     ]
                     query_filters.update({"object_id__in": entity_ids_list})
 
-                if "entity_attr" in filters.keys():
-                    field = filters.get("entity_attr")
+                if "entity_attr" in filters:
+                    field = filters["entity_attr"]
                     query_filters.update({"changes__regex": rf'"{field}": \['})
 
-            if "user" in filters.keys():
-                query_filters.update({"actor__exact": filters.get("user")})
+            if "user" in filters:
+                query_filters.update({"actor__exact": filters["user"]})
 
             print(f"Filters: {query_filters}")
             self.object_list = [{"action": log.Action.choices[log.action], "log": log} for log in LogEntry.objects.filter(**query_filters).all()]
@@ -113,10 +111,10 @@ class LogEntryListView(CheckerMixin, ListView):
         if request.user.is_superuser or request.user.is_part_of(constants.Groups.DATA_STEWARD.value) or request.user.is_part_of(constants.Groups.AUDITOR.value):
             return None
         else:
-            if "entity_name" in request.GET.keys() and "entity_id" in request.GET.keys():
+            if "entity_name" in request.GET and "entity_id" in request.GET:
                 self.referenced_class = get_object_or_404(ContentType, model=request.GET.get("entity_name")).model_class()
                 self.object = get_object_or_404(self.referenced_class, pk=request.GET.get("entity_id"))
-            elif "parent_entity_name" in request.GET.keys() and "parent_entity_id" in request.GET.keys():
+            elif "parent_entity_name" in request.GET and "parent_entity_id" in request.GET:
                 self.referenced_class = get_object_or_404(ContentType, model=request.GET.get("parent_entity_name")).model_class()
                 self.object = get_object_or_404(self.referenced_class, pk=request.GET.get("parent_entity_id"))
             else:
