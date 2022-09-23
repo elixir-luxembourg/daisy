@@ -139,9 +139,30 @@ class DocumentChecker(AbstractChecker):
                 **kwargs
             )
 
+
 class UserChecker(AbstractChecker):
     def _check(self, perm, obj, **kwargs):
         return self.user_or_group.is_staff
+
+
+class DatasetEntityChecker(DatasetChecker):
+    def check(self, perm, obj, **kwargs):
+        return super().check(perm, obj.dataset, **kwargs)
+
+
+class AccessChecker(AbstractChecker):
+    def check(self, perm, obj, **kwargs):
+        return self._check(perm, obj, **kwargs)
+
+    def _check(self, perm, obj, **kwargs):
+        parent_dataset = obj.dataset
+        if self.user_or_group.is_part_of([constants.Groups.DATA_STEWARD.name]) \
+                or parent_dataset.local_custodians.filter(pk=self.user_or_group.pk).exists():
+            return True
+
+        else:
+            return False
+
 
 class AutoChecker(AbstractChecker):
     """
@@ -155,6 +176,10 @@ class AutoChecker(AbstractChecker):
         'Document': DocumentChecker,
         'DataDeclaration': DataDeclarationChecker,
         'User': UserChecker,
+        'Access': AccessChecker,
+        'LegalBasis': DatasetEntityChecker,
+        'Share': DatasetEntityChecker,
+        'DataLocation': DatasetEntityChecker,
     }
 
     # override default check method

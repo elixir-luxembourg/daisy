@@ -228,6 +228,8 @@
                                        id="editlegalbasis"
                                        title="Edit legal basis"
                                        data-toggle="modal"
+                                       data-post-mode="true"
+                                       data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
                                        data-target="#modal"
                                        data-modal-title="Edit legal basis"
                                        data-ajax-url="{% url 'dataset_legalbasis_edit' pk=lbd.id dataset_pk=dataset.id %}">edit</i>
@@ -292,7 +294,9 @@
                                        title="Edit storage"
                                        data-toggle="modal"
                                        data-target="#modal"
+                                       data-post-mode="true"
                                        data-modal-title="Edit storage"
+                                       data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
                                        data-ajax-url="{% url 'dataset_storagelocation_edit' pk=location.id dataset_pk=dataset.id %}">edit</i>
                                     <i class="red material-icons clickable" data-method="delete"
                                        data-parent-to-remove="tr"
@@ -328,7 +332,16 @@
                         </button>
                     </div>
                 {% endif %}
-                <h2 class="card-title">Accesses</h2>
+                <h2 class="card-title">
+                    Accesses
+                    {% if can_see_protected %}
+                        <a href="{% url 'history' %}?entity_name=access&parent_entity_name=dataset&parent_entity_id={{ dataset.pk }}"
+                           title="See dataset accesses history"
+                        >
+                            <i class="material-icons">history</i>
+                        </a>
+                    {% endif %}
+                </h2>
                 <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
@@ -341,6 +354,9 @@
                         {% if can_edit %}
                             <th>To whom</th>
                             <th style="width:7em">Actions</th>
+                        {% endif %}
+                        {% if can_see_protected %}
+                            <th>History</th>
                         {% endif %}
                     </tr>
                     </thead>
@@ -368,11 +384,19 @@
                                        title="Edit access"
                                        data-toggle="modal"
                                        data-target="#modal"
+                                       data-post-mode="true"
                                        data-modal-title="Edit access"
-                                       data-ajax-url="{% url 'dataset_access_edit' pk=access.id dataset_pk=dataset.id %}">edit</i>
+                                       data-ajax-url="{% url 'dataset_access_edit' pk=access.id dataset_pk=dataset.id %}"
+                                       data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
+                                    >edit</i>
                                     <i class="red material-icons clickable" data-method="delete"
                                        title="Delete access"
                                        data-url="{% url 'dataset_access_remove' dataset_pk=dataset.id access_pk=access.id %}">delete_forever</i>
+                                </td>
+                            {% endif %}
+                            {% if can_see_protected %}
+                                <td>
+                                    <a href="{% url 'history' %}?entity_name=access&entity_id={{ access.pk }}"><i class="material-icons">history</i></a>
                                 </td>
                             {% endif %}
                         </tr>
@@ -424,7 +448,7 @@
                     {% for share in dataset.shares.all %}
                         <tr>
                             <td><p>{% for ddec in share.data_declarations.all  %}{{ ddec.title}} <br/> {% empty %}Entire dataset{% endfor %}</p></td>
-                            <td>{%if share.data_log_type  %} {{ share.data_log_type.name }} {% else %}<p class="alert-error"> missing </p>{% endif %}</td>
+                            <td>{% if share.data_log_type  %} {{ share.data_log_type.name }} {% else %}<p class="alert-error"> missing </p>{% endif %}</td>
                             <td>{{ share.partner }}</td>
                             <td>{{ share.granted_on | default:"-" }}</td>
                             <td>{{ share.share_notes  | default:"-" }}</td>
@@ -435,6 +459,8 @@
                                        title="Edit logbook entry"
                                        data-toggle="modal"
                                        data-target="#modal"
+                                       data-post-mode="true"
+                                       data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
                                        data-modal-title="Edit logbook entry"
                                        data-ajax-url="{% url 'dataset_share_edit' pk=share.id dataset_pk=dataset.id %}">edit</i>
                                     <i class="red material-icons clickable"
@@ -454,5 +480,3 @@
         </div>
     </div>
 {% endblock %}
-
-
