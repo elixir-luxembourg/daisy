@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 
 from core.constants import Groups as GroupConstants
-from core.models import User, Dataset
+from core.models import User, Dataset, DataLogType, StorageResource
 from core.models.data_declaration import DeidentificationMethod, SubjectCategory, ShareCategory, ConsentStatus
 from core.models.partner import GEO_CATEGORY
 from notification.models import NotificationVerb
@@ -57,8 +57,6 @@ class UserFactory(factory.django.DjangoModelFactory):
         if extracted:
             for group in extracted:
                 self.groups.add(group)
-
-
 
 
 class ProjectFactory(factory.django.DjangoModelFactory):
@@ -147,6 +145,64 @@ class DatasetFactory(factory.django.DjangoModelFactory):
             # A list of users were passed in, use them
             for user in extracted:
                 self.local_custodians.add(user)
+
+
+class AccessFactory(factory.django.DjangoModelFactory):
+    """
+    Access factory
+    """
+
+    class Meta:
+        model = 'core.Access'
+        django_get_or_create = ('user', )
+
+    access_notes = factory.Faker('sentence')
+    dataset = factory.SubFactory(DatasetFactory)
+    user = factory.SubFactory(UserFactory)
+
+
+class StorageResourceFactory(factory.django.DjangoModelFactory):
+    """
+    StorageResource Factory
+    """
+    class Meta:
+        model = 'core.StorageResource'
+        django_get_or_create = ('name',)
+
+    name = factory.Faker('hostname')
+
+
+class DataLocationFactory(factory.django.DjangoModelFactory):
+    """
+    Data Location Factory
+    """
+    class Meta:
+        model = 'core.DataLocation'
+
+    dataset = factory.SubFactory(DatasetFactory)
+    backend = factory.SubFactory(StorageResourceFactory)
+
+
+class ShareFactory(factory.django.DjangoModelFactory):
+    """
+    Dataset Share Factory
+    """
+    class Meta:
+        model = 'core.Share'
+
+    dataset = factory.SubFactory(DatasetFactory)
+    data_log_type = factory.Iterator(DataLogType.objects.all())
+
+
+class LegalBasisFactory(factory.django.DjangoModelFactory):
+    """
+    Legal Basis Factory
+    """
+    class Meta:
+        model = 'core.LegalBasis'
+
+    dataset = factory.SubFactory(DatasetFactory)
+
 
 
 class ContactTypeFactory(factory.django.DjangoModelFactory):
@@ -300,6 +356,14 @@ class DatasetDocumentFactory(AbstractDocumentFactory):
 
     content_object = factory.SubFactory(DatasetFactory)
 
+class ProjectDocumentFactory(AbstractDocumentFactory):
+    """
+    Add a document for Project
+    """
+    class Meta:
+        model = 'core.Document'
+
+    content_object = factory.SubFactory(ProjectFactory)
 
 class ContractDocumentFactory(AbstractDocumentFactory):
     """

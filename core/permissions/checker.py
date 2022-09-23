@@ -145,6 +145,11 @@ class UserChecker(AbstractChecker):
         return self.user_or_group.is_staff
 
 
+class DatasetEntityChecker(DatasetChecker):
+    def check(self, perm, obj, **kwargs):
+        return super().check(perm, obj.dataset, **kwargs)
+
+
 class AccessChecker(AbstractChecker):
     def check(self, perm, obj, **kwargs):
         return self._check(perm, obj, **kwargs)
@@ -172,6 +177,9 @@ class AutoChecker(AbstractChecker):
         'DataDeclaration': DataDeclarationChecker,
         'User': UserChecker,
         'Access': AccessChecker,
+        'LegalBasis': DatasetEntityChecker,
+        'Share': DatasetEntityChecker,
+        'DataLocation': DatasetEntityChecker,
     }
 
     # override default check method

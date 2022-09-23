@@ -1,12 +1,12 @@
 import os
 import unicodedata
 
-
-from django.http import JsonResponse, Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404 , redirect, render
+from django.http import JsonResponse, Http404, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.http import urlquote
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
+
 from core.constants import Permissions
 from core.forms import DocumentForm
 from core.models import Document
@@ -62,16 +62,18 @@ def document_edit(request, pk):
     if request.method == 'POST':
         form = DocumentForm(request.POST,  request.FILES, instance=document)
         if form.is_valid():
-            # data = form.cleaned_data
             form.save()
             messages.add_message(request, messages.SUCCESS, "Document updated")
-            redirecturl = document.content_type.name
-            return redirect(to=redirecturl, pk=document.object_id)
+            return JsonResponse({
+                'success': {},
+            })
         else:
-            return JsonResponse(
-                {'error':
-                     {'type': 'Edit error', 'messages': [str(e) for e in form.errors]
-                      }}, status=405)
+            return JsonResponse({
+                'error': {
+                    'type': 'Edit error',
+                    'messages': form.errors,
+                },
+            }, status=405)
     else:
         form = DocumentForm(instance=document)
 
