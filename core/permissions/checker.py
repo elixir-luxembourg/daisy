@@ -15,6 +15,7 @@ from guardian.mixins import PermissionRequiredMixin
 
 from core import constants
 from core.exceptions import DaisyError
+from core.models import User
 
 logger = logging.getLogger('daisy.permissions')
 
@@ -148,7 +149,12 @@ class UserChecker(AbstractChecker):
 class AccessChecker(AbstractChecker):
     def _check(self, perm, obj, **kwargs):
         parent_dataset = obj.dataset
-        return DatasetChecker(self.user_or_group, checker=self.checker).check(perm, parent_dataset)
+        if self.user_or_group.is_part_of([constants.Groups.DATA_STEWARD.name]) \
+                or self.user_or_group in parent_dataset.local_custodians:
+            return
+
+        else:
+            raise PermissionDenied()
 
 
 class AutoChecker(AbstractChecker):
