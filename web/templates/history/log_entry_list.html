@@ -12,7 +12,6 @@
                     History
                 </h1>
             </div>
-            <p>Click on the search button to reveal the options to filter the list of history logs</p>
         </div>
     </div>
     <div id="logFilters" class="collapse show" aria-labelledby="logFiltersHeader" data-parent="filtersAccordion">
@@ -83,15 +82,18 @@
     <div class="row mr-auto">
         <div class="card-rows w-100 ml-3">
             {% for object in object_list %}
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div id="{{ object.log.pk }}" class="d-flex justify-content-between clickable table-toggle" data-toggle="collapse" data-target="#changesTable{{object.log.pk}}" aria-expanded="true" aria-controls="changesTable{{object.log.pk}}">
-                        <h2 class="card-title text-capitalize">{{ object.log.content_type.model }} #{{ object.log.object_id }}</h2>
+            <div class="card mb-2">
+                <div class="card-body p-2 pt-3">
+                    <div id="{{ object.log.pk }}"
+                         class="card-subtitle mb-0 text-muted d-flex justify-content-between clickable table-toggle"
+                         data-toggle="collapse"
+                         data-target="#changesTable{{object.log.pk}}"
+                         aria-expanded="true"
+                         aria-controls="changesTable{{object.log.pk}}"
+                    >
+                        <span>{{ object.log.actor }} {{ object.action.1 }}d {{ object.log.content_type.model }} #{{ object.log.object_id }} on {{ object.log.timestamp }}</span>
                         <i id="expand-arrow-{{ object.log.pk }}" class="material-icons hidden">expand_less</i>
                     </div>
-                    <h6 class="card-subtitle mb-2 text-muted">
-                        {{ object.log.actor }} {{ object.action.1 }}d {{ object.log.content_type.model }} #{{ object.log.object_id }} on {{ object.log.timestamp }}
-                    </h6>
                     <div class="accordion collapse" id="changesTable{{object.log.pk}}" aria-labelledby="changesTable{{object.log.pk}}" data-parent="tableTogle{{object.log.pk}}">
                         <table class="table-striped table table-sm">
                         <thead>
