@@ -31,7 +31,7 @@ from web.views.publication import PublicationCreateView, PublicationListView, \
 from web.views.user import change_password, UserCreateView, UserDetailView, \
                            UserDelete, UserEditView, UsersListView, UserPasswordChange 
 from web.views.users import add_personnel_to_project, remove_personnel_from_project
-
+from web.views.log_entry import LogEntryListView
 
 web_urls = [
     # Single pages
@@ -184,5 +184,9 @@ web_urls = [
     path('publications/<int:pk>/edit', PublicationEditView.as_view(), name='publication_edit'),
     
     # Integrations
-    path('integrations/dsw/list-projects', dsw_list_projects, name="integrations_dsw_projects")
+    path('integrations/dsw/list-projects', dsw_list_projects, name="integrations_dsw_projects"),
+
+    # Activity log
+    path('history/', LogEntryListView.as_view(), name="history"),
 ]
+

@@ -332,7 +332,16 @@
                         </button>
                     </div>
                 {% endif %}
-                <h2 class="card-title">Accesses</h2>
+                <h2 class="card-title">
+                    Accesses
+                    {% if can_see_protected %}
+                        <a href="{% url 'history' %}?entity_name=access&parent_entity_name=dataset&parent_entity_id={{ dataset.pk }}"
+                           title="See dataset accesses history"
+                        >
+                            <i class="material-icons">history</i>
+                        </a>
+                    {% endif %}
+                </h2>
                 <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
@@ -345,6 +354,9 @@
                         {% if can_edit %}
                             <th>To whom</th>
                             <th style="width:7em">Actions</th>
+                        {% endif %}
+                        {% if can_see_protected %}
+                            <th>History</th>
                         {% endif %}
                     </tr>
                     </thead>
@@ -380,6 +392,11 @@
                                     <i class="red material-icons clickable" data-method="delete"
                                        title="Delete access"
                                        data-url="{% url 'dataset_access_remove' dataset_pk=dataset.id access_pk=access.id %}">delete_forever</i>
+                                </td>
+                            {% endif %}
+                            {% if can_see_protected %}
+                                <td>
+                                    <a href="{% url 'history' %}?entity_name=access&entity_id={{ access.pk }}"><i class="material-icons">history</i></a>
                                 </td>
                             {% endif %}
                         </tr>

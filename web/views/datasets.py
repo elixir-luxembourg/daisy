@@ -59,6 +59,7 @@ class DatasetDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['is_admin'] = self.request.user.is_admin_of_dataset(self.object)
         context['can_edit'] = self.request.user.can_edit_dataset(self.object)
+        context['can_see_protected'] = self.request.user.has_permission_on_object(constants.Permissions.PROTECTED, self.object)
         context['company_name'] = COMPANY
         return context
 
