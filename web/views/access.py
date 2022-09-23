@@ -70,7 +70,7 @@ class AccessEditView(CheckerMixin, UpdateView, AjaxViewMixin):
     def form_valid(self, form):
         """If the form is valid, check that remark is updated then save the associated model and add to the dataset"""
         if "access_notes" not in form.changed_data:
-            form.add_error("access_notes", "This field must be updated")
+            form.add_error("access_notes", "Changes must be justified. Please update this field")
             return super().form_invalid(form)
 
         self.object = form.save(commit=False)
