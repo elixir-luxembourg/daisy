@@ -150,6 +150,20 @@ class DatasetEntityChecker(DatasetChecker):
         return super().check(perm, obj.dataset, **kwargs)
 
 
+class AccessChecker(AbstractChecker):
+    def check(self, perm, obj, **kwargs):
+        return self._check(perm, obj, **kwargs)
+
+    def _check(self, perm, obj, **kwargs):
+        parent_dataset = obj.dataset
+        if self.user_or_group.is_part_of([constants.Groups.DATA_STEWARD.name]) \
+                or parent_dataset.local_custodians.filter(pk=self.user_or_group.pk).exists():
+            return True
+
+        else:
+            return False
+
+
 class AutoChecker(AbstractChecker):
     """
     Check permission on given object. Object must be instance on a key in the __mapping attribute.
@@ -162,7 +176,7 @@ class AutoChecker(AbstractChecker):
         'Document': DocumentChecker,
         'DataDeclaration': DataDeclarationChecker,
         'User': UserChecker,
-        'Access': DatasetEntityChecker,
+        'Access': AccessChecker,
         'LegalBasis': DatasetEntityChecker,
         'Share': DatasetEntityChecker,
         'DataLocation': DatasetEntityChecker,
