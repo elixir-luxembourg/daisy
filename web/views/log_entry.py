@@ -68,17 +68,25 @@ class LogEntryListView(CheckerMixin, ListView):
         if "action" in filters:
             query_filters.update({"action__exact": filters["action"]})
 
-        if "entity_name" in filters and "entity_id" in filters:
-            entity_class = get_object_or_404(ContentType, model=filters["entity_name"]).model_class()
-            entity_object = get_object_or_404(entity_class, pk=filters["entity_id"])
-            self.object_list = [
-                {"action": log.Action.choices[log.action], "log": log}
-                for log in entity_object.history.filter(**query_filters).all()
-            ]
+        if "user" in filters:
+            query_filters.update({"actor__exact": filters["user"]})
 
-        else:
-            if "entity_name" in filters:
-                query_filters.update({"content_type__model": filters["entity_name"]})
+        if "entity_name" in filters:
+            query_filters.update({"content_type__model": filters["entity_name"]})
+            hidden_filters.update({"entity_name": filters["entity_name"]})
+            if "entity_attr" in filters:
+                field = filters["entity_attr"]
+                query_filters.update({"changes__regex": rf'"{field}": \['})
+
+            if "entity_id" in filters:
+                entity_class = get_object_or_404(ContentType, model=filters["entity_name"]).model_class()
+                entity_object = get_object_or_404(entity_class, pk=filters["entity_id"])
+                self.object_list = [
+                    {"action": log.Action.choices[log.action], "log": log}
+                    for log in entity_object.history.filter(**query_filters).all()
+                ]
+                hidden_filters.update({"entity_id": filters["entity_id"]})
+            else:
                 if "parent_entity_name" in filters and "parent_entity_id" in filters:
                     entity_class = get_object_or_404(ContentType, model=filters["entity_name"]).model_class()
                     entity_ids_list = [
@@ -90,14 +98,7 @@ class LogEntryListView(CheckerMixin, ListView):
                         "parent_entity_id": filters["parent_entity_id"],
                     })
 
-                if "entity_attr" in filters:
-                    field = filters["entity_attr"]
-                    query_filters.update({"changes__regex": rf'"{field}": \['})
-
-            if "user" in filters:
-                query_filters.update({"actor__exact": filters["user"]})
-
-            print(f"Filters: {query_filters}")
+        if not hasattr(self, "object_list"):
             self.object_list = [{"action": log.Action.choices[log.action], "log": log} for log in LogEntry.objects.filter(**query_filters).all()]
 
         context = super().get_context_data(**kwargs)

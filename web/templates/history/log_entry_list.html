@@ -81,8 +81,15 @@
                         </select>
                     </div>
                 </div>
-                {% if hidden_filters.parent_entity_name %} <input type="hidden" name="parent_entity_name" value="{{ hidden_filters.parent_entity_name }}" >{% endif %}
-                {% if hidden_filters.parent_entity_id %} <input type="hidden" name="parent_entity_id"  value="{{ hidden_filters.parent_entity_id }}"> {% endif %}
+                {% if hidden_filters.entity_name %}
+                    <input type="hidden" name="entity_name" value="{{ hidden_filters.entity_name }}">
+                    {% if hidden_filters.entity_id %}
+                        <input type="hidden" name="entity_id" value="{{ hidden_filters.entity_id }}">
+                    {% elif hidden_filters.parent_entity_name and hidden_filters.parent_entity_id %}
+                        <input type="hidden" name="parent_entity_name" value="{{ hidden_filters.parent_entity_name }}">
+                        <input type="hidden" name="parent_entity_id" value="{{ hidden_filters.parent_entity_id }}">
+                    {% endif %}
+                {% endif %}
             </div>
             <button class="btn" type="submit" action="{% url 'history' %}">Filter</button>
         </form>
