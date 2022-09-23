@@ -15,7 +15,6 @@ from guardian.mixins import PermissionRequiredMixin
 
 from core import constants
 from core.exceptions import DaisyError
-from core.models import User
 
 logger = logging.getLogger('daisy.permissions')
 

@@ -52,9 +52,12 @@ class LogEntryListView(CheckerMixin, ListView):
 
     def get_context_data(self, object_list=None, filters=None, **kwargs):
         query_filters = {}
+        hidden_filters = {}
+
         start_date = datetime.datetime.strptime(filters["start_date"], self.DATE_FORMAT) \
             if "start_date" in filters \
             else datetime.date.today() - datetime.timedelta(days=90)
+
         query_filters.update({"timestamp__date__gte": start_date})
 
         end_date = datetime.datetime.strptime(filters["end_date"], self.DATE_FORMAT) \
@@ -82,6 +85,10 @@ class LogEntryListView(CheckerMixin, ListView):
                         o.pk for o in entity_class.objects.filter(**{filters["parent_entity_name"]: filters["parent_entity_id"]})
                     ]
                     query_filters.update({"object_id__in": entity_ids_list})
+                    hidden_filters.update({
+                        "parent_entity_name": filters["parent_entity_name"],
+                        "parent_entity_id": filters["parent_entity_id"],
+                    })
 
                 if "entity_attr" in filters:
                     field = filters["entity_attr"]
@@ -103,8 +110,10 @@ class LogEntryListView(CheckerMixin, ListView):
         context["users_list"] = users_list_names
         context["start_date"] = start_date.strftime(self.DATE_FORMAT)
         context["end_date"] = end_date.strftime(self.DATE_FORMAT)
+        context['hidden_filters'] = hidden_filters
         context["log_actions"] = LogEntry.Action.choices
         context["model_fields"] = self.get_list_of_model_fields()
+
         return context
 
     def check_permissions(self, request):

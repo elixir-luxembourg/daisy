@@ -22,7 +22,9 @@
                     <h6>Log author</h6>
                     <div class="form-group bg-white border-0">
                         <select class="form-control" name="user">
-                            <option value="none" selected hidden disabled>Choose a user...</option>
+                            <option value="none" selected disabled hidden>
+                                Choose a user...
+                            </option>
                             {% for user in users_list %}
                                 <option value="{{ user.pk }}">{{ user.full_name | title }}</option>
                             {% endfor %}
@@ -33,9 +35,13 @@
                     <h6>Action performed</h6>
                     <div class="form-group bg-white border-0">
                         <select class="form-control" name="action">
-                            <option value="none" selected hidden disabled>Choose an action...</option>
+                            <option value="none" selected hidden disabled>
+                                Choose an action...
+                            </option>
                             {% for action in log_actions %}
-                                <option value="{{ action.0 }}">{{ action.1 | title }}</option>
+                                <option value="{{ action.0 }}" >
+                                    {{ action.1 | title }}
+                                </option>
                             {% endfor %}
                         </select>
                     </div>
@@ -75,6 +81,8 @@
                         </select>
                     </div>
                 </div>
+                {% if hidden_filters.parent_entity_name %} <input type="hidden" name="parent_entity_name" value="{{ hidden_filters.parent_entity_name }}" >{% endif %}
+                {% if hidden_filters.parent_entity_id %} <input type="hidden" name="parent_entity_id"  value="{{ hidden_filters.parent_entity_id }}"> {% endif %}
             </div>
             <button class="btn" type="submit" action="{% url 'history' %}">Filter</button>
         </form>
