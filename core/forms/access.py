@@ -40,7 +40,7 @@ class AccessEditForm(ModelForm):
     class Meta:
         model = Access
         fields = '__all__'
-        exclude = []
+        exclude = ['created_by']
         widgets = {
             # Date pickers
             'granted_on': DateInput(attrs={'class': 'datepicker'}),
