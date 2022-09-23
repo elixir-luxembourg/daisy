@@ -146,14 +146,17 @@ class UserChecker(AbstractChecker):
 
 
 class AccessChecker(AbstractChecker):
+    def check(self, perm, obj, **kwargs):
+        return self._check(perm, obj, **kwargs)
+
     def _check(self, perm, obj, **kwargs):
         parent_dataset = obj.dataset
         if self.user_or_group.is_part_of([constants.Groups.DATA_STEWARD.name]) \
-                or self.user_or_group in parent_dataset.local_custodians:
-            return
+                or parent_dataset.local_custodians.filter(pk=self.user_or_group.pk).exists():
+            return True
 
         else:
-            raise PermissionDenied()
+            return False
 
 
 class AutoChecker(AbstractChecker):
