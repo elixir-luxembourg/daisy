@@ -100,3 +100,49 @@ def test_vip_membership_perms(perm, attribute, permissions):
 #         assert user.has_permission_on_object(perm, getattr(membership, attribute))
 #     else:
 #         assert not user.has_permission_on_object(perm, getattr(membership, attribute))
+
+
+@pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
+@pytest.mark.parametrize('entity_factory', [AccessFactory, DataLocationFactory, LegalBasisFactory, ShareFactory, DatasetDocumentFactory])
+def test_dataset_entity_permissions(group, entity_factory):
+    user = UserFactory(groups=[group()])
+    user.save()
+    dataset = DatasetFactory(title="Test")
+    dataset.save()
+
+    new_entity = entity_factory(object_id=dataset.pk) \
+        if entity_factory == DatasetDocumentFactory \
+        else entity_factory(dataset=dataset)
+
+    new_entity.save()
+
+    if user.is_part_of(DataStewardGroup):
+        assert user.has_permission_on_object(constants.Permissions.EDIT, new_entity)
+    else:
+        assert not user.has_permission_on_object(constants.Permissions.EDIT, new_entity)
+
+        dataset.local_custodians.set([user])
+        dataset.save()
+        assert user.has_permission_on_object(constants.Permissions.EDIT, new_entity)
+
+
+@pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
+@pytest.mark.parametrize('entity_factory', [ProjectDocumentFactory])
+def test_project_entity_permissions(group, entity_factory):
+    user = UserFactory(groups=[group()])
+    user.save()
+    project = ProjectFactory(title="Test")
+    project.save()
+
+    new_entity = entity_factory(object_id=project.pk)
+    new_entity.save()
+
+    if user.is_part_of(DataStewardGroup):
+        assert user.has_permission_on_object(constants.Permissions.EDIT, new_entity)
+    else:
+        assert not user.has_permission_on_object(constants.Permissions.EDIT, new_entity)
+
+        project.local_custodians.set([user])
+        project.save()
+        assert user.has_permission_on_object(constants.Permissions.EDIT, new_entity)
+

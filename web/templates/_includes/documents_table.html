@@ -26,6 +26,10 @@
                                 <a data-toggle="modal" id="btnupdate" class="jsBtn clickable"
                                    data-target="#modal"
                                    data-modal-title="Update document"
+                                   data-post-mode="true"
+                                   {% if project %}
+                                       data-ajax-redirect-uri="{% url 'project' pk=project.id %}"
+                                   {% endif %}
                                    data-ajax-url="{% url "document_edit" pk=file.id %}"
                                    title="Update document">
                                     <i class="material-icons">edit</i>

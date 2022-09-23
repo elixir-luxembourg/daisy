@@ -3,7 +3,7 @@ from django.urls import path
 from web.views import access, api, contracts, data_declarations, datasets, \
                       documents, legalbasis, notifications, permissions, \
                       profile, projects, share, storage_locations
-from web.views.access import AccessCreateView
+from web.views.access import AccessCreateView, AccessEditView
 from web.views.about import about
 from web.views.cohorts import CohortCreateView, CohortEditView, \
                               CohortDelete, CohortDetailView, cohort_list, \
@@ -86,19 +86,19 @@ web_urls = [
     # Dataset's StorageLocation methods
     path('dataset/<int:dataset_pk>/storagelocation/add/', storage_locations.StorageLocationCreateView.as_view(), name='dataset_storagelocation_add'),
     path('dataset/<int:dataset_pk>/storagelocation/remove/<int:storagelocation_pk>/', storage_locations.remove_storagelocation, name='dataset_storagelocation_remove'),
-    path('dataset/<int:dataset_pk>/storagelocation/<int:pk>/edit', storage_locations.edit_storagelocation, name="dataset_storagelocation_edit"),
+    path('dataset/<int:dataset_pk>/storagelocation/<int:pk>/edit', storage_locations.StorageLocationEditView.as_view(), name="dataset_storagelocation_edit"),
     # Dataset's Access (Internal access, as opposed to "Shares")
     path('dataset/<int:dataset_pk>/access/add/', AccessCreateView.as_view(), name='dataset_access_add'),
     path('dataset/<int:dataset_pk>/access/remove/<int:access_pk>/', access.remove_access, name='dataset_access_remove'),
-    path('dataset/<int:dataset_pk>/access/<int:pk>/edit', access.edit_access, name="dataset_access_edit"),
+    path('dataset/<int:dataset_pk>/access/<int:pk>/edit', AccessEditView.as_view(), name="dataset_access_edit"),
     # Dataset's LegalBasis
     path('dataset/<int:dataset_pk>/legalbasis/add/', legalbasis.LegalBasisCreateView.as_view(), name='dataset_legalbasis_add'),
     path('dataset/<int:dataset_pk>/legalbasis/remove/<int:legalbasis_pk>/', legalbasis.remove_legalbasis, name='dataset_legalbasis_remove'),
-    path('dataset/<int:dataset_pk>/legalbasis/<int:pk>/edit', legalbasis.edit_legalbasis, name="dataset_legalbasis_edit"),
+    path('dataset/<int:dataset_pk>/legalbasis/<int:pk>/edit', legalbasis.LegalBasisEditView.as_view(), name="dataset_legalbasis_edit"),
     # Dataset's Shares (External access, as opposed to "Access")
     path('dataset/<int:dataset_pk>/share/add/', share.ShareCreateView.as_view(), name='dataset_share_add'),
     path('dataset/<int:dataset_pk>/share/remove/<int:share_pk>/', share.remove_share, name='dataset_share_remove'),
-    path('dataset/<int:dataset_pk>/share/<int:pk>/edit', share.edit_share, name="dataset_share_edit"),
+    path('dataset/<int:dataset_pk>/share/<int:pk>/edit', share.ShareEditView.as_view(), name="dataset_share_edit"),
 
     # Cohorts
     path('definitions/cohorts/', cohort_list, name="cohorts"),

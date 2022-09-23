@@ -228,6 +228,8 @@
                                        id="editlegalbasis"
                                        title="Edit legal basis"
                                        data-toggle="modal"
+                                       data-post-mode="true"
+                                       data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
                                        data-target="#modal"
                                        data-modal-title="Edit legal basis"
                                        data-ajax-url="{% url 'dataset_legalbasis_edit' pk=lbd.id dataset_pk=dataset.id %}">edit</i>
@@ -292,7 +294,9 @@
                                        title="Edit storage"
                                        data-toggle="modal"
                                        data-target="#modal"
+                                       data-post-mode="true"
                                        data-modal-title="Edit storage"
+                                       data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
                                        data-ajax-url="{% url 'dataset_storagelocation_edit' pk=location.id dataset_pk=dataset.id %}">edit</i>
                                     <i class="red material-icons clickable" data-method="delete"
                                        data-parent-to-remove="tr"
@@ -368,8 +372,11 @@
                                        title="Edit access"
                                        data-toggle="modal"
                                        data-target="#modal"
+                                       data-post-mode="true"
                                        data-modal-title="Edit access"
-                                       data-ajax-url="{% url 'dataset_access_edit' pk=access.id dataset_pk=dataset.id %}">edit</i>
+                                       data-ajax-url="{% url 'dataset_access_edit' pk=access.id dataset_pk=dataset.id %}"
+                                       data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
+                                    >edit</i>
                                     <i class="red material-icons clickable" data-method="delete"
                                        title="Delete access"
                                        data-url="{% url 'dataset_access_remove' dataset_pk=dataset.id access_pk=access.id %}">delete_forever</i>
@@ -424,7 +431,7 @@
                     {% for share in dataset.shares.all %}
                         <tr>
                             <td><p>{% for ddec in share.data_declarations.all  %}{{ ddec.title}} <br/> {% empty %}Entire dataset{% endfor %}</p></td>
-                            <td>{%if share.data_log_type  %} {{ share.data_log_type.name }} {% else %}<p class="alert-error"> missing </p>{% endif %}</td>
+                            <td>{% if share.data_log_type  %} {{ share.data_log_type.name }} {% else %}<p class="alert-error"> missing </p>{% endif %}</td>
                             <td>{{ share.partner }}</td>
                             <td>{{ share.granted_on | default:"-" }}</td>
                             <td>{{ share.share_notes  | default:"-" }}</td>
@@ -435,6 +442,8 @@
                                        title="Edit logbook entry"
                                        data-toggle="modal"
                                        data-target="#modal"
+                                       data-post-mode="true"
+                                       data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
                                        data-modal-title="Edit logbook entry"
                                        data-ajax-url="{% url 'dataset_share_edit' pk=share.id dataset_pk=dataset.id %}">edit</i>
                                     <i class="red material-icons clickable"
@@ -454,5 +463,3 @@
         </div>
     </div>
 {% endblock %}
-
-
