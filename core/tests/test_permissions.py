@@ -2,6 +2,7 @@ import pytest
 
 from core import constants
 from core.permissions import ALL_PERMS, PERMISSION_MAPPING, AutoChecker
+from core.constants import Groups
 from test.factories import *
 
 
@@ -107,7 +108,9 @@ def test_vip_membership_perms(perm, attribute, permissions):
 def test_dataset_entity_permissions(group, entity_factory):
     user = UserFactory(groups=[group()])
     user.save()
-    dataset = DatasetFactory(title="Test")
+    project = ProjectFactory()
+    project.save()
+    dataset = DatasetFactory(title="Test", project=project)
     dataset.save()
 
     new_entity = entity_factory(object_id=dataset.pk) \
@@ -116,7 +119,8 @@ def test_dataset_entity_permissions(group, entity_factory):
 
     new_entity.save()
 
-    if user.is_part_of(DataStewardGroup):
+    if user.is_part_of(DataStewardGroup.name):
+        user.assign_permissions_to_project(project)
         assert user.has_permission_on_object(constants.Permissions.EDIT, new_entity)
     else:
         assert not user.has_permission_on_object(constants.Permissions.EDIT, new_entity)
@@ -137,7 +141,8 @@ def test_project_entity_permissions(group, entity_factory):
     new_entity = entity_factory(object_id=project.pk)
     new_entity.save()
 
-    if user.is_part_of(DataStewardGroup):
+    if user.is_part_of(DataStewardGroup.name):
+        user.assign_permissions_to_project(project)
         assert user.has_permission_on_object(constants.Permissions.EDIT, new_entity)
     else:
         assert not user.has_permission_on_object(constants.Permissions.EDIT, new_entity)
