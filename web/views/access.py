@@ -25,9 +25,7 @@ class AccessCreateView(CreateView, AjaxViewMixin):
     form_class = AccessForm
 
     def has_permissions(self, user, dataset):
-        print(f"Is user a data steward: {user.is_part_of([Groups.DATA_STEWARD.name])}")
-        print(f"User is custodian: {dataset.local_custodians.filter(pk=user.pk).exists()}")
-        if user.is_part_of([Groups.DATA_STEWARD.name]):
+        if user.is_part_of(Groups.DATA_STEWARD.value):
             return True
         else:
             return dataset.local_custodians.filter(pk=user.pk).exists()
