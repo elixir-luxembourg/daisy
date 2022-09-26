@@ -156,10 +156,12 @@ class AccessChecker(AbstractChecker):
 
     def _check(self, perm, obj, **kwargs):
         parent_dataset = obj.dataset
+        print(f"Checking if user is data steward ({self.user_or_group.is_part_of([constants.Groups.DATA_STEWARD.name])}) "
+              f"or if user is custodian ({parent_dataset.local_custodians.filter(pk=self.user_or_group.pk).exists()})")
+        print(f"User groups: {self.user_or_group.groups.all()}")
         if self.user_or_group.is_part_of([constants.Groups.DATA_STEWARD.name]) \
                 or parent_dataset.local_custodians.filter(pk=self.user_or_group.pk).exists():
             return True
-
         else:
             return False
 

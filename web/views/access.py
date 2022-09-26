@@ -4,10 +4,11 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
+from django.core.exceptions import PermissionDenied
 
 from core.forms.access import AccessForm, AccessEditForm
 from core.models import Access, Dataset
-from core.constants import Permissions
+from core.constants import Permissions, Groups
 from core.permissions import CheckerMixin
 from core.permissions import permission_required
 from core.utils import DaisyLogger
@@ -22,6 +23,28 @@ class AccessCreateView(CreateView, AjaxViewMixin):
     model = Access
     template_name = 'accesses/access_form.html'
     form_class = AccessForm
+
+    def has_permissions(self, user, dataset):
+        print(f"Is user a data steward: {user.is_part_of([Groups.DATA_STEWARD.name])}")
+        print(f"User is custodian: {dataset.local_custodians.filter(pk=user.pk).exists()}")
+        if user.is_part_of([Groups.DATA_STEWARD.name]):
+            return True
+        else:
+            return dataset.local_custodians.filter(pk=user.pk).exists()
+
+    def get(self, request, *args, **kwargs):
+        dataset = get_object_or_404(Dataset, pk=kwargs['dataset_pk'])
+        if self.has_permissions(request.user, dataset):
+            return super().get(request, args, kwargs)
+        else:
+            raise PermissionDenied()
+
+    def post(self, request, *args, **kwargs):
+        dataset = get_object_or_404(Dataset, pk=kwargs['dataset_pk'])
+        if self.has_permissions(request.user, dataset):
+            return super().post(request, args, kwargs)
+        else:
+            raise PermissionDenied()
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -61,11 +84,6 @@ class AccessEditView(CheckerMixin, UpdateView, AjaxViewMixin):
     template_name = 'accesses/access_form.html'
     form_class = AccessEditForm
     permission_required = Permissions.EDIT
-
-    def get_permission_object(self, queryset=None):
-        obj = super().get_permission_object()
-        log.debug(obj)
-        return obj.dataset
 
     def form_valid(self, form):
         """If the form is valid, check that remark is updated then save the associated model and add to the dataset"""
