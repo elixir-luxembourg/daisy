@@ -39,8 +39,8 @@ class AccessForm(ModelForm):
 class AccessEditForm(ModelForm):
     class Meta:
         model = Access
-        fields = "__all__"
-        exclude = ["history"]
+        fields = '__all__'
+        exclude = ['created_by', 'history']
         widgets = {
             # Date pickers
             "granted_on": DateInput(attrs={"class": "datepicker"}),
