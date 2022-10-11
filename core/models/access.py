@@ -190,7 +190,7 @@ class Access(CoreModel):
         if self.status != StatusChoices.active:
             return False
 
-        if self.grant_expires_on is not None and self.grant_expires_on < datetime.now():
+        if self.grant_expires_on is not None and self.grant_expires_on < datetime.date(datetime.now()):
             return False
 
         return True
