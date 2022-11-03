@@ -59,6 +59,27 @@ class UserFactory(factory.django.DjangoModelFactory):
                 self.groups.add(group)
 
 
+class PublicationFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "core.Publication"
+        django_get_or_create = ('doi', )
+
+    doi = factory.Faker('ssn')
+
+    @factory.post_generation
+    def citation(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted:
+            return extracted
+        else:
+            authors = factory.Faker('name')
+            title = factory.Faker('sentence')
+            journal = factory.Faker('word')
+            year = factory.Faker
+            return f'{authors} {title}. {journal} ({year})'
+
+
 class ProjectFactory(factory.django.DjangoModelFactory):
     """
     Project factory

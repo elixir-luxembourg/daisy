@@ -266,4 +266,3 @@ def test_project_entity_permissions(permissions, group, entity_factory):
         project.local_custodians.set([user])
         project.save()
         assert user.has_permission_on_object(constants.Permissions.EDIT, new_entity)
-
