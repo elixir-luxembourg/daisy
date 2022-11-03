@@ -258,6 +258,13 @@ class GDPRRoleFactory(factory.django.DjangoModelFactory):
     name = factory.Iterator(["joint_controller", "controller", "processor"])
 
 
+class PartnerRoleFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = 'core.PartnerRole'
+
+    partner = factory.SubFactory(PartnerFactory)
+
+
 class ContractFactory(factory.django.DjangoModelFactory):
     """
     Collaboration factory
@@ -290,6 +297,9 @@ class ContractFactory(factory.django.DjangoModelFactory):
             # A list of users were passed in, use them
             for partner_roles in extracted:
                 self.partners_roles.add(partner_roles)
+
+        else:
+            self.partners_roles.add(PartnerRoleFactory(contract=self))
 
     # @factory.post_generation
     # def company_roles(self, create, extracted, **kwargs):

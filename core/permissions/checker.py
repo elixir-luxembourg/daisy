@@ -104,6 +104,25 @@ class ContractChecker(AbstractChecker):
         return ProjectChecker(self.user_or_group, checker=self.checker).check(perm, obj.project, **kwargs)
 
 
+class PartnerChecker(AbstractChecker):
+    """
+    Check permission on Partner.
+    """
+    # FIXME: The idea is to check whether someone can modify the partners associated with a contract
+    #  The issue is that here we only have the partner, so how to get the correct contract from there
+    #  seems very hard.
+    def _check(self, perm, obj, **kwargs):
+        return self.checker.has_perm(perm, obj)
+
+
+class PartnerRoleChecker(AbstractChecker):
+    """
+    Check permission on Contract Partner relationship.
+    """
+    def _check(self, perm, obj, **kwargs):
+        return ContractChecker(self.user_or_group, checker=self.checker).check(perm, obj.contract, **kwargs)
+
+
 class DocumentChecker(AbstractChecker):
     """
     Check permission on document.
@@ -171,6 +190,8 @@ class AutoChecker(AbstractChecker):
     __mapping = {
         'Dataset': DatasetChecker,
         'Project': ProjectChecker,
+        'Partner': PartnerChecker,
+        'PartnerRole': PartnerRoleChecker,
         'Contract': ContractChecker,
         'Document': DocumentChecker,
         'DataDeclaration': DataDeclarationChecker,

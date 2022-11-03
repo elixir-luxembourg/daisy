@@ -238,7 +238,7 @@ npm run-script build
 ### Run the built-in web server (for development)
 
 ```bash
-./manage.py runserver
+./manage.py "runserver
 ```
 
 ### Run the tests
