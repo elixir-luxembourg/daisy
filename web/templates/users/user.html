@@ -55,4 +55,24 @@
 
             </div>
         </div>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="jumbotron col">
+        <h3>User Permissions</h3>
+            <div class="card-body">
+                <div class="row">
+                    {% if dataset_perms %}
+                    {% include '_includes/permission_table.html' with obj_name='Datasets' perms_const=perms_const obj_perms=dataset_perms %}
+                    {% endif %}
+                </div>
+                <div class="row">
+                    {% if project_perms %}
+                    {% include '_includes/permission_table.html' with obj_name='Projects' perms_const=perms_const obj_perms=project_perms %}
+                    {% endif %}
+                </div>
+            </div>
+        
+    </div>
+</div>
         {% endblock %}
