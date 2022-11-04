@@ -11,6 +11,7 @@ class PartnerRole(CoreModel):
     class Meta:
         app_label = 'core'
 
+
     partner = models.ForeignKey('core.Partner',
                                 verbose_name='Partner', related_name="partners_roles",
                                 on_delete=models.CASCADE, blank=False, null=False)
@@ -59,11 +60,11 @@ class Contract(CoreModel):
         get_latest_by = "added"
         ordering = ['added']
         permissions = (
-            (constants.Permissions.ADMIN.value, 'Responsible of the project'),
-            (constants.Permissions.EDIT.value, 'Edit the project'),
-            (constants.Permissions.DELETE.value, 'Delete the project'),
-            (constants.Permissions.VIEW.value, 'View the project'),
-            (constants.Permissions.PROTECTED.value, 'View the protected elements'),
+            (constants.Permissions.ADMIN.value, 'Can edit user permissions on Contract instances'),
+            (constants.Permissions.EDIT.value, 'Can edit the Contract instances'),
+            (constants.Permissions.DELETE.value, 'Can delete the Contract instances'),
+            (constants.Permissions.VIEW.value, 'Can view Contract instances'),
+            (constants.Permissions.PROTECTED.value, 'Can view/edit the protected elements of Contract instances'),
         )
 
     class AppMeta:

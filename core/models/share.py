@@ -2,6 +2,7 @@ from django.db import models
 
 from .utils import CoreModel
 
+from core import constants
 
 class Share(CoreModel):
     """
@@ -12,6 +13,15 @@ class Share(CoreModel):
         app_label = 'core'
         get_latest_by = "added"
         ordering = ['added']
+
+        permissions = (
+            (constants.Permissions.ADMIN.value, 'Can edit user permissions on Share instances'),
+            (constants.Permissions.EDIT.value, 'Can edit the Share instances'),
+            (constants.Permissions.DELETE.value, 'Can delete the Share instances'),
+            (constants.Permissions.VIEW.value, 'Can view Share instances'),
+            (constants.Permissions.PROTECTED.value, 'Can view/edit the protected elements of Share instances'),
+        )
+
 
     data_log_type = models.ForeignKey('core.DataLogType',
                                                 null=True,

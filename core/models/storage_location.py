@@ -1,9 +1,9 @@
 from django.db import models
 from enumchoicefield import EnumChoiceField, ChoiceEnum
-from model_utils.managers import InheritanceManager
 
-from .utils import CoreModel, TextFieldWithInputWidget, classproperty
+from .utils import CoreModel, TextFieldWithInputWidget
 
+from core import constants
 
 class StorageLocationCategory(ChoiceEnum):
     master = 'master'
@@ -20,6 +20,15 @@ class DataLocation(CoreModel):
         app_label = 'core'
         get_latest_by = "added"
         ordering = ['added']
+
+        permissions = (
+            (constants.Permissions.ADMIN.value, 'Can edit user permissions on DataLocation instances'),
+            (constants.Permissions.EDIT.value, 'Can edit the DataLocation instances'),
+            (constants.Permissions.DELETE.value, 'Can delete the DataLocation instances'),
+            (constants.Permissions.VIEW.value, 'Can view DataLocation instances'),
+            (constants.Permissions.PROTECTED.value, 'Can view/edit the protected elements of DataLocation instances'),
+        )
+
 
 
     backend = models.ForeignKey(

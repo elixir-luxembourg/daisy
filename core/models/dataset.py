@@ -17,11 +17,11 @@ class Dataset(CoreTrackedModel):
         get_latest_by = "added"
         ordering = ['added']
         permissions = (
-            (constants.Permissions.ADMIN.value, 'Responsible of the dataset'),
-            (constants.Permissions.EDIT.value, 'Edit the dataset'),
-            (constants.Permissions.DELETE.value, 'Delete the dataset'),
-            (constants.Permissions.VIEW.value, 'View the dataset'),
-            (constants.Permissions.PROTECTED.value, 'View the protected elements'),
+            (constants.Permissions.ADMIN.value, 'Can edit user permissions on Dataset instances'),
+            (constants.Permissions.EDIT.value, 'Can edit the Dataset instances'),
+            (constants.Permissions.DELETE.value, 'Can delete the Dataset instances'),
+            (constants.Permissions.VIEW.value, 'Can view Dataset instances'),
+            (constants.Permissions.PROTECTED.value, 'Can view/edit the protected elements of Dataset instances'),
         )
 
     class AppMeta:

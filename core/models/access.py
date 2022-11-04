@@ -12,6 +12,7 @@ from .utils import CoreModel
 from auditlog.registry import auditlog
 from auditlog.models import AuditlogHistoryField
 
+from core import constants
 
 class StatusChoices(ChoiceEnum):
     precreated = "Pre-created"
@@ -37,6 +38,13 @@ class Access(CoreModel):
                 name="user_or_contact_only",
             )
         ]
+        permissions = (
+            (constants.Permissions.ADMIN.value, 'Can edit user permissions on Access instances'),
+            (constants.Permissions.EDIT.value, 'Can edit the Access instances'),
+            (constants.Permissions.DELETE.value, 'Can delete the Access instances'),
+            (constants.Permissions.VIEW.value, 'Can view Access instances'),
+            (constants.Permissions.PROTECTED.value, 'Can view/edit protected elements of Access instances')
+        )
 
     def clean(self):
         if self.user and self.contact:

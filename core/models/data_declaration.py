@@ -38,11 +38,11 @@ class DataDeclaration(CoreModel):
         get_latest_by = "added"
         ordering = ['added']
         permissions = (
-            (constants.Permissions.ADMIN.value, 'Responsible of the dataset'),
-            (constants.Permissions.EDIT.value, 'Edit the dataset'),
-            (constants.Permissions.DELETE.value, 'Delete the dataset'),
-            (constants.Permissions.VIEW.value, 'View the dataset'),
-            (constants.Permissions.PROTECTED.value, 'View the protected elements'),
+            (constants.Permissions.ADMIN.value, 'Can edit user permissions on DataDeclaration instances'),
+            (constants.Permissions.EDIT.value, 'Can edit the DataDeclaration instances'),
+            (constants.Permissions.DELETE.value, 'Can delete the DataDeclaration instances'),
+            (constants.Permissions.VIEW.value, 'Can view DataDeclaration instances'),
+            (constants.Permissions.PROTECTED.value, 'Can view/edit protected elements of DataDeclaration instances')
         )
         constraints = [
             models.UniqueConstraint(fields=['title', 'dataset'], name='unique_title_dataset')

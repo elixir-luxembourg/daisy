@@ -38,7 +38,11 @@ class Document(CoreModel):
         get_latest_by = "added"
         ordering = ['added']
         permissions = (
-            (constants.Permissions.PROTECTED.value, 'Protected document'),
+            (constants.Permissions.ADMIN.value, 'Can edit user permissions on Document instances'),
+            (constants.Permissions.EDIT.value, 'Can edit the Document instances'),
+            (constants.Permissions.DELETE.value, 'Can delete the Document instances'),
+            (constants.Permissions.VIEW.value, 'Can view Document instances'),
+            (constants.Permissions.PROTECTED.value, 'Can view/edit the protected elements of Document instances'),
         )
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)

@@ -1,7 +1,6 @@
-from datetime import datetime
-
 from django.db import models
 
+from core import constants
 from core.models.access import Access
 from core.models.contact_type import ContactType
 from core.models.utils import CoreModel, TextFieldWithInputWidget
@@ -22,6 +21,13 @@ class Contact(CoreModel):
         get_latest_by = "added"
         ordering = ['added']
 
+        permissions = (
+            (constants.Permissions.ADMIN.value, 'Can edit user permissions on Contact instances'),
+            (constants.Permissions.EDIT.value, 'Can edit the Contact instances'),
+            (constants.Permissions.DELETE.value, 'Can delete the Contact instances'),
+            (constants.Permissions.VIEW.value, 'Can view Contact instances'),
+            (constants.Permissions.PROTECTED.value, 'Can view/edit protected elements of Contact instances')
+        )
 
     class AppMeta:
         help_text = "Contacts are people affiliated with Partner institutions. Collaborator PIs, Project Officers at the EU are examples of contacts."

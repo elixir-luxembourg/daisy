@@ -17,11 +17,11 @@ class Project(CoreTrackedModel):
         get_latest_by = "added"
         ordering = ['added']
         permissions = (
-            (constants.Permissions.ADMIN.value, 'Responsible of the project'),
-            (constants.Permissions.EDIT.value, 'Edit the project'),
-            (constants.Permissions.DELETE.value, 'Delete the project'),
-            (constants.Permissions.VIEW.value, 'View the project'),
-            (constants.Permissions.PROTECTED.value, 'View the protected elements'),
+            (constants.Permissions.ADMIN.value, 'Can edit user permissions on Project instances'),
+            (constants.Permissions.EDIT.value, 'Can edit the Project instances'),
+            (constants.Permissions.DELETE.value, 'Can delete the Project instances'),
+            (constants.Permissions.VIEW.value, 'Can view Project instances'),
+            (constants.Permissions.PROTECTED.value, 'Can view/edit the protected elements of Project instances'),
         )
 
     class AppMeta:
