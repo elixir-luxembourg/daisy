@@ -21,16 +21,6 @@ class DataLocation(CoreModel):
         get_latest_by = "added"
         ordering = ['added']
 
-        permissions = (
-            (constants.Permissions.ADMIN.value, 'Can edit user permissions on DataLocation instances'),
-            (constants.Permissions.EDIT.value, 'Can edit the DataLocation instances'),
-            (constants.Permissions.DELETE.value, 'Can delete the DataLocation instances'),
-            (constants.Permissions.VIEW.value, 'Can view DataLocation instances'),
-            (constants.Permissions.PROTECTED.value, 'Can view/edit the protected elements of DataLocation instances'),
-        )
-
-
-
     backend = models.ForeignKey(
         'core.StorageResource',
         verbose_name="Storage back-end",

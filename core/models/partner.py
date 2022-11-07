@@ -40,13 +40,6 @@ class Partner(CoreTrackedModel):
         get_latest_by = "added"
         ordering = ['name']
 
-        permissions = (
-            (constants.Permissions.ADMIN.value, 'Can edit user permissions on Partner instances'),
-            (constants.Permissions.EDIT.value, 'Can edit the Partner instances'),
-            (constants.Permissions.DELETE.value, 'Can delete the Partner instances'),
-            (constants.Permissions.VIEW.value, 'Can view Partner instances'),
-            (constants.Permissions.PROTECTED.value, 'Can view/edit the protected elements of Partner instances'),
-        )
 
 
     class AppMeta:

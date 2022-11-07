@@ -5,10 +5,12 @@ from django.utils.safestring import mark_safe
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from core import constants
+from core.permissions.mapping import PERMISSION_MAPPING
 
-from elixir_daisy import settings
 from .utils import CoreTrackedModel, COMPANY
 from .partner import  HomeOrganisation
+
+from elixir_daisy import settings
 
 
 class Project(CoreTrackedModel):
@@ -16,13 +18,7 @@ class Project(CoreTrackedModel):
         app_label = 'core'
         get_latest_by = "added"
         ordering = ['added']
-        permissions = (
-            (constants.Permissions.ADMIN.value, 'Can edit user permissions on Project instances'),
-            (constants.Permissions.EDIT.value, 'Can edit the Project instances'),
-            (constants.Permissions.DELETE.value, 'Can delete the Project instances'),
-            (constants.Permissions.VIEW.value, 'Can view Project instances'),
-            (constants.Permissions.PROTECTED.value, 'Can view/edit the protected elements of Project instances'),
-        )
+        permissions = PERMISSION_MAPPING["Project"]  # Adds PROTECTED and ADMIN to permissions on Project
 
     class AppMeta:
         help_text = "Projects are time-limited research activities with associated documentation on ethical, " \

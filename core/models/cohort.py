@@ -12,13 +12,6 @@ class Cohort(CoreTrackedModel):
         get_latest_by = "added"
         ordering = ['added']
 
-        permissions = (
-            (constants.Permissions.ADMIN.value, 'Can edit user permissions on Cohort instances'),
-            (constants.Permissions.EDIT.value, 'Can edit the Cohort instances'),
-            (constants.Permissions.DELETE.value, 'Can delete the Cohort instances'),
-            (constants.Permissions.VIEW.value, 'Can view Cohort instances'),
-            (constants.Permissions.PROTECTED.value, 'Can view/edit protected elements of Cohort instances')
-        )
 
     class AppMeta:
         help_text = "Cohorts are studies that collect data and/or biosamples from a group of participants. " \

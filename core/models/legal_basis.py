@@ -15,13 +15,7 @@ class LegalBasis(CoreModel):
         get_latest_by = "added"
         ordering = ['added']
 
-        permissions = (
-            (constants.Permissions.ADMIN.value, 'Can edit user permissions on LegalBasis instances'),
-            (constants.Permissions.EDIT.value, 'Can edit the LegalBasis instances'),
-            (constants.Permissions.DELETE.value, 'Can delete the LegalBasis instances'),
-            (constants.Permissions.VIEW.value, 'Can view LegalBasis instances'),
-            (constants.Permissions.PROTECTED.value, 'Can view/edit the protected elements of LegalBasis instances'),
-        )
+
 
     dataset = models.ForeignKey('core.Dataset',
                                     related_name='legal_basis_definitions',
