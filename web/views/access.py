@@ -8,7 +8,7 @@ from django.core.exceptions import PermissionDenied
 
 from core.forms.access import AccessForm, AccessEditForm
 from core.models import Access, Dataset
-from core.constants import Permissions, Groups
+from core.constants import Groups
 from core.permissions import CheckerMixin
 from core.permissions import permission_required
 from core.utils import DaisyLogger
@@ -23,6 +23,7 @@ class AccessCreateView(CreateView, AjaxViewMixin):
     model = Access
     template_name = 'accesses/access_form.html'
     form_class = AccessForm
+    permission_required = ['core.change_dataset', 'core.protected_dataset']
 
     def has_permissions(self, user, dataset):
         if user.is_part_of(Groups.DATA_STEWARD.value):
@@ -81,7 +82,7 @@ class AccessEditView(CheckerMixin, UpdateView, AjaxViewMixin):
     model = Access
     template_name = 'accesses/access_form.html'
     form_class = AccessEditForm
-    permission_required = Permissions.EDIT
+    permission_required = ['core.change_dataset', 'core.protected_dataset']
 
     def form_valid(self, form):
         """If the form is valid, check that remark is updated then save the associated model and add to the dataset"""
@@ -103,7 +104,8 @@ class AccessEditView(CheckerMixin, UpdateView, AjaxViewMixin):
 
 
 @require_http_methods(['DELETE'])
-@permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
+@permission_required('core.change_dataset', (Dataset, 'pk', 'dataset_pk'), )
+@permission_required('core.protected_dataset', (Dataset, 'pk', 'dataset_pk'))
 def remove_access(request, dataset_pk, access_pk):
     access = get_object_or_404(Access, pk=access_pk)
     dataset = get_object_or_404(Dataset, pk=dataset_pk)

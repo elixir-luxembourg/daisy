@@ -66,6 +66,7 @@ class DatasetChecker(AbstractChecker):
 
     def _check(self, perm, obj, **kwargs):
         hasperm = self.checker.has_perm(perm, obj)
+        print(f"User has {perm} on {obj}: {hasperm}")
         logger.debug(f'[DatasetChecker _check] Checking permission "{perm}" on: "{obj}": {hasperm}.')
         if hasperm:
             return True
@@ -175,11 +176,15 @@ class AccessChecker(AbstractChecker):
 
     def _check(self, perm, obj, **kwargs):
         parent_dataset = obj.dataset
-        if self.user_or_group.groups.filter(name=constants.Groups.DATA_STEWARD.value).exists() \
-                or parent_dataset.local_custodians.filter(pk=self.user_or_group.pk).exists():
-            return True
-        else:
-            return False
+        # if self.user_or_group.groups.filter(name=constants.Groups.DATA_STEWARD.value).exists() \
+        #         or parent_dataset.local_custodians.filter(pk=self.user_or_group.pk).exists():
+        #     return True
+        # else:
+        #     return False
+        parent_checker = DatasetChecker(self.user_or_group, checker=self.checker)
+        hasperm = parent_checker.check(perm, parent_dataset)
+        print(f"{__name__}: Checking that user has {perm} on parent dataset {parent_dataset} of {obj}: {hasperm}")
+        return hasperm
 
 
 class AutoChecker(AbstractChecker):
@@ -211,11 +216,15 @@ class AutoChecker(AbstractChecker):
         Check the permission on the object.
         Automatically determines which permission class to use.
         """
-        value = self.__mapping[obj.__class__.__name__](self.user_or_group, checker=self.checker).check(perm, obj,
-                                                                                                      **kwargs)
-        logger.debug(f'[AutoChecker] Checking permission "{perm}" on {obj.__class__.__name__}: "{obj}" for "{self.user_or_group}": {value}.')
-        return value
-
+        if not isinstance(perm, list):
+            value = self.__mapping[obj.__class__.__name__](self.user_or_group, checker=self.checker).check(perm, obj,
+                                                                                                          **kwargs)
+            logger.debug(f'[AutoChecker] Checking permission "{perm}" on {obj.__class__.__name__}: "{obj}" for "{self.user_or_group}": {value}.')
+            return value
+        else:
+            value = [self.__mapping[obj.__class__.__name__](self.user_or_group, checker=self.checker).check(perm_unit, obj, **kwargs) for perm_unit in perm]
+            logger.debug(f'[AutoChecker] Checking permissions "{perm}" on {obj.__class__.__name__}: "{obj}" for "{self.user_or_group}": {value}.')
+            return all(value)
 
 def permission_required(perm, lookup_variables):
     """

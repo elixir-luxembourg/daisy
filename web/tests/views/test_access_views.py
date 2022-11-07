@@ -1,35 +1,41 @@
 import pytest
-
-from test.factories import AccessFactory, DatasetFactory, VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup, UserFactory
 from django.shortcuts import reverse
-
+from core.models.access import Access
+from test.factories import AccessFactory, DatasetFactory, VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup, UserFactory
 from .utils import check_response_status
 
 
-def check_access_view_permissions(url, user, parent_dataset):
-    if user.is_part_of(DataStewardGroup):
-        assert user.has_permission_on_object('core.edit_dataset', parent_dataset)
+def check_access_view_permissions(url, user, obj, method):
+    if isinstance(obj, Access):
+        parent_dataset = obj.dataset
     else:
-        assert not user.has_permission_on_object('core.edit_dataset', parent_dataset)
+        parent_dataset = obj
 
-    check_response_status(url, user, 'core.edit_dataset', obj=parent_dataset)
+    if user.is_part_of(DataStewardGroup()):
+        assert user.has_permission_on_object('core.change_dataset', obj)
+    else:
+        assert not user.has_permission_on_object('core.change_dataset', obj)
 
-    if user.is_part_of(VIPGroup):
+    check_response_status(url, user, ['core.change_dataset', 'core.protected_dataset'], method=method, obj=obj)
+
+    if user.is_part_of(VIPGroup()):
+        user.save()
         parent_dataset.local_custodians.add(user)
         parent_dataset.save()
-        assert user.has_permission_on_object('core.edit_dataset', parent_dataset)
-        check_response_status(url, user, 'core.edit_dataset', obj=parent_dataset)
+        assert user.has_permission_on_object('core.change_dataset', obj)
+        check_response_status(url, user, ['core.change_dataset', 'core.protected_dataset'], method=method, obj=obj)
 
 
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize('url_name', ['dataset_access_add', 'dataset_access_edit', 'dataset_access_remove'])
-def test_access_views_permissions(permissions, group, url_name):
+def test_access_views_permissions(permissions, users, group, url_name):
     """
     Tests whether users from different groups can create Access instances for a Dataset.
 
     Only data stewards and local custodians should be able to create Access instances.
     """
     dataset = DatasetFactory()
+    access = None
 
     kwargs = {'dataset_pk': dataset.pk}
     if url_name != 'dataset_access_add':
@@ -42,4 +48,7 @@ def test_access_views_permissions(permissions, group, url_name):
 
     # Only users who can edit a dataset can create Access instances in it
     user = UserFactory(groups=[group()])
-    check_access_view_permissions(url, user, dataset)
+
+    obj = access if access is not None else dataset
+    method = "DELETE" if url_name == "dataset_access_remove" else "GET"
+    check_access_view_permissions(url, user, obj, method)

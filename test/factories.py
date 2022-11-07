@@ -58,6 +58,15 @@ class UserFactory(factory.django.DjangoModelFactory):
             for group in extracted:
                 self.groups.add(group)
 
+    @factory.post_generation
+    def password(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted:
+            self.set_password(extracted)
+        else:
+            self.set_password('test-user')
+
 
 class PublicationFactory(factory.django.DjangoModelFactory):
     class Meta:

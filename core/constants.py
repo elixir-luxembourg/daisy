@@ -7,7 +7,7 @@ from enum import Enum
 class Permissions(Enum):
     ADMIN = 'admin'
     CREATE = 'add'
-    EDIT = 'edit'
+    EDIT = 'change'
     DELETE = 'delete'
     VIEW = 'view'
     PROTECTED = 'protected'

@@ -148,7 +148,7 @@ class Command(BaseCommand):
                 for perm in permissions:
                     permission_object = Permission.objects.get(
                         content_type=content_type,
-                        codename=perm.value,
+                        codename=perm.split(".")[1].lower(),
                     )
                     assign_perm(permission_object, group)
 

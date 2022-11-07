@@ -10,7 +10,7 @@ from guardian.shortcuts import assign_perm
 
 from core.constants import Groups as GroupConstants
 from core.management.commands.load_initial_data import Command as CommandLoadInitialData
-from core.permissions import PERMISSION_MAPPING
+from core.permissions import GROUP_PERMISSIONS
 
 
 FIXTURE_DIR = os.path.join(settings.BASE_DIR, 'core', 'fixtures')
@@ -152,18 +152,7 @@ def permissions():
     """
     Create basic permission mapping
     """
-    for group_enum, permission_mapping in PERMISSION_MAPPING.items():
-        group, _ = Group.objects.get_or_create(name=group_enum.value)
-        group.permissions.clear()
-        for klassname, permissions in permission_mapping.items():
-            model = apps.get_model(klassname)
-            content_type = ContentType.objects.get_for_model(model)
-            for perm in permissions:
-                permission_object = Permission.objects.get(
-                    content_type=content_type,
-                    codename=perm.value,
-                )
-                assign_perm(permission_object, group)
+    CommandLoadInitialData.create_roles_and_permissions()
 
 
 @pytest.fixture
