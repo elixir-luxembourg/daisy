@@ -10,7 +10,13 @@
     <tbody>
         {% for key, value in obj_perms.items %}
             <tr>
-            <th scope="row"><a href="{% url 'dataset' pk=key.id %}">{{ key }}</a></th>
+            {% if obj_name == 'Datasets' %}
+                <th scope="row"><a href="{% url 'dataset' pk=key.id %}">{{ key }}</a></th>
+            {% elif obj_name == 'Projects' %}
+                <th scope="row"><a href="{% url 'project' pk=key.id %}">{{ key }}</a></th>
+            {% elif obj_name == 'Users' %}
+                <th scope="row"><a href="{% url 'user' pk=key.id %}">{{ key }}</a></th>
+            {% endif %}
             {% for perm in perms_const %}
                 {% if perm.value in value %}
                     <td class="text-center"><i class="material-icons">check_box</i></td>
