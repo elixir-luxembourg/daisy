@@ -14,7 +14,7 @@ from core.models import ContactType, DataType, DocumentType, StorageResource, Fu
     SensitivityClass, Cohort, Contact, GDPRRole, LegalBasisType, PersonalDataType, DataLogType
 from core.models.partner import Partner
 from core.models.term_model import GeneTerm, StudyTerm, DiseaseTerm, PhenotypeTerm
-from core.permissions import PERMISSION_MAPPING
+from core.permissions import GROUP_PERMISSIONS
 
 FIXTURE_DIR = os.path.join(settings.BASE_DIR, 'core', 'fixtures')
 
@@ -139,7 +139,7 @@ class Command(BaseCommand):
     def create_roles_and_permissions():
         # assign permissions to groups
         print('Creating roles and permissions')
-        for group_enum, permission_mapping in PERMISSION_MAPPING.items():
+        for group_enum, permission_mapping in GROUP_PERMISSIONS.items():
             group, _ = Group.objects.get_or_create(name=group_enum.value)
             group.permissions.clear()
             for klassname, permissions in permission_mapping.items():
