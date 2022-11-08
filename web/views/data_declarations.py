@@ -35,10 +35,15 @@ DATA_DECLARATIONS_SUB_FORMS = [
 
 
 def data_declarations_add_sub_form(request):
-    declaration_type = request.GET['declaration_type']
-    dataset_id = int(request.GET['dataset_id'])
-    dataset = get_object_or_404(Dataset, id=dataset_id)
+    declaration_type = request.GET.get('declaration_type')
+    dataset_id = request.GET.get('dataset_id')
+    if declaration_type is None or dataset_id is None:
+        return HttpResponseBadRequest('invalid declaration_type or dataset_id argument')
+
+    dataset_id = int(dataset_id)
     declaration_type = int(declaration_type)
+
+    dataset = get_object_or_404(Dataset, id=dataset_id)
     form_class, template = DATA_DECLARATIONS_SUB_FORMS[declaration_type]
     form = form_class(dataset=dataset)
     context_form = form.get_context()
@@ -46,7 +51,7 @@ def data_declarations_add_sub_form(request):
     return render(request, 'data_declarations/' + template, context=context_form)
 
 
-@permission_required(Permissions.EDIT, (Dataset, 'pk', 'pk'))
+@permission_required(f'core.{Permissions.EDIT.value}_dataset', (Dataset, 'pk', 'pk'))
 def data_declarations_add(request, pk):
     template_name = 'data_declarations/data_declaration_form.html'
     form_class = DataDeclarationForm
@@ -80,8 +85,11 @@ def data_declarations_add(request, pk):
 
 
 def data_declarations_get_contracts(request):
-    partner_id = request.GET['partner_id']
-    dataset_id = request.GET['dataset_id']
+    partner_id = request.GET.get('partner_id')
+    dataset_id = request.GET.get('dataset_id')
+    if partner_id is None or dataset_id is None:
+        return HttpResponseBadRequest('invalid partner_id and/or dataset_id arguments')
+
     partner_id = int(partner_id)
     dataset_id = int(dataset_id)
     partner = get_object_or_404(Partner, id=partner_id)
@@ -103,6 +111,8 @@ def data_declarations_autocomplete(request):
         return None
 
     query = request.GET.get('q')
+
+
     suggestions = []
     if query:
         sqs = SearchQuerySet().models(DataDeclaration).autocomplete(autocomplete=query)
@@ -124,6 +134,8 @@ def data_dec_paginated_search(request):
     search = request.GET.get('search')
     page = request.GET.get('page')
 
+    if search is None:
+        return HttpResponseBadRequest("invalid search parameter")
 
     matching_declarations = DataDeclaration.objects.filter(Q(title__icontains=search) | Q(dataset__title__icontains=search)| Q(dataset__project__title__icontains=search)).order_by('id')
 
@@ -150,14 +162,14 @@ def data_dec_paginated_search(request):
 
 
 @require_http_methods(["DELETE"])
-@permission_required(Permissions.DELETE, (DataDeclaration, 'pk', 'pk'))
+@permission_required(f'core.{Permissions.EDIT.value}_dataset', (DataDeclaration, 'pk', 'pk'))
 def data_declarations_delete(request, pk):
     data_declaration = get_object_or_404(DataDeclaration, id=pk)
     data_declaration.delete()
     return HttpResponse("Data declaration deleted")
 
 
-@permission_required(Permissions.EDIT, (DataDeclaration, 'pk', 'pk'))
+@permission_required(f'core.{Permissions.EDIT.value}_dataset', (DataDeclaration, 'pk', 'pk'))
 def data_declarations_duplicate(request, pk):
     data_declaration = get_object_or_404(DataDeclaration, id=pk)
     new_data_declaration = DataDeclaration()
@@ -192,7 +204,7 @@ class DatadeclarationDetailView(DetailView):
 class DatadeclarationEditView(CheckerMixin, UpdateView):
     model = DataDeclaration
     template_name = 'data_declarations/data_declaration_form_edit.html'
-    permission_required = Permissions.EDIT
+    permission_required = f'core.{Permissions.EDIT.value}_dataset'
 
     
     def get(self, request, *args, **kwargs):

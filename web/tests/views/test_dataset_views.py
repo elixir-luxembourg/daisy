@@ -4,7 +4,7 @@ from test.factories import VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup,
 
 
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
-@pytest.mark.parametrize('url_name', ['datasets', 'datasets_export', 'dataset_add', 'dataset', 'dataset_delete', 'dataset_edit', 'dataset_publish', 'dataset_unpublish', 'data_declarations_add'])
+@pytest.mark.parametrize('url_name', ['datasets', 'datasets_export', 'dataset_add', 'dataset', 'dataset_delete', 'dataset_edit', 'dataset_publish', 'dataset_unpublish'])
 def test_dataset_views_permissions(permissions, group, url_name):
     """
     Tests whether users from different groups can access urls associated with Dataset instances

@@ -14,6 +14,7 @@ ALL_MODELS = ('core.Access', 'core.Cohort', 'core.Contact', 'core.Contract', 'co
 
 # Additional permissions that can be granted on entities (django creates VIEW, EDIT, CREATE, DELETE by default)
 # We add PROTECTED (can see/edit protected elements) and ADMIN (can grant permissions on an entity)
+# ANY MODIFICATION TO THIS DICT NEEDS A DB MIGRATION FOR IT TO WORK
 PERMISSION_MAPPING = {
     "Contract": [
         (f'{Permissions.PROTECTED.value}_contract', 'Can edit PROTECTED elements of Contract instances'),

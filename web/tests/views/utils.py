@@ -37,8 +37,11 @@ def check_response_status(url: str, user: User, permissions: List[str], obj: Opt
         else:
             assert response.status_code == 403
 
-    except KeyError:
-        raise ValueError(f"Received unexpected request method {method}")
+    except KeyError as e:
+        if method not in requests_methods:
+            raise ValueError(f"Received unexpected request method {method}")
+        else:
+            raise e
 
     finally:
         client.logout()
