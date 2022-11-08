@@ -4,7 +4,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 
 from core.models.user import User
-from core.permissions import constants, CheckerMixin
+from core.permissions import CheckerMixin
+from core import constants
 from auditlog.models import LogEntry
 from auditlog.registry import auditlog
 
