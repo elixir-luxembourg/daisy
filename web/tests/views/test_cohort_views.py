@@ -21,7 +21,7 @@ def check_cohort_view_permissions(url: str, user: User, action: Optional[Permiss
         else:
             assert not user.has_permission_on_object(f'core.{action.value}_cohort', cohort)
 
-        check_response_status(url, user, ['core.delete_cohort'], obj=cohort)
+        check_response_status(url, user, [f'core.{action.value}_cohort'], obj=cohort)
 
     elif action is None:
         # Everyone can view or create anything, so no permission was designed for it

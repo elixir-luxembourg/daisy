@@ -28,6 +28,7 @@ if TYPE_CHECKING:
     from core.models.partner import Partner
     from core.models.data_declaration import DataDeclaration
     from core.models.user import User
+    from core.models.contact import Contact
 
 
 logger = logging.getLogger('daisy.permissions')
@@ -124,6 +125,13 @@ class CohortChecker(AbstractChecker):
         return self.checker.has_perm(perm, obj)
 
 
+class ContactChecker(AbstractChecker):
+    """
+    Checks permissions on Contact
+    """
+    def _check(self, perm: str, obj: "Contact", **kwargs) -> bool:
+        return self.checker.has_perm(perm, obj)
+
 class PartnerChecker(AbstractChecker):
     """
     Check permission on Partner.
@@ -216,6 +224,7 @@ class AutoChecker(AbstractChecker):
         'Project': ProjectChecker,
         'Partner': PartnerChecker,
         'PartnerRole': PartnerRoleChecker,
+        'Contact': ContactChecker,
         'Contract': ContractChecker,
         'Document': DocumentChecker,
         'DataDeclaration': DataDeclarationChecker,

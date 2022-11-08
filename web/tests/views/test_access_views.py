@@ -1,6 +1,7 @@
 import pytest
 from django.shortcuts import reverse
 
+from core.constants import Permissions
 from core.models.access import Access
 from core.models.user import User
 from core.models.dataset import Dataset
@@ -11,24 +12,25 @@ from typing import Union
 
 
 def check_access_view_permissions(url: str, user: User, obj: Union[Access, Dataset], method: str) -> None:
+    # Any action on an Access instance needs the EDIT and PROTECTED permissions on parent dataset
     if isinstance(obj, Access):
         parent_dataset = obj.dataset
     else:
         parent_dataset = obj
 
     if user.is_part_of(DataStewardGroup()):
-        assert user.has_permission_on_object('core.change_dataset', obj)
+        assert user.has_permission_on_object(f'core.{Permissions.EDIT}_dataset', obj)
     else:
-        assert not user.has_permission_on_object('core.change_dataset', obj)
+        assert not user.has_permission_on_object(f'core.{Permissions.EDIT}_dataset', obj)
 
-    check_response_status(url, user, ['core.change_dataset', 'core.protected_dataset'], method=method, obj=obj)
+    check_response_status(url, user, [f'core.{Permissions.EDIT}_dataset', f'core.{Permissions.PROTECTED}_dataset'], method=method, obj=obj)
 
     if user.is_part_of(VIPGroup()):
         user.save()
         parent_dataset.local_custodians.add(user)
         parent_dataset.save()
-        assert user.has_permission_on_object('core.change_dataset', obj)
-        check_response_status(url, user, ['core.change_dataset', 'core.protected_dataset'], method=method, obj=obj)
+        assert user.has_permission_on_object(f'core.{Permissions.EDIT}_dataset', obj)
+        check_response_status(url, user, [f'core.{Permissions.EDIT}_dataset', f'core.{Permissions.PROTECTED}_dataset'], method=method, obj=obj)
 
 
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
