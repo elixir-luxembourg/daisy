@@ -61,3 +61,9 @@ def test_project_views_permissions(permissions, group, url_name):
         url = reverse(url_name, kwargs=kwargs)
 
     assert url is not None
+
+
+# FIXME
+# @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
+def test_project_view_protected_documents(permissions):
+    assert False

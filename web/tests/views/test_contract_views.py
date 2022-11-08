@@ -56,3 +56,8 @@ def test_contract_views_permissions(permissions, group, url_name, perm):
     user = UserFactory(groups=[group()])
     check_contract_view_permissions(url, user, perm, contract)
 
+
+# FIXME
+# @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
+def test_contract_view_protected_documents(permissions):
+    assert False
