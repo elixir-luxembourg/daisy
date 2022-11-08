@@ -31,7 +31,7 @@ def check_contact_view_permissions(url, user, action, contact):
 
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
-    'destination_tuple',
+    'url_name, perm',
     [
         ('contacts', None),
         ('contact_edit', Permissions.EDIT),
@@ -41,15 +41,13 @@ def check_contact_view_permissions(url, user, action, contact):
         # ('contacts_export', None)
     ]
 )
-def test_contacts_views_permissions(permissions, group, destination_tuple):
+def test_contacts_views_permissions(permissions, group, url_name, perm):
     """
     Tests whether users from different groups can access the urls associated with Contact instances
     """
     # For now, anyone can create or edit contacts, but only datastewards can delete
     # FIXME
     #   Discuss this!
-    url_name, action = destination_tuple
-
     contact = None
     if url_name in ['contacts', 'contact_add', 'contacts_export']:
         url = reverse(url_name)
@@ -60,4 +58,4 @@ def test_contacts_views_permissions(permissions, group, destination_tuple):
 
     assert url is not None
     user = UserFactory(groups=[group()])
-    check_contact_view_permissions(url, user, action, contact)
+    check_contact_view_permissions(url, user, perm, contact)

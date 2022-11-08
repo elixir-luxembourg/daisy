@@ -38,7 +38,7 @@ def check_cohort_view_permissions(url: str, user: User, action: Optional[Permiss
 
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
-    'destination_tuple',
+    'url_name, perm',
     [
         ('cohorts', None),
         ('cohort_add', None),
@@ -51,11 +51,10 @@ def check_cohort_view_permissions(url: str, user: User, action: Optional[Permiss
         # 'cohort_unpublish'
     ],
 )
-def test_cohorts_views_permissions(permissions, group, destination_tuple):
+def test_cohorts_views_permissions(permissions, group, url_name, perm):
     """
     Tests whether users from different groups can access the urls associated with Cohort instances
     """
-    url_name, action = destination_tuple
     cohort = None
     if url_name in ['cohorts', 'cohort_add', 'cohorts_export']:
         url = reverse(url_name)
@@ -66,4 +65,4 @@ def test_cohorts_views_permissions(permissions, group, destination_tuple):
 
     assert url is not None
     user = UserFactory(groups=[group()])
-    check_cohort_view_permissions(url, user, action, cohort)
+    check_cohort_view_permissions(url, user, perm, cohort)

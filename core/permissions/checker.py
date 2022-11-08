@@ -7,6 +7,7 @@ from typing import Union, Optional, TYPE_CHECKING
 from abc import ABCMeta, abstractmethod
 
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -18,7 +19,6 @@ from core.exceptions import DaisyError
 
 if TYPE_CHECKING:
     from django.db.models import Model
-    from django.contrib.auth.models import Group
     from core.models.dataset import Dataset
     from core.models.document import Document
     from core.models.contract import Contract, PartnerRole
@@ -107,6 +107,11 @@ class ContractChecker(AbstractChecker):
     """
 
     def _check(self, perm: str, obj: "Contract", **kwargs) -> bool:
+        groups = self.checker.user.groups.all()
+        if Group.objects.get(name='daisy-data-steward') in groups:
+            print(self.checker.user.get_all_permissions())
+            print(f'Checking if user has permission {perm} on object {obj}: {self.checker.has_perm(perm, obj)}')
+
         if self.checker.has_perm(perm, obj):
             return True
         no_follow = kwargs.pop('nofollow', False)

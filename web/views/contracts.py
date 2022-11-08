@@ -1,22 +1,19 @@
 from django.conf import settings
-from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse, HttpResponseForbidden
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 
 from core.constants import Permissions
 from core.forms import ContractForm, ContractFormEdit, PartnerRoleForm
-from core.forms.contract import KVForm
-from core.forms.document import DocumentForm
 from core.models import Contract, PartnerRole
-from core.permissions import permission_required
+from core.permissions import CheckerMixin
 from . import facet_view_utils
 
-FACET_FIELDS = settings.FACET_FIELDS['contract']
 
+FACET_FIELDS = settings.FACET_FIELDS['contract']
 
 
 class ContractCreateView(CreateView):
@@ -56,10 +53,11 @@ class ContractDetailView(DetailView):
         return context
 
 
-class ContractEditView(UpdateView):
+class ContractEditView(CheckerMixin, UpdateView):
     model = Contract
     template_name = 'contracts/contract_form_edit.html'
     form_class = ContractFormEdit
+    permission_required = f'core.{Permissions.EDIT.value}_contract'
 
     def dispatch(self, request, *args, **kwargs):
         the_contract = Contract.objects.get(id=kwargs.get('pk'))
@@ -113,6 +111,7 @@ class PartnerRoleCreateView(CreateView):
     model = PartnerRole
     template_name = 'contracts/partner_role_form.html'
     form_class = PartnerRoleForm
+    permission_required = f'core.{Permissions.EDIT.value}_contract'
 
     def dispatch(self, request, *args, **kwargs):
         self.contract = Contract.objects.get(id=kwargs.get('pk'))
@@ -149,6 +148,7 @@ class PartnerRoleEditView(UpdateView):
     model = PartnerRole
     template_name = 'contracts/partner_role_form.html'
     form_class = PartnerRoleForm
+    permission_required = f'core.{Permissions.EDIT.value}_contract'
 
     def dispatch(self, request, *args, **kwargs):
         self.contract = self.get_object().contract
@@ -263,11 +263,12 @@ def partner_role_delete(request, pk):
 #     return HttpResponse("Dataset removed")
 
 
-class ContractDelete(DeleteView):
+class ContractDelete(CheckerMixin, DeleteView):
     model = Contract
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('contracts')
     success_message = "Contract was deleted successfully."
+    permission_required = f'core.{Permissions.DELETE.value}_contract'
 
     def get_context_data(self, **kwargs):
         context = super(ContractDelete, self).get_context_data(**kwargs)
