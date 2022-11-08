@@ -1,8 +1,7 @@
 import pytest
 
 from core import constants
-from core.permissions import ALL_PERMS, PERMISSION_MAPPING, AutoChecker
-from core.constants import Groups
+from core.permissions import ALL_PERMISSIONS, GROUP_PERMISSIONS
 from test.factories import *
 
 # TODO
@@ -91,8 +90,8 @@ def test_object_global_permissions_for_admin_groups(group, klass_name, attribute
     user = UserFactory.create(groups=[group])
     obj = entities.get(attribute)
 
-    should_have_perms = set(PERMISSION_MAPPING.get(constants.Groups(group.name), {}).get(klass_name, []))
-    should_not_have_perms = set(ALL_PERMS) - should_have_perms
+    should_have_perms = set(GROUP_PERMISSIONS.get(constants.Groups(group.name), {}).get(klass_name, []))
+    should_not_have_perms = set(ALL_PERMISSIONS) - should_have_perms
 
     for perm in should_have_perms:
         assert user.has_permission_on_object(perm, obj)
@@ -103,7 +102,7 @@ def test_object_global_permissions_for_admin_groups(group, klass_name, attribute
 
 # FIXME: To delete.
 group_permissions_expectations = []  # tuples of ( group name, has PROTECTED permission)
-for group_name, permission_mapping in PERMISSION_MAPPING.items():
+for group_name, permission_mapping in GROUP_PERMISSIONS.items():
     permissions = permission_mapping.get('core.Project', [])
     group_permissions_expectations.append(
         (group_name, constants.Permissions.PROTECTED in permissions)
@@ -229,13 +228,13 @@ def test_dataset_entity_permissions(permissions, group, entity_factory):
     new_entity.save()
 
     if user.is_part_of(DataStewardGroup.name):
-        assert user.has_permission_on_object(constants.Permissions.EDIT, new_entity)
+        assert user.has_permission_on_object(f'core.change_dataset', new_entity)
     else:
-        assert not user.has_permission_on_object(constants.Permissions.EDIT, new_entity)
+        assert not user.has_permission_on_object(f'core.change_dataset', new_entity)
 
         dataset.local_custodians.set([user])
         dataset.save()
-        assert user.has_permission_on_object(constants.Permissions.EDIT, new_entity)
+        assert user.has_permission_on_object(f'core.change_dataset', new_entity)
 
 
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])

@@ -13,7 +13,6 @@ from django.utils.functional import wraps
 from guardian.core import ObjectPermissionChecker
 from guardian.mixins import PermissionRequiredMixin
 
-from core import constants
 from core.exceptions import DaisyError
 
 logger = logging.getLogger('daisy.permissions')
@@ -31,10 +30,8 @@ class AbstractChecker(metaclass=ABCMeta):
             self.checker = ObjectPermissionChecker(user_or_group)
 
     def _set_perm(self, perm):
-        # transform Permission enum to it's str value
-        if isinstance(perm, constants.Permissions):
-            self._perm = perm
-            perm = 'core.%s' % perm.value
+        # transform Permission enum to its str value
+        self._perm = perm
         return perm
 
     def check(self, perm, obj, **kwargs):
@@ -65,10 +62,9 @@ class DatasetChecker(AbstractChecker):
     """
 
     def _check(self, perm, obj, **kwargs):
-        hasperm = self.checker.has_perm(perm, obj)
-        print(f"User has {perm} on {obj}: {hasperm}")
-        logger.debug(f'[DatasetChecker _check] Checking permission "{perm}" on: "{obj}": {hasperm}.')
-        if hasperm:
+        has_perm = self.checker.has_perm(perm, obj)
+        logger.debug(f'[DatasetChecker _check] Checking permission "{perm}" on: "{obj}": {has_perm}.')
+        if has_perm:
             return True
         nofollow = kwargs.pop('nofollow', False)
         if nofollow:
@@ -152,6 +148,12 @@ class DocumentChecker(AbstractChecker):
                 obj.content_object,
                 **kwargs
             )
+        elif obj.content_type.name == 'dataset':
+            return DatasetChecker(self.user_or_group, checker=self.checker).check(
+                self._perm,
+                obj.content_object,
+                **kwargs
+            )
         else:
             return ContractChecker(self.user_or_group, checker=self.checker).check(
                 self._perm,
@@ -176,20 +178,13 @@ class AccessChecker(AbstractChecker):
 
     def _check(self, perm, obj, **kwargs):
         parent_dataset = obj.dataset
-        # if self.user_or_group.groups.filter(name=constants.Groups.DATA_STEWARD.value).exists() \
-        #         or parent_dataset.local_custodians.filter(pk=self.user_or_group.pk).exists():
-        #     return True
-        # else:
-        #     return False
         parent_checker = DatasetChecker(self.user_or_group, checker=self.checker)
-        hasperm = parent_checker.check(perm, parent_dataset)
-        print(f"{__name__}: Checking that user has {perm} on parent dataset {parent_dataset} of {obj}: {hasperm}")
-        return hasperm
+        return parent_checker.check(perm, parent_dataset)
 
 
 class AutoChecker(AbstractChecker):
     """
-    Check permission on given object. Object must be instance on a key in the __mapping attribute.
+    Check permission on given object. Object must be instanced on a key in the __mapping attribute.
     """
 
     __mapping = {
@@ -217,14 +212,14 @@ class AutoChecker(AbstractChecker):
         Automatically determines which permission class to use.
         """
         if not isinstance(perm, list):
-            value = self.__mapping[obj.__class__.__name__](self.user_or_group, checker=self.checker).check(perm, obj,
-                                                                                                          **kwargs)
+            value = self.__mapping[obj.__class__.__name__](self.user_or_group, checker=self.checker).check(perm, obj, **kwargs)
             logger.debug(f'[AutoChecker] Checking permission "{perm}" on {obj.__class__.__name__}: "{obj}" for "{self.user_or_group}": {value}.')
             return value
         else:
             value = [self.__mapping[obj.__class__.__name__](self.user_or_group, checker=self.checker).check(perm_unit, obj, **kwargs) for perm_unit in perm]
             logger.debug(f'[AutoChecker] Checking permissions "{perm}" on {obj.__class__.__name__}: "{obj}" for "{self.user_or_group}": {value}.')
             return all(value)
+
 
 def permission_required(perm, lookup_variables):
     """
@@ -260,7 +255,6 @@ def permission_required_from_content_type(perm, content_type_attr, object_id_att
 
     def dec(view_func):
         def wrapper(request, *args, **kwargs):
-            obj = None
             # get parameters
             if from_post:
                 content_type_pk = request.POST.get(content_type_attr)
@@ -290,7 +284,7 @@ def permission_required_from_content_type(perm, content_type_attr, object_id_att
 
 class CheckerMixin(PermissionRequiredMixin):
     """
-    A view mixin that verifies if the current logged in user has the specified permission
+    A view mixin that verifies if the current logged-in user has the specified permission
     using our checker methods.
     """
 
@@ -306,4 +300,3 @@ class CheckerMixin(PermissionRequiredMixin):
         if not has_permission:
             raise PermissionDenied()
         return None
-
