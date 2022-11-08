@@ -51,7 +51,11 @@ def index(request, selection, pk):
         'edit_url': f"{selection}_edit",
         'local_custodians': local_custodians,
         'local_vips': local_vips,
+        'perms_const': list(Permissions),
     }
+    # get inherited permissions from the parent project
+    if klass == Dataset:
+        context["inherited_permissions"] = get_users_with_perms(obj.project, attach_perms=True)
     for user, permissions in users_with_perms.items():
         # add user
         data = {

@@ -14,7 +14,7 @@
                 <th scope="row"><a href="{% url 'dataset' pk=key.id %}">{{ key }}</a></th>
             {% elif obj_name == 'Projects' %}
                 <th scope="row"><a href="{% url 'project' pk=key.id %}">{{ key }}</a></th>
-            {% elif obj_name == 'Users' %}
+            {% elif obj_name == 'User' %}
                 <th scope="row"><a href="{% url 'user' pk=key.id %}">{{ key }}</a></th>
             {% endif %}
             {% for perm in perms_const %}

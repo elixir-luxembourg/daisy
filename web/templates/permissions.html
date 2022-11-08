@@ -28,13 +28,25 @@
     <div class="row mt-4">
         <div class="card col">
             <div class="card-body">
-                <h2 class="card-title">{% block card_title %}Add or remove additionnal users{% endblock %}</h2>
+                <h2 class="card-title">Edit Permissions of {{ object.title }} {{ selection }}</h2>
                 <div id="form-container" class="card-text">
                     {% include '_includes/permission_form.html' %}
                 </div>
             </div>
         </div>
     </div>
+    {% if inherited_permissions %}
+    <div class="row mt-4">
+        <div class="card col">
+            <div class="card-body">
+                <h2 class="card-title">View Inherited Permissions from <a href="{% url 'project' pk=object.project.id %}">{{ object.project }}</a></h2>
+                <div class="mt-4">
+                    {% include '_includes/permission_table.html' with obj_name='User' perms_const=perms_const obj_perms=inherited_permissions %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
     <div class="row mt-4">
             <div class="card col">
                 <div class="card-body">
