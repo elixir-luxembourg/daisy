@@ -1,4 +1,3 @@
-from web.views.user import superuser_required
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseForbidden
@@ -8,7 +7,9 @@ from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 
 from core.forms import CohortForm, CohortFormEdit
 from core.models import Cohort
+from core.permissions.checker import CheckerMixin
 from . import facet_view_utils
+
 
 FACET_FIELDS = settings.FACET_FIELDS['cohort']
 from core.models.utils import COMPANY
@@ -93,11 +94,12 @@ def cohort_list(request):
     })
 
 
-class CohortDelete(DeleteView):
+class CohortDelete(CheckerMixin, DeleteView):
     model = Cohort
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('cohorts')
     success_message = "Cohort was deleted successfully."
+    permission_required = 'core.delete_cohort'
 
     def get_context_data(self, **kwargs):
         context = super(CohortDelete, self).get_context_data(**kwargs)
@@ -106,6 +108,8 @@ class CohortDelete(DeleteView):
         return context
 
 
+# FIXME:
+#   Who is staff?
 @staff_member_required
 def publish_cohort(request, pk):
     cohort = get_object_or_404(Cohort, pk=pk)

@@ -1,6 +1,4 @@
-from web.views.user import superuser_required
 from django.conf import settings
-from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
@@ -8,10 +6,9 @@ from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 
 from core.forms import DatasetForm
 from core.forms.dataset import DatasetFormEdit
-from core.forms.share import shareFormFactory
-from core.models import Dataset, Partner
+from core.models import Dataset
 from core.models.utils import COMPANY
-from core.permissions import permission_required, CheckerMixin, constants
+from core.permissions import CheckerMixin
 from core.utils import DaisyLogger
 from . import facet_view_utils
 
@@ -59,7 +56,7 @@ class DatasetDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['is_admin'] = self.request.user.is_admin_of_dataset(self.object)
         context['can_edit'] = self.request.user.can_edit_dataset(self.object)
-        context['can_see_protected'] = self.request.user.has_permission_on_object(constants.Permissions.PROTECTED, self.object)
+        context['can_see_protected'] = self.request.user.has_permission_on_object('core.protected_dataset', self.object)
         context['company_name'] = COMPANY
         return context
 
@@ -68,7 +65,7 @@ class DatasetEditView(CheckerMixin, UpdateView):
     model = Dataset
     template_name = 'datasets/dataset_form_edit.html'
     form_class = DatasetFormEdit
-    permission_required = constants.Permissions.EDIT
+    permission_required = 'core.change_dataset'
 
 
     def get_initial(self):
@@ -123,7 +120,7 @@ class DatasetDelete(CheckerMixin, DeleteView):
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('datasets')
     success_message = "Dataset was deleted successfully."
-    permission_required = constants.Permissions.DELETE
+    permission_required = 'core.delete_dataset'
 
     def get_context_data(self, **kwargs):
         context = super(DatasetDelete, self).get_context_data(**kwargs)

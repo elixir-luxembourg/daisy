@@ -3,8 +3,9 @@ from django.views.generic import ListView
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 
+from core import constants
 from core.models.user import User
-from core.permissions import constants, CheckerMixin
+from core.permissions import CheckerMixin
 from auditlog.models import LogEntry
 from auditlog.registry import auditlog
 

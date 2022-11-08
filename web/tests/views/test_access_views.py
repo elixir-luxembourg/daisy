@@ -1,11 +1,16 @@
 import pytest
 from django.shortcuts import reverse
+
 from core.models.access import Access
+from core.models.user import User
+from core.models.dataset import Dataset
 from test.factories import AccessFactory, DatasetFactory, VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup, UserFactory
+
 from .utils import check_response_status
+from typing import Union
 
 
-def check_access_view_permissions(url, user, obj, method):
+def check_access_view_permissions(url: str, user: User, obj: Union[Access, Dataset], method: str) -> None:
     if isinstance(obj, Access):
         parent_dataset = obj.dataset
     else:

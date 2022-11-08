@@ -1,7 +1,7 @@
 import pytest
 
 from core import constants
-from core.permissions import ALL_PERMISSIONS, GROUP_PERMISSIONS
+from core.permissions import GROUP_PERMISSIONS
 from test.factories import *
 
 # TODO
@@ -91,7 +91,7 @@ def test_object_global_permissions_for_admin_groups(group, klass_name, attribute
     obj = entities.get(attribute)
 
     should_have_perms = set(GROUP_PERMISSIONS.get(constants.Groups(group.name), {}).get(klass_name, []))
-    should_not_have_perms = set(ALL_PERMISSIONS) - should_have_perms
+    should_not_have_perms = set([perm.value for perm in constants.Permissions]) - should_have_perms
 
     for perm in should_have_perms:
         assert user.has_permission_on_object(perm, obj)

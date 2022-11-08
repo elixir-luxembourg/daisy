@@ -6,10 +6,8 @@ from enum import Enum
 
 class Permissions(Enum):
     ADMIN = 'admin'
-    CREATE = 'add'
     EDIT = 'change'
     DELETE = 'delete'
-    VIEW = 'view'
     PROTECTED = 'protected'
 
 

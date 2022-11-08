@@ -6,13 +6,11 @@ If a user does not belong to a group with class-level permissions on the model t
 want to access, the permissions have to be handled at the instance level.
 """
 
-from core.constants import Groups
+from core.constants import Groups, Permissions
 
 ALL_MODELS = ('core.Access', 'core.Cohort', 'core.Contact', 'core.Contract', 'core.DataDeclaration',
               'core.Dataset', 'core.Document', 'core.LegalBasis', 'core.Partner',
               'core.Project', 'core.Publication', 'core.Share', 'core.DataLocation')
-
-ALL_PERMISSIONS = ('add', 'admin', 'change', 'delete', 'protected', 'view')
 
 # Additional permissions that can be granted on entities (django creates VIEW, EDIT, CREATE, DELETE by default)
 # We add PROTECTED (can see/edit protected elements) and ADMIN (can grant permissions on an entity)
@@ -34,10 +32,10 @@ PERMISSION_MAPPING = {
 GROUP_PERMISSIONS = {
     Groups.DATA_STEWARD: {
         model: [
-            model.replace('.', f'.{perm}_')
-            for perm in ALL_PERMISSIONS
+            model.replace('.', f'.{perm.value}_')
+            for perm in Permissions
             if model.split('.')[1] in PERMISSION_MAPPING
-               or perm not in ['admin', 'protected']
+               or perm.value not in ['admin', 'protected']
         ] for model in ALL_MODELS
     },
     Groups.AUDITOR: {

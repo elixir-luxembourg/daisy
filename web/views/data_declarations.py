@@ -20,7 +20,7 @@ from core.forms import DataDeclarationForm, DataDeclarationSubFormOther, DataDec
 from core.forms import DataDeclarationSubFormFromExisting, DataDeclarationEditForm
 from core.forms.data_declaration import RestrictionFormset
 from core.models import Dataset, Partner, DataDeclaration, UseRestriction
-from core.permissions import permission_required, CheckerMixin, constants
+from core.permissions import permission_required, CheckerMixin
 from core.utils import DaisyLogger
 
 
@@ -192,7 +192,7 @@ class DatadeclarationDetailView(DetailView):
 class DatadeclarationEditView(CheckerMixin, UpdateView):
     model = DataDeclaration
     template_name = 'data_declarations/data_declaration_form_edit.html'
-    permission_required = constants.Permissions.EDIT
+    permission_required = Permissions.EDIT
 
     
     def get(self, request, *args, **kwargs):

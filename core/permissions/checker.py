@@ -3,12 +3,10 @@ Module that handle permission management.
 """
 import logging
 
-from typing import Union, Optional
+from typing import Union, Optional, TYPE_CHECKING
 from abc import ABCMeta, abstractmethod
 
-from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Model
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -17,15 +15,19 @@ from guardian.core import ObjectPermissionChecker
 from guardian.mixins import PermissionRequiredMixin
 
 from core.exceptions import DaisyError
-from core.models.dataset import Dataset
-from core.models.document import Document
-from core.models.contract import Contract, PartnerRole
-from core.models.cohort import Cohort
-from core.models.access import Access
-from core.models.legal_basis import LegalBasis
-from core.models.partner import Partner
-from core.models.data_declaration import DataDeclaration
-from core.models.user import User
+
+if TYPE_CHECKING:
+    from django.db.models import Model
+    from django.contrib.auth.models import Group
+    from core.models.dataset import Dataset
+    from core.models.document import Document
+    from core.models.contract import Contract, PartnerRole
+    from core.models.cohort import Cohort
+    from core.models.access import Access
+    from core.models.legal_basis import LegalBasis
+    from core.models.partner import Partner
+    from core.models.data_declaration import DataDeclaration
+    from core.models.user import User
 
 
 logger = logging.getLogger('daisy.permissions')
@@ -36,7 +38,7 @@ class AbstractChecker(metaclass=ABCMeta):
     Abstract Base Class to check objects permission in  DAISY.
     """
 
-    def __init__(self, user_or_group: Union[User, Group], checker: Optional[ObjectPermissionChecker] = None) -> None:
+    def __init__(self, user_or_group: Union["User", "Group"], checker: Optional[ObjectPermissionChecker] = None) -> None:
         self.user_or_group = user_or_group
         self.checker = checker
         if checker is None:
@@ -47,13 +49,13 @@ class AbstractChecker(metaclass=ABCMeta):
         self._perm = perm
         return perm
 
-    def check(self, perm: str, obj: Model, **kwargs) -> bool:
+    def check(self, perm: str, obj: "Model", **kwargs) -> bool:
         perm = self._set_perm(perm)
         # check global perm first then check on object
         return self.user_or_group.has_perm(perm) or self._check(perm, obj, **kwargs)
 
     @abstractmethod
-    def _check(self, perm: str, obj: Model, **kwargs) -> bool:
+    def _check(self, perm: str, obj: "Model", **kwargs) -> bool:
         """
         Perform the permission check
         """
@@ -65,7 +67,7 @@ class ProjectChecker(AbstractChecker):
     Check permissions on project.
     """
 
-    def _check(self, perm: str, obj: Model, **kwargs) -> bool:
+    def _check(self, perm: str, obj: "Model", **kwargs) -> bool:
         return self.checker.has_perm(perm, obj)
 
 
@@ -74,7 +76,7 @@ class DatasetChecker(AbstractChecker):
     Check permissions on dataset.
     """
 
-    def _check(self, perm: str, obj: Dataset, **kwargs) -> bool:
+    def _check(self, perm: str, obj: "Dataset", **kwargs) -> bool:
         has_perm = self.checker.has_perm(perm, obj)
         logger.debug(f'[DatasetChecker _check] Checking permission "{perm}" on: "{obj}": {has_perm}.')
         if has_perm:
@@ -94,7 +96,7 @@ class DatasetChecker(AbstractChecker):
 class DataDeclarationChecker(AbstractChecker):
     """ Check permissions on data declaration"""
 
-    def _check(self, perm: str, obj: DataDeclaration, **kwargs) -> bool:
+    def _check(self, perm: str, obj: "DataDeclaration", **kwargs) -> bool:
         return DatasetChecker(self.user_or_group, checker=self.checker).check(perm, obj.dataset, **kwargs)
 
 
@@ -103,7 +105,7 @@ class ContractChecker(AbstractChecker):
     Check permission on contract.
     """
 
-    def _check(self, perm: str, obj: Contract, **kwargs) -> bool:
+    def _check(self, perm: str, obj: "Contract", **kwargs) -> bool:
         if self.checker.has_perm(perm, obj):
             return True
         no_follow = kwargs.pop('nofollow', False)
@@ -118,7 +120,7 @@ class CohortChecker(AbstractChecker):
     """
     Checks permissions on Cohort.
     """
-    def _check(self, perm: str, obj: Cohort, **kwargs) -> bool:
+    def _check(self, perm: str, obj: "Cohort", **kwargs) -> bool:
         return self.checker.has_perm(perm, obj)
 
 
@@ -129,7 +131,7 @@ class PartnerChecker(AbstractChecker):
     # FIXME: The idea is to check whether someone can modify the partners associated with a contract
     #  The issue is that here we only have the partner, so how to get the correct contract from there
     #  seems very hard.
-    def _check(self, perm: str, obj: Partner, **kwargs) -> bool:
+    def _check(self, perm: str, obj: "Partner", **kwargs) -> bool:
         return self.checker.has_perm(perm, obj)
 
 
@@ -137,7 +139,7 @@ class PartnerRoleChecker(AbstractChecker):
     """
     Check permission on Contract Partner relationship.
     """
-    def _check(self, perm: str, obj: PartnerRole, **kwargs) -> bool:
+    def _check(self, perm: str, obj: "PartnerRole", **kwargs) -> bool:
         return ContractChecker(self.user_or_group, checker=self.checker).check(perm, obj.contract, **kwargs)
 
 
@@ -149,12 +151,12 @@ class DocumentChecker(AbstractChecker):
     And only the people who have PROTECTED rights on the project can see them.
     """
 
-    def check(self, perm: str, obj: Document, **kwargs) -> bool:
+    def check(self, perm: str, obj: "Document", **kwargs) -> bool:
         perm = self._set_perm(perm)
         # does not check global perm for document.
         return self._check(perm, obj, **kwargs)
 
-    def _check(self, perm: str, obj: Document, **kwargs) -> bool:
+    def _check(self, perm: str, obj: "Document", **kwargs) -> bool:
         """
         Check the permission on the underlying content_object
         """
@@ -184,20 +186,20 @@ class DocumentChecker(AbstractChecker):
 
 
 class UserChecker(AbstractChecker):
-    def _check(self, perm: str, obj: User, **kwargs) -> bool:
+    def _check(self, perm: str, obj: "User", **kwargs) -> bool:
         return self.user_or_group.is_staff
 
 
 class DatasetEntityChecker(DatasetChecker):
-    def check(self, perm: str, obj: Union[DataDeclaration, LegalBasis], **kwargs) -> bool:
+    def check(self, perm: str, obj: Union["DataDeclaration", "LegalBasis"], **kwargs) -> bool:
         return super().check(perm, obj.dataset, **kwargs)
 
 
 class AccessChecker(AbstractChecker):
-    def check(self, perm: str, obj: Access, **kwargs) -> bool:
+    def check(self, perm: str, obj: "Access", **kwargs) -> bool:
         return self._check(perm, obj, **kwargs)
 
-    def _check(self, perm: str, obj: Access, **kwargs) -> bool:
+    def _check(self, perm: str, obj: "Access", **kwargs) -> bool:
         parent_dataset = obj.dataset
         parent_checker = DatasetChecker(self.user_or_group, checker=self.checker)
         return parent_checker.check(perm, parent_dataset)
@@ -225,10 +227,10 @@ class AutoChecker(AbstractChecker):
     }
 
     # override default check method
-    def check(self, perm: str, obj: Model, **kwargs) -> bool:
+    def check(self, perm: str, obj: "Model", **kwargs) -> bool:
         return self._check(perm, obj, **kwargs)
 
-    def _check(self, perm: str, obj: Model, **kwargs) -> bool:
+    def _check(self, perm: str, obj: "Model", **kwargs) -> bool:
         """
         Check the permission on the object.
         Automatically determines which permission class to use.
