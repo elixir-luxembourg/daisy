@@ -8,8 +8,9 @@ from core.forms import DatasetForm
 from core.forms.dataset import DatasetFormEdit
 from core.models import Dataset
 from core.models.utils import COMPANY
-from core.permissions import CheckerMixin
+from core.permissions import permission_required, CheckerMixin
 from core.utils import DaisyLogger
+from core.constants import Permissions
 from . import facet_view_utils
 
 log = DaisyLogger(__name__)
@@ -56,7 +57,7 @@ class DatasetDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['is_admin'] = self.request.user.is_admin_of_dataset(self.object)
         context['can_edit'] = self.request.user.can_edit_dataset(self.object)
-        context['can_see_protected'] = self.request.user.has_permission_on_object('core.protected_dataset', self.object)
+        context['can_see_protected'] = self.request.user.has_permission_on_object(f'core.{Permissions.PROTECTED.value}_dataset', self.object)
         context['company_name'] = COMPANY
         return context
 
@@ -65,7 +66,7 @@ class DatasetEditView(CheckerMixin, UpdateView):
     model = Dataset
     template_name = 'datasets/dataset_form_edit.html'
     form_class = DatasetFormEdit
-    permission_required = 'core.change_dataset'
+    permission_required = f'core.{Permissions.EDIT.value}_dataset'
 
 
     def get_initial(self):
@@ -120,7 +121,7 @@ class DatasetDelete(CheckerMixin, DeleteView):
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('datasets')
     success_message = "Dataset was deleted successfully."
-    permission_required = 'core.delete_dataset'
+    permission_required = f'core.{Permissions.DELETE.value}_dataset'
 
     def get_context_data(self, **kwargs):
         context = super(DatasetDelete, self).get_context_data(**kwargs)

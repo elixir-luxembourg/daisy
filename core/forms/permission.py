@@ -17,9 +17,10 @@ def generate_user_permission_form(permission_cls):
             """
             Add permissions
             """
+            model_selection = kwargs.pop('model')
             super().__init__(*args, **kwargs)
             for perm in permission_cls:
-                self.fields[perm.value] = forms.BooleanField(label=perm.name, required=False)
+                self.fields[f"{perm.value}_{model_selection}"] = forms.BooleanField(label=perm.name, required=False)
 
     return UserPermForm
 
