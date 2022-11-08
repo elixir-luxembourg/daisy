@@ -216,13 +216,13 @@ class User(AbstractUser):
     def can_edit_contract(self, contract):
         """
         Check if user can edit a contract.
-        True if he has ADMIN right on the project
+        Should return True if user is data steward, legal or local custodian on contract
         """
-        return ContractChecker(self).check(constants.Permissions.EDIT, contract)
+        return ContractChecker(self).check(f"core.{constants.Permissions.EDIT.value}_contract", contract)
 
     def get_access_permissions(self) -> List[str]:
         """
-        Finds Accesses of the user, and returns a list of their dataset IDs 
+        Finds Accesses of the user, and returns a list of their dataset IDs
         """
         return Access.find_for_user(self)
 
