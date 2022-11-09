@@ -35,27 +35,28 @@ def upload_document(request, object_id, content_type):
         if not request.FILES:
             log.error('Upload failed: no document found.')
             return JsonResponse(
-                {'error':
-                     {'type': 'Upload error', 'messages': ['No document to upload.']
-                      }}, status=405)
+                {
+                    'error': {'type': 'Upload error', 'messages': ['No document to upload.']}
+                }, status=405)
         form = DocumentForm(request.POST, request.FILES)
         if not form.is_valid():
             return JsonResponse(
-                {'error':
-                     {'type': 'Upload error', 'messages': [str(e) for e in form.errors]
-                      }}, status=405)
+                {
+                    'error': {'type': 'Upload error', 'messages': [str(e) for e in form.errors]}
+                }, status=405)
         document = form.save()
         messages.add_message(request, messages.SUCCESS, "Document added")
         redirecturl = document.content_type.name
         return redirect(to=redirecturl, pk=document.object_id)
 
     else:
-        form = DocumentForm(initial={ 'content_type':content_type, 'object_id':object_id})
+        form = DocumentForm(initial={'content_type':content_type, 'object_id': object_id})
     log.debug(submit_url=request.get_full_path())
     return render(request, 'modal_form.html', {'form': form, 'submit_url': request.get_full_path()})
 
 
-@permission_required(Permissions.EDIT, (Document, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'document', (Document, 'pk', 'pk'))
+@permission_required(Permissions.PROTECTED, 'document', (Document, 'pk', 'pk'))
 def document_edit(request, pk):
     log.debug('editing document', post=request.POST)
     document = get_object_or_404(Document, pk=pk)
@@ -82,7 +83,7 @@ def document_edit(request, pk):
 
 
 @require_http_methods(["GET"])
-@permission_required(Permissions.PROTECTED, (Document, 'pk', 'pk'))
+@permission_required(Permissions.PROTECTED, 'document', (Document, 'pk', 'pk'))
 def download_document(request, pk):
     document = get_object_or_404(Document, pk=pk)
 
@@ -99,8 +100,8 @@ def download_document(request, pk):
 
 
 @require_http_methods(["DELETE"])
-@permission_required(Permissions.PROTECTED, (Document, 'pk', 'pk'))
-@permission_required(Permissions.EDIT, (Document, 'pk', 'pk'))
+@permission_required(Permissions.PROTECTED, 'document', (Document, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'document', (Document, 'pk', 'pk'))
 def delete_document(request, pk):
     document = get_object_or_404(Document, pk=pk)
     # perm = PERMISSION_MAPPING[document.content_type.name].DELETE.value

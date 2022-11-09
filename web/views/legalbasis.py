@@ -74,7 +74,7 @@ class LegalBasisEditView(CheckerMixin, UpdateView, AjaxViewMixin):
 
 
 @require_http_methods(["DELETE"])
-@permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
+@permission_required(Permissions.EDIT, 'dataset', (Dataset, 'pk', 'dataset_pk'))
 def remove_legalbasis(request, dataset_pk, legalbasis_pk):
     legbasis = get_object_or_404(LegalBasis, pk=legalbasis_pk)
     dataset = get_object_or_404(Dataset, pk=dataset_pk)

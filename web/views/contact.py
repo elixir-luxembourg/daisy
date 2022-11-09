@@ -17,7 +17,7 @@ FACET_FIELDS = settings.FACET_FIELDS['contact']
 from core.models.utils import COMPANY
 
 @require_http_methods(["DELETE"])
-@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'project', (Project, 'pk', 'pk'))
 def remove_contact_from_project(request, pk, contact_id):
     contact = get_object_or_404(Contact, pk=contact_id)
     project = get_object_or_404(Project, pk=pk)
@@ -25,7 +25,7 @@ def remove_contact_from_project(request, pk, contact_id):
     return HttpResponse("Contact deleted")
 
 
-@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'project', (Project, 'pk', 'pk'))
 def pick_contact_for_project(request, pk):
     if request.method == 'POST':
         form = PickContactForm(request.POST)
@@ -46,7 +46,7 @@ def pick_contact_for_project(request, pk):
     return render(request, 'modal_form.html', {'form': form, 'submit_url': request.get_full_path()})
 
 
-@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'project', (Project, 'pk', 'pk'))
 def add_contact_to_project(request, pk):
     if request.method == 'POST':
         form = ContactForm(request.POST)
@@ -145,7 +145,8 @@ class ContactDelete(CheckerMixin, DeleteView):
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('contacts')
     success_message = "Contact was deleted successfully."
-    permission_required = 'core.delete_contact'
+    permission_required = Permissions.DELETE
+    permission_target = 'contact'
 
     def get_context_data(self, **kwargs):
         context = super(ContactDelete, self).get_context_data(**kwargs)

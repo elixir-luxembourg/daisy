@@ -85,7 +85,7 @@ class ShareEditView(CheckerMixin, UpdateView, AjaxViewMixin):
 
 
 @require_http_methods(["DELETE"])
-@permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
+@permission_required(Permissions.EDIT, 'dataset', (Dataset, 'pk', 'dataset_pk'))
 def remove_share(request, dataset_pk, share_pk):
     share = get_object_or_404(Share, pk=share_pk)
     dataset = get_object_or_404(Dataset, pk=dataset_pk)

@@ -8,6 +8,7 @@ from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from core.forms import CohortForm, CohortFormEdit
 from core.models import Cohort
 from core.permissions.checker import CheckerMixin
+from core.constants import Permissions
 from . import facet_view_utils
 
 
@@ -99,7 +100,8 @@ class CohortDelete(CheckerMixin, DeleteView):
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('cohorts')
     success_message = "Cohort was deleted successfully."
-    permission_required = 'core.delete_cohort'
+    permission_required = Permissions.DELETE
+    permission_target = 'cohort'
 
     def get_context_data(self, **kwargs):
         context = super(CohortDelete, self).get_context_data(**kwargs)

@@ -107,11 +107,6 @@ class ContractChecker(AbstractChecker):
     """
 
     def _check(self, perm: str, obj: "Contract", **kwargs) -> bool:
-        groups = self.checker.user.groups.all()
-        if Group.objects.get(name='daisy-data-steward') in groups:
-            print(self.checker.user.get_all_permissions())
-            print(f'Checking if user has permission {perm} on object {obj}: {self.checker.has_perm(perm, obj)}')
-
         if self.checker.has_perm(perm, obj):
             return True
         no_follow = kwargs.pop('nofollow', False)
@@ -165,6 +160,10 @@ class DocumentChecker(AbstractChecker):
     """
 
     def check(self, perm: str, obj: "Document", **kwargs) -> bool:
+        if perm.endswith('document'):
+            target = obj.content_object.__class__.__name__.lower()
+            perm = perm.replace('document', target)
+
         perm = self._set_perm(perm)
         # does not check global perm for document.
         return self._check(perm, obj, **kwargs)
@@ -259,7 +258,7 @@ class AutoChecker(AbstractChecker):
             return all(value)
 
 
-def permission_required(perm, lookup_variables):
+def permission_required(perm, target, lookup_variables):
     """
     Simplified version of https://github.com/django-guardian/django-guardian/blob/master/guardian/decorators.py
     """
@@ -276,8 +275,10 @@ def permission_required(perm, lookup_variables):
                     raise DaisyError("Argument '%s' was not passed into view function" % view_arg)
                 lookup_dict[lookup] = kwargs[view_arg]
             obj = get_object_or_404(model, **lookup_dict)
+
             # check permission
-            if not AutoChecker(request.user).check(perm, obj):
+            has_perm = AutoChecker(request.user).check(f'core.{perm.value}_{target}', obj)
+            if not AutoChecker(request.user).check(f'core.{perm.value}_{target}', obj):
                 raise PermissionDenied
             return view_func(request, *args, **kwargs)
 
@@ -311,7 +312,7 @@ def permission_required_from_content_type(perm, content_type_attr, object_id_att
             except ObjectDoesNotExist:
                 raise Http404
             # check permission
-            if not AutoChecker(request.user).check(perm, obj):
+            if not AutoChecker(request.user).check(f'core.{perm.value}_{obj.__class__.__name__.lower()}', obj):
                 raise PermissionDenied
             return view_func(request, *args, **kwargs)
 
@@ -325,6 +326,7 @@ class CheckerMixin(PermissionRequiredMixin):
     A view mixin that verifies if the current logged-in user has the specified permission
     using our checker methods.
     """
+    permission_target = None
 
     def check_permissions(self, request):
         """
@@ -333,8 +335,12 @@ class CheckerMixin(PermissionRequiredMixin):
 
         :param request: Original request.
         """
+        if self.permission_target is None:
+            raise ValueError('A permission target must be set to test permissions.')
+
         obj = self.get_permission_object()
-        has_permission = AutoChecker(request.user).check(self.permission_required, obj)
+        perm = f'core.{self.permission_required.value}_{self.permission_target}'
+        has_permission = AutoChecker(request.user).check(perm, obj)
         if not has_permission:
             raise PermissionDenied()
         return None

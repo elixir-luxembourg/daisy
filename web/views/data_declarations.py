@@ -51,7 +51,7 @@ def data_declarations_add_sub_form(request):
     return render(request, 'data_declarations/' + template, context=context_form)
 
 
-@permission_required(f'core.{Permissions.EDIT.value}_dataset', (Dataset, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'dataset', (Dataset, 'pk', 'pk'))
 def data_declarations_add(request, pk):
     template_name = 'data_declarations/data_declaration_form.html'
     form_class = DataDeclarationForm
@@ -162,14 +162,14 @@ def data_dec_paginated_search(request):
 
 
 @require_http_methods(["DELETE"])
-@permission_required(f'core.{Permissions.EDIT.value}_dataset', (DataDeclaration, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'dataset', (DataDeclaration, 'pk', 'pk'))
 def data_declarations_delete(request, pk):
     data_declaration = get_object_or_404(DataDeclaration, id=pk)
     data_declaration.delete()
     return HttpResponse("Data declaration deleted")
 
 
-@permission_required(f'core.{Permissions.EDIT.value}_dataset', (DataDeclaration, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'dataset', (DataDeclaration, 'pk', 'pk'))
 def data_declarations_duplicate(request, pk):
     data_declaration = get_object_or_404(DataDeclaration, id=pk)
     new_data_declaration = DataDeclaration()
@@ -204,7 +204,8 @@ class DatadeclarationDetailView(DetailView):
 class DatadeclarationEditView(CheckerMixin, UpdateView):
     model = DataDeclaration
     template_name = 'data_declarations/data_declaration_form_edit.html'
-    permission_required = f'core.{Permissions.EDIT.value}_dataset'
+    permission_required = Permissions.EDIT
+    permission_target = 'dataset'
 
     
     def get(self, request, *args, **kwargs):

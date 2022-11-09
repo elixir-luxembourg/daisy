@@ -57,7 +57,8 @@ class ContractEditView(CheckerMixin, UpdateView):
     model = Contract
     template_name = 'contracts/contract_form_edit.html'
     form_class = ContractFormEdit
-    permission_required = f'core.{Permissions.EDIT.value}_contract'
+    permission_required = Permissions.EDIT
+    permission_target = 'contract'
 
     def dispatch(self, request, *args, **kwargs):
         the_contract = Contract.objects.get(id=kwargs.get('pk'))
@@ -111,7 +112,8 @@ class PartnerRoleCreateView(CreateView):
     model = PartnerRole
     template_name = 'contracts/partner_role_form.html'
     form_class = PartnerRoleForm
-    permission_required = f'core.{Permissions.EDIT.value}_contract'
+    permission_required = Permissions.EDIT
+    permission_target = 'contract'
 
     def dispatch(self, request, *args, **kwargs):
         self.contract = Contract.objects.get(id=kwargs.get('pk'))
@@ -144,11 +146,12 @@ class PartnerRoleCreateView(CreateView):
         return response
 
     
-class PartnerRoleEditView(UpdateView):
+class PartnerRoleEditView(CheckerMixin, UpdateView):
     model = PartnerRole
     template_name = 'contracts/partner_role_form.html'
     form_class = PartnerRoleForm
-    permission_required = f'core.{Permissions.EDIT.value}_contract'
+    permission_required = Permissions.EDIT
+    permission_target = 'contract'
 
     def dispatch(self, request, *args, **kwargs):
         self.contract = self.get_object().contract
@@ -268,7 +271,8 @@ class ContractDelete(CheckerMixin, DeleteView):
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('contracts')
     success_message = "Contract was deleted successfully."
-    permission_required = f'core.{Permissions.DELETE.value}_contract'
+    permission_required = Permissions.DELETE
+    permission_target = 'contract'
 
     def get_context_data(self, **kwargs):
         context = super(ContractDelete, self).get_context_data(**kwargs)

@@ -66,7 +66,8 @@ class DatasetEditView(CheckerMixin, UpdateView):
     model = Dataset
     template_name = 'datasets/dataset_form_edit.html'
     form_class = DatasetFormEdit
-    permission_required = f'core.{Permissions.EDIT.value}_dataset'
+    permission_required = Permissions.EDIT
+    permission_target = 'dataset'
 
 
     def get_initial(self):
@@ -121,7 +122,8 @@ class DatasetDelete(CheckerMixin, DeleteView):
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('datasets')
     success_message = "Dataset was deleted successfully."
-    permission_required = f'core.{Permissions.DELETE.value}_dataset'
+    permission_required = Permissions.DELETE
+    permission_target = 'dataset'
 
     def get_context_data(self, **kwargs):
         context = super(DatasetDelete, self).get_context_data(**kwargs)
