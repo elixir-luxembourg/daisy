@@ -16,7 +16,7 @@ from django.views.generic import (
     DeleteView,
 )
 
-from core import constants
+from core.constants import Permissions
 from core.forms.user import UserForm, UserEditFormActiveDirectory, UserEditFormManual
 from core.models import User
 from core.models.project import ProjectUserObjectPermission
@@ -106,7 +106,9 @@ class UserDetailView(DetailView):
         }
         context["project_perms"] = project_perms
         context["dataset_perms"] = dataset_perms
-        context["perms_const"] = list(constants.Permissions)
+        context["ds_perms_const"] = list(map(lambda x: f"{x}_dataset", [p.value for p in Permissions]))
+        context["pj_perms_const"] = list(map(lambda x: f"{x}_project", [p.value for p in Permissions]))
+        context["perms_const"] = list(Permissions)
         return context
 
 

@@ -28,7 +28,7 @@
     <div class="row mt-4">
         <div class="card col">
             <div class="card-body">
-                <h2 class="card-title">Edit Permissions of {{ object.title }} {{ selection }}</h2>
+                <h2 class="card-title">Edit Permissions of {{ selection }} {{ object.title }}</h2>
                 <div id="form-container" class="card-text">
                     {% include '_includes/permission_form.html' %}
                 </div>
@@ -39,10 +39,13 @@
     <div class="row mt-4">
         <div class="card col">
             <div class="card-body">
-                <h2 class="card-title">View Inherited Permissions from <a href="{% url 'project' pk=object.project.id %}">{{ object.project }}</a></h2>
+                <h2 class="card-title">View Inherited Permissions from project <a href="{% url 'project' pk=object.project.id %}">{{ object.project }}</a></h2>
                 <div class="mt-4">
-                    {% include '_includes/permission_table.html' with obj_name='User' perms_const=perms_const obj_perms=inherited_permissions %}
+                    {% include '_includes/permission_table.html' with obj_name='User' obj_perms_const=pj_perms_const obj_perms=inherited_permissions %}
                 </div>
+            </div>
+            <div class="card-footer">
+                You can change the permissions on the <a href="{% url 'permission_project' pk=object.project.id %}">project permission edit page</a>.
             </div>
         </div>
     </div>
@@ -101,8 +104,8 @@
             $('#formset tbody tr').formset({
                 prefix: 'form',                  // The form prefix for your django formset
                 formTemplate: null,              // The jQuery selection cloned to generate new form instances
-                addText: 'add another',          // Text for the add link
-                deleteText: 'remove',            // Text for the delete link
+                addText: '<i class="material-icons">add</i>',          // Text for the add link
+                deleteText: '<i class="material-icons">delete</i>',            // Text for the delete link
                 addCssClass: 'add-row',          // CSS class applied to the add link
                 deleteCssClass: 'fas fa-trash',    // CSS class applied to the delete link
                 formCssClass: 'dynamic-form',    // CSS class applied to each form in a formset
@@ -117,6 +120,8 @@
             var select2 = $('#form-container select').select2({
                 width: '100%',
             });
+            $('#users thead th:last').html(" ");
+            $('#permissions tr:first').append('<th scope="col" class="col-sm-1 text-center"></th>')
         });
 
     </script>

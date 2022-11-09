@@ -51,6 +51,7 @@ def index(request, selection, pk):
         'edit_url': f"{selection}_edit",
         'local_custodians': local_custodians,
         'local_vips': local_vips,
+        'pj_perms_const': list(map(lambda x: f"{x}_project", [p.value for p in Permissions])),
         'perms_const': list(Permissions),
     }
     # get inherited permissions from the parent project
