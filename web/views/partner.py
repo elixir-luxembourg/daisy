@@ -6,12 +6,14 @@ from django.urls import reverse_lazy
 from django.utils.module_loading import import_string
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 
+import core.models.data_declaration
 from . import facet_view_utils
 from core.forms import PartnerForm
 from core.forms.partner import PartnerFormEdit
 from core.models import Partner
 from core.models.utils import COMPANY
-from core.permissions import permission_required
+from core.permissions import permission_required, CheckerMixin
+from core.constants import Permissions
 from web.views.user import superuser_required
 from web.views.utils import AjaxViewMixin
 
@@ -118,11 +120,13 @@ def unpublish_partner(request, pk):
     return HttpResponseRedirect(reverse_lazy('partner', kwargs={'pk': pk}))
 
 
-class PartnerDelete(DeleteView):
+class PartnerDelete(CheckerMixin, DeleteView):
     model = Partner
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('partners')
     success_message = "Partner was deleted successfully."
+    permission_required = Permissions.DELETE
+    permission_target = 'partner'
 
     def get_context_data(self, **kwargs):
         context = super(PartnerDelete, self).get_context_data(**kwargs)
