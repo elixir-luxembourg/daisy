@@ -1,4 +1,3 @@
-from web.views.user import superuser_required
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -9,11 +8,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 
-from core import constants
-from core.constants import Permissions
+from core.constants import Permissions, Groups
 from core.forms.contract import ContractForm
 from core.forms.dataset import DatasetForm
-from core.forms.document import DocumentForm
 from core.forms.project import ProjectForm, DatasetSelection
 from core.models import Project, Contract
 from core.permissions import permission_required
@@ -70,7 +67,7 @@ class ProjectCreateView(CreateView):
         # get user from kwargs and check if user is pi or not
         # automatically add him to the responsible people if pi
         kwargs = super().get_form_kwargs()
-        if self.request.user.is_part_of(constants.Groups.VIP) and 'data' in kwargs:
+        if self.request.user.is_part_of(Groups.VIP) and 'data' in kwargs:
             data = kwargs['data'].copy()
             if 'local_custodians' not in data or str(self.request.user.pk) not in data['local_custodians']:
                 data.update({'local_custodians': str(self.request.user.pk)})
@@ -113,7 +110,6 @@ class ProjectDetailView(DetailView):
         context['object_id'] = self.object.pk
         context['datafiles'] = [d for d in self.object.legal_documents.all()]
 
-
         return context
 
 
@@ -122,7 +118,8 @@ class ProjectEditView(CheckerMixin, UpdateView):
     form_class = ProjectForm
     template_name = 'projects/project_form_edit.html'
 
-    permission_required = constants.Permissions.EDIT
+    permission_required = Permissions.EDIT
+    permission_target = 'project'
 
     def get_success_url(self):
         return reverse_lazy('project', kwargs={'pk': self.object.id})
@@ -259,7 +256,8 @@ class ProjectDelete(CheckerMixin, DeleteView):
     success_url = reverse_lazy('projects')
     action_url = 'project_delete'
     success_message = "Project was deleted successfully."
-    permission_required = constants.Permissions.DELETE
+    permission_required = Permissions.DELETE
+    permission_target = 'project'
 
     def get_context_data(self, **kwargs):
         context = super(ProjectDelete, self).get_context_data(**kwargs)
