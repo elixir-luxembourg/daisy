@@ -27,6 +27,7 @@ if TYPE_CHECKING:
     from core.models.legal_basis import LegalBasis
     from core.models.partner import Partner
     from core.models.data_declaration import DataDeclaration
+    from core.models.share import Share
     from core.models.user import User
     from core.models.contact import Contact
 
@@ -203,7 +204,7 @@ class UserChecker(AbstractChecker):
 
 
 class DatasetEntityChecker(DatasetChecker):
-    def check(self, perm: str, obj: Union["DataDeclaration", "LegalBasis"], **kwargs) -> bool:
+    def check(self, perm: str, obj: Union["DataDeclaration", "LegalBasis", "Share"], **kwargs) -> bool:
         return super().check(perm, obj.dataset, **kwargs)
 
 

@@ -17,10 +17,18 @@ from web.views.utils import AjaxViewMixin
 log = DaisyLogger(__name__)
 
 
-class ShareCreateView(CreateView, AjaxViewMixin):
+class ShareCreateView(CheckerMixin, CreateView, AjaxViewMixin):
     model = Share
     template_name = 'shares/share_form.html'
     form_class = ShareForm
+    permission_required = Permissions.EDIT
+    permission_target = 'dataset'
+
+    def check_permissions(self, request):
+        edited_dataset_pk = request.resolver_match.kwargs['dataset_pk']
+        self.permission_object = Dataset.objects.get(pk=edited_dataset_pk)
+        super().check_permissions(request)
+        super().check_permissions(request)
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -60,6 +68,7 @@ class ShareEditView(CheckerMixin, UpdateView, AjaxViewMixin):
     template_name = 'shares/share_form.html'
     form_class = ShareEditForm
     permission_required = Permissions.EDIT
+    permission_target = 'dataset'
 
     def get_permission_object(self):
         obj = super().get_permission_object()
