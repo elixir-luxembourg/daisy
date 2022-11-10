@@ -103,14 +103,20 @@ def test_object_global_permissions_for_admin_groups(group, klass_name, attribute
 # FIXME: To delete.
 group_permissions_expectations = []  # tuples of ( group name, has PROTECTED permission)
 for group_name, permission_mapping in GROUP_PERMISSIONS.items():
-    permissions = permission_mapping.get('core.Project', [])
     group_permissions_expectations.append(
-        (group_name, f"core.{constants.Permissions.PROTECTED.value}_project" in permissions)
+        (
+            group_name,
+            {
+                model.split('.')[1].lower(): model.replace('.', f'.{constants.Permissions.PROTECTED.value}_').lower() in permissions
+                for model, permissions in permission_mapping.items()
+            }
+        )
     )
 
 
 @pytest.mark.parametrize('Factory,attribute', [
     (DatasetDocumentFactory, 'dataset'),
+    (ProjectDocumentFactory, 'project'),
     (ContractDocumentFactory, 'contract'),
 ])
 @pytest.mark.parametrize('group,expected', group_permissions_expectations)
@@ -125,11 +131,12 @@ def test_global_document_perms(group, expected, Factory, attribute, permissions)
     group = Group.objects.get(name=group.value)
     contract = ContractFactory()
     dataset = DatasetFactory()
-    entities = {"contract": contract, "dataset": dataset}
+    project = ProjectFactory()
+    entities = {"contract": contract, "project": project, "dataset": dataset}
     document = Factory(content_object=entities.get(attribute))
     user = UserFactory.create(groups=[group])
     assert document.content_object
-    assert expected == user.has_permission_on_object(f'core.{constants.Permissions.PROTECTED.value}_{attribute}', document)
+    assert expected.get(attribute, False) == user.has_permission_on_object(f'core.{constants.Permissions.PROTECTED.value}_{attribute}', document)
 
 
 @pytest.mark.parametrize('attribute', ['project', 'dataset', 'contract'])

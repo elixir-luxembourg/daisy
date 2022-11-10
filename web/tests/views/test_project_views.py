@@ -1,3 +1,4 @@
+import os
 import pytest
 from typing import Optional
 from django.shortcuts import reverse
@@ -125,7 +126,8 @@ def test_project_view_protected_documents(permissions, group):
 
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
 def test_project_edit_protected_documents(permissions, group):
-    document = ProjectDocumentFactory()
+    document = ProjectDocumentFactory.create(with_file=True)
+    print(f"Document is saved in {document.content.name}")
     project = document.content_object
     user = UserFactory(groups=[group()])
 
@@ -151,5 +153,8 @@ def test_project_edit_protected_documents(permissions, group):
         assert b'<div class="ml-1 float-right btn-group" id="add-project-document">' in response.content
         assert b'<th id="document-action-head" style="width:7em">Actions</th>' in response.content
         assert b'<td id="document-action">' in response.content
+
+    print(f"Removing document from {document.content.name}")
+    os.remove(document.content.name)
 
 

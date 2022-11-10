@@ -1,6 +1,4 @@
 # configure factories from https://factoryboy.readthedocs.io
-import os.path
-
 import factory
 from tempfile import NamedTemporaryFile
 from django.conf import settings
@@ -380,15 +378,23 @@ class DatasetNotificationFactory(AbstractNotificationFactory):
 class AbstractDocumentFactory(factory.django.DjangoModelFactory):
     """
     Abstract class for document factories
+
+    Can be created with a temporary file when needed by using the parameter `with_file=True`
+    This file is not deleted automatically and must be removed manually. For example with `os.remove(object.content.name)`
+    where `object` is the document created by this factory.
     """
     class Meta:
-        exclude = ['content_object, create_tmp_file']
+        exclude = ['content_object']
         abstract = True
 
-    content = NamedTemporaryFile(mode='r+b', dir='.', delete=False).name
+    content = "Some content"
     object_id = factory.SelfAttribute('content_object.id')
     content_type = factory.LazyAttribute(lambda o: ContentType.objects.get_for_model(o.content_object))
 
+    class Params:
+        with_file = factory.Trait(
+            content=factory.LazyAttribute(lambda o: NamedTemporaryFile(mode='r+b', dir='.', delete=False).name),
+        )
 
 class DatasetDocumentFactory(AbstractDocumentFactory):
     """

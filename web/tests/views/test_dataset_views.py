@@ -1,3 +1,4 @@
+import os
 import pytest
 from typing import Optional
 from django.shortcuts import reverse
@@ -88,7 +89,7 @@ def test_dataset_view_protected_documents(permissions, group):
 @pytest.mark.skip("Dataset templates do not display documents")
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
 def test_dataset_edit_protected_documents(permissions, group):
-    document = DatasetDocumentFactory()
+    document = DatasetDocumentFactory(with_file=True)
     dataset = document.content_object
 
     user = UserFactory(groups=[group()])
@@ -116,3 +117,4 @@ def test_dataset_edit_protected_documents(permissions, group):
         assert b'<th id="document-action-head" style="width:7em">Actions</th>' in response.content
         assert b'<td id="document-action">' in response.content
 
+    os.remove(document.content.name)

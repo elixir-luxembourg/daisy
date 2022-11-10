@@ -1,3 +1,4 @@
+import os
 import pytest
 from typing import Optional
 from django.shortcuts import reverse
@@ -86,7 +87,7 @@ def test_contract_view_protected_documents(permissions, group):
 
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
 def test_contract_edit_protected_documents(permissions, group):
-    document = ContractDocumentFactory()
+    document = ContractDocumentFactory(with_file=True)
     contract = document.content_object
 
     user = UserFactory(groups=[group()])
@@ -112,3 +113,5 @@ def test_contract_edit_protected_documents(permissions, group):
         assert b'<div class="ml-1 float-right btn-group" id="add-contract-document">' in response.content
         assert b'<th id="document-action-head" style="width:7em">Actions</th>' in response.content
         assert b'<td id="document-action">' in response.content
+
+    os.remove(document.content.name)
