@@ -8,6 +8,7 @@ from django.core.exceptions import PermissionDenied
 
 from core.forms.access import AccessForm, AccessEditForm
 from core.models import Access, Dataset
+from core.models.access import StatusChoices
 from core.constants import Groups, Permissions
 from core.permissions import CheckerMixin
 from core.permissions import permission_required
@@ -63,6 +64,7 @@ class AccessCreateView(CreateView, AjaxViewMixin):
             self.object.dataset = self.dataset
         if not self.request.user.is_anonymous:
             self.object.created_by = self.request.user
+        self.object.status = StatusChoices.precreated
         self.object.save()
         messages.add_message(self.request, messages.SUCCESS, 'Access created')
         return super().form_valid(form)
@@ -90,6 +92,10 @@ class AccessEditView(CheckerMixin, UpdateView, AjaxViewMixin):
         """If the form is valid, check that remark is updated then save the associated model and add to the dataset"""
         if "access_notes" not in form.changed_data:
             form.add_error("access_notes", "Changes must be justified. Please update this field")
+            return super().form_invalid(form)
+
+        if StatusChoices.active.name in form.data.get("status") and not self.request.user.is_part_of(Groups.DATA_STEWARD.value):
+            form.add_error("status", "Only data stewards are allowed to activate accesses, please contact one")
             return super().form_invalid(form)
 
         self.object = form.save(commit=False)
