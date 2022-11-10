@@ -1,5 +1,8 @@
 # configure factories from https://factoryboy.readthedocs.io
+import os.path
+
 import factory
+from tempfile import NamedTemporaryFile
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
@@ -372,16 +375,17 @@ class DatasetNotificationFactory(AbstractNotificationFactory):
 
 
 ## Documents
+
+
 class AbstractDocumentFactory(factory.django.DjangoModelFactory):
     """
     Abstract class for document factories
     """
-
     class Meta:
-        exclude = ['content_object']
+        exclude = ['content_object, create_tmp_file']
         abstract = True
 
-    content = 'Some content'
+    content = NamedTemporaryFile(mode='r+b', dir='.', delete=False).name
     object_id = factory.SelfAttribute('content_object.id')
     content_type = factory.LazyAttribute(lambda o: ContentType.objects.get_for_model(o.content_object))
 

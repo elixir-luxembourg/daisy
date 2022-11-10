@@ -1,22 +1,19 @@
 import pytest
-from urllib.parse import urlparse
 from django.shortcuts import reverse
 from django.test.client import Client
 
 from test.factories import VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup, UserFactory
 from core.models.user import User
-from elixir_daisy import settings
 
 def check_user_views_permissions(url: str, user: User):
     client = Client()
-    client.login(username=user.username, password=user.password)
+    assert client.login(username=user.username, password='test-user' if not user.is_superuser else 'password'), "Login failed"
+
     response = client.get(url)
     if user.is_superuser:
         assert response.status_code != 403
     else:
-        assert response.status_code == 302
-        url_components = urlparse(response.url)
-        assert url_components.path.startswith(f'/{settings.LOGIN_URL}/')
+        assert response.status_code == 403
 
 
 
@@ -26,7 +23,6 @@ def check_user_views_permissions(url: str, user: User):
     [
         ('users', True),
         ('users_add', True),
-        ('users_change_password', True),
         ('user', True),
         ('user_delete', True),
         ('user_edit', True),

@@ -293,25 +293,28 @@
 
     </div>
     {# DOCUMENTS #}
-    <div class="row mt-4">
-        <div class="card col-md-12">
-            <div class="card-body">
-                <div class="ml-1 float-right btn-group">
-                    <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button" id="adddocument" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Add document to project">
-                        <i class="material-icons">add</i>
-                    </button>
-                    <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="adddocument">
-
-                        <button data-toggle="modal" data-target="#modal" data-modal-title="Add document to project" data-ajax-url="{% url 'document_add' object_id=object_id content_type=content_type %}" class="dropdown-item" type="button" title="Add document to project">
-                            Upload new document
+    {% if user|can_see_protected:project %}
+        <div class="row mt-4" id="documents-card">
+            <div class="card col-md-12">
+                <div class="card-body">
+                    {% if can_edit %}
+                    <div class="ml-1 float-right btn-group" id="add-project-document">
+                        <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button" id="adddocument" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Add document to project">
+                            <i class="material-icons">add</i>
                         </button>
-                    </div>
-                </div>
+                        <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="adddocument">
 
-                {% include "_includes/documents_table.html" %}
+                            <button data-toggle="modal" data-target="#modal" data-modal-title="Add document to project" data-ajax-url="{% url 'document_add' object_id=object_id content_type=content_type %}" class="dropdown-item" type="button" title="Add document to project">
+                                Upload new document
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% include "_includes/documents_table.html" %}
+                </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 
     <div class="row mt-4">
         {# PUBLICATION #}

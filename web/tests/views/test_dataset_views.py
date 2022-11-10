@@ -1,8 +1,9 @@
 import pytest
 from typing import Optional
 from django.shortcuts import reverse
+from django.test.client import Client
 
-from test.factories import VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup, DatasetFactory, UserFactory
+from test.factories import VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup, DatasetFactory, UserFactory, DatasetDocumentFactory
 from core.constants import Permissions
 from core.models.user import User
 from core.models.dataset import Dataset
@@ -58,6 +59,60 @@ def test_dataset_views_permissions(permissions, group, url_name, action):
     check_dataset_views_permissions(url, user, action, dataset)
 
 # FIXME
-# @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
-def test_dataset_view_protected_documents(permissions):
-    assert False
+@pytest.mark.skip("Dataset templates do not display documents")
+@pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
+def test_dataset_view_protected_documents(permissions, group):
+    dataset = DatasetFactory()
+    user = UserFactory(groups=[group()])
+
+    client = Client()
+    client.login(username=user.username, password=user.password)
+
+    url = reverse('dataset', kwargs={"pk": dataset.pk})
+    response = client.get(url, follow=True)
+
+    if user.is_part_of(DataStewardGroup()) or user.is_part_of(AuditorGroup()):
+        assert b'<div class="row mt-4" id="documents-card">' in response.content
+        assert b'<h2 class="card-title"><span><i class="material-icons">link</i></span> Documents</h2>' in response.content
+    else:
+        assert b'<div class="row mt-4" id="documents-card">' not in response.content
+        assert b'<h2 class="card-title"><span><i class="material-icons">link</i></span> Documents</h2>' not in response.content
+
+    if user.is_part_of(VIPGroup()):
+        dataset.local_custodians.set([user])
+        response = client.get(url, follow=True)
+        assert b'<div class="row mt-4" id="documents-card">' in response.content
+        assert b'<h2 class="card-title"><span><i class="material-icons">link</i></span> Documents</h2>' in response.content
+
+
+@pytest.mark.skip("Dataset templates do not display documents")
+@pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
+def test_dataset_edit_protected_documents(permissions, group):
+    document = DatasetDocumentFactory()
+    dataset = document.content_object
+
+    user = UserFactory(groups=[group()])
+
+    client = Client()
+    assert client.login(username=user.username, password='test-user'), "Login failed"
+
+    url = reverse('dataset', kwargs={"pk": dataset.pk})
+    response = client.get(url, follow=True)
+
+    if user.is_part_of(DataStewardGroup()):
+        assert b'<div class="ml-1 float-right btn-group" id="add-dataset-document">' in response.content
+        assert b'<th id="document-action-head" style="width:7em">Actions</th>' in response.content
+        assert b'<td id="document-action">' in response.content
+
+    else:
+        assert b'<div class="ml-1 float-right btn-group" id="add-dataset-document">' not in response.content
+        assert b'<th id="document-action-head" style="width:7em">Actions</th>' not in response.content
+        assert b'<td id="document-action">' not in response.content
+
+    if user.is_part_of(VIPGroup()):
+        dataset.local_custodians.set([user])
+        response = client.get(url, follow=True)
+        assert b'<div class="ml-1 float-right btn-group" id="add-dataset-document">' in response.content
+        assert b'<th id="document-action-head" style="width:7em">Actions</th>' in response.content
+        assert b'<td id="document-action">' in response.content
+

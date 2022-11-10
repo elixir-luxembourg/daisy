@@ -336,10 +336,12 @@ class CheckerMixin(PermissionRequiredMixin):
 
         :param request: Original request.
         """
-        if self.permission_target is None:
-            raise ValueError('A permission target must be set to test permissions.')
-
         obj = self.get_permission_object()
+
+        if self.permission_target is None:
+            logger.warning(f'No permission target defined, using the object class name')
+            self.permission_target = obj.__class__.__name__.lower()
+
         perm = f'core.{self.permission_required.value}_{self.permission_target}'
         has_permission = AutoChecker(request.user).check(perm, obj)
         if not has_permission:

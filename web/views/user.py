@@ -144,14 +144,15 @@ class UserPasswordChange(PasswordChangeView):
         return reverse_lazy("login")
 
 
-class UserDelete(CheckerMixin, DeleteView):
+@superuser_required()
+class UserDelete(DeleteView):
     model = User
     template_name = "../templates/generic_confirm_delete.html"
     success_url = reverse_lazy("users")
     success_message = "User was deleted successfully."
 
     def get_context_data(self, **kwargs):
-        context = super(UserDelete, self).get_context_data(**kwargs)
+        context = {}
         context["action_url"] = "user_delete"
         context["id"] = self.object.id
         return context

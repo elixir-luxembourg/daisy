@@ -63,7 +63,7 @@ class Document(CoreModel):
         Return the name of the files without the path relative to MEDIA_ROOT.
         Also remove the id prefix of the document.
         """
-        return  ''.join(os.path.basename(self.content.path).split('_')[1:])
+        return ''.join(os.path.basename(self.content.path).split('_')[1:])
 
     @property
     def size(self):

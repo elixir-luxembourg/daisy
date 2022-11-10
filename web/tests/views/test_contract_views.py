@@ -1,8 +1,9 @@
 import pytest
 from typing import Optional
 from django.shortcuts import reverse
+from django.test.client import Client
 
-from test.factories import VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup, ContractFactory, UserFactory
+from test.factories import VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup, ContractFactory, UserFactory, ContractDocumentFactory
 from core.constants import Permissions
 from core.models.user import User
 from core.models.contract import Contract
@@ -58,6 +59,56 @@ def test_contract_views_permissions(permissions, group, url_name, perm):
 
 
 # FIXME
-# @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
-def test_contract_view_protected_documents(permissions):
-    assert False
+@pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
+def test_contract_view_protected_documents(permissions, group):
+    contract = ContractFactory()
+    user = UserFactory(groups=[group()])
+
+    client = Client()
+    assert client.login(username=user.username, password='test-user'), "Login failed"
+
+    url = reverse('contract', kwargs={"pk": contract.pk})
+    response = client.get(url, follow=True)
+
+    if user.is_part_of(VIPGroup()):
+        assert b'<div class="row mt-4" id="documents-card">' not in response.content
+        assert b'<h2 class="carbd-title"><span><i class="material-icons">link</i></span> Documents</h2>' not in response.content
+
+        contract.local_custodians.set([user])
+        response = client.get(url, follow=True)
+        assert b'<div class="row mt-4" id="documents-card">' in response.content
+        assert b'<h2 class="card-title"><span><i class="material-icons">link</i></span> Documents</h2>' in response.content
+
+    else:
+        assert b'<div class="row mt-4" id="documents-card">' in response.content
+        assert b'<h2 class="card-title"><span><i class="material-icons">link</i></span> Documents</h2>' in response.content
+
+
+@pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
+def test_contract_edit_protected_documents(permissions, group):
+    document = ContractDocumentFactory()
+    contract = document.content_object
+
+    user = UserFactory(groups=[group()])
+
+    client = Client()
+    assert client.login(username=user.username, password='test-user'), "Login failed"
+
+    url = reverse('contract', kwargs={"pk": contract.pk})
+    response = client.get(url, follow=True)
+
+    if user.is_part_of(DataStewardGroup(), LegalGroup()):
+        assert b'<div class="ml-1 float-right btn-group" id="add-contract-document">' in response.content
+        assert b'<th id="document-action-head" style="width:7em">Actions</th>' in response.content
+        assert b'<td id="document-action">' in response.content
+    else:
+        assert b'<div class="ml-1 float-right btn-group" id="add-contract-document">' not in response.content
+        assert b'<th id="document-action-head" style="width:7em">Actions</th>' not in response.content
+        assert b'<td id="document-action">' not in response.content
+
+    if user.is_part_of(VIPGroup()):
+        contract.local_custodians.set([user])
+        response = client.get(url, follow=True)
+        assert b'<div class="ml-1 float-right btn-group" id="add-contract-document">' in response.content
+        assert b'<th id="document-action-head" style="width:7em">Actions</th>' in response.content
+        assert b'<td id="document-action">' in response.content

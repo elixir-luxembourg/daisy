@@ -31,7 +31,7 @@ def test_entity_default_permissions(permissions, factory, group):
 
     # assert user.has_permission_on_object(constants.Permissions.VIEW, entity)
 
-    if user.is_part_of(VIPGroup.name):
+    if user.is_part_of(VIPGroup()):
         assert not user.has_permission_on_object(f'core.{constants.Permissions.EDIT.value}_{entity.__class__.__name__.lower()}', entity)
         assert not user.has_permission_on_object(f'core.{constants.Permissions.PROTECTED.value}_{entity.__class__.__name__.lower()}', entity)
         assert not user.has_permission_on_object(f'core.{constants.Permissions.ADMIN.value}_{entity.__class__.__name__.lower()}', entity)
@@ -45,20 +45,20 @@ def test_entity_default_permissions(permissions, factory, group):
         assert user.has_permission_on_object(f'core.{constants.Permissions.ADMIN.value}_{entity.__class__.__name__.lower()}', entity)
         assert user.has_permission_on_object(f'core.{constants.Permissions.DELETE.value}_{entity.__class__.__name__.lower()}', entity)
 
-    elif user.is_part_of(AuditorGroup.name):
+    elif user.is_part_of(AuditorGroup()):
         assert user.has_permission_on_object(f'core.{constants.Permissions.PROTECTED.value}_{entity.__class__.__name__.lower()}', entity)
         assert not user.has_permission_on_object(f'core.{constants.Permissions.EDIT.value}_{entity.__class__.__name__.lower()}', entity)
         assert not user.has_permission_on_object(f'core.{constants.Permissions.ADMIN.value}_{entity.__class__.__name__.lower()}', entity)
         assert not user.has_permission_on_object(f'core.{constants.Permissions.DELETE.value}_{entity.__class__.__name__.lower()}', entity)
 
-    elif user.is_part_of(LegalGroup.name) and factory == ContractFactory:
+    elif user.is_part_of(LegalGroup()) and factory == ContractFactory:
         assert user.has_permission_on_object(f'core.{constants.Permissions.PROTECTED.value}_{entity.__class__.__name__.lower()}', entity)
         assert user.has_permission_on_object(f'core.{constants.Permissions.EDIT.value}_{entity.__class__.__name__.lower()}', entity)
 
         assert not user.has_permission_on_object(f'core.{constants.Permissions.ADMIN.value}_{entity.__class__.__name__.lower()}', entity)
         assert not user.has_permission_on_object(f'core.{constants.Permissions.DELETE.value}_{entity.__class__.__name__.lower()}', entity)
 
-    elif user.is_part_of(DataStewardGroup.name):
+    elif user.is_part_of(DataStewardGroup()):
         assert user.has_permission_on_object(f'core.{constants.Permissions.EDIT.value}_{entity.__class__.__name__.lower()}', entity)
         assert user.has_permission_on_object(f'core.{constants.Permissions.PROTECTED.value}_{entity.__class__.__name__.lower()}', entity)
         assert user.has_permission_on_object(f'core.{constants.Permissions.ADMIN.value}_{entity.__class__.__name__.lower()}', entity)
@@ -184,7 +184,7 @@ def test_contract_entity_permissions(permissions, group):
     document = ContractDocumentFactory(object_id=contract.pk)
     document.save()
 
-    if user.is_part_of(DataStewardGroup.name, LegalGroup.name):
+    if user.is_part_of(DataStewardGroup(), LegalGroup()):
         assert user.has_permission_on_object(f'core.{constants.Permissions.EDIT.value}_contract', document)
         assert user.has_permission_on_object(f'core.{constants.Permissions.EDIT.value}_contract', contract)
         assert user.has_permission_on_object(f'core.{constants.Permissions.EDIT.value}_contract', contract.partner_roles[0])
@@ -228,7 +228,7 @@ def test_dataset_entity_permissions(permissions, group, entity_factory):
 
     new_entity.save()
 
-    if user.is_part_of(DataStewardGroup.name):
+    if user.is_part_of(DataStewardGroup()):
         assert user.has_permission_on_object(f'core.{constants.Permissions.EDIT.value}_dataset', new_entity)
     else:
         assert not user.has_permission_on_object(f'core.{constants.Permissions.EDIT.value}_dataset', new_entity)
@@ -258,7 +258,7 @@ def test_project_entity_permissions(permissions, group, entity_factory):
     new_entity = entity_factory(object_id=project.pk)
     new_entity.save()
 
-    if user.is_part_of(DataStewardGroup.name):
+    if user.is_part_of(DataStewardGroup()):
         assert user.has_permission_on_object(f'core.{constants.Permissions.EDIT.value}_project', new_entity)
     else:
         assert not user.has_permission_on_object(f'core.{constants.Permissions.EDIT.value}_project', new_entity)

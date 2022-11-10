@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Union
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
@@ -10,7 +10,7 @@ from enumchoicefield.enum import ChoiceEnum
 from guardian.shortcuts import assign_perm, remove_perm
 
 from core import constants
-from core.models import Access, Dataset
+from core.models import Access, Dataset, Contract, Project
 from core.permissions import ProjectChecker, DatasetChecker, ContractChecker, AutoChecker
 from .utils import TextFieldWithInputWidget
 
@@ -219,6 +219,13 @@ class User(AbstractUser):
         Should return True if user is data steward, legal or local custodian on contract
         """
         return ContractChecker(self).check(f"core.{constants.Permissions.EDIT.value}_contract", contract)
+
+    def can_see_protected(self, obj: Union[Contract, Dataset, Project]):
+        """
+        Check if user can see protected elements of Contract, Dataset, or Project
+        Should return True if user is data stewards, auditor, legal (for contract) or local custodian of object
+        """
+        return AutoChecker(self).check(f"core.{constants.Permissions.PROTECTED.value}_{obj.__class__.__name__.lower()}", obj)
 
     def get_access_permissions(self) -> List[str]:
         """
