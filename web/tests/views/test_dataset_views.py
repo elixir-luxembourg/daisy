@@ -4,12 +4,13 @@ from typing import Optional
 from django.shortcuts import reverse
 from django.test.client import Client
 
-from test.factories import VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup, DatasetFactory, UserFactory, DatasetDocumentFactory
+from test.factories import VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup, DatasetFactory, UserFactory, \
+    DatasetDocumentFactory
 from core.constants import Permissions
 from core.models.user import User
 from core.models.dataset import Dataset
 
-from .utils import check_response_status, check_datasteward_restricted_url
+from .utils import check_response_status, check_datasteward_restricted_url, login_test_user, check_response_context_can_edit
 
 
 def check_dataset_views_permissions(url: str, user: User, action: Permissions, dataset: Optional[Dataset]):
@@ -64,7 +65,7 @@ def test_dataset_view_protected_documents(permissions, group):
     user = UserFactory(groups=[group()])
 
     client = Client()
-    client.login(username=user.username, password=user.password)
+    login_test_user(client, user)
 
     url = reverse('dataset', kwargs={"pk": dataset.pk})
     response = client.get(url, follow=True)
@@ -92,7 +93,7 @@ def test_dataset_edit_protected_documents(permissions, group):
     user = UserFactory(groups=[group()])
 
     client = Client()
-    assert client.login(username=user.username, password='test-user'), "Login failed"
+    login_test_user(client, user)
 
     url = reverse('dataset', kwargs={"pk": dataset.pk})
     response = client.get(url, follow=True)
@@ -129,3 +130,12 @@ def test_dataset_publications(permissions, group, url_name):
     user = UserFactory(groups=[group()])
 
     check_datasteward_restricted_url(url, user)
+
+
+@pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
+def test_dataset_views_edit_buttons(permissions, group):
+    user = UserFactory(groups=[group()])
+    dataset = DatasetFactory()
+
+    url = reverse('dataset', kwargs={'pk': dataset.pk})
+    check_response_context_can_edit(url, user, dataset)

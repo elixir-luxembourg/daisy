@@ -46,5 +46,6 @@ GROUP_PERMISSIONS = {
     },
     Groups.LEGAL: {
         'core.Contract': (f'core.{Permissions.EDIT.value}_contract', f'core.{Permissions.PROTECTED.value}_contract')
-    }
+    },
+    Groups.VIP: {}
 }

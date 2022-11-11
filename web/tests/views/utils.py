@@ -2,7 +2,7 @@ from django.test.client import Client
 from django.db.models import Model
 from django.contrib.auth.models import Group
 
-from core.models.user import User
+from core.models import User, Contract
 from core.constants import Groups
 
 from typing import List, Optional
@@ -30,7 +30,7 @@ def check_permissions(user: User, permissions: List[str], obj: Optional[Model] =
 
 
 def check_response_status(url: str, user: User, permissions: List[str], obj: Optional[Model] = None, method: str = "GET") -> None:
-    assert client.login(username=user.username, password='test-user'), "Login failed"
+    login_test_user(client, user)
     try:
         response = requests_methods[method](url)
         has_perm = check_permissions(user, permissions, obj) if permissions else True
@@ -51,7 +51,7 @@ def check_response_status(url: str, user: User, permissions: List[str], obj: Opt
 
 def check_datasteward_restricted_url(url, user):
 
-    assert client.login(username=user.username, password='test-user'), "Login Failed"
+    login_test_user(client, user)
     try:
         response = client.get(url)
         if user.is_part_of(Group.objects.get(name=Groups.DATA_STEWARD.value)):
@@ -60,3 +60,25 @@ def check_datasteward_restricted_url(url, user):
             assert response.status_code == 403
     finally:
         client.logout()
+
+
+def check_response_context_can_edit(url, user, obj):
+    login_test_user(client, user)
+
+    response = client.get(url)
+    assert isinstance(response.context['can_edit'], bool)
+    if user.is_part_of(Group.objects.get(name=Groups.DATA_STEWARD.value)) \
+            or (isinstance(obj, Contract) and user.is_part_of(Group.objects.get(name=Groups.LEGAL.value))):
+        assert response.context['can_edit']
+    else:
+        assert not response.context['can_edit']
+        if user.is_part_of(Group.objects.get(name=Groups.VIP.value)):
+            obj.local_custodians.set([user])
+            response = client.get(url)
+            assert response.context['can_edit']
+
+    client.logout()
+
+
+def login_test_user(test_client: Client, user: User, password: Optional[str] = 'test-user'):
+    assert test_client.login(username=user.username, password=password), "Login failed"
