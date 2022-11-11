@@ -32,7 +32,6 @@ def form_add_class(field, css_class):
 @register.filter
 def can_see_protected(user, obj: Union[Project, Contract, Dataset]):
     has_perm = user.can_see_protected(obj)
-    print(f"User {user} wants to see protected elements of {obj}: {has_perm}")
     return has_perm
 
 # @register.simple_tag
