@@ -33,7 +33,7 @@ def index(request, selection, pk):
 
     checker = AutoChecker(request.user)
     # check if admin permission is there, otherwise forbid access
-    if not checker.check(Permissions.ADMIN, obj):
+    if not checker.check(f'core.{Permissions.ADMIN.value}_{selection}', obj):
         raise PermissionDenied
 
 
