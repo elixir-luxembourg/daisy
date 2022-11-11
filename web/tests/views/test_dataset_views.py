@@ -10,7 +10,7 @@ from core.constants import Permissions
 from core.models.user import User
 from core.models.dataset import Dataset
 
-from .utils import check_response_status, check_datasteward_restricted_url, login_test_user, check_response_context_can_edit
+from .utils import check_response_status, check_datasteward_restricted_url, login_test_user, check_response_context_data
 
 
 def check_dataset_views_permissions(url: str, user: User, action: Permissions, dataset: Optional[Dataset]):
@@ -131,11 +131,15 @@ def test_dataset_publications(permissions, group, url_name):
 
     check_datasteward_restricted_url(url, user)
 
-
+@pytest.mark.parametrize('context_key, permission_key', [
+    ('can_edit', f'core.{Permissions.EDIT.value}_dataset'),
+    ('is_admin', f'core.{Permissions.ADMIN.value}_dataset')
+])
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
-def test_dataset_views_edit_buttons(permissions, group):
+def test_dataset_views_context(permissions, context_key, permission_key, group):
     user = UserFactory(groups=[group()])
     dataset = DatasetFactory()
 
     url = reverse('dataset', kwargs={'pk': dataset.pk})
-    check_response_context_can_edit(url, user, dataset)
+    check_response_context_data(url, user, permission_key, dataset, context_key)
+

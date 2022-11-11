@@ -9,7 +9,7 @@ from core.constants import Permissions
 from core.models.user import User
 from core.models.contract import Contract
 
-from .utils import check_response_status, check_datasteward_restricted_url, check_response_context_can_edit
+from .utils import check_response_status, check_datasteward_restricted_url, check_response_context_data
 
 
 def check_contract_view_permissions(url: str, user: User, action: Permissions, contract: Optional[Contract]):
@@ -123,9 +123,9 @@ def test_contract_export(permissions, group):
 
 
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
-def test_contract_views_edit_buttons(permissions, group):
+def test_contract_views_context(permissions, group):
     user = UserFactory(groups=[group()])
     contract = ContractFactory()
 
     url = reverse('contract', kwargs={'pk': contract.pk})
-    check_response_context_can_edit(url, user, contract)
+    check_response_context_data(url, user, f'core.{Permissions.EDIT.value}_contract', contract, 'can_edit')

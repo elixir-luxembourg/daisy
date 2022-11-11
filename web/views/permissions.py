@@ -55,7 +55,7 @@ def index(request, selection, pk):
         'perms_const': list(Permissions),
     }
     # get inherited permissions from the parent project
-    if klass == Dataset:
+    if klass == Dataset and obj.project is not None:
         context["inherited_permissions"] = get_users_with_perms(obj.project, attach_perms=True)
     for user, permissions in users_with_perms.items():
         # add user

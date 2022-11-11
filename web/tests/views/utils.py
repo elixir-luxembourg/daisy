@@ -62,20 +62,19 @@ def check_datasteward_restricted_url(url, user):
         client.logout()
 
 
-def check_response_context_can_edit(url, user, obj):
+def check_response_context_data(url, user, perm, obj, context_key):
     login_test_user(client, user)
 
     response = client.get(url)
-    assert isinstance(response.context['can_edit'], bool)
-    if user.is_part_of(Group.objects.get(name=Groups.DATA_STEWARD.value)) \
-            or (isinstance(obj, Contract) and user.is_part_of(Group.objects.get(name=Groups.LEGAL.value))):
-        assert response.context['can_edit']
+    assert isinstance(response.context[context_key], bool)
+    if user.has_permission_on_object(perm, obj):
+        assert response.context[context_key]
     else:
-        assert not response.context['can_edit']
+        assert not response.context[context_key]
         if user.is_part_of(Group.objects.get(name=Groups.VIP.value)):
             obj.local_custodians.set([user])
             response = client.get(url)
-            assert response.context['can_edit']
+            assert response.context[context_key]
 
     client.logout()
 

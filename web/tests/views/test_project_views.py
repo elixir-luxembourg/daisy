@@ -8,7 +8,7 @@ from test.factories import VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup,
 from core.models.user import User
 from core.models.project import Project
 from core.constants import Permissions
-from .utils import check_response_status, check_datasteward_restricted_url, check_response_context_can_edit
+from .utils import check_response_status, check_datasteward_restricted_url, check_response_context_data
 
 
 def check_project_views_permissions(url: str, user: User, action: Optional[Permissions], project: Optional[Project], method: str):
@@ -162,10 +162,14 @@ def test_projects_publications_and_export(permissions, group, url_name):
     check_datasteward_restricted_url(url, user)
 
 
+@pytest.mark.parametrize('context_key, permission_key', [
+    ('can_edit', f'core.{Permissions.EDIT.value}_project'),
+    ('is_admin', f'core.{Permissions.ADMIN.value}_project')
+])
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
-def test_project_views_edit_buttons(permissions, group):
+def test_project_views_context(permissions, context_key, permission_key, group):
     user = UserFactory(groups=[group()])
     project = ProjectFactory()
 
     url = reverse('project', kwargs={'pk': project.pk})
-    check_response_context_can_edit(url, user, project)
+    check_response_context_data(url, user, permission_key, project, context_key)
