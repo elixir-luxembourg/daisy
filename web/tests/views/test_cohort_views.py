@@ -2,12 +2,13 @@ import pytest
 
 from typing import Optional
 from django.shortcuts import reverse
+from django.test.client import Client
 
 from test.factories import VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup, CohortFactory, UserFactory
 from core.models.user import User
 from core.models.cohort import Cohort
 from core.constants import Permissions
-from .utils import check_response_status
+from .utils import check_response_status, check_datasteward_restricted_url
 
 
 def check_cohort_view_permissions(url: str, user: User, action: Optional[Permissions], cohort: Optional[Cohort] = None):
@@ -42,13 +43,9 @@ def check_cohort_view_permissions(url: str, user: User, action: Optional[Permiss
     [
         ('cohorts', None),
         ('cohort_add', None),
-        ('cohorts_export', None),
         ('cohort', None),
         ('cohort_delete', Permissions.DELETE),
         ('cohort_edit', Permissions.EDIT),
-        # FIXME: These two must be checked, but who is staff?
-        # 'cohort_publish',
-        # 'cohort_unpublish'
     ],
 )
 def test_cohorts_views_permissions(permissions, group, url_name, perm):
@@ -56,7 +53,7 @@ def test_cohorts_views_permissions(permissions, group, url_name, perm):
     Tests whether users from different groups can access the urls associated with Cohort instances
     """
     cohort = None
-    if url_name in ['cohorts', 'cohort_add', 'cohorts_export']:
+    if url_name in ['cohorts', 'cohort_add']:
         url = reverse(url_name)
     else:
         cohort = CohortFactory()
@@ -66,3 +63,16 @@ def test_cohorts_views_permissions(permissions, group, url_name, perm):
     assert url is not None
     user = UserFactory(groups=[group()])
     check_cohort_view_permissions(url, user, perm, cohort)
+
+
+@pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
+@pytest.mark.parametrize('url_name', ['cohort_publish', 'cohort_unpublish', 'cohorts_export'])
+def test_cohorts_publications_and_export(permissions, group, url_name):
+    user = UserFactory(groups=[group()])
+    kwargs = {}
+    if url_name != 'cohorts_export':
+        cohort = CohortFactory()
+        kwargs.update({'pk': cohort.pk})
+
+    url = reverse(url_name, kwargs=kwargs)
+    check_datasteward_restricted_url(url, user)

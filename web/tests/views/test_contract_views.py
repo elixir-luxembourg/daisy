@@ -9,7 +9,7 @@ from core.constants import Permissions
 from core.models.user import User
 from core.models.contract import Contract
 
-from .utils import check_response_status
+from .utils import check_response_status, check_datasteward_restricted_url
 
 
 def check_contract_view_permissions(url: str, user: User, action: Permissions, contract: Optional[Contract]):
@@ -34,8 +34,6 @@ def check_contract_view_permissions(url: str, user: User, action: Permissions, c
     [
         ('contracts', None),
         ('contract_add', None),
-        # FIXME: Discuss this
-        # 'contracts_export',
         ('contract', None),
         ('add_partner_role_to_contract', Permissions.EDIT),
         ('contract_delete', Permissions.DELETE),
@@ -115,3 +113,10 @@ def test_contract_edit_protected_documents(permissions, group):
         assert b'<td id="document-action">' in response.content
 
     os.remove(document.content.name)
+
+
+@pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, AuditorGroup, LegalGroup])
+def test_contract_export(permissions, group):
+    url = reverse('contracts_export')
+    user = UserFactory(groups=[group()])
+    check_datasteward_restricted_url(url, user)

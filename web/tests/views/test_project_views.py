@@ -8,7 +8,7 @@ from test.factories import VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup,
 from core.models.user import User
 from core.models.project import Project
 from core.constants import Permissions
-from .utils import check_response_status
+from .utils import check_response_status, check_datasteward_restricted_url
 
 
 def check_project_views_permissions(url: str, user: User, action: Optional[Permissions], project: Optional[Project], method: str):
@@ -35,14 +35,10 @@ def check_project_views_permissions(url: str, user: User, action: Optional[Permi
     'url_name, action',
     [
         ('projects', None),
-        ('projects_export', None),
         ('project_add', None),
         ('project', None),
         ('project_delete', Permissions.DELETE),
         ('project_edit', Permissions.EDIT),
-        # FIXME: Needs discussion
-        # 'project_publish',
-        # 'project_unpublish',
         ('add_contact_to_project', Permissions.EDIT),
         ('datasets_add_to_project', None),
         ('add_personnel_to_project', Permissions.EDIT),
@@ -98,7 +94,6 @@ def test_project_views_permissions(permissions, group, url_name, action):
 
     check_project_views_permissions(url, user, action, project, method)
 
-# FIXME
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
 def test_project_view_protected_documents(permissions, group):
     project = ProjectFactory()
@@ -127,7 +122,6 @@ def test_project_view_protected_documents(permissions, group):
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
 def test_project_edit_protected_documents(permissions, group):
     document = ProjectDocumentFactory.create(with_file=True)
-    print(f"Document is saved in {document.content.name}")
     project = document.content_object
     user = UserFactory(groups=[group()])
 
@@ -154,7 +148,15 @@ def test_project_edit_protected_documents(permissions, group):
         assert b'<th id="document-action-head" style="width:7em">Actions</th>' in response.content
         assert b'<td id="document-action">' in response.content
 
-    print(f"Removing document from {document.content.name}")
     os.remove(document.content.name)
 
-
+@pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
+@pytest.mark.parametrize('url_name', ['project_publish', 'project_unpublish', 'projects_export'])
+def test_projects_publications_and_export(permissions, group, url_name):
+    user = UserFactory(groups=[group()])
+    kwargs = {}
+    if url_name != 'projects_export':
+        project = ProjectFactory()
+        kwargs.update({'pk': project.pk})
+    url = reverse(url_name, kwargs=kwargs)
+    check_datasteward_restricted_url(url, user)

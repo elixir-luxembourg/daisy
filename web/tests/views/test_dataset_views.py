@@ -8,7 +8,8 @@ from test.factories import VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup,
 from core.constants import Permissions
 from core.models.user import User
 from core.models.dataset import Dataset
-from .utils import check_response_status
+
+from .utils import check_response_status, check_datasteward_restricted_url
 
 
 def check_dataset_views_permissions(url: str, user: User, action: Permissions, dataset: Optional[Dataset]):
@@ -33,14 +34,10 @@ def check_dataset_views_permissions(url: str, user: User, action: Permissions, d
     'url_name, action',
     [
         ('datasets', None),
-        ('datasets_export', None),
         ('dataset_add', None),
         ('dataset', None),
         ('dataset_delete', Permissions.DELETE),
         ('dataset_edit', Permissions.EDIT),
-        # FIXME: What permissions to use here?
-        ('dataset_publish', None),
-        ('dataset_unpublish', None)
     ]
 )
 def test_dataset_views_permissions(permissions, group, url_name, action):
@@ -118,3 +115,17 @@ def test_dataset_edit_protected_documents(permissions, group):
         assert b'<td id="document-action">' in response.content
 
     os.remove(document.content.name)
+
+
+@pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
+@pytest.mark.parametrize('url_name', ['dataset_publish', 'dataset_unpublish', 'datasets_export'])
+def test_dataset_publications(permissions, group, url_name):
+    kwargs = {}
+    if url_name != 'datasets_export':
+        dataset = DatasetFactory()
+        kwargs.update({'pk': dataset.pk})
+
+    url = reverse(url_name, kwargs=kwargs)
+    user = UserFactory(groups=[group()])
+
+    check_datasteward_restricted_url(url, user)

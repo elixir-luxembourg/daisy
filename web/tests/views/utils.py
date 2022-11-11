@@ -1,6 +1,9 @@
 from django.test.client import Client
 from django.db.models import Model
+from django.contrib.auth.models import Group
+
 from core.models.user import User
+from core.constants import Groups
 
 from typing import List, Optional
 import logging
@@ -42,5 +45,18 @@ def check_response_status(url: str, user: User, permissions: List[str], obj: Opt
         else:
             raise e
 
+    finally:
+        client.logout()
+
+
+def check_datasteward_restricted_url(url, user):
+
+    assert client.login(username=user.username, password='test-user'), "Login Failed"
+    try:
+        response = client.get(url)
+        if user.is_part_of(Group.objects.get(name=Groups.DATA_STEWARD.value)):
+            assert response.status_code != 403
+        else:
+            assert response.status_code == 403
     finally:
         client.logout()

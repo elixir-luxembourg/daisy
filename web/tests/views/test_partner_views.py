@@ -6,7 +6,7 @@ from test.factories import VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup,
 from core.models.user import User
 from core.models.partner import Partner
 from core.constants import Permissions
-from .utils import check_response_status
+from .utils import check_response_status, check_datasteward_restricted_url
 
 
 def check_partner_views_permissions(url: str, user: User, action: Optional[Permissions], partner: Optional[Partner]):
@@ -27,13 +27,9 @@ def check_partner_views_permissions(url: str, user: User, action: Optional[Permi
     [
         ('partners', None),
         ('partner_add', None),
-        ('partners_export', None),
         ('partner', None),
         ('partner_delete', Permissions.DELETE),
         ('partner_edit', None),
-        # FIXME: This needs to be discussed
-        # 'partner_publish',
-        # 'partner_unpublish'
     ]
 )
 def test_partners_views_permissions(permissions, group, url_name, action):
@@ -51,3 +47,15 @@ def test_partners_views_permissions(permissions, group, url_name, action):
     assert url is not None
     user = UserFactory(groups=[group()])
     check_partner_views_permissions(url, user, action, partner)
+
+
+@pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
+@pytest.mark.parametrize('url_name', ['partner_publish', 'partner_unpublish', 'partners_export'])
+def test_partners_publications_and_export(permissions, group, url_name):
+    user = UserFactory(groups=[group()])
+    kwargs = {}
+    if url_name != 'partners_export':
+        partner = PartnerFactory()
+        kwargs.update({'pk': partner.pk})
+    url = reverse(url_name, kwargs=kwargs)
+    check_datasteward_restricted_url(url, user)

@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction, IntegrityError
 from django.http import HttpResponse
@@ -15,6 +15,7 @@ from core.forms.project import ProjectForm, DatasetSelection
 from core.models import Project, Contract
 from core.permissions import permission_required
 from core.permissions.checker import CheckerMixin
+from web.views.utils import is_data_steward
 from . import facet_view_utils
 
 FACET_FIELDS = settings.FACET_FIELDS['project']
@@ -266,14 +267,14 @@ class ProjectDelete(CheckerMixin, DeleteView):
         return context
 
 
-@staff_member_required
+@user_passes_test(is_data_steward)
 def publish_project(request, pk):
     project = get_object_or_404(Project, pk=pk)
     project.publish()
     return redirect(reverse_lazy('project', kwargs={'pk': project.id}))
 
 
-@staff_member_required
+@user_passes_test(is_data_steward)
 def unpublish_project(request, pk):
     project = get_object_or_404(Project, pk=pk)
     project.is_published = False

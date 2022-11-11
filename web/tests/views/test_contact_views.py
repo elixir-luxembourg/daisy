@@ -1,9 +1,10 @@
 import pytest
 from django.shortcuts import reverse
+from django.test.client import Client
 
 from core.constants import Permissions
 from test.factories import VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup, ContactFactory, UserFactory
-from .utils import check_response_status
+from .utils import check_response_status, check_datasteward_restricted_url
 
 
 def check_contact_view_permissions(url, user, action, contact):
@@ -37,8 +38,6 @@ def check_contact_view_permissions(url, user, action, contact):
         ('contact_edit', Permissions.EDIT),
         ('contact_add', None),
         ('contact_delete', Permissions.DELETE),
-        # FIXME: Needs to be discussed
-        # ('contacts_export', None)
     ]
 )
 def test_contacts_views_permissions(permissions, group, url_name, perm):
@@ -59,3 +58,11 @@ def test_contacts_views_permissions(permissions, group, url_name, perm):
     assert url is not None
     user = UserFactory(groups=[group()])
     check_contact_view_permissions(url, user, perm, contact)
+
+
+@pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
+def test_contacts_exports(permissions, group):
+    url = reverse('contacts_export')
+    user = UserFactory(groups=[group()])
+
+    check_datasteward_restricted_url(url, user)

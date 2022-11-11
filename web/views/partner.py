@@ -1,10 +1,10 @@
 from django.conf import settings
-from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.utils.module_loading import import_string
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+from django.contrib.auth.decorators import user_passes_test
 
 import core.models.data_declaration
 from . import facet_view_utils
@@ -15,7 +15,7 @@ from core.models.utils import COMPANY
 from core.permissions import permission_required, CheckerMixin
 from core.constants import Permissions
 from web.views.user import superuser_required
-from web.views.utils import AjaxViewMixin
+from web.views.utils import AjaxViewMixin, is_data_steward
 
 
 FACET_FIELDS = settings.FACET_FIELDS['partner']
@@ -104,14 +104,15 @@ def partner_search_view(request):
         ]
     })
 
-@staff_member_required
+
+@user_passes_test(is_data_steward)
 def publish_partner(request, pk):
     partner = get_object_or_404(Partner, pk=pk)
     partner.publish()
     return HttpResponseRedirect(reverse_lazy('partner', kwargs={'pk': pk}))
 
 
-@staff_member_required
+@user_passes_test(is_data_steward)
 def unpublish_partner(request, pk):
     partner = get_object_or_404(Partner, pk=pk)
     if partner.is_published:

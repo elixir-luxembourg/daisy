@@ -1,8 +1,8 @@
 from django.conf import settings
-from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
+from django.contrib.auth.decorators import user_passes_test
 
 from core.forms import DatasetForm
 from core.forms.dataset import DatasetFormEdit
@@ -11,6 +11,7 @@ from core.models.utils import COMPANY
 from core.permissions import permission_required, CheckerMixin
 from core.utils import DaisyLogger
 from core.constants import Permissions
+from web.views.utils import is_data_steward
 from . import facet_view_utils
 
 log = DaisyLogger(__name__)
@@ -133,13 +134,13 @@ class DatasetDelete(CheckerMixin, DeleteView):
 
 
 
-@staff_member_required
+@user_passes_test(is_data_steward)
 def publish_dataset(request, pk):
     dataset = get_object_or_404(Dataset, pk=pk)
     dataset.publish()
     return redirect(reverse_lazy('dataset', kwargs={'pk': dataset.id}))
 
-@staff_member_required
+@user_passes_test(is_data_steward)
 def unpublish_dataset(request, pk):
     dataset = get_object_or_404(Dataset, pk=pk)
     dataset.is_published = False
