@@ -90,7 +90,7 @@ def index(request, selection, pk):
             # delete any permissions for the user if not a local custodian.
             if delete:
                 if user in local_custodians:
-                    messages.add_message(request, messages.ERROR, f"Can't delete right for the local custodian {user}.")
+                    messages.add_message(request, messages.ERROR, f"Cannot delete permission set for {user} - user is local custodian.")
                     continue
                 for perm in Permissions:
                     remove_perm(f"{perm.value}_{selection}", user, obj)

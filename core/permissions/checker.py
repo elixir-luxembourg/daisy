@@ -90,7 +90,8 @@ class DatasetChecker(AbstractChecker):
             project = obj.project
             if project is None:
                 return False
-            return ProjectChecker(self.user_or_group, checker=self.checker).check(perm, project, **kwargs)
+            project_perm = perm.replace('dataset', 'project')
+            return ProjectChecker(self.user_or_group, checker=self.checker).check(project_perm, project, **kwargs)
         except ObjectDoesNotExist:
             return False
 
@@ -115,7 +116,8 @@ class ContractChecker(AbstractChecker):
             return False
         if obj.project is None:
             return False
-        return ProjectChecker(self.user_or_group, checker=self.checker).check(perm, obj.project, **kwargs)
+        project_perm = perm.replace('contract', 'project')
+        return ProjectChecker(self.user_or_group, checker=self.checker).check(project_perm, obj.project, **kwargs)
 
 
 class CohortChecker(AbstractChecker):
