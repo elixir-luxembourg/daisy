@@ -38,12 +38,12 @@ def rollback_django_permissions(apps, schema_editor):
                     assert len(new_permission_id) == 1
                     new_permission_id, = new_permission_id[0]
                     print(f"Replacing new permission {new_codename} (id={new_permission_id}) by {codename} (id={id}, target={model_name})")
-                    cursor.execute(
-                        "UPDATE core_user_user_permissions "
-                        "SET permission_id=%s "
-                        "WHERE permission_id=%s ",
-                        (id, new_permission_id)
-                    )
+                    # cursor.execute(
+                    #     "UPDATE core_user_user_permissions "
+                    #     "SET permission_id=%s "
+                    #     "WHERE permission_id=%s ",
+                    #     (id, new_permission_id)
+                    # )
 
         else:
             raise DataError("Old permissions were removed from the database. Impossible to roll back")
@@ -78,12 +78,12 @@ def rollback_guardian_userobjectpermissions(apps, schema_editor):
                     assert len(old_permission_id) == 1
                     old_permission_id, = old_permission_id[0]
                     print(f"Replacing new permission {codename} (id={id}, target={model_name}) by {previous_codename} (id={old_permission_id})")
-                    cursor.execute(
-                        "UPDATE guardian_userobjectpermission "
-                        "SET permission_id=%s "
-                        "WHERE permission_id=%s and content_type_id=%s",
-                        (old_permission_id, id, content_type_id)
-                    )
+                    # cursor.execute(
+                    #     "UPDATE guardian_userobjectpermission "
+                    #     "SET permission_id=%s "
+                    #     "WHERE permission_id=%s and content_type_id=%s",
+                    #     (old_permission_id, id, content_type_id)
+                    # )
         else:
             print("No new permission was found on contracts. Nothing to roll back.")
 
@@ -123,12 +123,12 @@ def rollback_core_datasetuserobjectpermissions(apps, schema_editor):
                     assert len(old_permission_id) == 1
                     old_permission_id, = old_permission_id[0]
                     print(f"Replacing new permission {codename} (id={id}, target={model_name}) by {previous_codename} (id={old_permission_id})")
-                    cursor.execute(
-                        "UPDATE guardian_userobjectpermission "
-                        "SET permission_id=%s "
-                        "WHERE permission_id=%s and content_type_id=%s",
-                        (old_permission_id, id, content_type_id)
-                    )
+                    # cursor.execute(
+                    #     "UPDATE guardian_userobjectpermission "
+                    #     "SET permission_id=%s "
+                    #     "WHERE permission_id=%s and content_type_id=%s",
+                    #     (old_permission_id, id, content_type_id)
+                    # )
         else:
             print("No new permission was found on datasets. Nothing to roll back.")
 
@@ -137,8 +137,8 @@ def rollback_core_projectuserobjectpermissions(apps, schema_editor):
     with connection.cursor() as cursor:
         # Getting the list of old permissions that need to be put back in permission attributions
         cursor.execute(
-            "SELECT permission_id, auth_permission.codename FROM core_projectuserobjectpermissions "
-            "INNER JOIN auth_permission on auth_permission.id = core_projectuserobjectpermissions.permission_id "
+            "SELECT permission_id, auth_permission.codename FROM core_projectuserobjectpermission "
+            "INNER JOIN auth_permission on auth_permission.id = core_projectuserobjectpermission.permission_id "
             "WHERE auth_permission.codename NOT LIKE '%\_%' "
             "GROUP BY permission_id, auth_permission.codename"
         )
@@ -168,12 +168,12 @@ def rollback_core_projectuserobjectpermissions(apps, schema_editor):
                     assert len(old_permission_id) == 1
                     old_permission_id, = old_permission_id[0]
                     print(f"Replacing old permission {codename} (id={id}, target={model_name}) by {previous_codename} (id={old_permission_id})")
-                    cursor.execute(
-                        "UPDATE guardian_userobjectpermission "
-                        "SET permission_id=%s "
-                        "WHERE permission_id=%s and content_type_id=%s",
-                        (old_permission_id, id, content_type_id)
-                    )
+                    # cursor.execute(
+                    #     "UPDATE guardian_userobjectpermission "
+                    #     "SET permission_id=%s "
+                    #     "WHERE permission_id=%s and content_type_id=%s",
+                    #     (old_permission_id, id, content_type_id)
+                    # )
         else:
             print("No new permission was found on projects. Nothing to roll back.")
 
@@ -211,13 +211,12 @@ def update_django_permissions(apps, schema_editor):
                     assert len(new_permission_id) == 1
                     new_permission_id, = new_permission_id[0]
                     print(f"Replacing old permission {codename} (id={id}, target={model_name}) by {new_codename} (id={new_permission_id})")
-                    cursor.execute(
-                        "UPDATE core_user_user_permissions "
-                        "SET permission_id=%s "
-                        "WHERE permission_id=%s ",
-                        (new_permission_id, id)
-                    )
-
+                    # cursor.execute(
+                    #     "UPDATE core_user_user_permissions "
+                    #     "SET permission_id=%s "
+                    #     "WHERE permission_id=%s ",
+                    #     (new_permission_id, id)
+                    # )
 
 def update_guardian_userobjectpermissions(apps, schema_editor):
     with connection.cursor() as cursor:
@@ -247,12 +246,12 @@ def update_guardian_userobjectpermissions(apps, schema_editor):
                     assert len(new_permission_id) == 1
                     new_permission_id, = new_permission_id[0]
                     print(f"Replacing old permission {codename} (id={id}, target={model_name}) by {new_codename} (id={new_permission_id})")
-                    cursor.execute(
-                        "UPDATE guardian_userobjectpermission "
-                        "SET permission_id=%s "
-                        "WHERE permission_id=%s and content_type_id=%s",
-                        (new_permission_id, id, content_type_id)
-                    )
+                    # cursor.execute(
+                    #     "UPDATE guardian_userobjectpermission "
+                    #     "SET permission_id=%s "
+                    #     "WHERE permission_id=%s and content_type_id=%s",
+                    #     (new_permission_id, id, content_type_id)
+                    # )
 
 
 def update_core_datasetuserobjectpermissions(apps, schema_editor):
@@ -289,20 +288,20 @@ def update_core_datasetuserobjectpermissions(apps, schema_editor):
                     assert len(new_permission_id) == 1
                     new_permission_id, = new_permission_id[0]
                     print(f"Replacing old permission {codename} (id={id}, target={model_name}) by {new_codename} (id={new_permission_id})")
-                    cursor.execute(
-                        "UPDATE guardian_userobjectpermission "
-                        "SET permission_id=%s "
-                        "WHERE permission_id=%s and content_type_id=%s",
-                        (new_permission_id, id, content_type_id)
-                    )
+                    # cursor.execute(
+                    #     "UPDATE guardian_userobjectpermission "
+                    #     "SET permission_id=%s "
+                    #     "WHERE permission_id=%s and content_type_id=%s",
+                    #     (new_permission_id, id, content_type_id)
+                    # )
 
 
 def update_core_projectuserobjectpermissions(apps, schema_editor):
     with connection.cursor() as cursor:
         # Getting the list of old permissions that need to be replaced in permission attributions
         cursor.execute(
-            "SELECT permission_id, auth_permission.codename FROM core_projectuserobjectpermissions "
-            "INNER JOIN auth_permission on auth_permission.id = core_projectuserobjectpermissions.permission_id "
+            "SELECT permission_id, auth_permission.codename FROM core_projectuserobjectpermission "
+            "INNER JOIN auth_permission on auth_permission.id = core_projectuserobjectpermission.permission_id "
             "WHERE auth_permission.codename NOT LIKE '%\_%' "
             "GROUP BY permission_id, auth_permission.codename"
         )
@@ -331,12 +330,12 @@ def update_core_projectuserobjectpermissions(apps, schema_editor):
                     assert len(new_permission_id) == 1
                     new_permission_id, = new_permission_id[0]
                     print(f"Replacing old permission {codename} (id={id}, target={model_name}) by {new_codename} (id={new_permission_id})")
-                    cursor.execute(
-                        "UPDATE guardian_userobjectpermission "
-                        "SET permission_id=%s "
-                        "WHERE permission_id=%s and content_type_id=%s",
-                        (id, content_type_id)
-                    )
+                    # cursor.execute(
+                    #     "UPDATE guardian_userobjectpermission "
+                    #     "SET permission_id=%s "
+                    #     "WHERE permission_id=%s and content_type_id=%s",
+                    #     (id, content_type_id)
+                    # )
 
 
 def rollback_local_custodians_protected_permission(apps, schema_editor):
@@ -351,26 +350,26 @@ def rollback_local_custodians_protected_permission(apps, schema_editor):
         results = cursor.fetchall()
         id_dict = {perm_codename: perm_id for perm_codename, perm_id in results}
 
-        # Deleting protected permission on datasets
-        cursor.execute(
-            "DELETE FROM core_datasetuserobjectpermission "
-            "WHERE permission_id = %s",
-            [id_dict['protected_dataset']]
-        )
+        # # Deleting protected permission on datasets
+        # cursor.execute(
+        #     "DELETE FROM core_datasetuserobjectpermission "
+        #     "WHERE permission_id = %s",
+        #     [id_dict['protected_dataset']]
+        # )
 
-        # Deleting protected permission on projects
-        cursor.execute(
-            "DELETE FROM core_projectuserobjectpermission "
-            "WHERE permission_id = %s",
-            [id_dict['protected_project']]
-        )
+        # # Deleting protected permission on projects
+        # cursor.execute(
+        #     "DELETE FROM core_projectuserobjectpermission "
+        #     "WHERE permission_id = %s",
+        #     [id_dict['protected_project']]
+        # )
 
-        # Deleting protected permission on contracts
-        cursor.execute(
-            "DELETE FROM guardian_userobjectpermission "
-            "WHERE permission_id = %s",
-            [id_dict['protected_contract']]
-        )
+        # # Deleting protected permission on contracts
+        # cursor.execute(
+        #     "DELETE FROM guardian_userobjectpermission "
+        #     "WHERE permission_id = %s",
+        #     [id_dict['protected_contract']]
+        # )
 
 
 def add_protected_permission_to_local_custodians(apps, schema_editor):
@@ -396,12 +395,12 @@ def add_protected_permission_to_local_custodians(apps, schema_editor):
             rows_to_insert += f"({contract_id}, {contract_content_type_id}, {permission_id}, {user_id}), "
 
         rows_to_insert = rows_to_insert.rstrip(', ')
-        # Inserting new data
-        cursor.execute(
-            "INSERT INTO guardian_userobjectpermission %s"
-            "VALUES %s",
-            [cols, rows_to_insert]
-        )
+        # # Inserting new data
+        # cursor.execute(
+        #     "INSERT INTO guardian_userobjectpermission %s"
+        #     "VALUES %s",
+        #     [cols, rows_to_insert]
+        # )
 
 
         # Update project custodians
@@ -423,12 +422,12 @@ def add_protected_permission_to_local_custodians(apps, schema_editor):
             rows_to_insert += f"({project_id}, {permission_id}, {user_id}), "
 
         rows_to_insert = rows_to_insert.rstrip(', ')
-        # Inserting new data
-        cursor.execute(
-            "INSERT INTO core_projectuserobjectpermission %s"
-            "VALUES %s",
-            [cols, rows_to_insert]
-        )
+        # # Inserting new data
+        # cursor.execute(
+        #     "INSERT INTO core_projectuserobjectpermission %s"
+        #     "VALUES %s",
+        #     [cols, rows_to_insert]
+        # )
 
         cursor.execute(
             "SELECT id from auth_permission "
@@ -448,12 +447,12 @@ def add_protected_permission_to_local_custodians(apps, schema_editor):
             rows_to_insert += f"({dataset_id}, {permission_id}, {user_id}), "
 
         rows_to_insert = rows_to_insert.rstrip(', ')
-        # Inserting new data
-        cursor.execute(
-            "INSERT INTO core_projectuserobjectpermission %s"
-            "VALUES %s",
-            [cols, rows_to_insert]
-        )
+        # # Inserting new data
+        # cursor.execute(
+        #     "INSERT INTO core_projectuserobjectpermission %s"
+        #     "VALUES %s",
+        #     [cols, rows_to_insert]
+        # )
 
 
 class Migration(migrations.Migration):
