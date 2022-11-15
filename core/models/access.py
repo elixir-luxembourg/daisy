@@ -139,10 +139,7 @@ class Access(CoreModel):
     )
 
     def __str__(self):
-        if self.contact:
-            return f"Access ({self.status}) to dataset {self.dataset.title} given to a user: {self.user}/{self.access_notes}"
-        else:
-            return f"Access ({self.status}) to dataset {self.dataset.title} given to a contact: {self.user}/{self.access_notes}"
+        return f"Access ({self.status}) to dataset {self.dataset.title} given to a contact: {self.user}/{self.access_notes}"
 
     def delete(self, force: bool = False):
         self.status = StatusChoices.terminated

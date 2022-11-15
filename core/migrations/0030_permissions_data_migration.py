@@ -1,5 +1,5 @@
 from django.db import migrations, connection, DataError
-from core.permissions.mapping import PERMISSION_MAPPING
+from core.permissions.mapping import PERMISSION_MAPPING, GROUP_PERMISSIONS
 
 # BEFORE UPGRADE:
 # Django default permissions can be safely upgraded?
@@ -7,9 +7,22 @@ from core.permissions.mapping import PERMISSION_MAPPING
 #
 
 
-def roll_back_new_permissions(apps, schema_editor):
+def rollback_new_permissions(apps, schema_editor):
     # Even if we rollback, we do not want to delete the new permissions from the database
     pass
+
+
+def rollback_group_permissions(apps, schema_editor):
+    with connection.cursor() as cursor:
+        # Getting the list of old permissions given to groups
+        cursor.execute(
+            "DELETE from auth_group_permissions "
+            "WHERE auth_group_permissions.permission_id IN ("
+            "   SELECT auth_permission.id FROM auth_permission "
+            "   INNER JOIN django_content_type ON auth_permission.content_type_id = django_content_type.id "
+            "   WHERE auth_permission.codename LIKE '%\_%' AND django_content_type.app_label = 'core'"
+            ")"
+        )
 
 
 def rollback_django_permissions(apps, schema_editor):
@@ -382,6 +395,54 @@ def update_core_projectuserobjectpermissions(apps, schema_editor):
                         (new_permission_id, id, content_type_id)
                     )
 
+def update_group_permissions(apps, schema_editor):
+    with connection.cursor() as cursor:
+        for group, permissions_dict in GROUP_PERMISSIONS.items():
+            # Find the group id
+            cursor.execute(
+                "SELECT id from auth_group "
+                "WHERE auth_group.name=%s",
+                [group.value]
+            )
+
+            group_id = cursor.fetchall()
+            if not group_id:
+                raise DataError(f"Group {group.value} was not found in database")
+
+            try:
+                assert len(group_id) == 1
+            except AssertionError:
+                raise DataError(f"More than one group named {group.value} was found in database")
+
+            group_id = group_id[0][0]
+
+            for model_label, permissions_list in permissions_dict.items():
+                app_label, model_name = model_label.lower().split('.')
+                for perm in permissions_list:
+                    _, perm = perm.split('.')
+                    # Get permission id
+                    cursor.execute(
+                        "SELECT auth_permission.id from auth_permission "
+                        "INNER JOIN django_content_type ON django_content_type.id=auth_permission.content_type_id "
+                        "WHERE auth_permission.codename=%s AND django_content_type.app_label=%s AND django_content_type.model=%s",
+                        [perm, app_label, model_name]
+                    )
+                    perm_id = cursor.fetchall()
+                    if not perm_id:
+                        raise DataError(f"Permission {perm} (content_type={model_name}) was not found in database")
+
+                    try:
+                        assert len(perm_id) == 1
+                    except AssertionError:
+                        raise DataError(f"More than one permission {perm} (content_type={model_name}) was found in database")
+
+                    perm_id = perm_id[0][0]
+                    cursor.execute(
+                        "INSERT INTO auth_group_permissions (group_id, permission_id)"
+                        "VALUES (%s, %s)",
+                        [group_id, perm_id]
+                    )
+
 
 class Migration(migrations.Migration):
 
@@ -391,9 +452,10 @@ class Migration(migrations.Migration):
     print("\n")
 
     operations = [
-        migrations.RunPython(create_new_permissions, roll_back_new_permissions),
+        migrations.RunPython(create_new_permissions, rollback_new_permissions),
         migrations.RunPython(update_django_permissions, rollback_django_permissions),
         migrations.RunPython(update_guardian_userobjectpermissions, rollback_guardian_userobjectpermissions),
         migrations.RunPython(update_core_datasetuserobjectpermissions, rollback_core_datasetuserobjectpermissions),
         migrations.RunPython(update_core_projectuserobjectpermissions, rollback_core_projectuserobjectpermissions),
+        migrations.RunPython(update_group_permissions, rollback_group_permissions),
     ]
