@@ -50,20 +50,20 @@
                             class="btn btn-default bmd-btn-fab float-right">
                                 <i class="material-icons">build</i>
                         </a>
-                            {% if not partner.is_published %}
-                                <a  id="publish" 
-                                    class="btn btn-default bmd-btn-fab float-right"
-                                    href="{% url 'partner_publish' pk=partner.id %}">
-                                        <i class="material-icons">publish</i>
-                                </a>
-                            {% else %}
-                                <a  id="unpublish" 
-                                    data-confirm="Are you sure to unpublish the partner? The changes won't be propagated to other systems!"
-                                    class="btn btn-default bmd-btn-fab float-right"
-                                    href="{% url 'partner_unpublish' pk=partner.id %}">
-                                    <i class="material-icons">undo</i>
-                                </a>
-                            {% endif %}
+                    {% endif %}
+                    {% if request.user.can_publish and not partner.is_published %}
+                        <a id="publish"
+                           class="btn btn-default bmd-btn-fab float-right"
+                           href="{% url 'partner_publish' pk=partner.id %}">
+                            <i class="material-icons">publish</i>
+                        </a>
+                    {% elif request.user.can_publish %}
+                        <a id="unpublish"
+                           data-confirm="Are you sure to unpublish the partner? The changes won't be propagated to other systems!"
+                           class="btn btn-default bmd-btn-fab float-right"
+                           href="{% url 'partner_unpublish' pk=partner.id %}">
+                            <i class="material-icons">undo</i>
+                        </a>
                     {% endif %}
                     {% if can_edit %}
                         <a class="btn btn-primary bmd-btn-fab float-right"

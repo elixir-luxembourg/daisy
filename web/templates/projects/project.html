@@ -76,26 +76,24 @@
                                 class="btn btn-default bmd-btn-fab float-right">
                                     <i class="material-icons">build</i>
                             </a>
-
-                            {% if not project.is_published %}
-                                <a href="{% url 'project_publish' pk=project.pk %}" 
-                                   id="publish" 
-                                   title="Publish project"
-                                   class="btn btn-default bmd-btn-fab float-right">
-                                    <i class="material-icons">publish</i>
-                                </a>
-                            {% else %}
-                                <a  href="{% url 'project_unpublish' pk=project.pk %}" 
-                                    id="unpublish" 
-                                    title="Unpublish project"
-                                    data-confirm="Are you sure to unpublish the project? The changes won't be propagated to other systems!"
-                                    class="btn btn-default bmd-btn-fab float-right">
-                                        <i class="material-icons">undo</i>
-                                </a>
-                            {% endif %}
                         </p>
                     {% endif %}
-
+                    {% if request.user.can_publish and not project.is_published %}
+                        <a href="{% url 'project_publish' pk=project.pk %}"
+                           id="publish"
+                           title="Publish project"
+                           class="btn btn-default bmd-btn-fab float-right">
+                           <i class="material-icons">publish</i>
+                        </a>
+                    {% elif request.user.can_publish %}
+                        <a href="{% url 'project_unpublish' pk=project.pk %}"
+                           id="unpublish"
+                           title="Unpublish project"
+                           data-confirm="Are you sure to unpublish the project? The changes won't be propagated to other systems!"
+                           class="btn btn-default bmd-btn-fab float-right">
+                            <i class="material-icons">undo</i>
+                        </a>
+                    {% endif %}
                     {% if is_admin %}
                         <a class="btn btn-default bmd-btn-fab float-right"
                            title="Manage project permissions"

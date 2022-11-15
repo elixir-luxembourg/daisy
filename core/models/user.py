@@ -140,6 +140,9 @@ class User(AbstractUser):
             return self.groups.filter(name=args[0]).exists()
         return self.groups.filter(name__in=args).exists()
 
+    def can_publish(self):
+        return self.is_superuser or self.is_part_of(constants.Groups.DATA_STEWARD.value)
+
     # Permission management
     # ======================================================================
 

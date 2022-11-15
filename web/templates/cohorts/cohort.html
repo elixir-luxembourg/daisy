@@ -52,24 +52,23 @@
                             class="btn btn-default bmd-btn-fab float-right">
                                 <i class="material-icons">build</i>
                         </a>
-
-                        {% if not cohort.is_published %}
-                            <a  href="{% url 'cohort_publish' pk=cohort.pk %}" 
-                                id="publish" 
-                                title="Publish cohort"  
-                                class="btn btn-default bmd-btn-fab float-right">
-                                    <i class="material-icons">publish</i>
-                            </a>
-                        {% else %}
-                            <a href="{% url 'cohort_unpublish' pk=cohort.pk %}" 
-                                    id="unpublish"
-                                    data-confirm="Are you sure to unpublish the cohort? The changes won't be propagated to other systems!" 
-                                    title="Unpublish cohort" 
-                                    class="btn btn-default bmd-btn-fab float-right">
-                                    <i class="material-icons">undo</i></a>
-                        {% endif %}
                     {% endif %}
-
+                    {% if request.user.can_publish and not cohort.is_published %}
+                        <a href="{% url 'cohort_publish' pk=cohort.pk %}"
+                           id="publish"
+                           title="Publish cohort"
+                           class="btn btn-default bmd-btn-fab float-right">
+                            <i class="material-icons">publish</i>
+                        </a>
+                    {% elif request.user.can_publish %}
+                        <a href="{% url 'cohort_unpublish' pk=cohort.pk %}"
+                           id="unpublish"
+                           data-confirm="Are you sure to unpublish the cohort? The changes won't be propagated to other systems!"
+                           title="Unpublish cohort"
+                           class="btn btn-default bmd-btn-fab float-right">
+                            <i class="material-icons">undo</i>
+                        </a>
+                    {% endif %}
                     {% if can_edit %}
                         <a class="btn btn-primary bmd-btn-fab float-right"  title="Edit cohort" href="{% url 'cohort_edit' pk=cohort.id %}"><i
                                 class="material-icons">edit</i>
