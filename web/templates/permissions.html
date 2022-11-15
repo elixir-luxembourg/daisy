@@ -40,7 +40,7 @@
         <div class="card col">
             <div class="card-body">
                 <h2 class="card-title">View Inherited Permissions from project <a href="{% url 'project' pk=object.project.id %}">{{ object.project }}</a></h2>
-                <div class="mt-4">
+                <div class="card-text md-1">
                     {% include '_includes/permission_table.html' with obj_name='User' obj_perms_const=pj_perms_const obj_perms=inherited_permissions %}
                 </div>
             </div>
@@ -116,7 +116,7 @@
                 width: '100%',
             });
             $('#users thead th:last').html(" ");
-            $('#permissions tr:first').append('<th scope="col" class="col-sm-1 text-center"></th>')
+            $('#permissions tr:first').append('<th scope="col" class="col-sm-1"></th>')
         });
 
     </script>
