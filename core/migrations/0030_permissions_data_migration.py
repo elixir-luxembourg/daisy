@@ -190,6 +190,7 @@ def create_new_permissions(apps, schema_editor):
         for target, permissions_list in PERMISSION_MAPPING.items():
             for permission_item in permissions_list:
                 codename, description = permission_item
+                print(f"Searching for {codename} permission")
                 cursor.execute(
                     "SELECT auth_permission.id FROM auth_permission "
                     "INNER JOIN django_content_type on auth_permission.content_type_id = django_content_type.id "
@@ -198,7 +199,7 @@ def create_new_permissions(apps, schema_editor):
                 )
 
                 results = cursor.fetchall()
-                if results is None:
+                if not results:
                     # Getting the content_type id
                     cursor.execute(
                         "SELECT id from django_content_type "
@@ -210,13 +211,16 @@ def create_new_permissions(apps, schema_editor):
                     content_type_id = content_type_id[0][0]
 
                     # Create the wanted permission
+                    print(f"Permission {codename} was not found. Creating it")
                     cursor.execute(
                         "INSERT INTO auth_permission (name, content_type_id, codename) "
                         "VALUES (%s, %s, %s)",
                         [description, content_type_id, codename]
                     )
 
+
                 else:
+                    print(f"Permission {codename} was found. Skipping")
                     continue
 
 def update_django_permissions(apps, schema_editor):
@@ -375,7 +379,7 @@ def update_core_projectuserobjectpermissions(apps, schema_editor):
                         "UPDATE guardian_userobjectpermission "
                         "SET permission_id=%s "
                         "WHERE permission_id=%s and content_type_id=%s",
-                        (id, content_type_id)
+                        (new_permission_id, id, content_type_id)
                     )
 
 
@@ -438,9 +442,8 @@ def add_protected_permission_to_local_custodians(apps, schema_editor):
         rows_to_insert = rows_to_insert.rstrip(', ')
         # Inserting new data
         cursor.execute(
-            "INSERT INTO guardian_userobjectpermission %s"
-            "VALUES %s",
-            [cols, rows_to_insert]
+            "INSERT INTO guardian_userobjectpermission (object_pk, content_type_id, permission_id, user_id) "
+            f"VALUES {rows_to_insert}",
         )
 
 
