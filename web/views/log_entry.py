@@ -21,6 +21,11 @@ class LogEntryListView(CheckerMixin, ListView):
 
     template_name = 'history/log_entry_list.html'
 
+    target_mapping = {
+        'access': 'dataset',
+        'dataset': 'dataset',
+    }
+
     # TODO
     #  - Make cleaner
     def get_list_of_model_fields(self):
@@ -130,6 +135,7 @@ class LogEntryListView(CheckerMixin, ListView):
                 self.object = get_object_or_404(self.referenced_class, pk=request.GET.get("parent_entity_id"))
             else:
                 raise PermissionDenied()
+            self.permission_target = self.target_mapping[self.object.__class__.__name__.lower()]
             super().check_permissions(request)
 
     def get(self, request, *args, **kwargs):
