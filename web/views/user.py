@@ -1,5 +1,3 @@
-from itertools import groupby
-
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
@@ -95,15 +93,18 @@ class UserDetailView(DetailView):
         context["manual_source"] = UserSource.MANUAL
         project_set = ProjectUserObjectPermission.objects.filter(user=context["user"])
         dataset_set = DatasetUserObjectPermission.objects.filter(user=context["user"])
-        key_func = lambda x: x.content_object
-        project_perms = {
-            k: [p.permission.codename for p in list(l)]
-            for k, l in groupby(project_set, key_func)
-        }
-        dataset_perms = {
-            k: [p.permission.codename for p in list(l)]
-            for k, l in groupby(dataset_set, key_func)
-        }
+        project_perms = {}
+        dataset_perms = {}
+        for dsp in dataset_set:
+            if dsp.content_object in dataset_perms:
+                dataset_perms[dsp.content_object].append(dsp.permission.codename)
+            else:
+                dataset_perms[dsp.content_object] = [dsp.permission.codename]
+        for psp in project_set:
+            if psp.content_object in project_perms:
+                project_perms[psp.content_object].append(psp.permission.codename)
+            else:
+                project_perms[psp.content_object] = [psp.permission.codename]
         context["project_perms"] = project_perms
         context["dataset_perms"] = dataset_perms
         context["ds_perms_const"] = list(map(lambda x: f"{x}_dataset", [p.value for p in Permissions]))
