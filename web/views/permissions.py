@@ -106,7 +106,7 @@ def index(request, selection, pk):
                 for perm, value in data.items():
                     if value or data.get(f"{Permissions.ADMIN.value}_{selection}"):
                         assign_perm(perm, user, obj)
-                    elif perm not in map(lambda x: f"{x}_{selection}",[Permissions.EDIT.value, Permissions.DELETE.value, Permissions.VIEW.value]):
+                    elif perm not in map(lambda x: f"{x}_{selection}",[Permissions.EDIT.value, Permissions.DELETE.value]):
                         remove_perm(perm, user, obj)
             else:
                 # if no `if` has been executed, we loop over the permission and update them accordingly
