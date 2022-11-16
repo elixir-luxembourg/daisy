@@ -5,6 +5,13 @@ from core.permissions.mapping import PERMISSION_MAPPING, GROUP_PERMISSIONS
 # Django default permissions can be safely upgraded?
 # - PROTECTED is given on documents -> Needs to be skipped (protected only attributed to projects and contracts atm)
 #
+def is_test_environment(db_cursor):
+    db_cursor.execute(
+        "SELECT id from django_content_type "
+        "WHERE app_label='core'"
+    )
+
+    return not db_cursor.fetchall()
 
 
 def rollback_new_permissions(apps, schema_editor):
@@ -200,6 +207,9 @@ def rollback_core_projectuserobjectpermissions(apps, schema_editor):
 
 def create_new_permissions(apps, schema_editor):
     with connection.cursor() as cursor:
+        if is_test_environment(cursor):
+            return
+
         for target, permissions_list in PERMISSION_MAPPING.items():
             for permission_item in permissions_list:
                 codename, description = permission_item
@@ -238,6 +248,9 @@ def create_new_permissions(apps, schema_editor):
 
 def update_django_permissions(apps, schema_editor):
     with connection.cursor() as cursor:
+        if is_test_environment(cursor):
+            return
+
         # Getting the list of old permissions that need to be replaced in permission attributions
         cursor.execute(
             "SELECT auth_permission.id, auth_permission.codename, auth_permission.content_type_id, django_content_type.model FROM auth_permission "
@@ -278,6 +291,8 @@ def update_django_permissions(apps, schema_editor):
 
 def update_guardian_userobjectpermissions(apps, schema_editor):
     with connection.cursor() as cursor:
+        if is_test_environment(cursor):
+            return
         # Getting the list of old permissions that need to be replaced in permission attributions
         cursor.execute(
             "SELECT permission_id, auth_permission.codename, auth_permission.content_type_id, django_content_type.model FROM guardian_userobjectpermission "
@@ -314,6 +329,8 @@ def update_guardian_userobjectpermissions(apps, schema_editor):
 
 def update_core_datasetuserobjectpermissions(apps, schema_editor):
     with connection.cursor() as cursor:
+        if is_test_environment(cursor):
+            return
         # Getting the list of old permissions that need to be replaced in permission attributions
         cursor.execute(
             "SELECT permission_id, auth_permission.codename FROM core_datasetuserobjectpermission "
@@ -356,6 +373,8 @@ def update_core_datasetuserobjectpermissions(apps, schema_editor):
 
 def update_core_projectuserobjectpermissions(apps, schema_editor):
     with connection.cursor() as cursor:
+        if is_test_environment(cursor):
+            return
         # Getting the list of old permissions that need to be replaced in permission attributions
         cursor.execute(
             "SELECT permission_id, auth_permission.codename FROM core_projectuserobjectpermission "
@@ -397,6 +416,8 @@ def update_core_projectuserobjectpermissions(apps, schema_editor):
 
 def update_group_permissions(apps, schema_editor):
     with connection.cursor() as cursor:
+        if is_test_environment(cursor):
+            return
         for group, permissions_dict in GROUP_PERMISSIONS.items():
             # Find the group id
             cursor.execute(
