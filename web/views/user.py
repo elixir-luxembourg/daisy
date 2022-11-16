@@ -96,11 +96,15 @@ class UserDetailView(DetailView):
         project_perms = {}
         dataset_perms = {}
         for dsp in dataset_set:
+            if 'view' in dsp.permission.codename:
+                continue
             if dsp.content_object in dataset_perms:
                 dataset_perms[dsp.content_object].append(dsp.permission.codename)
             else:
                 dataset_perms[dsp.content_object] = [dsp.permission.codename]
         for psp in project_set:
+            if 'view' in psp.permission.codename:
+                continue
             if psp.content_object in project_perms:
                 project_perms[psp.content_object].append(psp.permission.codename)
             else:

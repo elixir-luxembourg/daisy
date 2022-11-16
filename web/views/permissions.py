@@ -58,6 +58,8 @@ def index(request, selection, pk):
     if klass == Dataset and obj.project is not None:
         context["inherited_permissions"] = get_users_with_perms(obj.project, attach_perms=True)
     for user, permissions in users_with_perms.items():
+        if len(permissions) == 1 and 'view' in permissions[0]:
+            continue
         # add user
         data = {
             'user': user,
