@@ -173,10 +173,13 @@
                     <div id="edit-declaration-form"></div>
                 {% else %}
                     <p class="text-center text-danger"><br/><em>Dataset is empty!</em></p>
+                    {% if can_edit %}
                     <div class="arrow-click"><p>Click here to declare data</p>
                         <p class="arrow-right"><i class="material-icons">
                             arrow_right_alt
-                        </i></p></div>
+                        </i></p>
+                    </div>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
