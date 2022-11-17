@@ -15,7 +15,7 @@ def is_test_environment(db_cursor):
 
 
 def rollback_new_permissions(apps, schema_editor):
-    # Even if we rollback, we do not want to delete the new permissions from the database
+    # Even if we roll back, we do not want to delete the new permissions from the database
     pass
 
 
