@@ -146,10 +146,10 @@ class PartnerChecker(AbstractChecker):
 
 class ContractEntityChecker(ContractChecker):
     """
-    Check permission on Contract related entities (like PartnerRole).
+    Check permission on Contract dependent entities, like PartnerRole
     """
     def _check(self, perm: str, obj: Union["PartnerRole"], **kwargs) -> bool:
-        return super().check(perm, obj.contract, **kwargs)
+        return super()._check(perm, obj.contract, **kwargs)
 
 
 class DocumentChecker(AbstractChecker):
