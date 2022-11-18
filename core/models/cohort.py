@@ -3,8 +3,6 @@ from django.conf import settings
 
 from .utils import CoreTrackedModel, TextFieldWithInputWidget
 
-from core import constants
-
 
 class Cohort(CoreTrackedModel):
     class Meta:

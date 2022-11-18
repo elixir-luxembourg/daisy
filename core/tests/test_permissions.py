@@ -4,11 +4,6 @@ from core import constants
 from core.permissions import GROUP_PERMISSIONS
 from test.factories import *
 
-# TODO
-#   All tests are based on the PERMISSIONS_MAPPING dict in mapping.py
-#   But this dict is not used in the code at all it seems!
-#   Need to rewrite all tests to not use this
-#
 
 # test checker
 @pytest.mark.parametrize('factory', [ContractFactory, DatasetFactory, ProjectFactory])
@@ -18,7 +13,7 @@ def test_entity_default_permissions(permissions, factory, group):
     Tests whether a user from a given group has the correct permissions on different Entities
 
     FIXTURES:
-        permissions: Fixture to initialize permissions of users  # FIXME: To delete
+        permissions: Fixture to initialize permissions of users
 
     PARAMETERS:
         factory: An entity factory to create a contract, dataset, or project
@@ -28,8 +23,6 @@ def test_entity_default_permissions(permissions, factory, group):
     user.save()
     entity = factory()
     entity.save()
-
-    # assert user.has_permission_on_object(constants.Permissions.VIEW, entity)
 
     if user.is_part_of(VIPGroup()):
         assert not user.has_permission_on_object(f'core.{constants.Permissions.EDIT.value}_{entity.__class__.__name__.lower()}', entity)
@@ -72,8 +65,6 @@ def test_entity_default_permissions(permissions, factory, group):
 
 
 
-# FIXME: This test loads permissions from mapping.py, which are not used in the code
-#   Replaced by test above, and can be deleted
 # test user
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize('klass_name', ['core.Project', ])
@@ -100,7 +91,6 @@ def test_object_global_permissions_for_admin_groups(group, klass_name, attribute
         assert not user.has_permission_on_object(perm, obj)
 
 
-# FIXME: To delete.
 group_permissions_expectations = []  # tuples of ( group name, has PROTECTED permission)
 for group_name, permission_mapping in GROUP_PERMISSIONS.items():
     group_permissions_expectations.append(
@@ -125,8 +115,6 @@ def test_global_document_perms(group, expected, Factory, attribute, permissions)
     Test document objects for "admins".
     -> a document is viewable by anyone with the PROTECTED permission on the project.
     or the "admin" groups
-
-    FIXME: To delete, this is tested below in test_contract_entity_permissions
     """
     group = Group.objects.get(name=group.value)
     contract = ContractFactory()
@@ -144,9 +132,7 @@ def test_global_document_perms(group, expected, Factory, attribute, permissions)
 @pytest.mark.skip("VIP Group does not exist anymore for permissions")
 def test_vip_membership_perms(perm, attribute, permissions):
     """
-    A vip added has local custodian should have all permissions for all object in the membership.
-
-    FIXME: Delete, VIP have no particular permissions anymore
+    A user added as local custodian should have all permissions for all objects in the membership.
     """
     group = Group.objects.get(name=constants.Groups.VIP.value)
     contract = ContractFactory()
@@ -156,21 +142,6 @@ def test_vip_membership_perms(perm, attribute, permissions):
     user.assign_permissions_to_project(contract.project)
     assert user.has_permission_on_object(f'core.{perm.value}_{attribute}', entities.get(attribute))
 
-# @pytest.mark.parametrize('attribute', ['project', 'dataset', 'contract'])
-# @pytest.mark.parametrize('perm', [p for p in constants.Permissions])
-# def test_not_vip_membership_perms(perm, attribute, permissions):
-#     """
-#     A vip added has local custodian should have all permissions for all object in the membership.
-#     """
-#     membership = None
-#         #MembershipFactory()
-#     user = UserFactory()
-#     user.assign_permissions_to_project(membership.project)
-#     if perm not in [constants.Permissions.ADMIN, constants.Permissions.PROTECTED]:
-#         assert user.has_permission_on_object(perm, getattr(membership, attribute))
-#     else:
-#         assert not user.has_permission_on_object(perm, getattr(membership, attribute))
-
 
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
 def test_contract_entity_permissions(permissions, group):
@@ -178,7 +149,7 @@ def test_contract_entity_permissions(permissions, group):
     Tests user permissions on Contract and related chidren entities based on User status
 
     FIXTURE:
-        permissions: Needed to load default permissions # FIXME: To delete
+        permissions: Needed to load default permissions
 
     PARAMETERS:
         group: The group the user belongs to
@@ -217,7 +188,7 @@ def test_dataset_entity_permissions(permissions, group, entity_factory):
     Tests user permissions on Dataset and related chidren entities based on User status
 
     FIXTURE:
-        permissions: Needed to load default permissions # FIXME: To delete
+        permissions: Needed to load default permissions
 
     PARAMETERS:
         group: The group the user belongs to
@@ -252,7 +223,7 @@ def test_project_entity_permissions(permissions, group, entity_factory):
     Tests user permissions on Project and related chidren entities based on User status
 
     FIXTURE:
-        permissions: Needed to load default permissions # FIXME: To delete
+        permissions: Needed to load default permissions
 
     PARAMETERS:
         group: The group the user belongs to

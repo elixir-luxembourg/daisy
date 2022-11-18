@@ -135,23 +135,21 @@ class ContactChecker(AbstractChecker):
     def _check(self, perm: str, obj: "Contact", **kwargs) -> bool:
         return self.checker.has_perm(perm, obj)
 
+
 class PartnerChecker(AbstractChecker):
     """
     Check permission on Partner.
     """
-    # FIXME: The idea is to check whether someone can modify the partners associated with a contract
-    #  The issue is that here we only have the partner, so how to get the correct contract from there
-    #  seems very hard.
     def _check(self, perm: str, obj: "Partner", **kwargs) -> bool:
         return self.checker.has_perm(perm, obj)
 
 
-class PartnerRoleChecker(AbstractChecker):
+class ContractEntityChecker(ContractChecker):
     """
-    Check permission on Contract Partner relationship.
+    Check permission on Contract related entities (like PartnerRole).
     """
-    def _check(self, perm: str, obj: "PartnerRole", **kwargs) -> bool:
-        return ContractChecker(self.user_or_group, checker=self.checker).check(perm, obj.contract, **kwargs)
+    def _check(self, perm: str, obj: Union["PartnerRole"], **kwargs) -> bool:
+        return super().check(perm, obj.contract, **kwargs)
 
 
 class DocumentChecker(AbstractChecker):
@@ -230,11 +228,11 @@ class AutoChecker(AbstractChecker):
         'Cohort': CohortChecker,
         'Project': ProjectChecker,
         'Partner': PartnerChecker,
-        'PartnerRole': PartnerRoleChecker,
+        'PartnerRole': ContractEntityChecker,
         'Contact': ContactChecker,
         'Contract': ContractChecker,
         'Document': DocumentChecker,
-        'DataDeclaration': DataDeclarationChecker,
+        'DataDeclaration': DatasetEntityChecker,
         'User': UserChecker,
         'Access': AccessChecker,
         'LegalBasis': DatasetEntityChecker,

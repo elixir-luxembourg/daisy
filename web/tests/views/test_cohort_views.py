@@ -13,8 +13,6 @@ from .utils import check_response_status, check_datasteward_restricted_url
 
 def check_cohort_view_permissions(url: str, user: User, action: Optional[Permissions], cohort: Optional[Cohort] = None):
     # For now, anyone can create or edit the cohorts. However, only data stewards should be able to delete them
-    # FIXME
-    #  Discuss the correct permissions to be given
     if action == Permissions.DELETE:
         # Only data stewards can delete Cohort instances
         if user.is_part_of(DataStewardGroup()):
@@ -29,7 +27,7 @@ def check_cohort_view_permissions(url: str, user: User, action: Optional[Permiss
         check_response_status(url, user, [], obj=cohort)
 
     elif action == Permissions.EDIT:
-        # FIXME: Anyone can edit Cohort instances
+        # Anyone can edit Cohort instances
         check_response_status(url, user, [], obj=cohort)
 
     else:

@@ -52,7 +52,6 @@ def check_project_views_permissions(url: str, user: User, action: Optional[Permi
         ('project_contract_remove', Permissions.EDIT),
         ('project_dataset_add', Permissions.EDIT),
         ('project_dataset_choose_type', Permissions.EDIT),
-        # 'project_dataset_create',  # FIXME: Actually never used anywhere in the code?
     ]
 )
 def test_project_views_permissions(permissions, group, url_name, action):

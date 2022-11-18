@@ -57,7 +57,7 @@ def test_dataset_views_permissions(permissions, group, url_name, action):
     user = UserFactory(groups=[group()])
     check_dataset_views_permissions(url, user, action, dataset)
 
-# FIXME
+
 @pytest.mark.skip("Dataset templates do not display documents")
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
 def test_dataset_view_protected_documents(permissions, group):

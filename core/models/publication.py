@@ -1,6 +1,5 @@
 from .utils import CoreModel, TextFieldWithInputWidget
 
-from core import constants
 
 class Publication(CoreModel):
     """

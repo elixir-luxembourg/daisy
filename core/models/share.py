@@ -2,7 +2,6 @@ from django.db import models
 
 from .utils import CoreModel
 
-from core import constants
 
 class Share(CoreModel):
     """

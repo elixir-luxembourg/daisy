@@ -6,7 +6,6 @@ from model_utils import Choices
 from .utils import CoreTrackedModel, TextFieldWithInputWidget
 
 from elixir_daisy import settings
-from core import constants
 
 GEO_CATEGORY = Choices(
     ('EU', 'EU'),

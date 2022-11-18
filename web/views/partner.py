@@ -6,15 +6,13 @@ from django.utils.module_loading import import_string
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.decorators import user_passes_test
 
-import core.models.data_declaration
 from . import facet_view_utils
 from core.forms import PartnerForm
 from core.forms.partner import PartnerFormEdit
 from core.models import Partner
 from core.models.utils import COMPANY
-from core.permissions import permission_required, CheckerMixin
+from core.permissions import CheckerMixin
 from core.constants import Permissions
-from web.views.user import superuser_required
 from web.views.utils import AjaxViewMixin, is_data_steward
 
 

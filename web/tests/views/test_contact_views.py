@@ -44,9 +44,6 @@ def test_contacts_views_permissions(permissions, group, url_name, perm):
     """
     Tests whether users from different groups can access the urls associated with Contact instances
     """
-    # For now, anyone can create or edit contacts, but only datastewards can delete
-    # FIXME
-    #   Discuss this!
     contact = None
     if url_name in ['contacts', 'contact_add', 'contacts_export']:
         url = reverse(url_name)

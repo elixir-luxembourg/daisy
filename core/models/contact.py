@@ -1,6 +1,5 @@
 from django.db import models
 
-from core import constants
 from core.models.access import Access
 from core.models.contact_type import ContactType
 from core.models.utils import CoreModel, TextFieldWithInputWidget

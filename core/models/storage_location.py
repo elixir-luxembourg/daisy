@@ -3,7 +3,6 @@ from enumchoicefield import EnumChoiceField, ChoiceEnum
 
 from .utils import CoreModel, TextFieldWithInputWidget
 
-from core import constants
 
 class StorageLocationCategory(ChoiceEnum):
     master = 'master'

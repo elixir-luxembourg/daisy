@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List, Union
 
 from django.contrib.auth.base_user import BaseUserManager
@@ -157,58 +156,52 @@ class User(AbstractUser):
             remove_perm(permission, user_object, permission_object)
 
     def assign_permissions_to_dataset(self, dataset_object):
-        self._assign_perm('core.protected_dataset', self, dataset_object)
-        self._assign_perm('core.admin_dataset', self, dataset_object)
-        self._assign_perm('core.delete_dataset', self, dataset_object)
-        self._assign_perm('core.change_dataset', self, dataset_object)
-        self._assign_perm('core.view_dataset', self, dataset_object)
+        self._assign_perm(f'core.{constants.Permissions.PROTECTED.value}_dataset', self, dataset_object)
+        self._assign_perm(f'core.{constants.Permissions.ADMIN.value}_dataset', self, dataset_object)
+        self._assign_perm(f'core.{constants.Permissions.DELETE.value}_dataset', self, dataset_object)
+        self._assign_perm(f'core.{constants.Permissions.EDIT.value}_dataset', self, dataset_object)
 
     def remove_permissions_to_dataset(self, dataset_object):
-        self._remove_perm('core.protected_dataset', self, dataset_object)
-        self._remove_perm('core.admin_dataset', self, dataset_object)
-        self._remove_perm('core.delete_dataset', self, dataset_object)
-        self._remove_perm('core.change_dataset', self, dataset_object)
-        self._remove_perm('core.view_dataset', self, dataset_object)
+        self._remove_perm(f'core.{constants.Permissions.PROTECTED.value}_dataset', self, dataset_object)
+        self._remove_perm(f'core.{constants.Permissions.ADMIN.value}_dataset', self, dataset_object)
+        self._remove_perm(f'core.{constants.Permissions.DELETE.value}_dataset', self, dataset_object)
+        self._remove_perm(f'core.{constants.Permissions.EDIT.value}_dataset', self, dataset_object)
 
     def assign_permissions_to_contract(self, contract):
-        self._assign_perm('core.protected_contract', self, contract)
-        self._assign_perm('core.admin_contract', self, contract)
-        self._assign_perm('core.delete_contract', self, contract)
-        self._assign_perm('core.change_contract', self, contract)
-        self._assign_perm('core.view_contract', self, contract)
+        self._assign_perm(f'core.{constants.Permissions.PROTECTED.value}_contract', self, contract)
+        self._assign_perm(f'core.{constants.Permissions.ADMIN.value}_contract', self, contract)
+        self._assign_perm(f'core.{constants.Permissions.DELETE.value}_contract', self, contract)
+        self._assign_perm(f'core.{constants.Permissions.EDIT.value}_contract', self, contract)
 
     def remove_permissions_to_contract(self, contract):
-        self._remove_perm('core.protected_contract', self, contract)
-        self._remove_perm('core.admin_contract', self, contract)
-        self._remove_perm('core.delete_contract', self, contract)
-        self._remove_perm('core.change_contract', self, contract)
-        self._remove_perm('core.view_contract', self, contract)
+        self._remove_perm(f'core.{constants.Permissions.PROTECTED.value}_contract', self, contract)
+        self._remove_perm(f'core.{constants.Permissions.ADMIN.value}_contract', self, contract)
+        self._remove_perm(f'core.{constants.Permissions.DELETE.value}_contract', self, contract)
+        self._remove_perm(f'core.{constants.Permissions.EDIT.value}_contract', self, contract)
 
     def assign_permissions_to_project(self, project_object):
-        self._assign_perm('core.protected_project', self, project_object)
-        self._assign_perm('core.admin_project', self, project_object)
-        self._assign_perm('core.delete_project', self, project_object)
-        self._assign_perm('core.change_project', self, project_object)
-        self._assign_perm('core.view_project', self, project_object)
+        self._assign_perm(f'core.{constants.Permissions.PROTECTED.value}_project', self, project_object)
+        self._assign_perm(f'core.{constants.Permissions.ADMIN.value}_project', self, project_object)
+        self._assign_perm(f'core.{constants.Permissions.DELETE.value}_project', self, project_object)
+        self._assign_perm(f'core.{constants.Permissions.EDIT.value}_project', self, project_object)
 
     def remove_permissions_to_project(self, project_object):
-        self._remove_perm('core.protected_project', self, project_object)
-        self._remove_perm('core.admin_project', self, project_object)
-        self._remove_perm('core.delete_project', self, project_object)
-        self._remove_perm('core.change_project', self, project_object)
-        self._remove_perm('core.view_project', self, project_object)
+        self._remove_perm(f'core.{constants.Permissions.PROTECTED.value}_project', self, project_object)
+        self._remove_perm(f'core.{constants.Permissions.ADMIN.value}_project', self, project_object)
+        self._remove_perm(f'core.{constants.Permissions.DELETE.value}_project', self, project_object)
+        self._remove_perm(f'core.{constants.Permissions.EDIT.value}_project', self, project_object)
 
     def is_admin_of_project(self, project_object):
-        return ProjectChecker(self).check('core.admin_project', project_object)
+        return ProjectChecker(self).check(f'core.{constants.Permissions.ADMIN.value}_project', project_object)
 
     def can_edit_project(self, project_object):
-        return ProjectChecker(self).check('core.change_project', project_object)
+        return ProjectChecker(self).check(f'core.{constants.Permissions.EDIT.value}_project', project_object)
 
     def is_admin_of_dataset(self, dataset_object):
-        return DatasetChecker(self).check('core.admin_dataset', dataset_object)
+        return DatasetChecker(self).check(f'core.{constants.Permissions.ADMIN.value}_dataset', dataset_object)
 
     def can_edit_dataset(self, dataset_object):
-        return DatasetChecker(self).check('core.change_dataset', dataset_object)
+        return DatasetChecker(self).check(f'core.{constants.Permissions.EDIT.value}_dataset', dataset_object)
 
     def has_permission_on_object(self, perm, obj):
         """
