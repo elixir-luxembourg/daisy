@@ -3,7 +3,7 @@ from typing import List
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, ObjectDoesNotExist
 
 from enumchoicefield import EnumChoiceField, ChoiceEnum
 
@@ -12,7 +12,7 @@ from .utils import CoreModel
 from auditlog.registry import auditlog
 from auditlog.models import AuditlogHistoryField
 
-from core import constants
+
 
 class StatusChoices(ChoiceEnum):
     precreated = "Pre-created"
@@ -139,7 +139,13 @@ class Access(CoreModel):
     )
 
     def __str__(self):
-        return f"Access ({self.status}) to dataset {self.dataset.title} given to a contact: {self.user}/{self.access_notes}"
+        try:
+            if self.contact:
+                return f"Access ({self.status}) to dataset {self.dataset.title} given to a contact: {self.contact}/{self.access_notes}"
+            else:
+                return f"Access ({self.status}) to dataset {self.dataset.title} given to a user: {self.user}/{self.access_notes}"
+        except ObjectDoesNotExist as e:
+                return f"Access ({self.status}) to dataset {self.dataset.title} given to a deleted contact or user: {self.access_notes}"
 
     def delete(self, force: bool = False):
         self.status = StatusChoices.terminated

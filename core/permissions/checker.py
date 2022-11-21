@@ -220,7 +220,7 @@ class AccessChecker(AbstractChecker):
 
 class AutoChecker(AbstractChecker):
     """
-    Check permission on given object. Object must be instanced on a key in the __mapping attribute.
+    Check permission on given object. Object must be an instance of a key in the __mapping attribute.
     """
 
     __mapping = {

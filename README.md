@@ -164,20 +164,7 @@ where ${JSON_FILE} is the path to a json file that will be produced.  In additio
 	```bash
 	docker-compose exec web python manage.py collectstatic
 	```
-	
-1. Reload initial data (optional).
 
-
-    **IMPORTANT NOTE:** The initial data package provides some default values for various lookup lists e.g. data sensitivity classes, document or data types.  If, while using DAISY, you have customized these default lists, please keep in mind that running the ```load_initial_data``` command during update will re-introduce those default values. If this is not desired, then please skip the reloading of initial data step during your update. You manage lookup lists through the application interface.<br/><br/>
-
- 
-    ```bash
-    docker-compose exec web bash -c "cd core/fixtures/ && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json"
-    docker-compose exec web python manage.py load_initial_data
-    ```
-	
-	
-    **IMPORTANT NOTE:** This step can take several minutes to complete. 
 	
 1. Rebuild the search index.
     
@@ -238,7 +225,7 @@ npm run-script build
 ### Run the built-in web server (for development)
 
 ```bash
-./manage.py "runserver
+./manage.py runserver
 ```
 
 ### Run the tests
