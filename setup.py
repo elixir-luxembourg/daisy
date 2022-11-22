@@ -40,7 +40,7 @@ requirements = [
     'psycopg2-binary==2.9.3',
     'pysolr==3.8.1',
     'pytest-runner==5.1',
-    'python-keycloak==0.26.1',
+    'python-keycloak==2.6.0',
     'pytz==2022.1',
     'requests==2.25.1',
     'urllib3==1.26.5',
