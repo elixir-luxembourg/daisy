@@ -10,7 +10,7 @@ def login(client, user):
     """
     Shotcut to log an user to a client.
     """
-    client.login(username=user.username, password=user.password)
+    assert client.login(username=user.username, password=user.password), f"Login of user {user.username} failed"
 
 
 @pytest.mark.parametrize('is_vip', [True, False])
@@ -26,7 +26,7 @@ def test_project_create_get(client, is_vip, user_vip, user_normal):
 
 
 @pytest.mark.parametrize('is_vip', [True, False])
-def test_project_create_post_valid(client, user_vip, user_normal, is_vip):
+def test_project_create_post_valid(permissions, client, user_vip, user_normal, is_vip):
     """
     POST to project creation
     """
@@ -54,15 +54,13 @@ def test_project_create_post_valid(client, user_vip, user_normal, is_vip):
 
     # check if normal user has proper right
     if not is_vip:
-        assert user_normal.has_perm(constants.Permissions.EDIT.value, project)
-        assert user_normal.has_perm(constants.Permissions.DELETE.value, project)
-        assert user_normal.has_perm(constants.Permissions.VIEW.value, project)
+        assert user_normal.has_permission_on_object(f'core.{constants.Permissions.EDIT.value}_project', project)
+        assert user_normal.has_permission_on_object(f'core.{constants.Permissions.DELETE.value}_project', project)
 
     # pi should always have the perms
-    assert user_vip.has_perm(constants.Permissions.EDIT.value, project)
-    assert user_vip.has_perm(constants.Permissions.ADMIN.value, project)
-    assert user_vip.has_perm(constants.Permissions.DELETE.value, project)
-    assert user_vip.has_perm(constants.Permissions.VIEW.value, project)
+    assert user_vip.has_permission_on_object(f'core.{constants.Permissions.EDIT.value}_project', project)
+    assert user_vip.has_permission_on_object(f'core.{constants.Permissions.ADMIN.value}_project', project)
+    assert user_vip.has_permission_on_object(f'core.{constants.Permissions.DELETE.value}_project', project)
 
 
 @pytest.mark.parametrize('is_vip', [True, False])

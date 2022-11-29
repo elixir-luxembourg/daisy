@@ -1,11 +1,21 @@
 from typing import Tuple, Optional
 
 from django.http import JsonResponse
+from django.core.exceptions import PermissionDenied
+from django.contrib.auth.models import Group
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.views.generic.edit import FormMixin
 from sequences import get_next_value
 
 from core.models import Contact, User
+from core.constants import Groups
+
+
+def is_data_steward(user):
+    if user.is_part_of(Group.objects.get(name=Groups.DATA_STEWARD.value)):
+        return True
+    else:
+        raise PermissionDenied
 
 
 class AjaxViewMixin(SingleObjectTemplateResponseMixin, FormMixin):

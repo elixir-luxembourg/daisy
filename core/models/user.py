@@ -1,5 +1,4 @@
-from datetime import datetime
-from typing import List
+from typing import List, Union
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
@@ -10,7 +9,7 @@ from enumchoicefield.enum import ChoiceEnum
 from guardian.shortcuts import assign_perm, remove_perm
 
 from core import constants
-from core.models import Access, Dataset
+from core.models import Access, Dataset, Contract, Project
 from core.permissions import ProjectChecker, DatasetChecker, ContractChecker, AutoChecker
 from .utils import TextFieldWithInputWidget
 
@@ -140,6 +139,9 @@ class User(AbstractUser):
             return self.groups.filter(name=args[0]).exists()
         return self.groups.filter(name__in=args).exists()
 
+    def can_publish(self):
+        return self.is_superuser or self.is_part_of(constants.Groups.DATA_STEWARD.value)
+
     # Permission management
     # ======================================================================
 
@@ -154,61 +156,52 @@ class User(AbstractUser):
             remove_perm(permission, user_object, permission_object)
 
     def assign_permissions_to_dataset(self, dataset_object):
-        if self.is_part_of(constants.Groups.VIP.value):
-            self._assign_perm(constants.Permissions.PROTECTED.value, self, dataset_object)
-            self._assign_perm(constants.Permissions.ADMIN.value, self, dataset_object)
-        self._assign_perm(constants.Permissions.DELETE.value, self, dataset_object)
-        self._assign_perm(constants.Permissions.EDIT.value, self, dataset_object)
-        self._assign_perm(constants.Permissions.VIEW.value, self, dataset_object)
+        self._assign_perm(f'core.{constants.Permissions.PROTECTED.value}_dataset', self, dataset_object)
+        self._assign_perm(f'core.{constants.Permissions.ADMIN.value}_dataset', self, dataset_object)
+        self._assign_perm(f'core.{constants.Permissions.DELETE.value}_dataset', self, dataset_object)
+        self._assign_perm(f'core.{constants.Permissions.EDIT.value}_dataset', self, dataset_object)
 
     def remove_permissions_to_dataset(self, dataset_object):
-        self._remove_perm(constants.Permissions.PROTECTED.value, self, dataset_object)
-        self._remove_perm(constants.Permissions.ADMIN.value, self, dataset_object)
-        self._remove_perm(constants.Permissions.DELETE.value, self, dataset_object)
-        self._remove_perm(constants.Permissions.EDIT.value, self, dataset_object)
-        self._remove_perm(constants.Permissions.VIEW.value, self, dataset_object)
+        self._remove_perm(f'core.{constants.Permissions.PROTECTED.value}_dataset', self, dataset_object)
+        self._remove_perm(f'core.{constants.Permissions.ADMIN.value}_dataset', self, dataset_object)
+        self._remove_perm(f'core.{constants.Permissions.DELETE.value}_dataset', self, dataset_object)
+        self._remove_perm(f'core.{constants.Permissions.EDIT.value}_dataset', self, dataset_object)
 
     def assign_permissions_to_contract(self, contract):
-        if self.is_part_of(constants.Groups.VIP.value):
-            self._assign_perm(constants.Permissions.PROTECTED.value, self, contract)
-            self._assign_perm(constants.Permissions.ADMIN.value, self, contract)
-        self._assign_perm(constants.Permissions.DELETE.value, self, contract)
-        self._assign_perm(constants.Permissions.EDIT.value, self, contract)
-        self._assign_perm(constants.Permissions.VIEW.value, self, contract)
+        self._assign_perm(f'core.{constants.Permissions.PROTECTED.value}_contract', self, contract)
+        self._assign_perm(f'core.{constants.Permissions.ADMIN.value}_contract', self, contract)
+        self._assign_perm(f'core.{constants.Permissions.DELETE.value}_contract', self, contract)
+        self._assign_perm(f'core.{constants.Permissions.EDIT.value}_contract', self, contract)
 
     def remove_permissions_to_contract(self, contract):
-        self._remove_perm(constants.Permissions.PROTECTED.value, self, contract)
-        self._remove_perm(constants.Permissions.ADMIN.value, self, contract)
-        self._remove_perm(constants.Permissions.DELETE.value, self, contract)
-        self._remove_perm(constants.Permissions.EDIT.value, self, contract)
-        self._remove_perm(constants.Permissions.VIEW.value, self, contract)
+        self._remove_perm(f'core.{constants.Permissions.PROTECTED.value}_contract', self, contract)
+        self._remove_perm(f'core.{constants.Permissions.ADMIN.value}_contract', self, contract)
+        self._remove_perm(f'core.{constants.Permissions.DELETE.value}_contract', self, contract)
+        self._remove_perm(f'core.{constants.Permissions.EDIT.value}_contract', self, contract)
 
     def assign_permissions_to_project(self, project_object):
-        if self.is_part_of(constants.Groups.VIP.value):
-            self._assign_perm(constants.Permissions.PROTECTED.value, self, project_object)
-            self._assign_perm(constants.Permissions.ADMIN.value, self, project_object)
-        self._assign_perm(constants.Permissions.DELETE.value, self, project_object)
-        self._assign_perm(constants.Permissions.EDIT.value, self, project_object)
-        self._assign_perm(constants.Permissions.VIEW.value, self, project_object)
+        self._assign_perm(f'core.{constants.Permissions.PROTECTED.value}_project', self, project_object)
+        self._assign_perm(f'core.{constants.Permissions.ADMIN.value}_project', self, project_object)
+        self._assign_perm(f'core.{constants.Permissions.DELETE.value}_project', self, project_object)
+        self._assign_perm(f'core.{constants.Permissions.EDIT.value}_project', self, project_object)
 
     def remove_permissions_to_project(self, project_object):
-        self._remove_perm(constants.Permissions.PROTECTED.value, self, project_object)
-        self._remove_perm(constants.Permissions.ADMIN.value, self, project_object)
-        self._remove_perm(constants.Permissions.DELETE.value, self, project_object)
-        self._remove_perm(constants.Permissions.EDIT.value, self, project_object)
-        self._remove_perm(constants.Permissions.VIEW.value, self, project_object)
+        self._remove_perm(f'core.{constants.Permissions.PROTECTED.value}_project', self, project_object)
+        self._remove_perm(f'core.{constants.Permissions.ADMIN.value}_project', self, project_object)
+        self._remove_perm(f'core.{constants.Permissions.DELETE.value}_project', self, project_object)
+        self._remove_perm(f'core.{constants.Permissions.EDIT.value}_project', self, project_object)
 
     def is_admin_of_project(self, project_object):
-        return ProjectChecker(self).check(constants.Permissions.ADMIN, project_object)
+        return ProjectChecker(self).check(f'core.{constants.Permissions.ADMIN.value}_project', project_object)
 
     def can_edit_project(self, project_object):
-        return ProjectChecker(self).check(constants.Permissions.EDIT, project_object)
+        return ProjectChecker(self).check(f'core.{constants.Permissions.EDIT.value}_project', project_object)
 
     def is_admin_of_dataset(self, dataset_object):
-        return DatasetChecker(self).check(constants.Permissions.ADMIN, dataset_object)
+        return DatasetChecker(self).check(f'core.{constants.Permissions.ADMIN.value}_dataset', dataset_object)
 
     def can_edit_dataset(self, dataset_object):
-        return DatasetChecker(self).check(constants.Permissions.EDIT, dataset_object)
+        return DatasetChecker(self).check(f'core.{constants.Permissions.EDIT.value}_dataset', dataset_object)
 
     def has_permission_on_object(self, perm, obj):
         """
@@ -219,13 +212,20 @@ class User(AbstractUser):
     def can_edit_contract(self, contract):
         """
         Check if user can edit a contract.
-        True if he has ADMIN right on the project
+        Should return True if user is data steward, legal or local custodian on contract
         """
-        return ContractChecker(self).check(constants.Permissions.EDIT, contract)
+        return ContractChecker(self).check(f"core.{constants.Permissions.EDIT.value}_contract", contract)
+
+    def can_see_protected(self, obj: Union[Contract, Dataset, Project]):
+        """
+        Check if user can see protected elements of Contract, Dataset, or Project
+        Should return True if user is data stewards, auditor, legal (for contract) or local custodian of object
+        """
+        return AutoChecker(self).check(f"core.{constants.Permissions.PROTECTED.value}_{obj.__class__.__name__.lower()}", obj)
 
     def get_access_permissions(self) -> List[str]:
         """
-        Finds Accesses of the user, and returns a list of their dataset IDs 
+        Finds Accesses of the user, and returns a list of their dataset IDs
         """
         return Access.find_for_user(self)
 

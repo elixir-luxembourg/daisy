@@ -1,8 +1,7 @@
 from django.db import models
 from enumchoicefield import EnumChoiceField, ChoiceEnum
-from model_utils.managers import InheritanceManager
 
-from .utils import CoreModel, TextFieldWithInputWidget, classproperty
+from .utils import CoreModel, TextFieldWithInputWidget
 
 
 class StorageLocationCategory(ChoiceEnum):
@@ -20,7 +19,6 @@ class DataLocation(CoreModel):
         app_label = 'core'
         get_latest_by = "added"
         ordering = ['added']
-
 
     backend = models.ForeignKey(
         'core.StorageResource',

@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.db import models
 
 from core.models.access import Access
@@ -21,7 +19,6 @@ class Contact(CoreModel):
         app_label = 'core'
         get_latest_by = "added"
         ordering = ['added']
-
 
     class AppMeta:
         help_text = "Contacts are people affiliated with Partner institutions. Collaborator PIs, Project Officers at the EU are examples of contacts."

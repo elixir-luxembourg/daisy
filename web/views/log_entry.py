@@ -3,8 +3,9 @@ from django.views.generic import ListView
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 
+from core import constants
 from core.models.user import User
-from core.permissions import constants, CheckerMixin
+from core.permissions import CheckerMixin
 from auditlog.models import LogEntry
 from auditlog.registry import auditlog
 
@@ -19,6 +20,11 @@ class LogEntryListView(CheckerMixin, ListView):
     permission_required = constants.Permissions.PROTECTED
 
     template_name = 'history/log_entry_list.html'
+
+    target_mapping = {
+        'access': 'dataset',
+        'dataset': 'dataset',
+    }
 
     # TODO
     #  - Make cleaner
@@ -129,6 +135,7 @@ class LogEntryListView(CheckerMixin, ListView):
                 self.object = get_object_or_404(self.referenced_class, pk=request.GET.get("parent_entity_id"))
             else:
                 raise PermissionDenied()
+            self.permission_target = self.target_mapping[self.object.__class__.__name__.lower()]
             super().check_permissions(request)
 
     def get(self, request, *args, **kwargs):

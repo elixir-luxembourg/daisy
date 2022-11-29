@@ -8,7 +8,7 @@
         </button>
     </div>
 {% endfor %}
-<form id="formset" class="form col-md-6" method="post" novalidate>
+<form id="formset" class="form md-1" method="post" novalidate>
     {% csrf_token %}
 
     {{ formset.non_form_errors.as_ul }}
@@ -16,11 +16,15 @@
     {{ formset.management_form }}
 
 
-    <table id="users" class="table table-condensed">
-        <thead>
+    <table id="users" class="table">
+        <thead class="thead-light">
             <tr>
                 {% for field in formset.empty_form.visible_fields %}
-                    <th scope="col" class="{% if forloop.first %}col-sm-11{% else %}col-sm-1{% endif %}">{{ field.label|capfirst }}</th>
+                    {% if forloop.first %}
+                    <th scope="col" class="col-sm-1"><h3>{{ field.label|capfirst }}</h3></th>
+                    {% else %}
+                    <th scope="col" class="col-sm-1 text-center">{{ field.label }}</th>
+                    {% endif %}
                 {% endfor %}
             </tr>
         </thead>
@@ -35,7 +39,7 @@
                 <!-- body -->
                 <tr>
                     {% for field in formset.empty_form.visible_fields %}
-                        <td>
+                        <td class="text-center">
                             {{ field.errors.as_ul }}
                             {{ field }}
                         </td>
@@ -51,7 +55,7 @@
                 <!-- body -->
                 <tr>
                     {% for field in form.visible_fields %}
-                        <td>
+                        <td class="text-center">
                             {{ field.errors.as_ul }}
                             {{ field }}
                         </td>

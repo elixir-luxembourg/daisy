@@ -1,9 +1,11 @@
 from django.apps import apps
 from django.db import models
-from model_utils import Choices
 from django_countries.fields import CountryField
+
+from model_utils import Choices
+from .utils import CoreTrackedModel, TextFieldWithInputWidget
+
 from elixir_daisy import settings
-from .utils import  CoreTrackedModel, TextFieldWithInputWidget
 
 GEO_CATEGORY = Choices(
     ('EU', 'EU'),
@@ -17,8 +19,6 @@ SECTOR_CATEGORY = Choices(
     ('PRIVATE_NP', 'Private Non-Profit'),
     ('PRIVATE_P', 'Private For-Profit')
 )
-
-
 
 
 class Partner(CoreTrackedModel):
@@ -38,6 +38,8 @@ class Partner(CoreTrackedModel):
         app_label = 'core'
         get_latest_by = "added"
         ordering = ['name']
+
+
 
     class AppMeta:
         help_text = "Partners are collaborators which are the source and/or recipient of data. " \

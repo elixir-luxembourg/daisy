@@ -5,11 +5,11 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 
 from core.forms import ContactForm, PickContactForm
 from core.models import Contact, Project
-from core.permissions import permission_required
+from core.permissions import permission_required, CheckerMixin
 from web.views.utils import AjaxViewMixin
 from core.constants import Permissions
 from . import facet_view_utils
@@ -17,7 +17,7 @@ FACET_FIELDS = settings.FACET_FIELDS['contact']
 from core.models.utils import COMPANY
 
 @require_http_methods(["DELETE"])
-@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'project', (Project, 'pk', 'pk'))
 def remove_contact_from_project(request, pk, contact_id):
     contact = get_object_or_404(Contact, pk=contact_id)
     project = get_object_or_404(Project, pk=pk)
@@ -25,7 +25,7 @@ def remove_contact_from_project(request, pk, contact_id):
     return HttpResponse("Contact deleted")
 
 
-@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'project', (Project, 'pk', 'pk'))
 def pick_contact_for_project(request, pk):
     if request.method == 'POST':
         form = PickContactForm(request.POST)
@@ -46,7 +46,7 @@ def pick_contact_for_project(request, pk):
     return render(request, 'modal_form.html', {'form': form, 'submit_url': request.get_full_path()})
 
 
-@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'project', (Project, 'pk', 'pk'))
 def add_contact_to_project(request, pk):
     if request.method == 'POST':
         form = ContactForm(request.POST)
@@ -111,7 +111,6 @@ class ContactEditView(UpdateView):
         return reverse_lazy('contact', kwargs={'pk': self.object.id})
 
 
-
 def contact_search_view(request):
     query = request.GET.get('query')
     order_by = request.GET.get('order_by')
@@ -141,11 +140,13 @@ def contact_search_view(request):
     })
 
 
-class ContactDelete(DeleteView):
+class ContactDelete(CheckerMixin, DeleteView):
     model = Contact
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('contacts')
     success_message = "Contact was deleted successfully."
+    permission_required = Permissions.DELETE
+    permission_target = 'contact'
 
     def get_context_data(self, **kwargs):
         context = super(ContactDelete, self).get_context_data(**kwargs)

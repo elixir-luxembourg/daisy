@@ -1,11 +1,12 @@
 """
 Template tags utils
 """
-
+from typing import Union
 from django.template.base import Node
 from django.template.defaulttags import register
 from django.urls import reverse
 
+from core.models import Dataset, Project, Contract
 
 @register.filter
 def get_item(dictionary, key):
@@ -27,6 +28,11 @@ def un_underscore(item):
 def form_add_class(field, css_class):
     return field.as_widget(attrs={'class': css_class})
 
+
+@register.filter
+def can_see_protected(user, obj: Union[Project, Contract, Dataset]):
+    has_perm = user.can_see_protected(obj)
+    return has_perm
 
 # @register.simple_tag
 # def url_replace_facet(request, field, value):

@@ -12,6 +12,7 @@ class Publication(CoreModel):
         get_latest_by = "added"
         ordering = ['added']
 
+
     # Citation string, with authors, title, publication year etc.
     citation = TextFieldWithInputWidget(blank=False,
                                         verbose_name='Citation string')

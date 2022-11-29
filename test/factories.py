@@ -1,5 +1,6 @@
 # configure factories from https://factoryboy.readthedocs.io
 import factory
+from tempfile import NamedTemporaryFile
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
@@ -57,6 +58,36 @@ class UserFactory(factory.django.DjangoModelFactory):
         if extracted:
             for group in extracted:
                 self.groups.add(group)
+
+    @factory.post_generation
+    def password(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted:
+            self.set_password(extracted)
+        else:
+            self.set_password('test-user')
+
+
+class PublicationFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "core.Publication"
+        django_get_or_create = ('doi', )
+
+    doi = factory.Faker('ssn')
+
+    @factory.post_generation
+    def citation(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted:
+            return extracted
+        else:
+            authors = factory.Faker('name')
+            title = factory.Faker('sentence')
+            journal = factory.Faker('word')
+            year = factory.Faker
+            return f'{authors} {title}. {journal} ({year})'
 
 
 class ProjectFactory(factory.django.DjangoModelFactory):
@@ -258,6 +289,13 @@ class GDPRRoleFactory(factory.django.DjangoModelFactory):
     name = factory.Iterator(["joint_controller", "controller", "processor"])
 
 
+class PartnerRoleFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = 'core.PartnerRole'
+
+    partner = factory.SubFactory(PartnerFactory)
+
+
 class ContractFactory(factory.django.DjangoModelFactory):
     """
     Collaboration factory
@@ -290,6 +328,9 @@ class ContractFactory(factory.django.DjangoModelFactory):
             # A list of users were passed in, use them
             for partner_roles in extracted:
                 self.partners_roles.add(partner_roles)
+
+        else:
+            self.partners_roles.add(PartnerRoleFactory(contract=self))
 
     # @factory.post_generation
     # def company_roles(self, create, extracted, **kwargs):
@@ -332,19 +373,28 @@ class DatasetNotificationFactory(AbstractNotificationFactory):
 
 
 ## Documents
+
+
 class AbstractDocumentFactory(factory.django.DjangoModelFactory):
     """
     Abstract class for document factories
-    """
 
+    Can be created with a temporary file when needed by using the parameter `with_file=True`
+    This file is not deleted automatically and must be removed manually. For example with `os.remove(object.content.name)`
+    where `object` is the document created by this factory.
+    """
     class Meta:
         exclude = ['content_object']
         abstract = True
 
-    content = 'Some content'
+    content = "Some content"
     object_id = factory.SelfAttribute('content_object.id')
     content_type = factory.LazyAttribute(lambda o: ContentType.objects.get_for_model(o.content_object))
 
+    class Params:
+        with_file = factory.Trait(
+            content=factory.LazyAttribute(lambda o: NamedTemporaryFile(mode='r+b', dir='.', delete=False).name),
+        )
 
 class DatasetDocumentFactory(AbstractDocumentFactory):
     """

@@ -57,24 +57,27 @@
                                     <i class="material-icons">build</i>
                             </a>
                         
-                            {% if not dataset.is_published %}
-                                <a  href="{% url 'dataset_publish' pk=dataset.pk %}" 
-                                    data-confirm="Are you sure to publish the dataset? This will publish related projects and data declarations' information as well!"
-                                    id="publish" 
-                                    title="Publish dataset"
-                                    class="btn btn-default bmd-btn-fab float-right">
-                                        <i class="material-icons">publish</i>
-                                </a>    
-                            {% else %}
-                                <a href="{% url 'dataset_unpublish' pk=dataset.pk %}" 
-                                    data-confirm="Are you sure to unpublish the dataset? The changes won't be propagated to other systems!"
-                                    id="unpublish" 
-                                    title="Unpublish dataset" 
-                                    class="btn btn-default bmd-btn-fab float-right">
-                                    <i class="material-icons">undo</i>
-                                </a>
-                            {% endif %}
+
                         </p>
+                    {% endif %}
+                    {% if request.user.can_publish %}
+                        {% if not dataset.is_published %}
+                            <a href="{% url 'dataset_publish' pk=dataset.pk %}"
+                               data-confirm="Are you sure to publish the dataset? This will publish related projects and data declarations' information as well!"
+                               id="publish"
+                               title="Publish dataset"
+                               class="btn btn-default bmd-btn-fab float-right">
+                                <i class="material-icons">publish</i>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'dataset_unpublish' pk=dataset.pk %}"
+                               data-confirm="Are you sure to unpublish the dataset? The changes won't be propagated to other systems!"
+                               id="unpublish"
+                               title="Unpublish dataset"
+                               class="btn btn-default bmd-btn-fab float-right">
+                                <i class="material-icons">undo</i>
+                            </a>
+                        {% endif %}
                     {% endif %}
                     {% if is_admin %}
                         <a class="btn btn-default bmd-btn-fab float-right"
@@ -172,10 +175,13 @@
                     <div id="edit-declaration-form"></div>
                 {% else %}
                     <p class="text-center text-danger"><br/><em>Dataset is empty!</em></p>
+                    {% if can_edit %}
                     <div class="arrow-click"><p>Click here to declare data</p>
                         <p class="arrow-right"><i class="material-icons">
                             arrow_right_alt
-                        </i></p></div>
+                        </i></p>
+                    </div>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

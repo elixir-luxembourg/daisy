@@ -106,7 +106,7 @@ class ProjectsImporter(BaseImporter):
         project.updated = True
         project.save()
         for local_custodian in local_custodians:
-            local_custodian.assign_permissions_to_dataset(project)
+            local_custodian.assign_permissions_to_project(project)
 
         if self.publish_on_import:
             self.publish_object(project)

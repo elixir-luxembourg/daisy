@@ -18,10 +18,17 @@ from web.views.utils import AjaxViewMixin
 log = DaisyLogger(__name__)
 
 
-class LegalBasisCreateView(CreateView, AjaxViewMixin):
+class LegalBasisCreateView(CheckerMixin, CreateView, AjaxViewMixin):
     model = LegalBasis
     template_name = 'legalbases/legalbasis_form.html'
     form_class = LegalBasisForm
+    permission_required = Permissions.EDIT
+    permission_target = 'dataset'
+
+    def check_permissions(self, request):
+        edited_dataset_pk = request.resolver_match.kwargs['dataset_pk']
+        self.permission_object = Dataset.objects.get(pk=edited_dataset_pk)
+        super().check_permissions(request)
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -57,6 +64,7 @@ class LegalBasisEditView(CheckerMixin, UpdateView, AjaxViewMixin):
     template_name = 'legalbases/legalbasis_form.html'
     form_class = LegalBasisEditForm
     permission_required = Permissions.EDIT
+    permission_target = 'dataset'
 
     def get_permission_object(self):
         obj = super().get_permission_object()
@@ -74,7 +82,7 @@ class LegalBasisEditView(CheckerMixin, UpdateView, AjaxViewMixin):
 
 
 @require_http_methods(["DELETE"])
-@permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
+@permission_required(Permissions.EDIT, 'dataset', (Dataset, 'pk', 'dataset_pk'))
 def remove_legalbasis(request, dataset_pk, legalbasis_pk):
     legbasis = get_object_or_404(LegalBasis, pk=legalbasis_pk)
     dataset = get_object_or_404(Dataset, pk=dataset_pk)

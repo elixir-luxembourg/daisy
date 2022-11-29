@@ -18,10 +18,17 @@ from web.views.utils import AjaxViewMixin
 log = DaisyLogger(__name__)
 
 
-class StorageLocationCreateView(CreateView, AjaxViewMixin):
+class StorageLocationCreateView(CheckerMixin, CreateView, AjaxViewMixin):
     model = DataLocation
     template_name = 'storage_locations/storage_location_form.html'
     form_class = StorageLocationForm
+    permission_required = Permissions.EDIT
+    permission_target = 'dataset'
+
+    def check_permissions(self, request):
+        parent_dataset_pk = request.resolver_match.kwargs['dataset_pk']
+        self.permission_object = Dataset.objects.get(pk=parent_dataset_pk)
+        super().check_permissions(request)
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -57,6 +64,7 @@ class StorageLocationEditView(CheckerMixin, UpdateView, AjaxViewMixin):
     form_class = StorageLocationEditForm
     template_name = 'storage_locations/storage_location_form.html'
     permission_required = Permissions.EDIT
+    permission_target = 'dataset'
 
     def get_permission_object(self, queryset=None):
         obj = super().get_permission_object()
@@ -77,7 +85,7 @@ class StorageLocationEditView(CheckerMixin, UpdateView, AjaxViewMixin):
 
 
 @require_http_methods(["DELETE"])
-@permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
+@permission_required(Permissions.EDIT, 'dataset', (Dataset, 'pk', 'dataset_pk'))
 def remove_storagelocation(request, dataset_pk, storagelocation_pk):
     dataset = get_object_or_404(Dataset, pk=dataset_pk)
     datalocation = get_object_or_404(DataLocation, pk=storagelocation_pk)

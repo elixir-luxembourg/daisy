@@ -1,13 +1,15 @@
 from django.db import models
-
-from .utils import COMPANY, CoreTrackedModel, TextFieldWithInputWidget
 from django.conf import settings
+
+from .utils import CoreTrackedModel, TextFieldWithInputWidget
+
 
 class Cohort(CoreTrackedModel):
     class Meta:
         app_label = 'core'
         get_latest_by = "added"
         ordering = ['added']
+
 
     class AppMeta:
         help_text = "Cohorts are studies that collect data and/or biosamples from a group of participants. " \

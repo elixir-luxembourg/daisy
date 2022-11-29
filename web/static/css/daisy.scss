@@ -417,3 +417,10 @@ i.reset-form-button {
 a.no-underline:hover {
   text-decoration: none;
 }
+
+#permissions, #users {
+  th:first-child, td:first-child {
+    width: 10em;
+    text-align: left !important;
+  }
+}

@@ -2,6 +2,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 
 from core import constants
+from core.permissions.mapping import PERMISSION_MAPPING
 from .contact import Contact
 from .partner import Partner, HomeOrganisation
 from .utils import CoreModel
@@ -10,6 +11,7 @@ from .utils import CoreModel
 class PartnerRole(CoreModel):
     class Meta:
         app_label = 'core'
+
 
     partner = models.ForeignKey('core.Partner',
                                 verbose_name='Partner', related_name="partners_roles",
@@ -58,13 +60,7 @@ class Contract(CoreModel):
         app_label = 'core'
         get_latest_by = "added"
         ordering = ['added']
-        permissions = (
-            (constants.Permissions.ADMIN.value, 'Responsible of the project'),
-            (constants.Permissions.EDIT.value, 'Edit the project'),
-            (constants.Permissions.DELETE.value, 'Delete the project'),
-            (constants.Permissions.VIEW.value, 'View the project'),
-            (constants.Permissions.PROTECTED.value, 'View the protected elements'),
-        )
+        permissions = PERMISSION_MAPPING["Contract"]  # Adds PROTECTED and ADMIN permissions to Contract
 
     class AppMeta:
         help_text = "Contracts are agreements among partners.  Contracts are established by " \
