@@ -278,10 +278,12 @@ On the `Users` section, you can give any user a `staff` status and he will be ab
 | Key | Description | Expected values | Example value |
 |---|---|---|---|
 | `KEYCLOAK_INTEGRATION` | A feature flag for importing user information from Keycloak (OIDC IDs) | bool | `True` |
-| `KEYCLOAK_URL` | If keycloak integration flag is set, this setting contains URL to the Keycloak instance | str | `'https://keycloak.lcsb.uni.lu/auth/'` |
-| `KEYCLOAK_REALM` | If keycloak integration flag is set, this setting contains the realm's name in your Keycloak instance | str | `'master'` |
-| `KEYCLOAK_USER` | If keycloak integration flag is set, this setting contains the username to access Keycloak | str | `'username'` |
-| `KEYCLOAK_PASS` | If keycloak integration flag is set, this setting contains the password to access Keycloak | str | `'secure123'` |
+| `KEYCLOAK_URL` | URL to the Keycloak instance | str | `'https://keycloak.lcsb.uni.lu/auth/'` |
+| `KEYCLOAK_REALM` | Realm's name in your Keycloak instance | str | `'master'` |
+| `KEYCLOAK_REALM_LOGIN` | Realm's login name in your Keycloak instance | str | `'master'` |
+| `KEYCLOAK_REALM_ADMIN` | Realm's admin name in your Keycloak instance | str | `'master'` |
+| `KEYCLOAK_USER` | Username to access Keycloak | str | `'username'` |
+| `KEYCLOAK_PASS` | Password to access Keycloak | str | `'secure123'` |
 
 ### Others
 | Key | Description | Expected values | Example value |
