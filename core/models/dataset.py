@@ -5,7 +5,7 @@ from django.db import models
 from django.urls import reverse
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from core import constants
-
+from core.permissions.mapping import PERMISSION_MAPPING
 
 from .utils import CoreTrackedModel, TextFieldWithInputWidget
 from .partner import HomeOrganisation
@@ -16,13 +16,7 @@ class Dataset(CoreTrackedModel):
         app_label = 'core'
         get_latest_by = "added"
         ordering = ['added']
-        permissions = (
-            (constants.Permissions.ADMIN.value, 'Responsible of the dataset'),
-            (constants.Permissions.EDIT.value, 'Edit the dataset'),
-            (constants.Permissions.DELETE.value, 'Delete the dataset'),
-            (constants.Permissions.VIEW.value, 'View the dataset'),
-            (constants.Permissions.PROTECTED.value, 'View the protected elements'),
-        )
+        permissions = PERMISSION_MAPPING["Dataset"]  # Adds PROTECTED and ADMIN permissions to Dataset
 
     class AppMeta:
         help_text = "Datasets are physical/logical units of data with an associated storage location and access control policy. "

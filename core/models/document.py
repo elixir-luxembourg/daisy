@@ -37,9 +37,6 @@ class Document(CoreModel):
         app_label = 'core'
         get_latest_by = "added"
         ordering = ['added']
-        permissions = (
-            (constants.Permissions.PROTECTED.value, 'Protected document'),
-        )
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
@@ -66,7 +63,7 @@ class Document(CoreModel):
         Return the name of the files without the path relative to MEDIA_ROOT.
         Also remove the id prefix of the document.
         """
-        return  ''.join(os.path.basename(self.content.path).split('_')[1:])
+        return ''.join(os.path.basename(self.content.path).split('_')[1:])
 
     @property
     def size(self):

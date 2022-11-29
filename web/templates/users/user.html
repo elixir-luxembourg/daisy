@@ -46,7 +46,33 @@
                 </a>
 
                 {% endif %}
+                <a class="btn btn-primary bmd-btn-fab float-right"
+                   href="{% url 'history' %}?user={{ user.pk }}"
+                   title="See user actions"
+                >
+                    <i class="material-icons">history</i>
+                </a>
 
             </div>
         </div>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="jumbotron col">
+        <h3>User Permissions</h3>
+            <div class="card-body">
+                <div class="row">
+                    {% if dataset_perms %}
+                    {% include '_includes/permission_table.html' with obj_name='Dataset' obj_perms_const=ds_perms_const obj_perms=dataset_perms %}
+                    {% endif %}
+                </div>
+                <div class="row">
+                    {% if project_perms %}
+                    {% include '_includes/permission_table.html' with obj_name='Project' obj_perms_const=pj_perms_const obj_perms=project_perms %}
+                    {% endif %}
+                </div>
+            </div>
+        
+    </div>
+</div>
         {% endblock %}

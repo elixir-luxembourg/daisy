@@ -33,7 +33,7 @@ def index(request, selection, pk):
 
     checker = AutoChecker(request.user)
     # check if admin permission is there, otherwise forbid access
-    if not checker.check(Permissions.ADMIN, obj):
+    if not checker.check(f'core.{Permissions.ADMIN.value}_{selection}', obj):
         raise PermissionDenied
 
 
@@ -51,8 +51,15 @@ def index(request, selection, pk):
         'edit_url': f"{selection}_edit",
         'local_custodians': local_custodians,
         'local_vips': local_vips,
+        'pj_perms_const': list(map(lambda x: f"{x}_project", [p.value for p in Permissions])),
+        'perms_const': list(Permissions),
     }
+    # get inherited permissions from the parent project
+    if klass == Dataset and obj.project is not None:
+        context["inherited_permissions"] = get_users_with_perms(obj.project, attach_perms=True)
     for user, permissions in users_with_perms.items():
+        if len(permissions) == 1 and 'view' in permissions[0]:
+            continue
         # add user
         data = {
             'user': user,
@@ -63,7 +70,7 @@ def index(request, selection, pk):
         initial.append(data)
     initial = sorted(initial, key=lambda x: x['user'].username)
     if request.method == 'GET':
-        formset = UserPermFormSet(initial=initial)
+        formset = UserPermFormSet(initial=initial, form_kwargs={"model": selection})
 
         context['formset'] = formset
         return render(request, 'permissions.html', context)
@@ -72,7 +79,7 @@ def index(request, selection, pk):
         # we accept only POST requests from here
         raise PermissionDenied
 
-    formset = UserPermFormSet(request.POST)
+    formset = UserPermFormSet(request.POST, form_kwargs={"model": selection})
     if formset.is_valid():
         # assing/remove permission for each form in the formset
         for form in formset:
@@ -85,10 +92,10 @@ def index(request, selection, pk):
             # delete any permissions for the user if not a local custodian.
             if delete:
                 if user in local_custodians:
-                    messages.add_message(request, messages.ERROR, f"Can't delete right for the local custodian {user}.")
+                    messages.add_message(request, messages.ERROR, f"Cannot delete permission set for {user} - user is local custodian.")
                     continue
                 for perm in Permissions:
-                    remove_perm(perm.value, user, obj)
+                    remove_perm(f"{perm.value}_{selection}", user, obj)
                 continue
 
             if user in local_vips:
@@ -97,14 +104,14 @@ def index(request, selection, pk):
             elif user in local_custodians:
                 # local custodians that are not VIP can be assigned or removed an ADMIN or PROTECTED perm. All other must stay the same
                 for perm, value in data.items():
-                    if value or data[Permissions.ADMIN.value]:
+                    if value or data.get(f"{Permissions.ADMIN.value}_{selection}"):
                         assign_perm(perm, user, obj)
-                    elif perm not in [Permissions.EDIT.value, Permissions.DELETE.value, Permissions.VIEW.value]:
+                    elif perm not in map(lambda x: f"{x}_{selection}",[Permissions.EDIT.value, Permissions.DELETE.value]):
                         remove_perm(perm, user, obj)
             else:
                 # if no `if` has been executed, we loop over the permission and update them accordingly
                 for perm, value in data.items():
-                    if value or data[Permissions.ADMIN.value]: # if admin perm is set, all other permssions must be true
+                    if value or data.get(f"{Permissions.ADMIN.value}_{selection}"): # if admin perm is set, all other permssions must be true
                         assign_perm(perm, user, obj)
                     else:
                         remove_perm(perm, user, obj)

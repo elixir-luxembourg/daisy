@@ -10,7 +10,7 @@
                         
                         
                         {% if can_edit %}
-                            <th style="width:7em">Actions</th>
+                            <th id="document-action-head" style="width:7em">Actions</th>
                         {% endif %}
                     </tr>
                     </thead>
@@ -22,19 +22,25 @@
                             <td><span class="col-xs-4 text-center">{{ file.content_notes | default:'-' }}</span>
                             <td style="max-width: 400px; overflow: auto"><a href="{% url 'document_download' pk=file.id %}">{{ file.shortname}}</a></td>
                             <td><small><span class="col-xs-4 text-center">{{ file.size | filesizeformat  }}</span></small></td>
-                            <td>
-                                <a data-toggle="modal" id="btnupdate" class="jsBtn clickable"
-                                   data-target="#modal"
-                                   data-modal-title="Update document"
-                                   data-ajax-url="{% url "document_edit" pk=file.id %}"
-                                   title="Update document">
-                                    <i class="material-icons">edit</i>
-                                </a>
-                                <i title="Delete document" class="material-icons red clickable" data-method="delete"
-                                   data-confirmation = "delete"
-                                   data-parent-to-remove="tr"
-                                   data-url="{% url 'document_delete' pk=file.id  %}">delete_forever</i>
-                            </td>
+                            {% if can_edit %}
+                                <td id="document-action">
+                                    <a data-toggle="modal" id="btnupdate" class="jsBtn clickable"
+                                       data-target="#modal"
+                                       data-modal-title="Update document"
+                                       data-post-mode="true"
+                                       {% if project %}
+                                           data-ajax-redirect-uri="{% url 'project' pk=project.id %}"
+                                       {% endif %}
+                                       data-ajax-url="{% url "document_edit" pk=file.id %}"
+                                       title="Update document">
+                                        <i class="material-icons">edit</i>
+                                    </a>
+                                    <i title="Delete document" class="material-icons red clickable" data-method="delete"
+                                       data-confirmation = "delete"
+                                       data-parent-to-remove="tr"
+                                       data-url="{% url 'document_delete' pk=file.id  %}">delete_forever</i>
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                     </tbody>

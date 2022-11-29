@@ -6,10 +6,10 @@ from enum import Enum
 
 class Permissions(Enum):
     ADMIN = 'admin'
-    EDIT = 'edit'
+    EDIT = 'change'
     DELETE = 'delete'
-    VIEW = 'view'
     PROTECTED = 'protected'
+
 
 class Groups(Enum):
     DATA_STEWARD = 'daisy-data-steward'

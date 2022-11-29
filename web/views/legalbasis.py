@@ -1,25 +1,34 @@
-
 from django.http import JsonResponse,  HttpResponse
 from django.shortcuts import get_object_or_404 , redirect, render
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.urls import reverse_lazy
+
 from core.forms import LegalBasisForm
 from core.forms.legal_basis import LegalBasisEditForm
 from core.models import LegalBasis, Dataset
-from core.permissions import permission_required
+from core.permissions import permission_required, CheckerMixin
 from core.utils import DaisyLogger
-from web.views.utils import AjaxViewMixin
 from core.constants import Permissions
+
+from web.views.utils import AjaxViewMixin
+
 
 log = DaisyLogger(__name__)
 
 
-class LegalBasisCreateView(CreateView, AjaxViewMixin):
+class LegalBasisCreateView(CheckerMixin, CreateView, AjaxViewMixin):
     model = LegalBasis
     template_name = 'legalbases/legalbasis_form.html'
     form_class = LegalBasisForm
+    permission_required = Permissions.EDIT
+    permission_target = 'dataset'
+
+    def check_permissions(self, request):
+        edited_dataset_pk = request.resolver_match.kwargs['dataset_pk']
+        self.permission_object = Dataset.objects.get(pk=edited_dataset_pk)
+        super().check_permissions(request)
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -37,7 +46,7 @@ class LegalBasisCreateView(CreateView, AjaxViewMixin):
         if self.dataset:
             self.object.dataset = self.dataset
         self.object.save()
-        messages.add_message(self.request, messages.SUCCESS, "Legal basis definition created.")
+        messages.add_message(self.request, messages.SUCCESS, 'Legal basis definition created.')
         return super().form_valid(form)
 
     def get_form_kwargs(self):
@@ -50,33 +59,30 @@ class LegalBasisCreateView(CreateView, AjaxViewMixin):
         return reverse_lazy('dataset', kwargs={'pk': self.dataset.pk})
 
 
-@permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
-def edit_legalbasis(request, pk, dataset_pk):
-    # log.debug('editing legal basis', post=request.POST)
-    legalbasis = get_object_or_404(LegalBasis, pk=pk)
-    if request.method == 'POST':
-        form = LegalBasisEditForm(request.POST,  request.FILES, instance=legalbasis)
-        if form.is_valid():
-            # data = form.cleaned_data
-            form.save()
-            messages.add_message(request, messages.SUCCESS, "Legal basis updated")
-            redirecturl = reverse_lazy('dataset', kwargs={'pk': dataset_pk})
-            return redirect(to=redirecturl, pk=legalbasis.id)
-        else:
-            return JsonResponse(
-                {'error':
-                     {'type': 'Edit error', 'messages': [str(e) for e in form.errors]
-                      }}, status=405)
-    else:
-        form = LegalBasisEditForm(instance=legalbasis)
+class LegalBasisEditView(CheckerMixin, UpdateView, AjaxViewMixin):
+    model = LegalBasis
+    template_name = 'legalbases/legalbasis_form.html'
+    form_class = LegalBasisEditForm
+    permission_required = Permissions.EDIT
+    permission_target = 'dataset'
 
-    log.debug(submit_url=request.get_full_path())
-    return render(request, 'modal_form.html', {'form': form, 'submit_url': request.get_full_path() })
+    def get_permission_object(self):
+        obj = super().get_permission_object()
+        return obj.dataset
 
+    def form_valid(self, form):
+        """If the form is valid, save the associated model and add to the dataset"""
+        self.object = form.save(commit=False)
+        self.object.save()
+        messages.add_message(self.request, messages.SUCCESS, 'Legal basis definition updated.')
+        return super().form_valid(form)
+
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('dataset', kwargs={'pk': self.object.dataset.pk})
 
 
 @require_http_methods(["DELETE"])
-@permission_required(Permissions.EDIT, (Dataset, 'pk', 'dataset_pk'))
+@permission_required(Permissions.EDIT, 'dataset', (Dataset, 'pk', 'dataset_pk'))
 def remove_legalbasis(request, dataset_pk, legalbasis_pk):
     legbasis = get_object_or_404(LegalBasis, pk=legalbasis_pk)
     dataset = get_object_or_404(Dataset, pk=dataset_pk)

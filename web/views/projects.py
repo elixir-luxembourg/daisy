@@ -1,7 +1,6 @@
-from web.views.user import superuser_required
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction, IntegrityError
 from django.http import HttpResponse
@@ -9,15 +8,14 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 
-from core import constants
-from core.constants import Permissions
+from core.constants import Permissions, Groups
 from core.forms.contract import ContractForm
 from core.forms.dataset import DatasetForm
-from core.forms.document import DocumentForm
 from core.forms.project import ProjectForm, DatasetSelection
 from core.models import Project, Contract
 from core.permissions import permission_required
 from core.permissions.checker import CheckerMixin
+from web.views.utils import is_data_steward
 from . import facet_view_utils
 
 FACET_FIELDS = settings.FACET_FIELDS['project']
@@ -70,7 +68,7 @@ class ProjectCreateView(CreateView):
         # get user from kwargs and check if user is pi or not
         # automatically add him to the responsible people if pi
         kwargs = super().get_form_kwargs()
-        if self.request.user.is_part_of(constants.Groups.VIP) and 'data' in kwargs:
+        if self.request.user.is_part_of(Groups.VIP) and 'data' in kwargs:
             data = kwargs['data'].copy()
             if 'local_custodians' not in data or str(self.request.user.pk) not in data['local_custodians']:
                 data.update({'local_custodians': str(self.request.user.pk)})
@@ -113,7 +111,6 @@ class ProjectDetailView(DetailView):
         context['object_id'] = self.object.pk
         context['datafiles'] = [d for d in self.object.legal_documents.all()]
 
-
         return context
 
 
@@ -122,7 +119,8 @@ class ProjectEditView(CheckerMixin, UpdateView):
     form_class = ProjectForm
     template_name = 'projects/project_form_edit.html'
 
-    permission_required = constants.Permissions.EDIT
+    permission_required = Permissions.EDIT
+    permission_target = 'project'
 
     def get_success_url(self):
         return reverse_lazy('project', kwargs={'pk': self.object.id})
@@ -142,7 +140,7 @@ class ProjectEditView(CheckerMixin, UpdateView):
 
 ## DATASET METHODS ##
 
-@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'project', (Project, 'pk', 'pk'))
 def project_dataset_create(request, pk, flag):
     project = get_object_or_404(Project, pk=pk)
 
@@ -172,7 +170,7 @@ def project_dataset_create(request, pk, flag):
         })
 
 
-@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'project', (Project, 'pk', 'pk'))
 def project_dataset_add(request, pk):
     project = get_object_or_404(Project, pk=pk)
     if request.method == 'GET':
@@ -198,7 +196,7 @@ def project_dataset_add(request, pk):
         })
 
 
-@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'project', (Project, 'pk', 'pk'))
 def project_dataset_choose_type(request, pk):
     """
     View to choose dataset type to create
@@ -212,7 +210,7 @@ def project_dataset_choose_type(request, pk):
 # CONTRACTS METHODS
 
 
-@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'project', (Project, 'pk', 'pk'))
 def project_contract_create(request, pk):
     project = get_object_or_404(Project, pk=pk)
     # get the correct form from the flag selected
@@ -245,7 +243,7 @@ def project_contract_create(request, pk):
         })
 
 
-@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'project', (Project, 'pk', 'pk'))
 def project_contract_remove(request, pk, cid):
     contract = get_object_or_404(Contract, pk=cid)
     contract.project = None
@@ -259,7 +257,8 @@ class ProjectDelete(CheckerMixin, DeleteView):
     success_url = reverse_lazy('projects')
     action_url = 'project_delete'
     success_message = "Project was deleted successfully."
-    permission_required = constants.Permissions.DELETE
+    permission_required = Permissions.DELETE
+    permission_target = 'project'
 
     def get_context_data(self, **kwargs):
         context = super(ProjectDelete, self).get_context_data(**kwargs)
@@ -268,14 +267,14 @@ class ProjectDelete(CheckerMixin, DeleteView):
         return context
 
 
-@staff_member_required
+@user_passes_test(is_data_steward)
 def publish_project(request, pk):
     project = get_object_or_404(Project, pk=pk)
     project.publish()
     return redirect(reverse_lazy('project', kwargs={'pk': project.id}))
 
 
-@staff_member_required
+@user_passes_test(is_data_steward)
 def unpublish_project(request, pk):
     project = get_object_or_404(Project, pk=pk)
     project.is_published = False

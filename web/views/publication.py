@@ -50,14 +50,14 @@ class PublicationEditView(UpdateView):
 
 
 @require_http_methods(["DELETE"])
-@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'project', (Project, 'pk', 'pk'))
 def remove_publication_from_project(request, pk, publication_id):
     project = get_object_or_404(Project, pk=pk)
     project.publications.remove(publication_id)
     return HttpResponse("Publication removed from project.")
 
 
-@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'project', (Project, 'pk', 'pk'))
 def pick_publication_for_project(request, pk):
     if request.method == 'POST':
         form = PickPublicationForm(request.POST)
@@ -78,7 +78,7 @@ def pick_publication_for_project(request, pk):
     return render(request, 'modal_form.html', {'form': form, 'submit_url': request.get_full_path()})
 
 
-@permission_required(Permissions.EDIT, (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, 'project', (Project, 'pk', 'pk'))
 def add_publication_to_project(request, pk):
     if request.method == 'POST':
         form = PublicationForm(request.POST)

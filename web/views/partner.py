@@ -1,19 +1,19 @@
 from django.conf import settings
-from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.utils.module_loading import import_string
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+from django.contrib.auth.decorators import user_passes_test
 
 from . import facet_view_utils
 from core.forms import PartnerForm
 from core.forms.partner import PartnerFormEdit
 from core.models import Partner
 from core.models.utils import COMPANY
-from core.permissions import permission_required
-from web.views.user import superuser_required
-from web.views.utils import AjaxViewMixin
+from core.permissions import CheckerMixin
+from core.constants import Permissions
+from web.views.utils import AjaxViewMixin, is_data_steward
 
 
 FACET_FIELDS = settings.FACET_FIELDS['partner']
@@ -102,14 +102,15 @@ def partner_search_view(request):
         ]
     })
 
-@staff_member_required
+
+@user_passes_test(is_data_steward)
 def publish_partner(request, pk):
     partner = get_object_or_404(Partner, pk=pk)
     partner.publish()
     return HttpResponseRedirect(reverse_lazy('partner', kwargs={'pk': pk}))
 
 
-@staff_member_required
+@user_passes_test(is_data_steward)
 def unpublish_partner(request, pk):
     partner = get_object_or_404(Partner, pk=pk)
     if partner.is_published:
@@ -118,11 +119,13 @@ def unpublish_partner(request, pk):
     return HttpResponseRedirect(reverse_lazy('partner', kwargs={'pk': pk}))
 
 
-class PartnerDelete(DeleteView):
+class PartnerDelete(CheckerMixin, DeleteView):
     model = Partner
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('partners')
     success_message = "Partner was deleted successfully."
+    permission_required = Permissions.DELETE
+    permission_target = 'partner'
 
     def get_context_data(self, **kwargs):
         context = super(PartnerDelete, self).get_context_data(**kwargs)

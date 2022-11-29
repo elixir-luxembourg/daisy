@@ -1,17 +1,18 @@
 from django.conf import settings
-from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse
+from django.contrib.auth.decorators import user_passes_test
 
 from excel_response import ExcelResponse
 
 from core.models import Cohort, Contact, Contract, Dataset, Partner, Project
 from core.utils import DaisyLogger
+from web.views.utils import is_data_steward
 from . import facet_view_utils
 
 log = DaisyLogger(__name__)
 
 
-@staff_member_required
+@user_passes_test(is_data_steward)
 def generic_export(request, object_model_class, object_name):
     def _get_objects(request, object_model_class, object_name):
         query = request.GET.get('query', '')

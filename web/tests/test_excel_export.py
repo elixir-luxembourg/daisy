@@ -11,7 +11,7 @@ from django.urls import reverse
     ('partners_export', factories.PartnerFactory),
     ('cohorts_export', factories.CohortFactory),
 ])
-def test_excel_export(client_user_admin, url_name, factory):
+def test_excel_export(permissions, client_user_data_steward, url_name, factory):
     """
     Test view for exporting records to Excel file.
     """
@@ -19,7 +19,7 @@ def test_excel_export(client_user_admin, url_name, factory):
     number_of_objects = 4
     objects = factory.create_batch(number_of_objects)
     url = reverse(url_name)
-    response = client_user_admin.get(url)
+    response = client_user_data_steward.get(url)
 
     assert response.status_code == 200
 

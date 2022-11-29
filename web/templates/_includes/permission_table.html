@@ -1,0 +1,30 @@
+<table id="permissions" class="table">
+    <thead class="thead-light">
+        <tr>
+            <th scope="col" class="col-sm-1"><h3>{{ obj_name }}</h3></th>
+            {% for perm in perms_const %}
+            <th scope="col" class="col-sm-1 text-center">{{ perm.name }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for key, value in obj_perms.items %}
+            <tr>
+            {% if obj_name == 'Dataset' %}
+                <td><a href="{% url 'dataset' pk=key.id %}">{{ key }}</a></td>
+            {% elif obj_name == 'Project' %}
+                <td><a href="{% url 'project' pk=key.id %}">{{ key }}</a></td>
+            {% elif obj_name == 'User' %}
+                <td><a href="{% url 'user' pk=key.id %}">{{ key }}</a></td>
+            {% endif %}
+            {% for perm in obj_perms_const %}
+                {% if perm in value %}
+                    <td class="text-center"><input type="checkbox" disabled checked></td>
+                {% else %}
+                    <td class="text-center"><input type="checkbox" disabled unchecked></td>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+        </tr>
+    </tbody>
+</table>

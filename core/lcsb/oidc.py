@@ -21,7 +21,8 @@ logger = DaisyLogger(__name__)
 def get_keycloak_config_from_settings() -> Dict:
     return {
         'KEYCLOAK_URL': getattr(settings, 'KEYCLOAK_URL'),
-        'KEYCLOAK_REALM': getattr(settings, 'KEYCLOAK_REALM'),
+        'KEYCLOAK_REALM_LOGIN': getattr(settings, 'KEYCLOAK_REALM_LOGIN'),
+        'KEYCLOAK_REALM_ADMIN': getattr(settings, 'KEYCLOAK_REALM_ADMIN'),
         'KEYCLOAK_USER': getattr(settings, 'KEYCLOAK_USER'),
         'KEYCLOAK_PASS': getattr(settings, 'KEYCLOAK_PASS')
     }
@@ -34,7 +35,7 @@ class KeycloakSynchronizationMethod(AccountSynchronizationMethod):
 
     @staticmethod
     def _validate_config(config: Dict) -> None:
-        keys = ['KEYCLOAK_URL', 'KEYCLOAK_USER', 'KEYCLOAK_PASS', 'KEYCLOAK_REALM']
+        keys = ['KEYCLOAK_URL', 'KEYCLOAK_USER', 'KEYCLOAK_PASS', 'KEYCLOAK_REALM_LOGIN', 'KEYCLOAK_REALM_ADMIN']
         for key in keys:
             if key not in config:
                 raise KeyError(f"'{key}' missing in KeycloakAdmin configuration!")
@@ -52,7 +53,8 @@ class KeycloakSynchronizationMethod(AccountSynchronizationMethod):
         self._validate_config(self.config) 
         admin = KeycloakAdmin(
             server_url=self.config.get('KEYCLOAK_URL'),
-            realm_name=self.config.get('KEYCLOAK_REALM'),
+            realm_name=self.config.get('KEYCLOAK_REALM_ADMIN'),
+            user_realm_name=self.config.get('KEYCLOAK_REALM_LOGIN'),
             username=self.config.get('KEYCLOAK_USER'),
             password=self.config.get('KEYCLOAK_PASS'),
             verify=False
@@ -243,4 +245,3 @@ class CachedKeycloakAccountSynchronizer(KeycloakAccountSynchronizer):
             return True
         else:
             return self._cached_external_accounts != self.current_external_accounts
-    

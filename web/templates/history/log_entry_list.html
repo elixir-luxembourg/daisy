@@ -1,0 +1,181 @@
+{% extends 'layout.html' %}
+
+
+{% block title %}Access logs of access {{ request.args.pk }}{% endblock %}
+
+{% block content %}
+    <div class="card bg-light text-dark mt-4 mb-4">
+        <div class="card-body">
+            <div class="card-title">
+                <h1 class="display-4">
+                    <i id="filtersAccordion" class="material-icons text-secondary clickable" data-toggle="collapse" data-target="#logFilters" aria-expanded="true" aria-controls="logFilters">search</i></button>
+                    History
+                </h1>
+            </div>
+        </div>
+    </div>
+    <div id="logFilters" class="collapse show" aria-labelledby="logFiltersHeader" data-parent="filtersAccordion">
+        <form class="card w-100">
+            {# include '_includes/facets_sidebar.html' with facets=facets url=search_url #}
+            <div class="d-flex flex-wrap p-4">
+                <div class="card-body m-1 w-25 flex-grow-1">
+                    <h6>Log author</h6>
+                    <div class="form-group bg-white border-0">
+                        <select class="form-control" name="user">
+                            <option value="none" selected disabled hidden>
+                                Choose a user...
+                            </option>
+                            {% for user in users_list %}
+                                <option value="{{ user.pk }}">{{ user.full_name | title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body m-1 w-25 flex-grow-1">
+                    <h6>Action performed</h6>
+                    <div class="form-group bg-white border-0">
+                        <select class="form-control" name="action">
+                            <option value="none" selected hidden disabled>
+                                Choose an action...
+                            </option>
+                            {% for action in log_actions %}
+                                <option value="{{ action.0 }}" >
+                                    {{ action.1 | title }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body m-1 w-25 flex-grow-1">
+                    <h6>Date range</h6>
+                    <div class="d-flex flex-column form-group border-0 bg-white">
+                        <div class="d-inline-flex align-items-center justify-content-around">
+                            <span>Start date</span>
+                            <input id="log_entry_start_date" type="text" class="datepicker form-control w-50" name="start_date" value="{{ start_date }}" />
+                        </div>
+                        <div class="d-inline-flex align-items-center justify-content-around">
+                            <span>End date</span>
+                            <input id="log_entry_end_date" type="text" class="datepicker form-control w-50" name="end_date" value="{{ end_date }}"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body m-1 w-25 flex-grow-0">
+                    <h6>Model</h6>
+                    <div class="form-group bg-white border-0">
+                        <select id="model-select" class="form-control" name="entity_name">
+                            <option value="none" selected hidden disabled>Choose a model...</option>
+                            {% for model in models_list %}
+                                <option value="{{ model }}">{{ model | title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div id="model-fields-filter" class="card-body m-1 w-25 flex-grow-0 d-none">
+                    <h6>Model fields</h6>
+                    <div class="form-group bg-white border-0">
+                        <select class="form-control" name="entity_attr">
+                            <option value="none" selected hidden disabled>Choose a field...</option>
+                            {% for attr in model_attributes %}
+                                <option value="{{ attr }}">{{ attr | title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                {% if hidden_filters.entity_name %}
+                    <input type="hidden" name="entity_name" value="{{ hidden_filters.entity_name }}">
+                    {% if hidden_filters.entity_id %}
+                        <input type="hidden" name="entity_id" value="{{ hidden_filters.entity_id }}">
+                    {% elif hidden_filters.parent_entity_name and hidden_filters.parent_entity_id %}
+                        <input type="hidden" name="parent_entity_name" value="{{ hidden_filters.parent_entity_name }}">
+                        <input type="hidden" name="parent_entity_id" value="{{ hidden_filters.parent_entity_id }}">
+                    {% endif %}
+                {% endif %}
+            </div>
+            <button class="btn" type="submit" action="{% url 'history' %}">Filter</button>
+        </form>
+    </div>
+    <div class="row mr-auto">
+        <div class="card-rows w-100 ml-3">
+            {% for object in object_list %}
+            <div class="card mb-2">
+                <div class="card-body p-2 pt-3">
+                    <div id="{{ object.log.pk }}"
+                         class="card-subtitle mb-0 text-muted d-flex justify-content-between clickable table-toggle"
+                         data-toggle="collapse"
+                         data-target="#changesTable{{object.log.pk}}"
+                         aria-expanded="true"
+                         aria-controls="changesTable{{object.log.pk}}"
+                    >
+                        <span>{{ object.log.actor }} {{ object.action.1 }}d {{ object.log.content_type.model }} #{{ object.log.object_id }} on {{ object.log.timestamp }}</span>
+                        <i id="expand-arrow-{{ object.log.pk }}" class="material-icons hidden">expand_less</i>
+                    </div>
+                    <div class="accordion collapse" id="changesTable{{object.log.pk}}" aria-labelledby="changesTable{{object.log.pk}}" data-parent="tableTogle{{object.log.pk}}">
+                        <table class="table-striped table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Attribute</th>
+                                <th>Original value</th>
+                                <th>New value</th>
+                            </tr>
+                        </thead>
+                        {% for key, value in object.log.changes_display_dict.items %}
+                            <tr>
+                                <td>{{ key }}</td>
+                                <td>"{{ value.0|default:"None" }}"</td>
+                                <td>"{{ value.1|default:"None" }}"</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    {{ model_fields | json_script:"model-data"}}
+    <script>
+        const modelSelect = $("#model-select");
+        const modelFieldFilter = $("#model-fields-filter");
+
+        // Function to build the list of model fields and display the filter
+        function buildModelFieldsOptions() {
+            const selectedValue = modelSelect.children("option:selected").val()
+            if (selectedValue !== "none"){
+                const modelFieldSelect = modelFieldFilter.children("div").children("select"),
+                    newOptions = Array(),
+                    modelFieldsList = JSON.parse($("#model-data").text())[selectedValue];
+
+                newOptions.push("<option value='none' selected disabled hidden>Choose a field...</option>");
+                for (let attr in modelFieldsList) {
+                    newOptions.push(new Option(modelFieldsList[attr], attr));
+                }
+                modelFieldSelect.children("option").remove();
+                modelFieldSelect.append(newOptions);
+                modelFieldFilter.hasClass('d-none') && modelFieldFilter.toggleClass('d-none');
+            }
+        }
+
+        // Making the accordion status button toggable
+        $('.table-toggle').click(
+            function () {
+                const collapsingTable = $(`#changesTable${this.id}`);
+                if (collapsingTable.hasClass('collapsing')) {
+                    return;
+                }
+                const expandIcon = $(`#expand-arrow-${this.id}`)
+                expandIcon.toggleClass("hidden") && expandIcon.hasClass("hidden") ? expandIcon.text("expand_less") : expandIcon.text("expand_more");
+            }
+        );
+
+        // Building the list of fields for a given model when selected in the model filter
+        modelSelect.change( () => buildModelFieldsOptions() );
+
+        // Displaying the model fields filter if a model is already selected when page loads
+        // (i.e. if user actualise the page)
+        buildModelFieldsOptions();
+    </script>
+{% endblock %}

@@ -1,14 +1,17 @@
-from web.views.user import superuser_required
 from django.conf import settings
-from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
+from django.contrib.auth.decorators import user_passes_test
 
 from core.forms import CohortForm, CohortFormEdit
 from core.models import Cohort
+from core.permissions.checker import CheckerMixin
+from core.constants import Permissions
+from web.views.utils import is_data_steward
 from . import facet_view_utils
+
 
 FACET_FIELDS = settings.FACET_FIELDS['cohort']
 from core.models.utils import COMPANY
@@ -93,11 +96,13 @@ def cohort_list(request):
     })
 
 
-class CohortDelete(DeleteView):
+class CohortDelete(CheckerMixin, DeleteView):
     model = Cohort
     template_name = '../templates/generic_confirm_delete.html'
     success_url = reverse_lazy('cohorts')
     success_message = "Cohort was deleted successfully."
+    permission_required = Permissions.DELETE
+    permission_target = 'cohort'
 
     def get_context_data(self, **kwargs):
         context = super(CohortDelete, self).get_context_data(**kwargs)
@@ -106,13 +111,14 @@ class CohortDelete(DeleteView):
         return context
 
 
-@staff_member_required
+@user_passes_test(is_data_steward)
 def publish_cohort(request, pk):
     cohort = get_object_or_404(Cohort, pk=pk)
     cohort.publish()
     return redirect(reverse_lazy('cohort', kwargs={'pk': cohort.id}))
 
-@staff_member_required
+
+@user_passes_test(is_data_steward)
 def unpublish_cohort(request, pk):
     cohort = get_object_or_404(Cohort, pk=pk)
     cohort.is_published = False

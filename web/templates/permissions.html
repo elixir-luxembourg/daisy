@@ -28,13 +28,28 @@
     <div class="row mt-4">
         <div class="card col">
             <div class="card-body">
-                <h2 class="card-title">{% block card_title %}Add or remove additionnal users{% endblock %}</h2>
+                <h2 class="card-title">Edit Permissions of {{ selection }} {{ object.title }}</h2>
                 <div id="form-container" class="card-text">
                     {% include '_includes/permission_form.html' %}
                 </div>
             </div>
         </div>
     </div>
+    {% if inherited_permissions %}
+    <div class="row mt-4">
+        <div class="card col">
+            <div class="card-body">
+                <h2 class="card-title">View Inherited Permissions from project <a href="{% url 'project' pk=object.project.id %}">{{ object.project }}</a></h2>
+                <div class="card-text md-1">
+                    {% include '_includes/permission_table.html' with obj_name='User' obj_perms_const=pj_perms_const obj_perms=inherited_permissions %}
+                </div>
+            </div>
+            <div class="card-footer">
+                You can change the permissions on the <a href="{% url 'permission_project' pk=object.project.id %}">project permission edit page</a>.
+            </div>
+        </div>
+    </div>
+    {% endif %}
     <div class="row mt-4">
             <div class="card col">
                 <div class="card-body">
@@ -42,23 +57,18 @@
                     <div id="form-container" class="card-text">
                         <dl>
                             <dt>Admin</dt>
-                            <dd>Grant the right to change permissions on this {{selection}} and grant all other permissions.</dd>
+                            <dd>Grant the right to change permissions on this {{selection}}.</dd>
                             <dt>Delete</dt>
                             <dd>Grant the right to delete this {{selection}}.</dd>
                             <dt>Edit</dt>
                             <dd>Grant the right to edit this {{selection}}.</dd>
                             <dt>Protected</dt>
                             <dd>Grant the right to access protected information on this {{selection}}.</dd>
-                            <dt>View</dt>
-                            <dd>Grant the right to view this {{selection}}.</dd>
                         </dl>
                     </div>
-                    <h2 class="card-title">Additionnal notes</h2>
+                    <h2 class="card-title">Additional notes</h2>
                     <p>
-                        <b>Admin</b> permission is automatically granted for <span class="badge badge-success">VIP</span>.
-                    </p>
-                    <p>
-                        <b>Delete</b>, <b>Edit</b> and <b>View</b> permissions are automatically granted for local custodians.
+                        <b>Admin</b>, <b>Delete</b>, <b>Edit</b> and <b>View</b> permissions are automatically granted for local custodians.
                     </p>
                 </div>
             </div>
@@ -89,8 +99,8 @@
             $('#formset tbody tr').formset({
                 prefix: 'form',                  // The form prefix for your django formset
                 formTemplate: null,              // The jQuery selection cloned to generate new form instances
-                addText: 'add another',          // Text for the add link
-                deleteText: 'remove',            // Text for the delete link
+                addText: '<i class="material-icons">add</i>',          // Text for the add link
+                deleteText: '<i class="material-icons">delete</i>',            // Text for the delete link
                 addCssClass: 'add-row',          // CSS class applied to the add link
                 deleteCssClass: 'fas fa-trash',    // CSS class applied to the delete link
                 formCssClass: 'dynamic-form',    // CSS class applied to each form in a formset
@@ -105,6 +115,8 @@
             var select2 = $('#form-container select').select2({
                 width: '100%',
             });
+            $('#users thead th:last').html(" ");
+            $('#permissions tr:first').append('<th scope="col" class="col-sm-1"></th>')
         });
 
     </script>

@@ -16,6 +16,7 @@ class LegalBasis(CoreModel):
         ordering = ['added']
 
 
+
     dataset = models.ForeignKey('core.Dataset',
                                     related_name='legal_basis_definitions',
                                     on_delete=models.CASCADE

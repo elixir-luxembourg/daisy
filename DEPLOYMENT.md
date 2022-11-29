@@ -5,7 +5,7 @@ Following instructions are for CentOS Linux 7 (Core).
 ```bash
 sudo yum update
 sudo yum group install "Development Tools"
-sudo yum install wget make gcc bzip2-devel openssl-devel zlib-devel libffi-devel openssl
+sudo yum install wget make gcc bzip2-devel openssl-devel zlib-devel libffi-devel openssl cvs sqlite-devel
 wget https://www.python.org/ftp/python/3.9.6/Python-3.9.6.tgz
 tar -xvf Python-3.9.6.tgz
 cd Python-3.9.6
@@ -675,6 +675,10 @@ systemctl start celery_beat
 ```
 
 # Migration
+
+## Daisy 1.7.0 to 1.7.1
+The migration introduced breaking change by updating python-keycloak to version `2.6.0`. If you are using Keycloak integration, update your `elixir_daisy/settings_local.py` file to contain **all** Keyclock related variables defined in README Keycloak [section](https://github.com/elixir-luxembourg/daisy/blob/master/README.md#keycloak).
+
 ## DAISY 1.6.0 to 1.7.0
- * Due to the change of Celery to 5.X, you must update Celery service definitions (please take a look on Celery section in this document). Luckily this is only a small change - it's just the order of parameters that has changed.
+ * Due to the change of Celery to 5.X, you must update Celery service definitions. Please take a look on Celery section in this document and make sure the content of your Celery config files matches the content here (only the order of parameters has changed).
  * Python version was migrated from 3.6 to 3.9 - new python and pip version need to be installed (see section **Base** of deployment instructions)

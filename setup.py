@@ -40,7 +40,7 @@ requirements = [
     'psycopg2-binary==2.9.3',
     'pysolr==3.8.1',
     'pytest-runner==5.1',
-    'python-keycloak==0.26.1',
+    'python-keycloak==2.6.0',
     'pytz==2022.1',
     'requests==2.25.1',
     'urllib3==1.26.5',
@@ -64,7 +64,7 @@ dev_requirements = [
 
 setup(
     name='elixir-daisy',
-    version='1.7.0',
+    version='1.7.1',
     description="Elixir-LU DAISY",
     author="Pinar Alper, Valentin Grouès, Yohan Jarosz, Jacek Lebioda, Kavita Rege, Vilem Ded",
     author_email='lcsb.sysadmins@uni.lu',
