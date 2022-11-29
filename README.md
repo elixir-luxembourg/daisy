@@ -279,7 +279,6 @@ On the `Users` section, you can give any user a `staff` status and he will be ab
 |---|---|---|---|
 | `KEYCLOAK_INTEGRATION` | A feature flag for importing user information from Keycloak (OIDC IDs) | bool | `True` |
 | `KEYCLOAK_URL` | URL to the Keycloak instance | str | `'https://keycloak.lcsb.uni.lu/auth/'` |
-| `KEYCLOAK_REALM` | Realm's name in your Keycloak instance | str | `'master'` |
 | `KEYCLOAK_REALM_LOGIN` | Realm's login name in your Keycloak instance | str | `'master'` |
 | `KEYCLOAK_REALM_ADMIN` | Realm's admin name in your Keycloak instance | str | `'master'` |
 | `KEYCLOAK_USER` | Username to access Keycloak | str | `'username'` |
