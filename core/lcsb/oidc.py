@@ -70,7 +70,6 @@ class KeycloakSynchronizationMethod(AccountSynchronizationMethod):
 
     def get_list_of_users(self) -> List[Dict]:
         keycloak_response = self.get_keycloak_admin_connection().get_users({'emailVerified': True})
-        logger.debug(keycloak_response)
         return [
             {
                 'id': user.get('id').replace(',', '').replace('(', '').replace(')', '').replace("'", ''), 
@@ -135,7 +134,7 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
         # Let's try to find user with given e-mail
         user_by_email = User.objects.filter(email=acc.get('email'))
         if user_by_email.count() == 1:
-            user:User = user_by_email.first()
+            user: User = user_by_email.first()
             user.oidc_id = acc.get('id')
             user.save()
             logger.debug(f'KC :: Set OIDC_ID ({acc.get("id")}) of a existing User (matched by email)')
