@@ -90,6 +90,11 @@ class AccessEditView(CheckerMixin, UpdateView, AjaxViewMixin):
     permission_target = 'dataset'
 
     def form_valid(self, form):
+        """If access status is Active, only data stewards can edit it"""
+        if self.object.status == StatusChoices.active and not self.request.user.is_part_of(Groups.DATA_STEWARD.value):
+            form.add_error(None, "Only data stewards can edit active accesses, please contact one")
+            return super().form_invalid(form)
+
         """If the form is valid, check that remark is updated then save the associated model and add to the dataset"""
         if "access_notes" not in form.changed_data:
             form.add_error("access_notes", "Changes must be justified. Please update this field")
