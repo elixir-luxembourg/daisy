@@ -1,6 +1,7 @@
 import pytest
 from django.shortcuts import reverse
 
+from guardian.shortcuts import assign_perm
 from core.constants import Permissions
 from core.models.access import Access
 from core.models.user import User
@@ -23,14 +24,13 @@ def check_access_view_permissions(url: str, user: User, obj: Union[Access, Datas
     else:
         assert not user.has_permission_on_object(f'core.{Permissions.EDIT.value}_dataset', obj)
 
-    check_response_status(url, user, [f'core.{Permissions.EDIT.value}_dataset', f'core.{Permissions.PROTECTED.value}_dataset'], method=method, obj=obj)
+    check_response_status(url, user, [f'core.{Permissions.EDIT.value}_dataset'], method=method, obj=obj)
 
     if user.is_part_of(VIPGroup()):
         user.save()
-        parent_dataset.local_custodians.add(user)
-        parent_dataset.save()
+        assign_perm(f'core.{Permissions.EDIT.value}_dataset', user, parent_dataset)
         assert user.has_permission_on_object(f'core.{Permissions.EDIT.value}_dataset', obj)
-        check_response_status(url, user, [f'core.{Permissions.EDIT.value}_dataset', f'core.{Permissions.PROTECTED.value}_dataset'], method=method, obj=obj)
+        check_response_status(url, user, [f'core.{Permissions.EDIT.value}_dataset'], method=method, obj=obj)
 
 
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])

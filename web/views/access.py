@@ -28,10 +28,11 @@ class AccessCreateView(CreateView, AjaxViewMixin):
     permission_target = 'dataset'
 
     def has_permissions(self, user, dataset):
-        if user.is_part_of(Groups.DATA_STEWARD.value):
-            return True
-        else:
-            return dataset.local_custodians.filter(pk=user.pk).exists()
+        return (
+            user.is_part_of(Groups.DATA_STEWARD.value) or
+            user.can_edit_dataset(dataset)
+        )
+
 
     def get(self, request, *args, **kwargs):
         dataset = get_object_or_404(Dataset, pk=kwargs['dataset_pk'])
