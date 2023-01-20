@@ -148,7 +148,7 @@ $(document).ready(function () {
                 var modalForm = modal.find('form');
                 modalForm.submit(function (e) {
                     // remove is-invalid classes and feedback
-                    modalForm.find(".invalid-feedback").remove();
+                    modal.find(".invalid-feedback").remove();
                     modalForm.find(".form-control").removeClass('is-invalid');
                     e.preventDefault();
                     $.ajax({
@@ -171,9 +171,17 @@ $(document).ready(function () {
                         error: function (response) {
                             var errors = response.responseJSON;
                             for (var i in errors) {
-                                var input = modalForm.find('[name=' + i + ']');
-                                input.addClass('is-invalid');
-                                input.after($('<div class="invalid-feedback">' + errors[i] + '</div>'));
+                                if (i === '__all__'){
+                                    errors[i].map( (error) => {
+                                        modalForm.after(
+                                            $('<div class="invalid-feedback d-block">' + error + '</div>')
+                                        );
+                                    })}
+                                else {
+                                    var input = modalForm.find('[name=' + i + ']');
+                                    input.addClass('is-invalid');
+                                    input.after($('<div class="invalid-feedback">' + errors[i] + '</div>'));
+                                }
                             }
                         }
                     });
