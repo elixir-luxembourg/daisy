@@ -148,7 +148,7 @@ $(document).ready(function () {
                 var modalForm = modal.find('form');
                 modalForm.submit(function (e) {
                     // remove is-invalid classes and feedback
-                    modalForm.find(".invalid-feedback").remove();
+                    modal.find(".invalid-feedback").remove();
                     modalForm.find(".form-control").removeClass('is-invalid');
                     e.preventDefault();
                     $.ajax({
