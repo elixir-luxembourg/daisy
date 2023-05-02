@@ -24,6 +24,9 @@ from .restriction_class import RestrictionClass
 from .use_restriction import UseRestriction
 from .term_model import StudyTerm, GeneTerm, PhenotypeTerm, DiseaseTerm
 from .data_log_type import DataLogType
+from .endpoint import Endpoint
+from .exposure import Exposure
+
 # They need to be after User because of the inner references
 from .user import User
 
@@ -57,4 +60,6 @@ __all__ = ['GDPRRole',
            'PhenotypeTerm',
            'DiseaseTerm',
            'DataLogType',
+           'Endpoint',
+           'Exposure'
            'User']
