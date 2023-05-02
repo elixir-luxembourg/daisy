@@ -201,10 +201,6 @@ class UserAdmin(BaseUserAdmin):
 # User
 admin.site.register(User, UserAdmin)
 
-
-
-    
-
 @admin.register(Endpoint)
 class EndpointAdmin(admin.ModelAdmin):
     list_display = ('name', 'id', 'url_pattern')

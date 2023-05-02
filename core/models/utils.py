@@ -91,6 +91,7 @@ class TextFieldWithInputWidget(TextField):
         defaults.update(kwargs)
         return super().formfield(**defaults)
 
+
 class HashedField(models.CharField):
     """
     A custom field that will store a hash of the provided value.

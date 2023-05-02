@@ -61,5 +61,5 @@ __all__ = ['GDPRRole',
            'DiseaseTerm',
            'DataLogType',
            'Endpoint',
-           'Exposure'
+           'Exposure',
            'User']

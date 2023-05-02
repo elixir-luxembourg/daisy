@@ -18,13 +18,13 @@ class Exposure(CoreModel):
                                  on_delete=models.CASCADE,
                                  related_name='exposures',
                                  help_text='The endpoint to which the entity is exposed.')
-    
+
     dataset = models.ForeignKey('core.Dataset',
                                 verbose_name='Dataset',
                                 on_delete=models.CASCADE,
                                 related_name='exposures',
                                 help_text='The dataset that is exposed.')
-    
+
     form_id = models.IntegerField()
 
     created_by = models.ForeignKey('core.User',
@@ -32,6 +32,6 @@ class Exposure(CoreModel):
                                     on_delete=models.SET_NULL,
                                     null=True,
                                     help_text='Which User added this entry to DAISY',)
-    
+
     def __str__(self):
         return f'Exposure: {self.dataset}@{self.endpoint}'
