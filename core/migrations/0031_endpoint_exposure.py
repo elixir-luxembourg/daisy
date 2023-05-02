@@ -14,6 +14,7 @@ api_key_help_text = "\n \
 head <a href='https://generate-random.org/api-key-generator?count=1&length=64&type=mixed-numbers&prefix=' target='_blank'> here </a> \n \
 to generate a random key and keep it somewhere, we only store a hash.\n        "
 
+
 class Migration(migrations.Migration):
     dependencies = [
         ("core", "0030_permissions_data_migration"),
