@@ -485,4 +485,69 @@
             </div>
         </div>
     </div>
+    {% if request.user.can_publish %}
+    <div class="row mt-4">
+        {#    Exposure endpoints for the DATASET  #}
+        <div class="card with-max-height col-md-12 ml-0">
+            <div class="card-body">
+                {% if can_edit %}
+                    <div class="ml-1 float-right btn-group">
+                        <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button"
+                                id="addexposure"
+                                title="Add new exposure endpoint to dataset"
+                                data-toggle="modal"
+                                data-target="#modal"
+                                data-modal-title="Add new exposure endpoint"
+                                data-ajax-url="{% url 'dataset_exposure_add' dataset_pk=dataset.id %}"
+                                data-post-mode="true"
+                                data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
+                        >
+                            <i class="material-icons">add</i>
+                        </button>
+                    </div>
+                {% endif %}
+                <h2 class="card-title">Exposure</h2>
+
+                <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Form ID</th>
+                        {% if can_edit %}
+                            <th style="width:7em">Actions</th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for exposure in Exposure %}
+                        <tr>
+                            <td><p>{{exposure.dataset.endpoint}}</p></td>
+                            <td><p>{{exposure.dataset.form_id}}</p></td>
+                            <td>
+                                {% if can_edit %}
+                                    <i class="material-icons clickable"
+                                       id="editexposure"
+                                       title="Edit exposure"
+                                       data-toggle="modal"
+                                       data-target="#modal"
+                                       data-post-mode="true"
+                                       data-modal-title="Edit exposure"
+                                       data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
+                                       data-ajax-url="{% url 'dataset_exposure_edit' pk=exposure.id dataset_pk=dataset.id %}">edit</i>
+                                    <i class="red material-icons clickable" data-method="delete"
+                                       data-parent-to-remove="tr"
+                                       title="Delete exposure"
+                                       data-url="{% url 'dataset_exposure_remove' dataset_pk=dataset.id exposure_pk=exposure.id %}">delete_forever</i>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 {% endblock %}
