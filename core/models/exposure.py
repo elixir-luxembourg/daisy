@@ -28,10 +28,10 @@ class Exposure(CoreModel):
     form_id = models.IntegerField()
 
     created_by = models.ForeignKey('core.User',
-                                    verbose_name='Created by',
-                                    on_delete=models.SET_NULL,
-                                    null=True,
-                                    help_text='Which User added this entry to DAISY',)
+                                   verbose_name='Created by',
+                                   on_delete=models.SET_NULL,
+                                   null=True,
+                                   help_text='Which User added this entry to DAISY', )
 
     def __str__(self):
         return f'Exposure: {self.dataset}@{self.endpoint}'

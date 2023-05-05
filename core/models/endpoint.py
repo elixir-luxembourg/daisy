@@ -36,7 +36,7 @@ class Endpoint(CoreModel):
         max_length=128,
         verbose_name="API Key",
         help_text="""
-        * Please specify the API key to the endpoint, 
+        * Please specify the API key to the endpoint,
         head <a href='https://generate-random.org/api-key-generator?count=1&length=64&type=mixed-numbers&prefix=' target='_blank'> here </a>
         to generate a random key and keep it somewhere, we only store a hash.
         """,

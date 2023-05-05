@@ -6,6 +6,7 @@ from django.conf import settings
 
 from core.models import Exposure
 
+
 class ExposureForm(forms.ModelForm):
     class Meta:
         model = Exposure
@@ -17,7 +18,7 @@ class ExposureForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # we don't allow editing dataset
         self.fields.pop('dataset')
-        rems_forms_response = requests.get(getattr(settings, 'REMS_URL')+'api/forms',
+        rems_forms_response = requests.get(getattr(settings, 'REMS_URL') + 'api/forms',
                                            headers={"x-rems-api-key": getattr(settings, 'REMS_API_KEY'),
                                                     "x-rems-user-id": getattr(settings, 'REMS_API_USER')},
                                            verify=getattr(settings, 'REMS_VERIFY_SSL'))
@@ -52,7 +53,7 @@ class ExposureEditForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # we don't allow editing dataset
         self.fields.pop('dataset')
-        rems_forms_response = requests.get(getattr(settings, 'REMS_URL')+'api/forms',
+        rems_forms_response = requests.get(getattr(settings, 'REMS_URL') + 'api/forms',
                                            headers={"x-rems-api-key": getattr(settings, 'REMS_API_KEY'),
                                                     "x-rems-user-id": getattr(settings, 'REMS_API_USER')},
                                            verify=getattr(settings, 'REMS_VERIFY_SSL'))
@@ -64,4 +65,3 @@ class ExposureEditForm(forms.ModelForm):
             form_ids.append(getattr(settings, 'REMS_FORM_ID'))
 
         self.fields['form_id'] = forms.ChoiceField(choices=[(i, i) for i in form_ids], widget=forms.Select)
-

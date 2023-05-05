@@ -131,19 +131,4 @@ class DatasetDelete(CheckerMixin, DeleteView):
         context['action_url'] = 'dataset_delete'
         context['id'] = self.object.id
         return context
-
-
-
-@user_passes_test(is_data_steward)
-def publish_dataset(request, pk):
-    dataset = get_object_or_404(Dataset, pk=pk)
-    dataset.publish()
-    return redirect(reverse_lazy('dataset', kwargs={'pk': dataset.id}))
-
-@user_passes_test(is_data_steward)
-def unpublish_dataset(request, pk):
-    dataset = get_object_or_404(Dataset, pk=pk)
-    dataset.is_published = False
-    dataset.save()
-    return redirect(reverse_lazy('dataset', kwargs={'pk': dataset.id}))
     
