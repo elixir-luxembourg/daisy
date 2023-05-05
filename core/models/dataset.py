@@ -138,8 +138,7 @@ class Dataset(CoreTrackedModel):
             "storages": storage_dicts,
             "transfers": transfer_dicts,
             "contacts": contact_dicts,
-            "metadata": self.scientific_metadata,
-            "form_id": self.exposure.form_id
+            "metadata": self.scientific_metadata
         }
         return base_dict
 
