@@ -6,7 +6,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, UpdateView
 
 from core.forms.exposure import ExposureForm, ExposureEditForm
-from core.models import Dataset, Exposure
+from core.models import Dataset, Exposure, Endpoint
 from core.permissions import permission_required, CheckerMixin
 from core.constants import Permissions
 from core.utils import DaisyLogger
@@ -70,6 +70,28 @@ class ExposureEditView(CheckerMixin, UpdateView, AjaxViewMixin):
         log.debug(obj)
         return obj.dataset
 
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Hook method to save related dataset and endpoint.
+        """
+        self.dataset = None
+        dataset_pk = kwargs.get('dataset_pk')
+        if dataset_pk:
+            self.dataset = get_object_or_404(Dataset, pk=dataset_pk)
+
+        self.endpoint = None
+        exposure_pk = kwargs.get('pk')
+        if exposure_pk:
+            self.endpoint = get_object_or_404(Exposure, pk=exposure_pk).endpoint
+
+        return super().dispatch(request, *args, **kwargs)
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.dataset:
+            kwargs['dataset'] = self.dataset
+        if self.endpoint:
+            kwargs['endpoint'] = self.endpoint
+        return kwargs
     def form_valid(self, form):
         """If the form is valid, save the associated model and add to the dataset"""
         self.object = form.save(commit=False)

@@ -26,6 +26,19 @@
                         <dd>{{ dataset.other_external_id | default:'-' }}</dd>
                         <dt>Other comments</dt>
                         <dd>{{ dataset.comments | default:'-' | linebreaks }}</dd>
+                        {% if exposure_list|length > 0 %}
+                        <dt>Endpoints</dt>
+                        <dd>
+
+                            {% for exposure in exposure_list %}
+                                {% if exposure.endpoint.url_pattern %}
+                                    <a href="{{ exposure.endpoint.url_pattern }}">{{ exposure.endpoint.name }}</a>{% if not forloop.last %}, {% endif %}
+                                {% else %}
+                                    {{ exposure.endpoint.name }}{% if not forloop.last %}, {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </dd>
+                        {% endif %}
                     </dl>
                 </div>
 
@@ -496,10 +509,10 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for exposure in Exposure %}
+                    {% for exposure in exposure_list %}
                         <tr>
-                            <td><p>{{exposure.dataset.endpoint}}</p></td>
-                            <td><p>{{exposure.dataset.form_id}}</p></td>
+                            <td><p>{{exposure.endpoint}}</p></td>
+                            <td><p>{{exposure.form_id}}</p></td>
                             <td>
                                 {% if can_edit %}
                                     <i class="material-icons clickable"

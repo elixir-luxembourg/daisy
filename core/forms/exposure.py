@@ -4,7 +4,7 @@ import requests
 from django import forms
 from django.conf import settings
 
-from core.models import Exposure
+from core.models import Exposure, Endpoint
 
 
 class ExposureForm(forms.ModelForm):
@@ -29,8 +29,11 @@ class ExposureForm(forms.ModelForm):
 
         if not form_ids:
             form_ids.append(getattr(settings, 'REMS_FORM_ID'))
-
         self.fields['form_id'] = forms.ChoiceField(choices=[(i, i) for i in form_ids], widget=forms.Select)
+
+        exposure_list = Exposure.objects.filter(dataset=dataset)
+        endpoint_ids = exposure_list.values_list('endpoint', flat=True)
+        self.fields['endpoint'].choices = [(e.id, e) for e in Endpoint.objects.exclude(id__in=endpoint_ids)]
 
     field_order = [
         'endpoint',
@@ -50,6 +53,9 @@ class ExposureEditForm(forms.ModelForm):
     ]
 
     def __init__(self, *args, **kwargs):
+        dataset = kwargs.pop('dataset', None)
+        #current endpoint
+        endpoint = kwargs.pop('endpoint', None)
         super().__init__(*args, **kwargs)
         # we don't allow editing dataset
         self.fields.pop('dataset')
@@ -65,3 +71,8 @@ class ExposureEditForm(forms.ModelForm):
             form_ids.append(getattr(settings, 'REMS_FORM_ID'))
 
         self.fields['form_id'] = forms.ChoiceField(choices=[(i, i) for i in form_ids], widget=forms.Select)
+
+        exposure_list = Exposure.objects.filter(dataset=dataset)
+        endpoint_ids = exposure_list.values_list('endpoint', flat=True)
+        self.fields['endpoint'].choices = [(e.id, e) for e in Endpoint.objects.exclude(id__in=endpoint_ids)] + \
+                                          [(endpoint.id, endpoint)]

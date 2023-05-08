@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import user_passes_test
 
 from core.forms import DatasetForm
 from core.forms.dataset import DatasetFormEdit
-from core.models import Dataset
+from core.models import Dataset, Exposure
 from core.models.utils import COMPANY
 from core.permissions import permission_required, CheckerMixin
 from core.utils import DaisyLogger
@@ -60,6 +60,7 @@ class DatasetDetailView(DetailView):
         context['can_edit'] = self.request.user.can_edit_dataset(self.object)
         context['can_see_protected'] = self.request.user.has_permission_on_object(f'core.{Permissions.PROTECTED.value}_dataset', self.object)
         context['company_name'] = COMPANY
+        context['exposure_list'] = Exposure.objects.filter(dataset=self.object)
         return context
 
 
