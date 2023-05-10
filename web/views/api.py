@@ -7,7 +7,7 @@ from io import StringIO
 from typing import Dict, Optional
 
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured, PermissionDenied
+from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
@@ -136,7 +136,7 @@ def termsearch(request, category):
 @public
 @csrf_exempt
 @protect_with_api_key
-def datasets(request): 
+def datasets(request):
     endpoint_id = request.COOKIES.get('endpoint_id')
     global_export = request.COOKIES.get('global')
     objects = get_filtered_entities(request, 'Dataset')
