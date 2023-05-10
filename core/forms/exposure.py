@@ -23,13 +23,14 @@ class ExposureForm(forms.ModelForm):
                                                     "x-rems-user-id": getattr(settings, 'REMS_API_USER')},
                                            verify=getattr(settings, 'REMS_VERIFY_SSL'))
         rems_forms_dict = json.loads(rems_forms_response.text)
-        form_ids = []
+        form_name_ids = []
         for rems_forms in rems_forms_dict:
-            form_ids.append(rems_forms["form/id"])
+            form_name_ids.append((rems_forms["form/internal-name"]+" -- "+str(rems_forms["form/id"]), rems_forms["form/id"]))
 
-        if not form_ids:
-            form_ids.append(getattr(settings, 'REMS_FORM_ID'))
-        self.fields['form_id'] = forms.ChoiceField(choices=[(i, i) for i in form_ids], widget=forms.Select)
+
+        if not form_name_ids:
+            form_name_ids.append(getattr(settings, 'REMS_FORM_ID'))
+        self.fields['form_id'] = forms.ChoiceField(choices=[(i[1], i[0]) for i in form_name_ids], widget=forms.Select)
 
         exposure_list = Exposure.objects.filter(dataset=dataset)
         endpoint_ids = exposure_list.values_list('endpoint', flat=True)
@@ -64,13 +65,13 @@ class ExposureEditForm(forms.ModelForm):
                                                     "x-rems-user-id": getattr(settings, 'REMS_API_USER')},
                                            verify=getattr(settings, 'REMS_VERIFY_SSL'))
         rems_forms_dict = json.loads(rems_forms_response.text)
-        form_ids = []
+        form_name_ids = []
         for rems_forms in rems_forms_dict:
-            form_ids.append(rems_forms["form/id"])
-        if not form_ids:
-            form_ids.append(getattr(settings, 'REMS_FORM_ID'))
+            form_name_ids.append((rems_forms["form/internal-name"]+" -- "+str(rems_forms["form/id"]), rems_forms["form/id"]))
 
-        self.fields['form_id'] = forms.ChoiceField(choices=[(i, i) for i in form_ids], widget=forms.Select)
+        if not form_name_ids:
+            form_name_ids.append(getattr(settings, 'REMS_FORM_ID'))
+        self.fields['form_id'] = forms.ChoiceField(choices=[(i[1], i[0]) for i in form_name_ids], widget=forms.Select)
 
         exposure_list = Exposure.objects.filter(dataset=dataset)
         endpoint_ids = exposure_list.values_list('endpoint', flat=True)

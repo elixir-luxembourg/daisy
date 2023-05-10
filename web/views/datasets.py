@@ -1,17 +1,15 @@
 from django.conf import settings
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
-from django.contrib.auth.decorators import user_passes_test
 
 from core.forms import DatasetForm
 from core.forms.dataset import DatasetFormEdit
 from core.models import Dataset, Exposure
 from core.models.utils import COMPANY
-from core.permissions import permission_required, CheckerMixin
+from core.permissions import CheckerMixin
 from core.utils import DaisyLogger
 from core.constants import Permissions
-from web.views.utils import is_data_steward
 from . import facet_view_utils
 
 log = DaisyLogger(__name__)
