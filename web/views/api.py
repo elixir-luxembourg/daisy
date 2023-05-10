@@ -7,10 +7,12 @@ from io import StringIO
 from typing import Dict, Optional
 
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
+from django.contrib.auth.hashers import get_hasher
 
 from stronghold.decorators import public
 
@@ -18,7 +20,7 @@ from core.importer.datasets_exporter import DatasetsExporter
 from core.importer.projects_exporter import ProjectsExporter
 from core.lcsb.rems import handle_rems_callback
 from core.lcsb.rems import synchronizer
-from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm, Contact
+from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm, Contact, Endpoint
 from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneTerm
 from core.utils import DaisyLogger
 from elixir_daisy import settings
@@ -44,17 +46,25 @@ def create_protect_with_api_key_decorator(global_api_key=None):
         """
         @wraps(view)
         def decorator(request, *args, **kwargs):
-            submitted_keys = [request.GET.get('API_KEY', '-'), request.POST.get('API_KEY', '-')]
+            submitted_keys = [request.GET.get('API_KEY'), request.POST.get('API_KEY')]
+            req_key = submitted_keys[0] or submitted_keys[1]
             error_message = 'API_KEY missing in POST or GET parameters, or its value is invalid!'
             if 'API_KEY' not in request.GET and 'API_KEY' not in request.POST:
                 return create_error_response(error_message, status=403)
             elif global_api_key is not None and global_api_key in submitted_keys:
+                request.COOKIES['global'] = True
                 return view(request, *args, **kwargs)
-            # Check the key from GET
-            elif submitted_keys[0] not in ['-', ''] and User.objects.filter(api_key=submitted_keys[0]).count() > 0:
-                return view(request, *args, **kwargs)
-            # Check the key from POST
-            elif submitted_keys[1] not in ['-', ''] and User.objects.filter(api_key=submitted_keys[1]).count() > 0:
+            elif req_key:
+                # Check the key from GET or POST from USER api_key
+                if User.objects.filter(Q(api_key=req_key)).count() > 0:
+                    return view(request, *args, **kwargs)
+                # Check the key from GET or POST from Endpoint hashed api_key
+                hashed_key = get_hasher('default').encode(req_key, salt=settings.SECRET_KEY)
+                try:
+                    endpoint = Endpoint.objects.get(api_key=hashed_key)
+                except Endpoint.DoesNotExist:
+                    return create_error_response("There is no permitted endpoint with your API_KEY", status=403)
+                request.COOKIES['endpoint_id'] = endpoint.id
                 return view(request, *args, **kwargs)
             return create_error_response(error_message, status=403)
         return decorator
@@ -126,16 +136,19 @@ def termsearch(request, category):
 @public
 @csrf_exempt
 @protect_with_api_key
-def datasets(request):
+def datasets(request): 
+    endpoint_id = request.COOKIES.get('endpoint_id')
+    global_export = request.COOKIES.get('global')
     objects = get_filtered_entities(request, 'Dataset')
-    objects = objects.filter(is_published=True)
+    if not global_export:
+        objects = objects.filter(exposures__endpoint__id=endpoint_id)
     if 'project_id' in request.GET:
         project_id = request.GET.get('project_id', '')
         objects = objects.filter(project__id=project_id)
     if 'project_title' in request.GET:
         project_title = request.GET.get('project_title', '')
         objects = objects.filter(project__title__iexact=project_title)
-    exporter = DatasetsExporter(objects=objects)
+    exporter = DatasetsExporter(objects=objects, endpoint_id=endpoint_id, include_unpublished=global_export)
 
     try:
         buffer = exporter.export_to_buffer(StringIO())
@@ -188,8 +201,11 @@ def contracts(request):
 @csrf_exempt
 @protect_with_api_key
 def projects(request):
+    endpoint_id = request.COOKIES.get('endpoint_id')
+    global_export = request.COOKIES.get('global')
     objects = get_filtered_entities(request, 'Project')
-    objects = objects.filter(is_published=True)
+    if not global_export:
+        objects = objects.filter(datasets__exposures__endpoint__id=endpoint_id)
     if 'project_id' in request.GET:
         project_id = request.GET.get('project_id', '')
         objects = objects.filter(id=project_id)

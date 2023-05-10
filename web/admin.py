@@ -208,6 +208,7 @@ class EndpointAdmin(admin.ModelAdmin):
     search_fields = ('id', 'name', 'url_pattern')
     ordering = ('id',)
 
+
 @admin.register(Exposure)
 class ExposureAdmin(admin.ModelAdmin):
     list_display = ('dataset', 'id', 'endpoint', 'form_id')

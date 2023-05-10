@@ -1,7 +1,9 @@
 import re
 
 from django.db import models
+from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.contrib.auth.hashers import make_password
 
 from .utils import CoreModel, HashedField
 
@@ -35,6 +37,7 @@ class Endpoint(CoreModel):
     api_key = HashedField(
         max_length=128,
         verbose_name="API Key",
+        unique=True,
         help_text="""
         * Please specify the API key to the endpoint,
         head <a href='https://generate-random.org/api-key-generator?count=1&length=64&type=mixed-numbers&prefix=' target='_blank'> here </a>
@@ -54,6 +57,12 @@ class Endpoint(CoreModel):
             )
         if self.api_key and len(self.api_key) < 64:
             raise ValidationError("The API key must be 64 characters long.")
+        hashed_key = make_password(self.api_key, salt=settings.SECRET_KEY)
+        if hashed_key in Endpoint.objects.exclude(id=self.id).values_list(
+            "api_key", flat=True
+        ):
+            # Preventing integrity Errors in the future of having two endpoints with the same api key
+            raise ValidationError("Please use a different API key.")
 
     def __str__(self):
         return f"{self.name}"

@@ -98,10 +98,10 @@ class HashedField(models.CharField):
     """
     description = "Keeps the hash of the string in the DB"
     
-    def get_prep_value(self, value):
+    def pre_save(self, model_instance, add):
         """
         This function is called when the value is about to be saved to the DB. We hash the value and return it.
         """
-        value = make_password(value)
-        return super().get_prep_value(value)
+        value = getattr(model_instance, self.attname)
+        return make_password(value, salt=settings.SECRET_KEY)
     
