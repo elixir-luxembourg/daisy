@@ -80,4 +80,3 @@ class ProjectsExporter:
             "$schema": urljoin(JSONSCHEMA_BASE_REMOTE_URL, 'project.json'),
             "items": project_dicts}, buffer , indent=4)
         return buffer
-    

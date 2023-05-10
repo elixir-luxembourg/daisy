@@ -164,7 +164,9 @@ class DatasetFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ('title',)
 
     title = factory.Faker('bs')
+    project = factory.SubFactory(ProjectFactory)
     other_external_id = factory.Faker('ean8')
+    unique_id = factory.Faker('uuid4')
 
     @factory.post_generation
     def local_custodians(self, create, extracted, **kwargs):
@@ -424,3 +426,28 @@ class ContractDocumentFactory(AbstractDocumentFactory):
         model = 'core.Document'
 
     content_object = factory.SubFactory(ContractFactory)
+
+class EndpointFactory(factory.django.DjangoModelFactory):
+    """
+    Endpoint factory
+    """
+
+    class Meta:
+        model = 'core.Endpoint'
+
+    name = factory.Faker('company')
+    url_pattern = "https://datacatalog.elixir-luxembourg.org/e/dataset/${entity_id}"
+    api_key = 64 * 'x'
+
+class ExposureFactory(factory.django.DjangoModelFactory):
+    """
+    Exposure factory
+    """
+
+    class Meta:
+        model = 'core.Exposure'
+    
+    endpoint = factory.SubFactory(EndpointFactory)
+    dataset = factory.SubFactory(DatasetFactory)
+    form_id = 1
+    created_by = factory.SubFactory(UserFactory)
