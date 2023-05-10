@@ -23,6 +23,7 @@ def test_create_error_response():
     assert body.get('description') == 'description_value'
     assert body.get('more') == 'information'
 
+
 # def test_protect_with_api_key(override_global_api_key):  # see conftest.py
 def test_protect_with_api_key():
     test_global_key = 'GLOBAL_API_KEY__as_set_in_tests'
@@ -77,6 +78,7 @@ def test_protect_with_api_key():
     response = dummy_protected_view(request)
     assert response.status_code == 200
 
+
 def test_permissions():
     user = UserFactory.create(first_name='Rebecca', last_name='Kafe', oidc_id='test_oidc_id')
     user.save()
@@ -100,6 +102,7 @@ def test_permissions():
     failed_response = permissions(request, 'definitely_invalid_oidc_id')
     assert failed_response.status_code == 404
 
+
 def test_dataset_export_api():
     # Check if the API returns datasets without Exposure
     _ = DatasetFactory()
@@ -115,6 +118,7 @@ def test_dataset_export_api():
     response = api.datasets(request)
     assert response.status_code == 200
     assert len(loads(response.content).get("items")) == 1
+
 
 def test_project_export_api():
     # Check if the API returns projects without Exposure
@@ -132,4 +136,3 @@ def test_project_export_api():
     response = api.projects(request)
     assert response.status_code == 200
     assert len(loads(response.content).get("items")) == 1
-

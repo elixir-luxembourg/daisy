@@ -49,9 +49,7 @@ def create_protect_with_api_key_decorator(global_api_key=None):
             submitted_keys = [request.GET.get('API_KEY'), request.POST.get('API_KEY')]
             req_key = submitted_keys[0] or submitted_keys[1]
             error_message = 'API_KEY missing in POST or GET parameters, or its value is invalid!'
-            if 'API_KEY' not in request.GET and 'API_KEY' not in request.POST:
-                return create_error_response(error_message, status=403)
-            elif global_api_key is not None and global_api_key in submitted_keys:
+            if global_api_key is not None and global_api_key in submitted_keys:
                 request.COOKIES['global'] = True
                 return view(request, *args, **kwargs)
             elif req_key:
@@ -66,7 +64,8 @@ def create_protect_with_api_key_decorator(global_api_key=None):
                     return create_error_response("There is no permitted endpoint with your API_KEY", status=403)
                 request.COOKIES['endpoint_id'] = endpoint.id
                 return view(request, *args, **kwargs)
-            return create_error_response(error_message, status=403)
+            else:
+                return create_error_response(error_message, status=403)
         return decorator
     return protect_with_api_key
 
