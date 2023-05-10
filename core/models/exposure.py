@@ -32,6 +32,11 @@ class Exposure(CoreModel):
                                    on_delete=models.SET_NULL,
                                    null=True,
                                    help_text='Which User added this entry to DAISY', )
+    
+    @property
+    def url(self):
+        url = self.endpoint.url_pattern.replace('${entity_id}', str(self.dataset.unique_id))
+        return url
 
     def __str__(self):
         return f'Exposure: {self.dataset}@{self.endpoint}'

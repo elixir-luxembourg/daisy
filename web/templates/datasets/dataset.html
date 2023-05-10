@@ -32,7 +32,7 @@
 
                             {% for exposure in exposure_list %}
                                 {% if exposure.endpoint.url_pattern %}
-                                    <a href="{{ exposure.endpoint.url_pattern }}">{{ exposure.endpoint.name }}</a>{% if not forloop.last %}, {% endif %}
+                                    <a href="{{ exposure.url }}">{{ exposure.endpoint.name }}</a>{% if not forloop.last %}, {% endif %}
                                 {% else %}
                                     {{ exposure.endpoint.name }}{% if not forloop.last %}, {% endif %}
                                 {% endif %}
