@@ -8,10 +8,7 @@ from django.conf import settings
 from core.models import Project
 from core.utils import DaisyLogger
 
-
-
 JSONSCHEMA_BASE_REMOTE_URL = getattr(settings, 'IMPORT_JSON_SCHEMAS_URI')
-
 
 logger = DaisyLogger(__name__)
 
@@ -58,7 +55,7 @@ class ProjectsExporter:
             objects = self.objects
         else:
             objects = Project.objects.all()
-        
+
         if not self.include_unpublished:
             objects = objects.filter(datasets__exposures__endpoint__id=self.endpoint_id)
 
@@ -83,5 +80,4 @@ class ProjectsExporter:
             "$schema": urljoin(JSONSCHEMA_BASE_REMOTE_URL, 'project.json'),
             "items": project_dicts}, buffer , indent=4)
         return buffer
-
-
+    
