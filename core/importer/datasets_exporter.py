@@ -16,7 +16,7 @@ class DatasetsExporter:
     def __init__(
             self, 
             objects=None,
-            endpoint_id=None,
+            endpoint_id=-1,
             include_unpublished=False):
         self.include_unpublished = include_unpublished
         """
@@ -52,6 +52,8 @@ class DatasetsExporter:
             objects = self.objects
         else:
             objects = Dataset.objects.all()
+        if not self.include_unpublished:
+            objects = objects.filter(exposures__endpoint__id=self.endpoint_id)
         for dataset in objects:
             dataset_repr = str(dataset)
             logger.debug(f' * Exporting dataset: "{dataset_repr}"...')

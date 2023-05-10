@@ -20,6 +20,7 @@ class ProjectsExporter:
     def __init__(
             self, 
             objects=None,
+            endpoint_id=-1,
             include_unpublished=False):
         self.include_unpublished = include_unpublished   
         """
@@ -32,6 +33,7 @@ class ProjectsExporter:
             self.objects = objects
         else:
             self.objects = None
+        self.endpoint_id = endpoint_id
 
     def set_objects(self, objects):
         self.objects = objects
@@ -56,6 +58,9 @@ class ProjectsExporter:
             objects = self.objects
         else:
             objects = Project.objects.all()
+        
+        if not self.include_unpublished:
+            objects = objects.filter(datasets__exposures__endpoint__id=self.endpoint_id)
 
         for project in objects:
             logger.debug(f' * Exporting project: "{project.acronym}"...')

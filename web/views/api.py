@@ -140,8 +140,6 @@ def datasets(request):
     endpoint_id = request.COOKIES.get('endpoint_id')
     global_export = request.COOKIES.get('global')
     objects = get_filtered_entities(request, 'Dataset')
-    if not global_export:
-        objects = objects.filter(exposures__endpoint__id=endpoint_id)
     if 'project_id' in request.GET:
         project_id = request.GET.get('project_id', '')
         objects = objects.filter(project__id=project_id)
@@ -204,13 +202,11 @@ def projects(request):
     endpoint_id = request.COOKIES.get('endpoint_id')
     global_export = request.COOKIES.get('global')
     objects = get_filtered_entities(request, 'Project')
-    if not global_export:
-        objects = objects.filter(datasets__exposures__endpoint__id=endpoint_id)
     if 'project_id' in request.GET:
         project_id = request.GET.get('project_id', '')
         objects = objects.filter(id=project_id)
 
-    exporter = ProjectsExporter(objects=objects)
+    exporter = ProjectsExporter(objects=objects, endpoint_id=endpoint_id, include_unpublished=global_export)
 
     try:
         buffer = exporter.export_to_buffer(StringIO())
