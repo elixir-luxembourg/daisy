@@ -19,7 +19,7 @@ def is_data_steward(user):
 
 
 def can_publish(user):
-    if user.is_superuser or user.is_part_of(Group.objects.get(name=Groups.DATA_STEWARD.value)):
+    if user.can_publish():
         return True
     else:
         raise PermissionDenied
