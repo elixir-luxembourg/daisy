@@ -65,8 +65,7 @@ ACCESS_DEFAULT_EXPIRATION_DAYS = 90
 REMS_API_KEY = ""
 REMS_URL = ""
 REMS_API_USER = ""
-REMS_FORM_ID = 3
-REMS_VERIFY_SSL = False
+REMS_VERIFY_SSL = True
 
 # IDSERVICE_FUNCTION = 'core.lcsb.idservice.generate_identifier'
 IDSERVICE_ENDPOINT = 'https://10.240.16.199:8080/v1/api/id'

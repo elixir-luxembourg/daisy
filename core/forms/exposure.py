@@ -24,13 +24,15 @@ class ExposureForm(forms.ModelForm):
                                            verify=getattr(settings, 'REMS_VERIFY_SSL'))
         rems_forms_dict = json.loads(rems_forms_response.text)
         form_name_ids = []
-        for rems_forms in rems_forms_dict:
-            form_name_ids.append((rems_forms["form/internal-name"]+" -- "+str(rems_forms["form/id"]), rems_forms["form/id"]))
 
+        for rems_forms in rems_forms_dict:
+            form_name_ids.append(
+                (rems_forms["form/internal-name"] + " -- " + str(rems_forms["form/id"]), rems_forms["form/id"]))
+
+        self.fields['form_id'] = forms.ChoiceField(choices=[(i[1], i[0]) for i in form_name_ids], widget=forms.Select)
 
         if not form_name_ids:
-            form_name_ids.append(getattr(settings, 'REMS_FORM_ID'))
-        self.fields['form_id'] = forms.ChoiceField(choices=[(i[1], i[0]) for i in form_name_ids], widget=forms.Select)
+            self.fields['form_id'].help_text = 'Error: No forms retrieved form REMS'
 
         exposure_list = Exposure.objects.filter(dataset=dataset)
         endpoint_ids = exposure_list.values_list('endpoint', flat=True)
@@ -55,7 +57,7 @@ class ExposureEditForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         dataset = kwargs.pop('dataset', None)
-        #current endpoint
+        # current endpoint
         endpoint = kwargs.pop('endpoint', None)
         super().__init__(*args, **kwargs)
         # we don't allow editing dataset
@@ -66,12 +68,15 @@ class ExposureEditForm(forms.ModelForm):
                                            verify=getattr(settings, 'REMS_VERIFY_SSL'))
         rems_forms_dict = json.loads(rems_forms_response.text)
         form_name_ids = []
+
         for rems_forms in rems_forms_dict:
-            form_name_ids.append((rems_forms["form/internal-name"]+" -- "+str(rems_forms["form/id"]), rems_forms["form/id"]))
+            form_name_ids.append(
+                (rems_forms["form/internal-name"] + " -- " + str(rems_forms["form/id"]), rems_forms["form/id"]))
+
+        self.fields['form_id'] = forms.ChoiceField(choices=[(i[1], i[0]) for i in form_name_ids], widget=forms.Select)
 
         if not form_name_ids:
-            form_name_ids.append(getattr(settings, 'REMS_FORM_ID'))
-        self.fields['form_id'] = forms.ChoiceField(choices=[(i[1], i[0]) for i in form_name_ids], widget=forms.Select)
+            self.fields['form_id'].help_text = 'Error: No forms retrieved form REMS'
 
         exposure_list = Exposure.objects.filter(dataset=dataset)
         endpoint_ids = exposure_list.values_list('endpoint', flat=True)

@@ -22,7 +22,6 @@ class DataStewardGroupRequiredMixin(UserPassesTestMixin):
 
 class ExposureCreateView(DataStewardGroupRequiredMixin, CreateView, AjaxViewMixin):
     model = Exposure
-    template_name = 'exposure/exposure_form.html'
     form_class = ExposureForm
     def dispatch(self, request, *args, **kwargs):
         """
@@ -41,6 +40,7 @@ class ExposureCreateView(DataStewardGroupRequiredMixin, CreateView, AjaxViewMixi
         self.object.dataset = self.dataset
         self.object.save()
         messages.add_message(self.request, messages.SUCCESS, 'exposure endpoint created')
+        self.dataset.generate_elu_accession()
         return super().form_valid(form)
 
     def get_form_kwargs(self):
@@ -56,8 +56,6 @@ class ExposureCreateView(DataStewardGroupRequiredMixin, CreateView, AjaxViewMixi
 class ExposureEditView(DataStewardGroupRequiredMixin, UpdateView, AjaxViewMixin):
     model = Exposure
     form_class = ExposureEditForm
-    template_name = 'exposure/exposure_form.html'
-
     def dispatch(self, request, *args, **kwargs):
         """
         Hook method to save related dataset and endpoint.

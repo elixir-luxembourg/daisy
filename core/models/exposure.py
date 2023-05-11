@@ -35,7 +35,7 @@ class Exposure(CoreModel):
     
     @property
     def url(self):
-        url = self.endpoint.url_pattern.replace('${entity_id}', str(self.dataset.unique_id))
+        url = self.endpoint.url_pattern.replace('${entity_id}', str(self.dataset.elu_accession))
         return url
 
     def __str__(self):
