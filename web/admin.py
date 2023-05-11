@@ -31,6 +31,7 @@ from core.models import Access, \
                         Endpoint, \
                         Exposure, \
                         User
+from core.forms.endpoint import EndpointEditForm
 from core.models.contract import PartnerRole
 from core.models.storage_location import DataLocation
 from core.models.term_model import DiseaseTerm, \
@@ -204,6 +205,7 @@ admin.site.register(User, UserAdmin)
 
 @admin.register(Endpoint)
 class EndpointAdmin(admin.ModelAdmin):
+    form = EndpointEditForm
     list_display = ('name', 'id', 'url_pattern')
     search_fields = ('id', 'name', 'url_pattern')
     ordering = ('id',)
