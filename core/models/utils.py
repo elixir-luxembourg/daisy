@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import TextField
 from django.utils.module_loading import import_string
-
+from django.contrib.auth.hashers import make_password
 
 COMPANY = getattr(settings, "COMPANY", 'Company')
 
@@ -90,3 +90,18 @@ class TextFieldWithInputWidget(TextField):
             defaults['widget'] = forms.TextInput
         defaults.update(kwargs)
         return super().formfield(**defaults)
+
+
+class HashedField(models.CharField):
+    """
+    A custom field that will store a hash of the provided value.
+    """
+    description = "Keeps the hash of the string in the DB"
+    
+    def pre_save(self, model_instance, add):
+        """
+        This function is called when the value is about to be saved to the DB. We hash the value and return it.
+        """
+        value = getattr(model_instance, self.attname)
+        return make_password(value, salt=settings.SECRET_KEY)
+    

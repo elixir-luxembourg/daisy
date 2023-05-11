@@ -2,7 +2,7 @@ from django.urls import path
 
 from web.views import access, api, contracts, data_declarations, datasets, \
                       documents, legalbasis, notifications, permissions, \
-                      profile, projects, share, storage_locations
+                      profile, projects, share, storage_locations, exposure
 from web.views.access import AccessCreateView, AccessEditView
 from web.views.about import about
 from web.views.cohorts import CohortCreateView, CohortEditView, \
@@ -17,7 +17,7 @@ from web.views.contracts import ContractCreateView, ContractEditView, \
 from web.views.dashboard import dashboard
 from web.views.data_declarations import DatadeclarationDetailView, DatadeclarationEditView
 from web.views.datasets import DatasetCreateView, DatasetDetailView, DatasetEditView, DatasetDelete, \
-                               dataset_list, publish_dataset, unpublish_dataset
+                               dataset_list
 from web.views.export import cohorts_export, contacts_export, contracts_export, \
                              datasets_export, partners_export, projects_export
 from web.views.partner import PartnerCreateView, PartnerDelete, PartnerDetailView, \
@@ -81,8 +81,6 @@ web_urls = [
     path('dataset/<int:pk>/', DatasetDetailView.as_view(), name="dataset"),
     path('dataset/<int:pk>/delete', DatasetDelete.as_view(), name="dataset_delete"),
     path('dataset/<int:pk>/edit', DatasetEditView.as_view(), name="dataset_edit"),
-    path('dataset/<int:pk>/publish', publish_dataset, name="dataset_publish"),
-    path('dataset/<int:pk>/unpublish', unpublish_dataset, name="dataset_unpublish"),
     # Dataset's StorageLocation methods
     path('dataset/<int:dataset_pk>/storagelocation/add/', storage_locations.StorageLocationCreateView.as_view(), name='dataset_storagelocation_add'),
     path('dataset/<int:dataset_pk>/storagelocation/remove/<int:storagelocation_pk>/', storage_locations.remove_storagelocation, name='dataset_storagelocation_remove'),
@@ -99,6 +97,13 @@ web_urls = [
     path('dataset/<int:dataset_pk>/share/add/', share.ShareCreateView.as_view(), name='dataset_share_add'),
     path('dataset/<int:dataset_pk>/share/remove/<int:share_pk>/', share.remove_share, name='dataset_share_remove'),
     path('dataset/<int:dataset_pk>/share/<int:pk>/edit', share.ShareEditView.as_view(), name="dataset_share_edit"),
+    # Dataset's Exposure methods
+    path('dataset/<int:dataset_pk>/exposure/add/', exposure.ExposureCreateView.as_view(),
+         name='dataset_exposure_add'),
+    path('dataset/<int:dataset_pk>/exposure/remove/<int:exposure_pk>/',
+         exposure.remove_exposure, name='dataset_exposure_remove'),
+    path('dataset/<int:dataset_pk>/exposure/<int:pk>/edit', exposure.ExposureEditView.as_view(),
+         name="dataset_exposure_edit"),
 
     # Cohorts
     path('definitions/cohorts/', cohort_list, name="cohorts"),

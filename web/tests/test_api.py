@@ -1,5 +1,4 @@
 from json import loads
-import json
 
 from importlib import reload
 
@@ -10,7 +9,7 @@ from django.test import RequestFactory
 
 from web.views import api
 
-from test.factories import UserFactory
+from test.factories import UserFactory, EndpointFactory, DatasetFactory, ExposureFactory, ProjectFactory
 from web.views.api import create_error_response, create_protect_with_api_key_decorator
 from web.views.api import permissions
 
@@ -23,6 +22,7 @@ def test_create_error_response():
     body = loads(create_error_response('description_value', {'more': 'information'}).content)
     assert body.get('description') == 'description_value'
     assert body.get('more') == 'information'
+
 
 # def test_protect_with_api_key(override_global_api_key):  # see conftest.py
 def test_protect_with_api_key():
@@ -72,6 +72,13 @@ def test_protect_with_api_key():
     response = dummy_protected_view(request)
     assert response.status_code == 200
 
+    # check if an endpoint api key is accepted
+    endpoint = EndpointFactory()
+    request = RequestFactory().get('', data={'API_KEY': endpoint.api_key})
+    response = dummy_protected_view(request)
+    assert response.status_code == 200
+
+
 def test_permissions():
     user = UserFactory.create(first_name='Rebecca', last_name='Kafe', oidc_id='test_oidc_id')
     user.save()
@@ -94,3 +101,38 @@ def test_permissions():
     # If invalid oidc_ id is used
     failed_response = permissions(request, 'definitely_invalid_oidc_id')
     assert failed_response.status_code == 404
+
+
+def test_dataset_export_api():
+    # Check if the API returns datasets without Exposure
+    _ = DatasetFactory()
+    endpoint = EndpointFactory()
+    path = reverse('api_datasets')
+    request = RequestFactory().get(path, {'API_KEY': endpoint.api_key})
+    response = api.datasets(request)
+    assert response.status_code == 200
+    assert len(loads(response.content).get("items")) == 0
+
+    # Check if the API returns datasets with Exposure
+    _ = ExposureFactory(endpoint=endpoint)
+    response = api.datasets(request)
+    assert response.status_code == 200
+    assert len(loads(response.content).get("items")) == 1
+
+
+def test_project_export_api():
+    # Check if the API returns projects without Exposure
+    project_a = ProjectFactory()
+    dataset_a = DatasetFactory(project=project_a)
+    endpoint = EndpointFactory()
+    path = reverse('api_projects')
+    request = RequestFactory().get(path, {'API_KEY': endpoint.api_key})
+    response = api.projects(request)
+    assert response.status_code == 200
+    assert len(loads(response.content).get("items")) == 0
+
+    # Check if the API returns projects with Exposure
+    _ = ExposureFactory(endpoint=endpoint, dataset=dataset_a)
+    response = api.projects(request)
+    assert response.status_code == 200
+    assert len(loads(response.content).get("items")) == 1

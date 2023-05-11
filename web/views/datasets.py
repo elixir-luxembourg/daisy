@@ -1,17 +1,15 @@
 from django.conf import settings
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
-from django.contrib.auth.decorators import user_passes_test
 
 from core.forms import DatasetForm
 from core.forms.dataset import DatasetFormEdit
-from core.models import Dataset
+from core.models import Dataset, Exposure
 from core.models.utils import COMPANY
-from core.permissions import permission_required, CheckerMixin
+from core.permissions import CheckerMixin
 from core.utils import DaisyLogger
 from core.constants import Permissions
-from web.views.utils import is_data_steward
 from . import facet_view_utils
 
 log = DaisyLogger(__name__)
@@ -60,6 +58,7 @@ class DatasetDetailView(DetailView):
         context['can_edit'] = self.request.user.can_edit_dataset(self.object)
         context['can_see_protected'] = self.request.user.has_permission_on_object(f'core.{Permissions.PROTECTED.value}_dataset', self.object)
         context['company_name'] = COMPANY
+        context['exposure_list'] = Exposure.objects.filter(dataset=self.object)
         return context
 
 
@@ -131,19 +130,4 @@ class DatasetDelete(CheckerMixin, DeleteView):
         context['action_url'] = 'dataset_delete'
         context['id'] = self.object.id
         return context
-
-
-
-@user_passes_test(is_data_steward)
-def publish_dataset(request, pk):
-    dataset = get_object_or_404(Dataset, pk=pk)
-    dataset.publish()
-    return redirect(reverse_lazy('dataset', kwargs={'pk': dataset.id}))
-
-@user_passes_test(is_data_steward)
-def unpublish_dataset(request, pk):
-    dataset = get_object_or_404(Dataset, pk=pk)
-    dataset.is_published = False
-    dataset.save()
-    return redirect(reverse_lazy('dataset', kwargs={'pk': dataset.id}))
     

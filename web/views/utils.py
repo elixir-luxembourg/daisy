@@ -18,6 +18,13 @@ def is_data_steward(user):
         raise PermissionDenied
 
 
+def can_publish(user):
+    if user.can_publish():
+        return True
+    else:
+        raise PermissionDenied
+
+
 class AjaxViewMixin(SingleObjectTemplateResponseMixin, FormMixin):
     template_name_ajax = '_includes/forms.html'
 
@@ -46,16 +53,18 @@ class AjaxViewMixin(SingleObjectTemplateResponseMixin, FormMixin):
 def get_client_ip(request):
     ip_from_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if ip_from_forwarded_for:
-        return ip_from_forwarded_for.split(',')[0]    
+        return ip_from_forwarded_for.split(',')[0]
     return request.META.get('REMOTE_ADDR')
+
 
 def generate_elu_accession(_=None):
     elu_accession = 'ELU_I_' + str(get_next_value('elu_accession', initial_value=100))
     return elu_accession
 
+
 def get_user_or_contact_by_oidc_id(user_oidc_id) -> Tuple[bool, bool, Optional[User], Optional[Contact]]:
     user, contact = None, None
-    
+
     try:
         user = User.objects.get(oidc_id=user_oidc_id)
         user_found = True

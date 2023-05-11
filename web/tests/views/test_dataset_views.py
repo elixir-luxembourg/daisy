@@ -119,7 +119,7 @@ def test_dataset_edit_protected_documents(permissions, group):
 
 
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
-@pytest.mark.parametrize('url_name', ['dataset_publish', 'dataset_unpublish', 'datasets_export'])
+@pytest.mark.parametrize('url_name', ['datasets_export'])
 def test_dataset_publications(permissions, group, url_name):
     kwargs = {}
     if url_name != 'datasets_export':

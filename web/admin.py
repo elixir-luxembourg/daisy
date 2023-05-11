@@ -28,6 +28,8 @@ from core.models import Access, \
                         StorageResource, \
                         UseRestriction, \
                         DataLogType, \
+                        Endpoint, \
+                        Exposure, \
                         User
 from core.models.contract import PartnerRole
 from core.models.storage_location import DataLocation
@@ -198,3 +200,17 @@ class UserAdmin(BaseUserAdmin):
 
 # User
 admin.site.register(User, UserAdmin)
+
+
+@admin.register(Endpoint)
+class EndpointAdmin(admin.ModelAdmin):
+    list_display = ('name', 'id', 'url_pattern')
+    search_fields = ('id', 'name', 'url_pattern')
+    ordering = ('id',)
+
+
+@admin.register(Exposure)
+class ExposureAdmin(admin.ModelAdmin):
+    list_display = ('dataset', 'id', 'endpoint', 'form_id')
+    search_fields = ('id', 'dataset', 'endpoint', 'form_id')
+    ordering = ('added',)
