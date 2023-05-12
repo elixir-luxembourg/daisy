@@ -499,7 +499,7 @@
                     <thead>
                     <tr>
                         <th>Endpoint</th>
-                        <th>Form ID</th>
+                        <th>Form</th>
                         <th style="width:7em">Actions</th>
                     </tr>
                     </thead>
@@ -507,7 +507,7 @@
                     {% for exposure in exposure_list %}
                         <tr>
                             <td><p>{{exposure.endpoint}}</p></td>
-                            <td><p>{{exposure.form_id}}</p></td>
+                            <td><p>{{exposure.form_name}} -- {{exposure.form_id}}</p></td>
                             <td>
                                 <i class="material-icons clickable"
                                    id="editexposure"

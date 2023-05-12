@@ -11,6 +11,7 @@ from core.permissions import CheckerMixin
 from core.utils import DaisyLogger
 from core.constants import Permissions
 from . import facet_view_utils
+from .utils import get_rems_forms
 
 log = DaisyLogger(__name__)
 
@@ -58,7 +59,14 @@ class DatasetDetailView(DetailView):
         context['can_edit'] = self.request.user.can_edit_dataset(self.object)
         context['can_see_protected'] = self.request.user.has_permission_on_object(f'core.{Permissions.PROTECTED.value}_dataset', self.object)
         context['company_name'] = COMPANY
+
+        exposure_form_names_none = Exposure.objects.filter(dataset=self.object, form_name=None)
+        for exposure in exposure_form_names_none:
+            rems_forms_dict = get_rems_forms(exposure.form_id)
+            exposure.form_name = rems_forms_dict["form/internal-name"]
+            exposure.save()
         context['exposure_list'] = Exposure.objects.filter(dataset=self.object)
+
         return context
 
 
