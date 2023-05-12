@@ -59,6 +59,10 @@ class Dataset(CoreTrackedModel):
                                     on_delete=models.SET_NULL,
                                     verbose_name='Sensitivity class',
                                     help_text='Sensitivity denotes the security classification of this dataset.')
+    @property
+    def is_published(self):
+        exposures_list = self.exposures.all()
+        return len(exposures_list) > 0
 
     @property
     def data_types(self):
@@ -169,8 +173,8 @@ class Dataset(CoreTrackedModel):
         for data_declaration in self.data_declarations.all():
             data_declaration.publish_subentities()
 
-        super().publish()
-        
+        self.generate_elu_accession()
+
 
 # faster lookup for permissions
 # https://django-guardian.readthedocs.io/en/stable/userguide/performance.html#direct-foreign-keys

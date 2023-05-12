@@ -7,10 +7,10 @@ from django.views.generic import CreateView, UpdateView
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import UserPassesTestMixin
 
+
 from core.forms.exposure import ExposureForm, ExposureEditForm
 from core.models import Dataset, Exposure
 from core.utils import DaisyLogger
-
 from web.views.utils import AjaxViewMixin, can_publish
 
 log = DaisyLogger(__name__)
@@ -39,8 +39,8 @@ class ExposureCreateView(DataStewardGroupRequiredMixin, CreateView, AjaxViewMixi
         self.object = form.save(commit=False)
         self.object.dataset = self.dataset
         self.object.save()
+        self.dataset.publish()
         messages.add_message(self.request, messages.SUCCESS, 'exposure endpoint created')
-        self.dataset.generate_elu_accession()
         return super().form_valid(form)
 
     def get_form_kwargs(self):
