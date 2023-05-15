@@ -282,6 +282,7 @@ FACET_FIELDS = {
         'consent_status',
         'data_types',
         'deidentification_method',
+        'is_published',
     ),
     'contract': (
         'contacts',

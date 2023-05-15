@@ -151,7 +151,9 @@ class Project(CoreTrackedModel):
         return self.acronym or self.title or "undefined"
 
 
-
+    @property
+    def is_published(self):
+        return any(dataset.is_published for dataset in self.datasets.all())
 
     def to_dict(self):
         contact_dicts = []

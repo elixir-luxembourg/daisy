@@ -61,6 +61,11 @@ class Dataset(CoreTrackedModel):
                                     help_text='Sensitivity denotes the security classification of this dataset.')
 
     @property
+    def is_published(self):
+        exposures_list = self.exposures.all()
+        return len(exposures_list) > 0
+
+    @property
     def data_types(self):
         all_data_types = set()
         for data_declaration in self.data_declarations.all():
