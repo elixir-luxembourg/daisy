@@ -167,14 +167,9 @@ class Dataset(CoreTrackedModel):
         d['legal_bases'] = legal_bases
         return d
 
-    def publish(self, save=True):
-        if self.project:
-            self.project.publish()
-        
+    def publish(self):     
         for data_declaration in self.data_declarations.all():
             data_declaration.publish_subentities()
-
-        super().publish()
         
 
 # faster lookup for permissions

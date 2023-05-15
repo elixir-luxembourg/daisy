@@ -24,7 +24,7 @@ from web.views.partner import PartnerCreateView, PartnerDelete, PartnerDetailVie
                               PartnerEditView, partner_search_view, \
                               publish_partner, unpublish_partner
 from web.views.projects import ProjectCreateView, ProjectEditView, ProjectDetailView, \
-                               ProjectDelete, publish_project, unpublish_project, dsw_list_projects
+                               ProjectDelete, dsw_list_projects
 from web.views.publication import PublicationCreateView, PublicationListView, \
                                   PublicationEditView, add_publication_to_project, \
                                   remove_publication_from_project, pick_publication_for_project
@@ -164,8 +164,6 @@ web_urls = [
     path('project/<int:pk>/', ProjectDetailView.as_view(), name="project"),
     path('project/<int:pk>/delete', ProjectDelete.as_view(), name="project_delete"),
     path('project/<int:pk>/edit', ProjectEditView.as_view(), name="project_edit"),
-    path('project/<int:pk>/publish', publish_project, name="project_publish"),
-    path('project/<int:pk>/unpublish', unpublish_project, name="project_unpublish"),
     path('project/<int:pk>/add-contact', add_contact_to_project, name="add_contact_to_project"),
     path('project/<int:pk>/add-dataset', datasets.DatasetCreateView.as_view(), name="datasets_add_to_project"),
     path('project/<int:pk>/add-personnel', add_personnel_to_project, name="add_personnel_to_project"),

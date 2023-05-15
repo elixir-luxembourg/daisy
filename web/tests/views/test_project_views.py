@@ -150,7 +150,7 @@ def test_project_edit_protected_documents(permissions, group):
     os.remove(document.content.name)
 
 @pytest.mark.parametrize('group', [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup])
-@pytest.mark.parametrize('url_name', ['project_publish', 'project_unpublish', 'projects_export'])
+@pytest.mark.parametrize('url_name', ['projects_export'])
 def test_projects_publications_and_export(permissions, group, url_name):
     user = UserFactory(groups=[group()])
     kwargs = {}

@@ -62,16 +62,6 @@ class CoreTrackedModel(CoreModel):
     def is_published(self):
         pass
 
-    def publish(self, save=True):
-        generate_id_function_path = getattr(settings, 'IDSERVICE_FUNCTION')
-        generate_id_function = import_string(generate_id_function_path)
-        if not self.is_published:
-            self.is_published = True
-            if not self.elu_accession:
-                self.elu_accession = generate_id_function(self)
-        if save:
-            self.save(update_fields=['is_published', 'elu_accession'])
-
     def generate_elu_accession(self, save=True):
         generate_id_function_path = getattr(settings, 'IDSERVICE_FUNCTION')
         generate_id_function = import_string(generate_id_function_path)
@@ -98,6 +88,17 @@ class CoreTrackedDBModel(CoreTrackedModel):
 
     class Meta:
         abstract = True
+
+    def publish(self, save=True):
+        generate_id_function_path = getattr(settings, 'IDSERVICE_FUNCTION')
+        generate_id_function = import_string(generate_id_function_path)
+        if not self.is_published:
+            self.is_published = True
+            if not self.elu_accession:
+                self.elu_accession = generate_id_function(self)
+        if save:
+            self.save(update_fields=['_is_published', 'elu_accession'])
+    
     @property
     def is_published(self):
         # Getter method

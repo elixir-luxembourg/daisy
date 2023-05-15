@@ -3,7 +3,7 @@ from typing import List
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Q, ObjectDoesNotExist
+from django.db.models import Q, ObjectDoesNotExist, Count
 
 from enumchoicefield import EnumChoiceField, ChoiceEnum
 
@@ -11,7 +11,6 @@ from .utils import CoreModel
 
 from auditlog.registry import auditlog
 from auditlog.models import AuditlogHistoryField
-
 
 
 class StatusChoices(ChoiceEnum):
@@ -145,7 +144,7 @@ class Access(CoreModel):
             else:
                 return f"Access ({self.status}) to dataset {self.dataset.title} given to a user: {self.user}/{self.access_notes}"
         except ObjectDoesNotExist as e:
-                return f"Access ({self.status}) to dataset {self.dataset.title} given to a deleted contact or user: {self.access_notes}"
+            return f"Access ({self.status}) to dataset {self.dataset.title} given to a deleted contact or user: {self.access_notes}"
 
     def delete(self, force: bool = False):
         self.status = StatusChoices.terminated
@@ -159,12 +158,12 @@ class Access(CoreModel):
 
     @classmethod
     def find_for_user(cls, user) -> List[str]:
-        accesses = cls.objects.filter(user=user, dataset__is_published=True)
+        accesses = cls.objects.annotate(c=Count("dataset__exposures")).filter(user=user, c__gt=0)
         return cls._filter_expired(accesses)
 
     @classmethod
     def find_for_contact(cls, contact) -> List[str]:
-        accesses = cls.objects.filter(contact=contact, dataset__is_published=True)
+        accesses = cls.objects.annotate(c=Count("dataset__exposures")).filter(contact=contact, c__gt=0)
         return cls._filter_expired(accesses)
 
     @staticmethod

@@ -115,7 +115,7 @@ def unpublish_partner(request, pk):
     partner = get_object_or_404(Partner, pk=pk)
     if partner.is_published:
         partner.is_published = False    
-    partner.save(update_fields=['is_published'])
+    partner.save(update_fields=['_is_published'])
     return HttpResponseRedirect(reverse_lazy('partner', kwargs={'pk': pk}))
 
 
