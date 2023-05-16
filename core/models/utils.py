@@ -62,6 +62,10 @@ class CoreTrackedModel(CoreModel):
     def is_published(self):
         pass
 
+    @abstractmethod
+    def publish(self):
+        pass
+
     def generate_elu_accession(self, save=True):
         generate_id_function_path = getattr(settings, 'IDSERVICE_FUNCTION')
         generate_id_function = import_string(generate_id_function_path)

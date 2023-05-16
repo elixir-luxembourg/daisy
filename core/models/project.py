@@ -219,6 +219,9 @@ class Project(CoreTrackedModel):
         d['publications'] = ','.join(publications)
         return d
 
+    def publish(self):
+        pass
+
 # faster lookup for permissions
 # https://django-guardian.readthedocs.io/en/stable/userguide/performance.html#direct-foreign-keys
 class ProjectUserObjectPermission(UserObjectPermissionBase):
