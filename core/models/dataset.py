@@ -3,6 +3,8 @@ import uuid
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
+from django.utils.module_loading import import_string
+
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from core import constants
 from core.permissions.mapping import PERMISSION_MAPPING
@@ -167,7 +169,14 @@ class Dataset(CoreTrackedModel):
         d['legal_bases'] = legal_bases
         return d
 
-    def publish(self):     
+    def publish(self, save=True):
+        generate_id_function_path = getattr(settings, 'IDSERVICE_FUNCTION')
+        generate_id_function = import_string(generate_id_function_path)
+        if not self.elu_accession:
+            self.elu_accession = generate_id_function(self)
+        if save:
+            self.save(update_fields=['elu_accession'])
+
         for data_declaration in self.data_declarations.all():
             data_declaration.publish_subentities()
         

@@ -66,14 +66,6 @@ class CoreTrackedModel(CoreModel):
     def publish(self):
         pass
 
-    def generate_elu_accession(self, save=True):
-        generate_id_function_path = getattr(settings, 'IDSERVICE_FUNCTION')
-        generate_id_function = import_string(generate_id_function_path)
-        if not self.elu_accession:
-            self.elu_accession = generate_id_function(self)
-        if save:
-            self.save(update_fields=['elu_accession'])
-
     def clean(self):
         cleaned_data = super().clean()
         validate_json(self.scientific_metadata)

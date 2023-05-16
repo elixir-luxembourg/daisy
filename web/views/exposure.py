@@ -42,8 +42,7 @@ class ExposureCreateView(DataStewardGroupRequiredMixin, CreateView, AjaxViewMixi
         self.object.dataset = self.dataset
         self.object.save()
         messages.add_message(self.request, messages.SUCCESS, 'exposure endpoint created')
-        self.dataset.generate_elu_accession()
-        # publish subentities
+        # generate elu accession for dataset & publish subentities
         self.dataset.publish()
         return super().form_valid(form)
 
