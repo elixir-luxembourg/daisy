@@ -211,8 +211,17 @@ class EndpointAdmin(admin.ModelAdmin):
     ordering = ('id',)
 
 
+class ReadOnlyAdmin(admin.ModelAdmin):
+    list_display = ['listing']
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
 @admin.register(Exposure)
-class ExposureAdmin(admin.ModelAdmin):
+class ExposureAdmin(ReadOnlyAdmin):
     list_display = ('dataset', 'id', 'endpoint', 'form_id', 'form_name')
     list_filter = ('endpoint__name', 'form_id', 'form_name')
     search_fields = ('id', 'dataset', 'endpoint', 'form_id', 'form_name')
