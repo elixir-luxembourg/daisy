@@ -214,5 +214,6 @@ class EndpointAdmin(admin.ModelAdmin):
 @admin.register(Exposure)
 class ExposureAdmin(admin.ModelAdmin):
     list_display = ('dataset', 'id', 'endpoint', 'form_id', 'form_name')
+    list_filter = ('endpoint__name', 'form_id', 'form_name')
     search_fields = ('id', 'dataset', 'endpoint', 'form_id', 'form_name')
     ordering = ('added',)
