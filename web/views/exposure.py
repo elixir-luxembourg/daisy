@@ -104,5 +104,8 @@ def remove_exposure(request, dataset_pk, exposure_pk):
     exposure = get_object_or_404(Exposure, pk=exposure_pk)
     if exposure.dataset == dataset:
         exposure.delete()
+    if len(dataset.exposures.all()) < 1:
+        # needed to trigger reindex of dataset and changing dataset.is_published to false
+        dataset.save()
     messages.add_message(request, messages.SUCCESS, 'exposure record deleted.')
     return HttpResponse("exposure deleted")
