@@ -159,7 +159,7 @@ class Command(BaseCommand):
             data = json.load(handler)
             for partner in data:
                 _current = {k: v for k, v in partner.items()}
-                _current.update({'is_published': True})
+                _current.update({'_is_published': True})
                 if 'external_id' in _current:
                     _current['elu_accession'] = _current['external_id']
                     _current.pop('external_id')

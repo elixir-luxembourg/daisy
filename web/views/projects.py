@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction, IntegrityError
+from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -267,26 +268,12 @@ class ProjectDelete(CheckerMixin, DeleteView):
         return context
 
 
-@user_passes_test(is_data_steward)
-def publish_project(request, pk):
-    project = get_object_or_404(Project, pk=pk)
-    project.publish()
-    return redirect(reverse_lazy('project', kwargs={'pk': project.id}))
-
-
-@user_passes_test(is_data_steward)
-def unpublish_project(request, pk):
-    project = get_object_or_404(Project, pk=pk)
-    project.is_published = False
-    project.save()
-    return redirect(reverse_lazy('project', kwargs={'pk': project.id}))
-
-
 def dsw_list_projects(request):
     #if data steward or admin -> list all the public projects
     # if(request.user.is_admin() | request.user.is_datasteward()):
     #     objects = Project.objects.all().filter(is_published=True)
-    objects = (Project.objects.filter(local_custodians=request.user, is_published=True) | Project.objects.filter(company_personnel=request.user, is_published=True)).distinct()
+    objects = (Project.objects.filter(local_custodians=request.user) | Project.objects.filter(company_personnel=request.user)).distinct()
+    objects = objects.annotate(c=Count('datasets__exposures')).filter(c__gt=0)
     return render(request, 'integrations/dsw/project_list.html', {
         'dsw_origin': getattr(settings, 'DSW_ORIGIN', 'localhost'),
         'projects': [{'url': reverse('project', args=[str(project.id)]),

@@ -3,7 +3,7 @@ from django.db import models
 from django_countries.fields import CountryField
 
 from model_utils import Choices
-from .utils import CoreTrackedModel, TextFieldWithInputWidget
+from .utils import CoreTrackedDBModel, TextFieldWithInputWidget
 
 from elixir_daisy import settings
 
@@ -21,7 +21,7 @@ SECTOR_CATEGORY = Choices(
 )
 
 
-class Partner(CoreTrackedModel):
+class Partner(CoreTrackedDBModel):
     """
     Represents a partner.
       {

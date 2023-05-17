@@ -20,9 +20,11 @@ class DataStewardGroupRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return can_publish(self.request.user)
 
+
 class ExposureCreateView(DataStewardGroupRequiredMixin, CreateView, AjaxViewMixin):
     model = Exposure
     form_class = ExposureForm
+
     def dispatch(self, request, *args, **kwargs):
         """
         Hook method to save related dataset.
@@ -42,7 +44,8 @@ class ExposureCreateView(DataStewardGroupRequiredMixin, CreateView, AjaxViewMixi
         self.object.form_name = rems_forms_dict["form/internal-name"]
         self.object.save()
         messages.add_message(self.request, messages.SUCCESS, 'exposure endpoint created')
-        self.dataset.generate_elu_accession()
+        # generate elu accession for dataset & publish subentities
+        self.dataset.publish()
         return super().form_valid(form)
 
     def get_form_kwargs(self):
@@ -58,6 +61,7 @@ class ExposureCreateView(DataStewardGroupRequiredMixin, CreateView, AjaxViewMixi
 class ExposureEditView(DataStewardGroupRequiredMixin, UpdateView, AjaxViewMixin):
     model = Exposure
     form_class = ExposureEditForm
+
     def dispatch(self, request, *args, **kwargs):
         """
         Hook method to save related dataset and endpoint.
@@ -104,7 +108,8 @@ def remove_exposure(request, dataset_pk, exposure_pk):
     exposure = get_object_or_404(Exposure, pk=exposure_pk)
     if exposure.dataset == dataset:
         exposure.delete()
+    if len(dataset.exposures.all()) < 1:
+        # needed to trigger reindex of dataset and changing dataset.is_published to false
+        dataset.save()
     messages.add_message(request, messages.SUCCESS, 'exposure record deleted.')
     return HttpResponse("exposure deleted")
-
-

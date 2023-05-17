@@ -10,7 +10,7 @@ from core.lcsb.oidc import KeycloakAccountSynchronizer, KeycloakSynchronizationM
 from core.lcsb.rems import create_rems_entitlement
 from core.models.access import Access
 from core.models.contact import Contact
-from test.factories import ContactFactory, DatasetFactory, UserFactory
+from test.factories import ContactFactory, DatasetFactory, UserFactory, ExposureFactory, EndpointFactory
 from web.views.utils import get_user_or_contact_by_oidc_id
 
 
@@ -120,7 +120,9 @@ def test_permissions():
     contact = ContactFactory()
     contact.save()
 
-    dataset = DatasetFactory(title='Test', local_custodians=[user], elu_accession='123', is_published=True)
+    dataset = DatasetFactory(title='Test', local_custodians=[user], elu_accession='123')
+    endpoint = EndpointFactory()
+    _ = ExposureFactory(dataset=dataset, endpoint=endpoint)
     dataset.save()
 
     access = Access(access_notes='Access contact', contact=contact, dataset=dataset, status=StatusChoices.active)

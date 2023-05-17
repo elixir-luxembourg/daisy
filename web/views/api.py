@@ -11,7 +11,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.contrib.auth.hashers import get_hasher
 
 from stronghold.decorators import public
@@ -174,7 +174,7 @@ def get_filtered_entities(request, model_name):
 @protect_with_api_key
 def contracts(request):
     objects = get_filtered_entities(request, 'Contract')
-    objects = objects.filter(project__is_published=True)
+    objects = objects.anotate(c=Count("project__datasets__exposures")).filter(project__is_published=True, c__gt=0)
     if 'project_id' in request.GET:
         project_id = request.GET.get('project_id', '')
         objects = objects.filter(project__id=project_id)

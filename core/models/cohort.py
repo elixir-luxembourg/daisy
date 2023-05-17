@@ -1,10 +1,10 @@
 from django.db import models
 from django.conf import settings
 
-from .utils import CoreTrackedModel, TextFieldWithInputWidget
+from .utils import CoreTrackedDBModel, TextFieldWithInputWidget
 
 
-class Cohort(CoreTrackedModel):
+class Cohort(CoreTrackedDBModel):
     class Meta:
         app_label = 'core'
         get_latest_by = "added"
