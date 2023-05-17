@@ -25,7 +25,12 @@ class Exposure(CoreModel):
                                 related_name='exposures',
                                 help_text='The dataset that is exposed.')
 
-    form_id = models.IntegerField()
+    form_id = models.IntegerField(help_text='The REMS form of the dataset.')
+
+    form_name = models.CharField(blank=False,
+                                 null=True,
+                                 max_length=500,
+                                 help_text='The REMS form name.')
 
     created_by = models.ForeignKey('core.User',
                                    verbose_name='Created by',

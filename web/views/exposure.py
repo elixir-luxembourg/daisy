@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
@@ -11,7 +11,7 @@ from core.forms.exposure import ExposureForm, ExposureEditForm
 from core.models import Dataset, Exposure
 from core.utils import DaisyLogger
 
-from web.views.utils import AjaxViewMixin, can_publish
+from web.views.utils import AjaxViewMixin, can_publish, get_rems_forms
 
 log = DaisyLogger(__name__)
 
@@ -38,6 +38,8 @@ class ExposureCreateView(DataStewardGroupRequiredMixin, CreateView, AjaxViewMixi
         """If the form is valid, save the associated model and add to the exposure"""
         self.object = form.save(commit=False)
         self.object.dataset = self.dataset
+        rems_forms_dict = get_rems_forms(self.object.form_id)
+        self.object.form_name = rems_forms_dict["form/internal-name"]
         self.object.save()
         messages.add_message(self.request, messages.SUCCESS, 'exposure endpoint created')
         self.dataset.generate_elu_accession()
@@ -83,6 +85,8 @@ class ExposureEditView(DataStewardGroupRequiredMixin, UpdateView, AjaxViewMixin)
     def form_valid(self, form):
         """If the form is valid, save the associated model and add to the exposure"""
         self.object = form.save(commit=False)
+        rems_forms_dict = get_rems_forms(self.object.form_id)
+        self.object.form_name = rems_forms_dict["form/internal-name"]
         self.object.save()
         messages.add_message(self.request, messages.SUCCESS, 'Exposure record updated')
         return super().form_valid(form)

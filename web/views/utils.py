@@ -1,6 +1,9 @@
+import json
+import requests
 from typing import Tuple, Optional
 
 from django.http import JsonResponse
+from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.models import Group
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
@@ -78,3 +81,17 @@ def get_user_or_contact_by_oidc_id(user_oidc_id) -> Tuple[bool, bool, Optional[U
         contact_found = False
 
     return user_found, contact_found, user, contact
+
+
+def get_rems_forms(form_id=None):
+    headers = {"x-rems-api-key": getattr(settings, 'REMS_API_KEY'),
+               "x-rems-user-id": getattr(settings, 'REMS_API_USER')}
+
+    request_url = getattr(settings, 'REMS_URL') + 'api/forms'
+    if form_id is not None:
+        request_url = request_url + "/" + str(form_id)
+
+    rems_forms_response = requests.get(request_url,
+                                       headers=headers,
+                                       verify=getattr(settings, 'REMS_VERIFY_SSL'))
+    return json.loads(rems_forms_response.text)
