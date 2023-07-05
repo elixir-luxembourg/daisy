@@ -7,7 +7,7 @@ except ImportError:
     from distutils.core import setup
 
 requirements = [
-    'Django==3.2.19',
+    'Django==3.2.20',
     'django-auth-ldap==4.1.0',
 
     'celery==5.2.3',
