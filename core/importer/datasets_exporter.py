@@ -1,7 +1,7 @@
 import json
 import sys
 
-from core.models import  Dataset
+from core.models import Dataset, Exposure
 from core.utils import DaisyLogger
 from django.conf import settings
 from io import StringIO
@@ -16,6 +16,7 @@ class DatasetsExporter:
     def __init__(
             self, 
             objects=None,
+            endpoint_id=-1,
             include_unpublished=False):
         self.include_unpublished = include_unpublished
         """
@@ -28,6 +29,7 @@ class DatasetsExporter:
             self.objects = objects
         else:
             self.objects = None
+        self.endpoint_id = endpoint_id
 
     def set_objects(self, objects):
         self.objects = objects
@@ -50,26 +52,28 @@ class DatasetsExporter:
             objects = self.objects
         else:
             objects = Dataset.objects.all()
+        if not self.include_unpublished:
+            objects = objects.filter(exposures__endpoint__id=self.endpoint_id)
         for dataset in objects:
             dataset_repr = str(dataset)
             logger.debug(f' * Exporting dataset: "{dataset_repr}"...')
-            if dataset.is_published or self.include_unpublished:
-                try:
-                    pd = dataset.to_dict()
-                    pd["source"] = settings.SERVER_URL
-                    dataset_dicts.append(pd)
-                except Exception as e:
-                    logger.error(f'Export failed for dataset {dataset.title}')
-                    logger.error(str(e))
-                    if verbose:
-                        import traceback
-                        ex = traceback.format_exception(*sys.exc_info())
-                        logger.error('\n'.join([e for e in ex]))
-                    if stop_on_error:
-                        raise e
-                logger.debug("   ... complete!")
-            else:
-                logger.debug(f' "{dataset_repr}" is not published, it can not be exported')
+            try:
+                pd = dataset.to_dict()
+                pd["source"] = settings.SERVER_URL
+                if not self.include_unpublished:
+                    rems_form_id = Exposure.objects.get(dataset=dataset, endpoint_id=self.endpoint_id).form_id
+                    pd["form_id"] = rems_form_id
+                dataset_dicts.append(pd)
+            except Exception as e:
+                logger.error(f'Export failed for dataset {dataset.title}')
+                logger.error(str(e))
+                if verbose:
+                    import traceback
+                    ex = traceback.format_exception(*sys.exc_info())
+                    logger.error('\n'.join([e for e in ex]))
+                if stop_on_error:
+                    raise e
+            logger.debug("   ... complete!")
 
         json.dump({
             "$schema": urljoin(JSONSCHEMA_BASE_REMOTE_URL, 'elu-dataset.json'),

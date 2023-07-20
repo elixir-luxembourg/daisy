@@ -28,7 +28,10 @@ from core.models import Access, \
                         StorageResource, \
                         UseRestriction, \
                         DataLogType, \
+                        Endpoint, \
+                        Exposure, \
                         User
+from core.forms.endpoint import EndpointEditForm
 from core.models.contract import PartnerRole
 from core.models.storage_location import DataLocation
 from core.models.term_model import DiseaseTerm, \
@@ -198,3 +201,28 @@ class UserAdmin(BaseUserAdmin):
 
 # User
 admin.site.register(User, UserAdmin)
+
+
+@admin.register(Endpoint)
+class EndpointAdmin(admin.ModelAdmin):
+    form = EndpointEditForm
+    list_display = ('name', 'id', 'url_pattern')
+    search_fields = ('id', 'name', 'url_pattern')
+    ordering = ('id',)
+
+
+class ReadOnlyAdmin(admin.ModelAdmin):
+    list_display = ['listing']
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+@admin.register(Exposure)
+class ExposureAdmin(ReadOnlyAdmin):
+    list_display = ('dataset', 'id', 'endpoint', 'form_id', 'form_name')
+    list_filter = ('endpoint__name', 'form_name')
+    search_fields = ('id', 'dataset', 'endpoint', 'form_id', 'form_name')
+    ordering = ('added',)

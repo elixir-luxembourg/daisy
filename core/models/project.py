@@ -151,7 +151,9 @@ class Project(CoreTrackedModel):
         return self.acronym or self.title or "undefined"
 
 
-
+    @property
+    def is_published(self):
+        return any(dataset.is_published for dataset in self.datasets.all())
 
     def to_dict(self):
         contact_dicts = []
@@ -216,6 +218,9 @@ class Project(CoreTrackedModel):
         publications = map(lambda v: f"[{v['citation']}, {v['doi']}]", d['publications'])
         d['publications'] = ','.join(publications)
         return d
+
+    def publish(self):
+        pass
 
 # faster lookup for permissions
 # https://django-guardian.readthedocs.io/en/stable/userguide/performance.html#direct-foreign-keys

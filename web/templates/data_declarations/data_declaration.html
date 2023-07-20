@@ -67,7 +67,7 @@
                         <dd>{{ object.subjects_category  | default:"-" }}</dd>
 
                         <dt>Special Subjects</dt>
-                        <dd>{{ subjects_category.special_subjects | yesno:"yes,no,unknown" }}</dd>
+                        <dd>{{ object.has_special_subjects | yesno:"yes,no,unknown" }}</dd>
 
                         {% if object.special_subjects_description %}
                         <dt>Description of the nature of special subjects</dt>

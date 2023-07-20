@@ -5,11 +5,6 @@
 {% block content %}
     <div class="row mt-4">
         <div class="jumbotron col" style="position:relative;">
-            {% if dataset.is_published %}
-                <div class="ribbon ribbon-green"><span>Published</span></div>
-            {% else %}
-                <div class="ribbon ribbon-orange"><span>Not Published</span></div>
-            {% endif %}
             <span style="color: #8D8F8F;">Dataset</span>
             <h1>{{ dataset.title }}</h1>
             <div class="row">
@@ -31,6 +26,19 @@
                         <dd>{{ dataset.other_external_id | default:'-' }}</dd>
                         <dt>Other comments</dt>
                         <dd>{{ dataset.comments | default:'-' | linebreaks }}</dd>
+                        {% if exposure_list|length > 0 %}
+                        <dt>Published on</dt>
+                        <dd>
+
+                            {% for exposure in exposure_list %}
+                                {% if exposure.endpoint.url_pattern %}
+                                    <a href="{{ exposure.url}}" class="badge badge-pill badge-primary">{{ exposure.endpoint.name }}</a>
+                                {% else %}
+                                    <span class="badge badge-pill badge-primary">{{ exposure.endpoint.name }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        </dd>
+                        {% endif %}
                     </dl>
                 </div>
 
@@ -59,25 +67,6 @@
                         
 
                         </p>
-                    {% endif %}
-                    {% if request.user.can_publish %}
-                        {% if not dataset.is_published %}
-                            <a href="{% url 'dataset_publish' pk=dataset.pk %}"
-                               data-confirm="Are you sure to publish the dataset? This will publish related projects and data declarations' information as well!"
-                               id="publish"
-                               title="Publish dataset"
-                               class="btn btn-default bmd-btn-fab float-right">
-                                <i class="material-icons">publish</i>
-                            </a>
-                        {% else %}
-                            <a href="{% url 'dataset_unpublish' pk=dataset.pk %}"
-                               data-confirm="Are you sure to unpublish the dataset? The changes won't be propagated to other systems!"
-                               id="unpublish"
-                               title="Unpublish dataset"
-                               class="btn btn-default bmd-btn-fab float-right">
-                                <i class="material-icons">undo</i>
-                            </a>
-                        {% endif %}
                     {% endif %}
                     {% if is_admin %}
                         <a class="btn btn-default bmd-btn-fab float-right"
@@ -485,4 +474,62 @@
             </div>
         </div>
     </div>
+    {% if request.user.can_publish %}
+    <div class="row mt-4">
+        {#    Exposure endpoints for the DATASET  #}
+        <div class="card with-max-height col-md-12 ml-0">
+            <div class="card-body">
+                <div class="ml-1 float-right btn-group">
+                    <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button"
+                            id="addexposure"
+                            title="Add new exposure endpoint to dataset"
+                            data-toggle="modal"
+                            data-target="#modal"
+                            data-modal-title="Add new exposure endpoint"
+                            data-ajax-url="{% url 'dataset_exposure_add' dataset_pk=dataset.id %}"
+                            data-post-mode="true"
+                            data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}">
+                        <i class="material-icons">add</i>
+                    </button>
+                </div>
+                <h2 class="card-title">Exposure</h2>
+
+                <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Form</th>
+                        <th style="width:7em">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for exposure in exposure_list %}
+                        <tr>
+                            <td><p>{{exposure.endpoint}}</p></td>
+                            <td><p>{% if exposure.form_name %}{{exposure.form_name}} -- {% endif %}{{exposure.form_id}}</p></td>
+                            <td>
+                                <i class="material-icons clickable"
+                                   id="editexposure"
+                                   title="Edit exposure"
+                                   data-toggle="modal"
+                                   data-target="#modal"
+                                   data-post-mode="true"
+                                   data-modal-title="Edit exposure"
+                                   data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
+                                   data-ajax-url="{% url 'dataset_exposure_edit' pk=exposure.id dataset_pk=dataset.id %}">edit</i>
+                                <i class="red material-icons clickable" data-method="delete"
+                                   data-parent-to-remove="tr"
+                                   title="Delete exposure"
+                                   data-url="{% url 'dataset_exposure_remove' dataset_pk=dataset.id exposure_pk=exposure.id %}">delete_forever</i>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 {% endblock %}
