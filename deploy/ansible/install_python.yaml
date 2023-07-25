@@ -1,0 +1,11 @@
+---
+- name: Install Python
+  hosts: all
+  gather_facts: false
+  become: yes
+  roles: 
+    - common
+    - role: pyfsrc
+      pyfsrc_version: 3.9.13
+  
+
