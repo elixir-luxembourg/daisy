@@ -1,5 +1,8 @@
 # Created by https://www.gitignore.io/api/python
 
+# Ansible
+deploy/ansible/inventory.yaml
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
