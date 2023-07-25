@@ -1,0 +1,49 @@
+---
+- name: "Pull latest changes"
+  become_method: community.general.sudosu
+  become: yes
+  become_user: '{{ daisy_user }}'
+  ansible.builtin.git:
+    repo: "{{ repo.url }}"
+    dest: "{{ repo.dest }}"
+    update: yes
+    single_branch: yes
+
+- name: Install NPM packages
+  become_method: community.general.sudosu
+  become: yes
+  become_user: '{{ daisy_user }}'
+  community.general.npm:
+    path: '{{ django_dir }}/web/static/vendor/'
+    ci: yes
+
+- name: Install python dependencies (pip)
+  become: yes
+  ansible.builtin.pip:
+    executable: /usr/local/bin/pip3.9
+    name: "{{ django_dir }}"
+    extra_args: "--upgrade -e"
+
+- name: Django migrate
+  become_method: community.general.sudosu
+  become: yes
+  become_user: '{{ daisy_user }}'
+  command: '{{python_executable}} {{ django_dir}}/manage.py  migrate'
+
+# - name: manage.py clear_index
+#   become_method: community.general.sudosu
+#   become: yes
+#   become_user: '{{ daisy_user }}'
+#   command: /bin/bash -c 'yes | {{python_executable}} {{ django_dir}}/manage.py  clear_index'
+
+- name: manage.py collectstatic
+  become_method: community.general.sudosu
+  become: yes
+  become_user: '{{ daisy_user }}' 
+  command: /bin/bash -c 'yes "yes" | {{python_executable}} {{ django_dir}}/manage.py collectstatic'
+
+- name: manage.py rebuild_index
+  become_method: community.general.sudosu
+  become: yes
+  become_user: '{{ daisy_user }}'
+  command:  /bin/bash -c 'yes | {{python_executable}} {{ django_dir}}/manage.py rebuild_index'

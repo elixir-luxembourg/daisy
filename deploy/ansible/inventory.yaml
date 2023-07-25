@@ -1,0 +1,6 @@
+all:
+  hosts:
+    <DAISY-INSTANCe-NAME>:
+      ansible_connection: ssh
+      ansible_user: 
+      ansible_port: 

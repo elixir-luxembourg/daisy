@@ -1,0 +1,20 @@
+---
+- name: Restart Solr
+  ansible.builtin.service:
+    name: solr
+    state: restarted
+
+- name: Start services - Celery Beat
+  ansible.builtin.service:
+    name: celery_beat
+    state: started
+
+- name: Start services - Celery Worker
+  ansible.builtin.service:
+    name: celery_worker
+    state: started
+
+- name: Start services - Gunicorn
+  ansible.builtin.service:
+    name: gunicorn
+    state: started

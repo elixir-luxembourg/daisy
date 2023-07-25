@@ -1,0 +1,16 @@
+
+---
+- name: Stop services - Gunicorn
+  ansible.builtin.service:
+    name: gunicorn
+    state: stopped
+
+- name: Stop services - Celery Beat
+  ansible.builtin.service:
+    name: celery_beat
+    state: stopped
+
+- name: Stop services - Celery Worker
+  ansible.builtin.service:
+    name: celery_worker
+    state: stopped

@@ -1,0 +1,16 @@
+---
+- name: Update Daisy on all VMs - use latest commit
+  hosts: all
+  gather_facts: False
+  roles: 
+    - role: stop-services
+      tags: stop-services
+    - common
+    - update-daisy
+    - role: start-services
+      tags: start-services
+
+  become: true
+  
+
+

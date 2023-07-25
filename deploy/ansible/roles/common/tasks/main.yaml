@@ -1,0 +1,11 @@
+- name: Yum update
+  ansible.builtin.yum:
+        name: "*"
+        state: latest
+        update_cache: true
+
+- name: pexpect
+  become: yes
+  ansible.builtin.pip:
+    executable: /usr/local/bin/pip3.9
+    name: pexpect

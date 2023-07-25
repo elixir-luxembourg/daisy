@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  role_name: pyfsrc
+  author: Vineet Naik
+  description: For installing a specific Python version from source
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+    - name: Debian
+  galaxy_tags:
+    - development
+    - python
+    - language
+dependencies: []

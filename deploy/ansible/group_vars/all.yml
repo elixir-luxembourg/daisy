@@ -1,0 +1,7 @@
+python_version: 3.9.13
+python_executable: /usr/local/bin/python3.9
+django_dir: /home/daisy/daisy
+daisy_user: 'daisy'
+repo:
+  url: https://github.com/elixir-luxembourg/daisy.git
+  dest: "{{ django_dir }}"

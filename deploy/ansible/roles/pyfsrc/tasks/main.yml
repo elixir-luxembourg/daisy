@@ -1,0 +1,39 @@
+---
+# tasks file for python-from-src
+
+- name: Derive python version
+  set_fact:
+    pyfsrc_exec: "python{{ pyfsrc_version|regex_replace('(\\d+\\.\\d+)\\..*$', '\\1') }}"
+
+- name: check if python version installed
+  command: "which {{ pyfsrc_exec }}"
+  ignore_errors: yes
+  register: is_installed
+  changed_when: is_installed.rc == 0
+
+- name: install required packages
+  yum:
+    name:
+      - sqlite-devel
+      - openssl-devel
+      - zlib-devel
+      - libffi-devel
+      - bzip2-devel
+      - gcc
+      - make
+      - wget
+      - cvs
+    state: present
+  become: yes
+
+- name: install extra system packages
+  yum:
+    name: "{{ pyfsrc_extra_sys_pkgs }}"
+    state: present
+  become: yes
+
+- name: Install python
+  include_tasks: install.yml
+  when: pyfsrc_force_install or is_installed.rc != 0
+
+
