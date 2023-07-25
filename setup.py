@@ -34,7 +34,7 @@ requirements = [
     'django-guardian==2.4.0',
     'django-stronghold==0.3.0',
     'gunicorn==19.9.0',
-    'ipython==7.16.3',
+    'ipython==8.10.0',
     'ontobio==2.8.3',
     'yamldown>=0.1.8',
     'psycopg2-binary==2.9.3',
