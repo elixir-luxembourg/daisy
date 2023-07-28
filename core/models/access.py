@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import List
 
 from django.core.exceptions import ValidationError
@@ -37,6 +37,23 @@ class Access(CoreModel):
                 name="user_or_contact_only",
             )
         ]
+
+    @classmethod
+    def expire_accesses(cls, upper_date: date) -> None:
+        """
+        Set the status of Access objects with an expiration date lower than given `upper_date`
+        to terminated
+
+        @param upper_date: Date threshold.
+        """
+        accesses_to_expire = cls.objects.filter(
+            grant_expires_on__lt=upper_date
+        ).exclude(
+            status=StatusChoices.terminated,
+        ).all()
+        for access in accesses_to_expire:
+            access.status = StatusChoices.terminated
+        cls.objects.bulk_update(accesses_to_expire, ["status"])
 
     def clean(self):
         if self.user and self.contact:
