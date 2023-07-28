@@ -7,7 +7,7 @@ except ImportError:
     from distutils.core import setup
 
 requirements = [
-    'Django==3.2.19',
+    'Django==3.2.20',
     'django-auth-ldap==4.1.0',
 
     'celery==5.2.3',
@@ -20,12 +20,12 @@ requirements = [
     'xlsxwriter==1.2.9',
 
     'django-model-utils==4.2.0',
-    'django-sequences==2.2',
+    'django-sequences==2.6',
     'django-enumchoicefield==3.0',
 
     'django-compressor==2.2',
     'django-debug-toolbar==3.2.1',
-    'django-formtools==2.1',
+    'django-formtools==2.4.1',
     'django-widget-tweaks==1.4.3',
     'django-countries==7.3.2',
     
@@ -34,15 +34,15 @@ requirements = [
     'django-guardian==2.4.0',
     'django-stronghold==0.3.0',
     'gunicorn==19.9.0',
-    'ipython==7.16.3',
-    'ontobio==2.8.3',
+    'ipython==8.10.0',
+    'ontobio==2.8.8',
     'yamldown>=0.1.8',
     'psycopg2-binary==2.9.3',
     'pysolr==3.8.1',
     'pytest-runner==5.1',
     'python-keycloak==2.6.0',
     'pytz==2022.1',
-    'requests==2.25.1',
+    'requests==2.31.0',
     'urllib3==1.26.5',
     'setuptools-scm==3.3.3',
     'jsonschema==3.2.0',

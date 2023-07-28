@@ -66,10 +66,10 @@ class BaseJSONSchemaValidator:
             return self._load_schema_from_disk(schema_name)
         except Exception as e:
             import os
-            logger.warn("Error (1/2) loading schema from disk for JSON validation...: " + str(e))
-            logger.warn("Working directory = " + os.getcwd())
-            logger.warn("File path = " + os.path.join(self.base_path, schema_name))
-            logger.warn("Will try to load the schema from URL...")
+            logger.warning("Error (1/2) loading schema from disk for JSON validation...: " + str(e))
+            logger.warning("Working directory = " + os.getcwd())
+            logger.warning("File path = " + os.path.join(self.base_path, schema_name))
+            logger.warning("Will try to load the schema from URL...")
 
         try:
             return self._load_schema_from_url(schema_name)

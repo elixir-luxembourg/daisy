@@ -1,6 +1,6 @@
 import json
 import requests
-from typing import Tuple, Optional
+from typing import Tuple, Optional, TYPE_CHECKING
 
 from django.http import JsonResponse
 from django.conf import settings
@@ -12,6 +12,13 @@ from sequences import get_next_value
 
 from core.models import Contact, User
 from core.constants import Groups
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
+
+
+def is_ajax_request(request: "HttpRequest") -> bool:
+    return request.headers.get("x-requested-with") == 'XMLHttpRequest'
 
 
 def is_data_steward(user):
@@ -32,19 +39,19 @@ class AjaxViewMixin(SingleObjectTemplateResponseMixin, FormMixin):
     template_name_ajax = '_includes/forms.html'
 
     def get_template_names(self):
-        if self.request.is_ajax():
+        if is_ajax_request(self.request):
             return [self.template_name_ajax]
         return super().get_template_names()
 
     def form_invalid(self, form):
         response = super().form_invalid(form)
-        if self.request.is_ajax():
+        if is_ajax_request(self.request):
             return JsonResponse(form.errors, status=400)
         return response
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        if self.request.is_ajax():
+        if is_ajax_request(self.request):
             data = {
                 'pk': self.object.pk,
                 'label': str(self.object)
