@@ -3,7 +3,7 @@ from typing import List
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Q, ObjectDoesNotExist, Count
+from django.db.models import Q, ObjectDoesNotExist, Count, signals
 
 from enumchoicefield import EnumChoiceField, ChoiceEnum
 
@@ -53,7 +53,17 @@ class Access(CoreModel):
         ).all()
         for access in accesses_to_expire:
             access.status = StatusChoices.terminated
+            # Necessary to manually send the signal because bulk_update does not use object.save()
+            # Without this, auditlog cannot create a LogEntry for the change of status
+            signals.pre_save.send(
+                sender=cls,
+                instance=access,
+                created=False,
+                raw=True,
+                update_fields=("status",)
+            )
         cls.objects.bulk_update(accesses_to_expire, ["status"])
+
 
     def clean(self):
         if self.user and self.contact:
