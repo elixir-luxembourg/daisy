@@ -307,4 +307,3 @@ def permissions(request, user_oidc_id: str) -> JsonResponse:
             {'more': more},
             status=404
         )
-    

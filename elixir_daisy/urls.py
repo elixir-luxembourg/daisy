@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf import settings
-from django.conf.urls import url
+from django.urls import path, re_path
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include
@@ -24,10 +24,10 @@ from core.forms.user import UserAuthForm
 from web.urls import web_urls
 
 urlpatterns = [
-    url(r'^login/$', auth_views.LoginView.as_view(authentication_form=UserAuthForm), name='login'),
-    url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
-    url(r'^admin/', admin.site.urls),
-    url(r'', include(web_urls)),
+    path('login/', auth_views.LoginView.as_view(authentication_form=UserAuthForm), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    re_path(r'^admin/', admin.site.urls),
+    path('', include(web_urls)),
 ]
 
 # Custom error views, see e.g. 
@@ -43,7 +43,7 @@ if settings.DEBUG:
     from django.conf.urls.static import static
 
     urlpatterns += [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
+        path('__debug__/', include(debug_toolbar.urls)),
     ]
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += url(r'^explorer/', include('explorer.urls')),
+    urlpatterns += path('explorer/', include('explorer.urls')),

@@ -46,19 +46,23 @@ class StorageResourceForm(forms.ModelForm):
         fields = ['name', 'slug', 'description', 'managed_by']
 
 
+@admin.register(StorageResource)
 class StorageResourceAdmin(admin.ModelAdmin):
     form = StorageResourceForm
 
 
+@admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
     search_fields = ['first_name', 'last_name', 'oidc_id']
     list_display = ('id', 'email', 'first_name', 'last_name', 'oidc_id', 'type')
 
+@admin.register(Dataset)
 class DatasetAdmin(admin.ModelAdmin):
     search_fields = ['title']
     list_display = ('title', 'project', 'unique_id', 'elu_accession', 'is_published')
 
 
+@admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     exclude = ('gene_terms', 'disease_terms', 'phenotype_terms', 'study_terms')
     search_fields = ['acronym', 'title']
@@ -69,11 +73,9 @@ class ProjectAdmin(admin.ModelAdmin):
 admin.site.site_header = 'DAISY administration'
 admin.site.register(Access)
 admin.site.register(Cohort)
-admin.site.register(Contact, ContactAdmin)
 admin.site.register(ContactType)
 admin.site.register(Contract)
 admin.site.register(DataDeclaration)
-admin.site.register(Dataset, DatasetAdmin)
 admin.site.register(DataLocation)  # storage_location.py
 admin.site.register(DataType)
 admin.site.register(DocumentType)
@@ -85,12 +87,10 @@ admin.site.register(LegalBasisType)
 admin.site.register(Partner)
 admin.site.register(PartnerRole)  # contract.py
 admin.site.register(PersonalDataType)
-admin.site.register(Project, ProjectAdmin)
 admin.site.register(Publication)
 admin.site.register(RestrictionClass)
 admin.site.register(SensitivityClass)
 admin.site.register(Share)
-admin.site.register(StorageResource, StorageResourceAdmin)
 admin.site.register(UseRestriction)
 admin.site.register(DataLogType)
 
@@ -171,6 +171,7 @@ class UserChangeForm(forms.ModelForm):
         return user
 
 
+@admin.register(User)
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm  # Form to change user
     add_form = UserCreationForm  # Form to add new user
@@ -200,7 +201,6 @@ class UserAdmin(BaseUserAdmin):
     filter_horizontal = ()
 
 # User
-admin.site.register(User, UserAdmin)
 
 
 @admin.register(Endpoint)
@@ -219,6 +219,7 @@ class ReadOnlyAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+
 
 @admin.register(Exposure)
 class ExposureAdmin(ReadOnlyAdmin):
