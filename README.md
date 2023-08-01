@@ -242,6 +242,20 @@ If tests dependencies are already installed, one can also run the tests just by 
 pytest
 ```
 
+### Upgrading Postgresql
+
+1. Run Docker
+```bash 
+docker compose up
+```
+2. Dump the database
+```bash 
+docker exec -it daisy-db-1 /usr/bin/pg_dumpall -U daisy > daisy_dump.sql
+```
+3. Close the docker-container
+4. Create a new temporary container running postgres:latest
+5. Import the dump into the new postgres image
+
 ## Administration
 
 To get access to the admin page, you must log in with a superuser account.  
