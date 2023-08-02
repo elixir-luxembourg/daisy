@@ -244,7 +244,10 @@ pytest
 
 ### Upgrading Postgresql
 
-1. Run Docker
+Current postgresql image is 15.0. If this version changes in future upgrades,
+here is how you can update your docker container.
+
+1. Run Docker (without )
 ```bash 
 docker compose up
 ```
@@ -252,9 +255,22 @@ docker compose up
 ```bash 
 docker exec -it daisy-db-1 /usr/bin/pg_dumpall -U daisy > daisy_dump.sql
 ```
-3. Close the docker-container
-4. Create a new temporary container running postgres:latest
-5. Import the dump into the new postgres image
+3. Stop the docker container (using Ctrl-C in the terminal where it runs) or with the following command
+```bash
+docker compose down
+```
+4. Delete the volume pgdata from your docker environment.
+```bash
+docker volume rm daisy_pgdata
+```
+5. Rebuild the docker container
+```bash
+docker compose up --build
+```
+6. Import the dump into the new postgres image
+```bash
+docker exec -i daisy-db-1 psql -U daisy < daisy_dump.sql
+```
 
 ## Administration
 
