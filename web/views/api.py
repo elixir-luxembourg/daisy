@@ -248,7 +248,7 @@ def rems_endpoint(request):
         message = f'REMS - something is wrong with the configuration!'
         more = str(ex)
         logger.debug(f'{message} ({more})')
-        return create_error_response(message)
+        return create_error_response(message+more)
     except Exception as ex:
         message = f'REMS - something went wrong during the import!'
         more = str(ex)

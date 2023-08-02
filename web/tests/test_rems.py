@@ -25,11 +25,11 @@ def test_rems_handler_duplicate(client, user_vip, user_data_steward):
             "mail": email, "end": expiration_date.strftime('%Y-%m-%d') + "T23:59:59.000Z"}]
 
     response = client.post(reverse('api_rems_endpoint'), json.dumps(data), content_type="application/json")
-    assert response.status_code == 200
+    assert response.status_code == 200, response.content
     accesses = Access.objects.filter(dataset=dataset, user=user).all()
     assert len(accesses) == 1
     response = client.post(reverse('api_rems_endpoint'), json.dumps(data), content_type="application/json")
-    assert response.status_code == 200
+    assert response.status_code == 200 , response.content
     accesses = Access.objects.filter(dataset=dataset, user=user).all()
     assert len(accesses) == 1
 
@@ -45,11 +45,11 @@ def test_rems_handler_no_expiration(client, user_vip, user_data_steward):
              "mail": email, "end": None}]
 
     response = client.post(reverse('api_rems_endpoint'), json.dumps(data), content_type="application/json")
-    assert response.status_code == 200
+    assert response.status_code == 200, response.content
     accesses = Access.objects.filter(dataset=dataset, user=user).all()
     assert len(accesses) == 1
     response = client.post(reverse('api_rems_endpoint'), json.dumps(data), content_type="application/json")
-    assert response.status_code == 200
+    assert response.status_code == 200, response.content
     accesses = Access.objects.filter(dataset=dataset, user=user).all()
     assert len(accesses) == 1
 
@@ -67,11 +67,11 @@ def test_rems_handler_different_expiration(client, user_vip, user_data_steward):
              "mail": email, "end": expiration_date_1.strftime('%Y-%m-%d') + "T23:59:59.000Z"}]
 
     response = client.post(reverse('api_rems_endpoint'), json.dumps(data), content_type="application/json")
-    assert response.status_code == 200
+    assert response.status_code == 200, response.content
     accesses = Access.objects.filter(dataset=dataset, user=user).all()
     assert len(accesses) == 1
     data[0]['end'] = expiration_date_2.strftime('%Y-%m-%d') + "T23:59:59.000Z"
     response = client.post(reverse('api_rems_endpoint'), json.dumps(data), content_type="application/json")
-    assert response.status_code == 200
+    assert response.status_code == 200, response.content
     accesses = Access.objects.filter(dataset=dataset, user=user).all()
     assert len(accesses) == 2
