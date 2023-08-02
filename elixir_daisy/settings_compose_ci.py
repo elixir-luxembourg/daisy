@@ -30,7 +30,7 @@ CELERY_BROKER_URL = 'amqp://guest:guest@mq:5672//'
 ## Result backend
 CELERY_RESULT_BACKEND = 'django-db'
 
-TESTING = os.environ.get('TEST', False)
+TESTING = True
 GLOBAL_API_KEY = os.environ.get('GLOBAL_API_KEY', 'default_global_api_key_in_settings_compose_ci.py')
 
 try:
