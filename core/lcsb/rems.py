@@ -36,7 +36,10 @@ else:
     synchronizer = DummyAccountSynchronizer()
 
 
-def check_existence_automatic(item):
+def check_existence_automatic(item: Dict[str, str]) -> bool:
+    """
+    Checks if an active access automatically created for the same received data already exists
+    """
     application, resource, user_oidc_id, email, expiration_date = extract_rems_data(item)
     filter_oidc = Q(user__oidc_id=user_oidc_id) | Q(contact__oidc_id=user_oidc_id)
     filter_resource_and_status = Q(dataset__elu_accession=resource, grant_expires_on=expiration_date, status=StatusChoices.active)
@@ -89,6 +92,9 @@ def handle_rems_callback(request: HttpRequest) -> bool:
 
 
 def extract_rems_data(data: Dict[str, str]) -> Tuple[str, str, str, str, date]:
+    """
+    Extracts the data from the REMS request
+    """
     application = data.get('application')
     resource = data.get('resource')
     user_oidc_id = data.get('user')
