@@ -32,6 +32,8 @@ CELERY_RESULT_BACKEND = 'django-db'
 
 TESTING = True
 GLOBAL_API_KEY = os.environ.get('GLOBAL_API_KEY', 'default_global_api_key_in_settings_compose_ci.py')
+REMS_INTEGRATION_ENABLED = True
+REMS_ALLOWED_IP_ADDRESSES = ['*']
 
 try:
     from .settings_ci import *
