@@ -248,7 +248,7 @@ def rems_endpoint(request):
         message = f'REMS - something is wrong with the configuration!'
         more = str(ex)
         logger.debug(f'{message} ({more})')
-        return create_error_response(ex.message)
+        return create_error_response(message)
     except Exception as ex:
         message = f'REMS - something went wrong during the import!'
         more = str(ex)
@@ -307,4 +307,3 @@ def permissions(request, user_oidc_id: str) -> JsonResponse:
             {'more': more},
             status=404
         )
-    
