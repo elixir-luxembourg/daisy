@@ -10,7 +10,7 @@ from core.permissions.mapping import PERMISSION_MAPPING
 from .utils import CoreTrackedModel, COMPANY
 from .partner import  HomeOrganisation
 
-from elixir_daisy import settings
+from django.conf import settings
 
 
 class Project(CoreTrackedModel):
