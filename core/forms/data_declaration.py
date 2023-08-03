@@ -3,6 +3,7 @@ from django.forms import  ValidationError
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 
+from core.forms.dataset import SkipFieldValidationMixin
 from core.forms.use_restriction import UseRestrictionForm
 from core.models import DataDeclaration, Partner, Contract, GDPRRole
 from core.models.contract import PartnerRole
@@ -169,10 +170,12 @@ class DataDeclarationSubFormFromExisting(BaseDataDeclarationSubForm):
         data_declaration.save()
 
 
-class DataDeclarationForm(forms.ModelForm):
+class DataDeclarationForm(SkipFieldValidationMixin, forms.ModelForm):
     class Meta:
         model = DataDeclaration
         fields = ['title']
+        heading = "Data declaration"
+        heading_help = "Please provide a help text for the Data declaration form"
 
     def __init__(self, *args, **kwargs):
         self.dataset = kwargs.pop('dataset')

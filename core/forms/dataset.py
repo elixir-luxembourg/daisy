@@ -1,8 +1,20 @@
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.forms import ValidationError
 from core.models import Dataset, User, Project
 from core.models.contract import Contract
+
+
+class SkipFieldValidationMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['skip_wizard'] = forms.BooleanField(initial=False, required=False, widget=forms.HiddenInput())
+
+    def is_valid(self):
+        if self.data.get(f'{self.prefix}-skip_wizard') == 'True':
+            return True
+        return super().is_valid()
 
 
 class DatasetForm(forms.ModelForm):
@@ -13,7 +25,8 @@ class DatasetForm(forms.ModelForm):
         widgets = {
             'comments': forms.Textarea(attrs={'rows': 2, 'cols': 40}),
         }
-
+        heading = "Dataset"
+        heading_help = "Please provide a help text for the dataset form"
 
     def __init__(self, *args, **kwargs):
         dataset = None

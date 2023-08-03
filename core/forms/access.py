@@ -1,9 +1,10 @@
 from django.forms import ModelForm, DateInput, Textarea
 
+from core.forms.dataset import SkipFieldValidationMixin
 from core.models import Access
 
 
-class AccessForm(ModelForm):
+class AccessForm(SkipFieldValidationMixin, ModelForm):
     class Meta:
         model = Access
         fields = "__all__"
@@ -15,15 +16,17 @@ class AccessForm(ModelForm):
             # Textareas
             "access_notes": Textarea(attrs={"rows": 2, "cols": 40}),
         }
-
+        heading = "Access"
+        heading_help = "Please provide a help text for Access form"
     def __init__(self, *args, **kwargs):
         dataset = kwargs.pop("dataset", None)
         super().__init__(*args, **kwargs)
         # we don't allow editing dataset
         self.fields.pop("dataset")
-        self.fields["defined_on_locations"].choices = [
-            (d.id, d) for d in dataset.data_locations.all()
-        ]
+        if dataset:
+            self.fields["defined_on_locations"].choices = [
+                (d.id, d) for d in dataset.data_locations.all()
+            ]
 
     field_order = [
         "contact",

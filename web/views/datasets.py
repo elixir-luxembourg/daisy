@@ -1,9 +1,12 @@
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
-
-from core.forms import DatasetForm
+from formtools.wizard.views import NamedUrlSessionWizardView
+from django.http import HttpResponseRedirect, Http404
+from core.constants import Permissions
+from core.forms.storage_location import StorageLocationForm
+from core.forms import DatasetForm, DataDeclarationForm, LegalBasisForm, AccessForm
 from core.forms.dataset import DatasetFormEdit
 from core.models import Dataset, Exposure
 from core.models.utils import COMPANY
@@ -15,6 +18,62 @@ from . import facet_view_utils
 log = DaisyLogger(__name__)
 
 FACET_FIELDS = settings.FACET_FIELDS['dataset']
+
+
+class DatasetWizardView(NamedUrlSessionWizardView):
+    template_name = "datasets/dataset_wizard_form.html"
+    form_list = [
+        ("dataset", DatasetForm),
+        ("data_declaration", DataDeclarationForm),
+        ("storage_location", StorageLocationForm),
+        ("legal_basis", LegalBasisForm),
+        ("access", AccessForm),
+    ]
+
+    def render_done(self, form, **kwargs):
+        if kwargs.get('step', None) != self.done_step_name:
+            return redirect(self.get_step_url(self.done_step_name))
+
+        dataset_id = self.storage.extra_data.get('dataset_id')
+        self.storage.reset()
+        if dataset_id:
+            done_response = HttpResponseRedirect(reverse_lazy('dataset', kwargs={'pk': dataset_id}))
+        else:
+            done_response = HttpResponseRedirect(reverse_lazy('datasets'))
+        return done_response
+
+    def get_form_kwargs(self, step=None):
+        kwargs = super().get_form_kwargs(step)
+        dataset_id = self.storage.extra_data.get('dataset_id', None)
+        if dataset_id is not None:
+            kwargs['dataset'] = Dataset.objects.get(pk=dataset_id)
+        return kwargs
+
+    def process_step(self, form, **kwargs):
+        if self.steps.current == 'dataset':
+            dataset = form.save()
+            self.storage.extra_data['dataset_id'] = dataset.id
+        elif form.data.get(f'{self.steps.current}-skip_wizard') != 'True':
+            dataset_id = self.storage.extra_data.get('dataset_id')
+            try:
+                dataset = Dataset.objects.get(pk=dataset_id)
+                instance = form.save(commit=False)
+                instance.dataset = dataset
+                instance.save()
+            except Dataset.DoesNotExist:
+                raise Http404(f"You need to have a dataset first")
+        return self.get_form_step_data(form)
+
+    def get_context_data(self, form, **kwargs):
+        context = super().get_context_data(form=form, **kwargs)
+        context.update({'step_name': self.steps.current})
+        names = [form_key.replace('_', ' ').title() for form_key, _ in self.form_list.items()]
+        context['steps_verbose_data'] = list(zip(self.form_list, names))
+        dataset_id = self.storage.extra_data.get('dataset_id', None)
+        if dataset_id is not None:
+            context['dataset_id'] = Dataset.objects.get(pk=dataset_id).id
+        return context
+
 
 class DatasetCreateView(CreateView):
     model = Dataset

@@ -10,6 +10,8 @@ from .permission import UserPermFormSet
 from .legal_basis import LegalBasisForm
 from .publication import PublicationForm, PickPublicationForm
 from .share import ShareForm
+from .use_restriction import UseRestrictionForm
+from .access import AccessForm
 
 
 
@@ -34,5 +36,6 @@ __all__ = [
     "PublicationForm",
     "ShareForm",
     "PickPublicationForm",
-    "UseRestrictionForm"
+    "UseRestrictionForm",
+    "AccessForm",
 ]
