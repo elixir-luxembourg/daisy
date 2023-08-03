@@ -7,10 +7,13 @@ from django.shortcuts import reverse
 
 import datetime
 
+from django.conf import settings
 from test.factories import UserFactory, DatasetFactory, AccessFactory
 
 log = DaisyLogger(__name__)
 
+settings.REMS_INTEGRATION_ENABLED = True
+settings.REMS_ALLOWED_IP_ADDRESSES = ['*']
 
 def test_rems_handler_duplicate(client, user_vip, user_data_steward):
     resource_id = "TEST-2-5591E3-1"
