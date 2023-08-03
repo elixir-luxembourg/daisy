@@ -10,7 +10,7 @@ DATABASES = {
         'USER': 'daisy_test',
         'PASSWORD': 'daisy_test',
         'HOST': 'localhost',
-        'PORT': 5432,
+        'PORT': 5433,
     }
 }
 
@@ -54,3 +54,6 @@ CELERY_BROKER_URL = 'amqp://guest:guest@mq:5672//'
 
 ## Result backend
 CELERY_RESULT_BACKEND = 'django-db'
+
+REMS_INTEGRATION_ENABLED = True
+REMS_ALLOWED_IP_ADDRESSES = ['*']
