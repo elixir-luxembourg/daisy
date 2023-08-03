@@ -67,7 +67,7 @@ class BaseImporter:
             return self.can_process_object(object)
         except:
             message = f'Couldn\'t check if the imported object has same "$schema" as the importer ({self.__class__.__name__}: {self.json_schema_uri}) - something went wrong while parsing the file'
-            self.logger.warn(message)
+            self.logger.warning(message)
             return False
 
     def can_process_object(self, json_object: Dict) -> bool:
@@ -156,13 +156,13 @@ class BaseImporter:
             object.publish(save=True)
             result = True
         except AttributeError as e:
-            self.logger.warn(f'Publishing this type of entity ({object._meta.object_name}) is not implemented - item is not published.')
+            self.logger.warning(f'Publishing this type of entity ({object._meta.object_name}) is not implemented - item is not published.')
             result = False
         return result
 
     def process_contacts(self, contacts_list: List[Dict]):
         if not isinstance(contacts_list, list):
-            self.logger.warn('Contact list is not a list... Please check the imported file.')
+            self.logger.warning('Contact list is not a list... Please check the imported file.')
             return [], [], []
         
         local_custodians = []
