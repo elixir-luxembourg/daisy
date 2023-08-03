@@ -60,8 +60,6 @@ CELERY_BROKER_URL = 'amqp://guest:guest@mq:5672//'
 CELERY_RESULT_BACKEND = 'django-db'
 
 TESTING = os.environ.get('TEST', False)
-REMS_INTEGRATION_ENABLED = True
-REMS_ALLOWED_IP_ADDRESSES = ['*']
 
 # import also local settings
 try:
