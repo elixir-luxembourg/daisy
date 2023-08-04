@@ -53,7 +53,7 @@ def test_document_views_permissions(permissions, group, doc_factory, url_name, a
 
     if url_name == 'document_add':
         content_type = ContentType.objects.get_for_model(document.content_object)
-        url = reverse(url_name, kwargs={'object_id': document.content_object.id, 'content_type': content_type.pk})
+        url = reverse(url_name, kwargs={'object_id': document.content_object.id, 'content_type': content_type.pk, 'content_type_name':content_type.name})
 
     else:
         url = reverse(url_name, kwargs={"pk": document.pk})
