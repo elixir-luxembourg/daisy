@@ -42,7 +42,8 @@ class Document(CoreModel):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
-    content = models.FileField(upload_to=get_file_name)
+    content = models.FileField(upload_to=get_file_name,
+                               blank=False)
     content_url = models.URLField(verbose_name='Document Url', null=True, blank=True)
     content_notes = models.TextField(verbose_name='Document Notes',
                                      blank=True,
@@ -50,9 +51,9 @@ class Document(CoreModel):
     domain_type = models.TextField(verbose_name='Domain Type', choices=type, default=type.not_specified)
 
     expiry_date = models.DateField(verbose_name='Expiry date',
-                                blank=True,
-                                help_text='If the document has a validity period, please specify the expiry date here.',
-                                null=True)
+                                   blank=True,
+                                   help_text='If the document has a validity period, please specify the expiry date here.',
+                                   null=True)
 
     def __str__(self):
         return f"{self.content.name} ({self.content_object})"

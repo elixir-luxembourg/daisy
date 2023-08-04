@@ -109,6 +109,7 @@ class ProjectDetailView(DetailView):
         context['company_name'] = COMPANY
         pk = ContentType.objects.get(model='project').pk
         context['content_type'] = pk
+        context['content_type_name'] = 'project'
         context['object_id'] = self.object.pk
         context['datafiles'] = [d for d in self.object.legal_documents.all()]
 

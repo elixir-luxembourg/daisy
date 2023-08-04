@@ -47,6 +47,7 @@ class ContractDetailView(DetailView):
         context['can_edit'] = can_edit
         pk = ContentType.objects.get(model='contract').pk
         context['content_type'] = pk
+        context['content_type_name'] = 'contract'
         context['object_id'] = self.object.pk
         context['datafiles'] = [d for d in self.object.legal_documents.all()]
 
