@@ -1,7 +1,7 @@
 from django import forms
 
-from core.forms.dataset import SkipFieldValidationMixin
-from core.models.storage_location import DataLocation
+from core.forms import SkipFieldValidationMixin
+from core.models import DataLocation
 
 
 class StorageLocationForm(SkipFieldValidationMixin, forms.ModelForm):

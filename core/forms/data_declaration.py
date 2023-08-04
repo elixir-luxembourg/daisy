@@ -3,8 +3,8 @@ from django.forms import  ValidationError
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 
-from core.forms.dataset import SkipFieldValidationMixin
-from core.forms.use_restriction import UseRestrictionForm
+from core.forms import SkipFieldValidationMixin
+from core.forms import UseRestrictionForm
 from core.models import DataDeclaration, Partner, Contract, GDPRRole
 from core.models.contract import PartnerRole
 

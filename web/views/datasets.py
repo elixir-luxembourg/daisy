@@ -31,9 +31,6 @@ class DatasetWizardView(NamedUrlSessionWizardView):
     ]
 
     def render_done(self, form, **kwargs):
-        if kwargs.get('step', None) != self.done_step_name:
-            return redirect(self.get_step_url(self.done_step_name))
-
         dataset_id = self.storage.extra_data.get('dataset_id')
         self.storage.reset()
         if dataset_id:
@@ -115,7 +112,8 @@ class DatasetDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['is_admin'] = self.request.user.is_admin_of_dataset(self.object)
         context['can_edit'] = self.request.user.can_edit_dataset(self.object)
-        context['can_see_protected'] = self.request.user.has_permission_on_object(f'core.{Permissions.PROTECTED.value}_dataset', self.object)
+        context['can_see_protected'] = self.request.user.has_permission_on_object(
+            f'core.{Permissions.PROTECTED.value}_dataset', self.object)
         context['company_name'] = COMPANY
         context['exposure_list'] = Exposure.objects.filter(dataset=self.object)
         return context
@@ -127,7 +125,6 @@ class DatasetEditView(CheckerMixin, UpdateView):
     form_class = DatasetFormEdit
     permission_required = Permissions.EDIT
     permission_target = 'dataset'
-
 
     def get_initial(self):
         initial = super().get_initial()
@@ -162,7 +159,7 @@ def dataset_list(request):
         'facets': facet_view_utils.filter_empty_facets(datasets.facet_counts()),
         'query': query or '',
         'title': 'Datasets',
-        'help_text' : Dataset.AppMeta.help_text,
+        'help_text': Dataset.AppMeta.help_text,
         'search_url': 'datasets',
         'add_url': 'dataset_add',
         'data': {'datasets': datasets},

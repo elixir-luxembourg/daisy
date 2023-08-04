@@ -1,6 +1,6 @@
 from django.forms import ModelForm, DateInput, Textarea
 
-from core.forms.dataset import SkipFieldValidationMixin
+from core.forms import SkipFieldValidationMixin
 from core.models import Access
 
 
