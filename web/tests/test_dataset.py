@@ -1,4 +1,3 @@
-import random
 import pytest
 from core.models import Dataset, DataDeclaration, DataLocation, LegalBasisType, LegalBasis, Access
 from test.factories import UserFactory, VIPGroup, StorageResourceFactory, LegalBasisFactory
@@ -16,18 +15,20 @@ def test_get_dataset_add(client_user_normal):
 
 
 @pytest.mark.django_db
-def test_dataset_wizard_form(client_user_normal):
+@pytest.mark.parametrize('data_declaration_skip', [True, False])
+@pytest.mark.parametrize('storage_location_skip', [True, False])
+@pytest.mark.parametrize('legal_basis_skip', [True, False])
+@pytest.mark.parametrize('access_skip', [True, False])
+def test_dataset_wizard_form(client_user_normal,
+                             data_declaration_skip,
+                             storage_location_skip,
+                             legal_basis_skip,
+                             access_skip):
     vip_user = UserFactory.create(groups=[VIPGroup()], first_name='Rebecca', last_name='Kafe')
     storage_backend = StorageResourceFactory.create(name='test_backend', managed_by='test')
     legal_basis_type = LegalBasisType(name='test_legal_basis', code='test')
     legal_basis_type.save()
 
-    skip_wizard = {
-        'data_declaration': random.choice([True, False]),
-        'storage_location': random.choice([True, False]),
-        'access': random.choice([True, False]),
-        'legal_basis': random.choice([True, False]),
-    }
     wizard_test_data = {
         'dataset': [
             {
@@ -45,7 +46,7 @@ def test_dataset_wizard_form(client_user_normal):
                 'data_declaration-type': ['2'],
                 'comment': ['Other provenance'],
                 'dataset_wizard_view-current_step': ['data_declaration'],
-                'data_declaration-skip_wizard': [skip_wizard['data_declaration']],
+                'data_declaration-skip_wizard': [data_declaration_skip],
             },
             DataDeclaration,
         ],
@@ -53,22 +54,22 @@ def test_dataset_wizard_form(client_user_normal):
             {
                 'storage_location-category': ['master'],
                 'storage_location-backend': [storage_backend.id],
-                'storage_location-data_declarations': [] if skip_wizard['data_declaration'] else ['1'],
+                'storage_location-data_declarations': [],
                 'storage_location-datatypes': [],
                 'storage_location-location_description': ['hello'],
                 'dataset_wizard_view-current_step': ['storage_location'],
-                'storage_location-skip_wizard': [skip_wizard['storage_location']],
+                'storage_location-skip_wizard': [storage_location_skip],
             },
             DataLocation,
         ],
         'legal_basis': [
             {
-                'legal_basis-data_declarations': [] if skip_wizard['data_declaration'] else ['1'],
+                'legal_basis-data_declarations': [],
                 'legal_basis-legal_basis_types': [legal_basis_type.id],
                 'legal_basis-personal_data_types': [],
                 'legal_basis-remarks': ['Legal basis comment'],
                 'dataset_wizard_view-current_step': ['legal_basis'],
-                'legal_basis-skip_wizard': [skip_wizard['legal_basis']]
+                'legal_basis-skip_wizard': [legal_basis_skip]
             },
             LegalBasis,
         ],
@@ -81,11 +82,14 @@ def test_dataset_wizard_form(client_user_normal):
                 'access-grant_expires_on': [''],
                 'access-access_notes': ['ssq'],
                 'dataset_wizard_view-current_step': ['access'],
-                'access-skip_wizard': [skip_wizard['access']]
+                'access-skip_wizard': [access_skip]
             },
             Access,
         ],
     }
+    for step_name, step_data in wizard_test_data.items():
+        form_data, Model = step_data
+        assert Model.objects.all().count() == 0
 
     for step_name, step_data in wizard_test_data.items():
         form_data, Model = step_data
