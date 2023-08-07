@@ -155,7 +155,10 @@ $(document).ready(function () {
                         url: url,
                         type: 'post',
                         dataType: 'json',
-                        data: modalForm.serialize(),
+                        data: new FormData(modalForm[0]),
+                        contentType: false,
+                        processData: false,
+                        cache: false,
                         success: function (results) {
                             if (redirectURI !== undefined) {
                                 window.location.replace(redirectURI);
