@@ -1,9 +1,11 @@
-from datetime import datetime
+import logging
+
+from datetime import datetime, date
 from typing import List
 
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Q, ObjectDoesNotExist, Count
+from django.db.models import Q, ObjectDoesNotExist, Count, signals
 
 from enumchoicefield import EnumChoiceField, ChoiceEnum
 
@@ -11,6 +13,9 @@ from .utils import CoreModel
 
 from auditlog.registry import auditlog
 from auditlog.models import AuditlogHistoryField
+
+
+logger = logging.getLogger(__name__)
 
 
 class StatusChoices(ChoiceEnum):
@@ -37,6 +42,34 @@ class Access(CoreModel):
                 name="user_or_contact_only",
             )
         ]
+
+    @classmethod
+    def expire_accesses(cls, upper_date: date) -> None:
+        """
+        Set the status of Access objects with an expiration date lower than given `upper_date`
+        to terminated
+
+        @param upper_date: Date threshold.
+        """
+        accesses_to_expire = cls.objects.filter(
+            grant_expires_on__lt=upper_date
+        ).exclude(
+            status=StatusChoices.terminated,
+        ).all()
+        for access in accesses_to_expire:
+            logger.debug(f"Expiring access {access.pk} because expiration date ({access.grant_expires_on}) is lower than {upper_date.strftime('%Y-%m-%d')}")
+            access.status = StatusChoices.terminated
+            # Necessary to manually send the signal because bulk_update does not use object.save()
+            # Without this, auditlog cannot create a LogEntry for the change of status
+            signals.pre_save.send(
+                sender=cls,
+                instance=access,
+                created=False,
+                raw=True,
+                update_fields=("status",)
+            )
+        cls.objects.bulk_update(accesses_to_expire, ["status"])
+        logger.debug("Accesses expired successfully")
 
     def clean(self):
         if self.user and self.contact:

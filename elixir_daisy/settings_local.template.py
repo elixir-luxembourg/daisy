@@ -1,3 +1,5 @@
+from celery.schedules import crontab
+
 #SECURITY WARNING: change the key used in production and keep it secret !
 GLOBAL_API_KEY = None  # Generate a global api key by e.g. django.core.management.utils.get_random_secret_key()
 if GLOBAL_API_KEY is None: raise NotImplementedError('You must specify GLOBAL_API_KEY in settings_local.py')
@@ -74,4 +76,12 @@ IDSERVICE_ENDPOINT = 'https://10.240.16.199:8080/v1/api/id'
 # KEYCLOAK_URL = 'https://root-address-to-your-keycloak.com:443'
 # KEYCLOAK_REALM = 'master'
 # KEYCLOAK_USER = 'your service user for daisy'
-# KEYCLOAK_PASS = 'the password for the service user' 
+# KEYCLOAK_PASS = 'the password for the service user'
+
+# Celery beat setting to schedule tasks on docker creation
+CELERY_BEAT_SCHEDULE = {
+    "clean-accesses-every-day": {
+        "task": "core.tasks.check_accesses_expiration",
+        "schedule": crontab(minute=0, hour=0),  # Execute task at midnight
+    }
+}
