@@ -109,7 +109,7 @@ def test_dataset_wizard_form(client_user_normal,
             assert redirect_url == expected_url
 
     dataset = Dataset.objects.get(title='Hello Dataset')
-    assert dataset.data_declaration_set.all().count() == DataDeclaration.objects.all().count()
-    assert dataset.data_location_set.all().count() == DataLocation.objects.all().count()
-    assert dataset.legal_basis_set.all().count() == LegalBasis.objects.all().count()
-    assert dataset.access_set.all().count() == Access.objects.all().count()
+    assert dataset.data_declarations.all().count() == DataDeclaration.objects.all().count()
+    assert dataset.data_locations.all().count() == DataLocation.objects.all().count()
+    assert dataset.legal_basis_definitions.all().count() == LegalBasis.objects.all().count()
+    assert dataset.accesses.all().count() == Access.objects.all().count()
