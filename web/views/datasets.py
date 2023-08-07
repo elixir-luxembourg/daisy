@@ -47,16 +47,20 @@ class DatasetWizardView(NamedUrlSessionWizardView):
         return kwargs
 
     def process_step(self, form, **kwargs):
+        self.storage.extra_data[f'{self.steps.current}-skipped'] = True
         if self.steps.current == 'dataset':
             dataset = form.save()
             self.storage.extra_data['dataset_id'] = dataset.id
+            self.storage.extra_data[f'{self.steps.current}-skipped'] = False
         elif form.data.get(f'{self.steps.current}-skip_wizard') != 'True':
+            self.storage.extra_data[f'{self.steps.current}-skipped'] = False
             dataset_id = self.storage.extra_data.get('dataset_id')
             try:
                 dataset = Dataset.objects.get(pk=dataset_id)
                 instance = form.save(commit=False)
                 instance.dataset = dataset
                 instance.save()
+                self.storage.extra_data[f'{self.steps.current}-skipped'] = False
             except Dataset.DoesNotExist:
                 raise Http404(f"You need to have a dataset first")
         return self.get_form_step_data(form)
@@ -65,7 +69,17 @@ class DatasetWizardView(NamedUrlSessionWizardView):
         context = super().get_context_data(form=form, **kwargs)
         context.update({'step_name': self.steps.current})
         names = [form_key.replace('_', ' ').title() for form_key, _ in self.form_list.items()]
-        context['steps_verbose_data'] = list(zip(self.form_list, names))
+        skips = []
+        for step in self.form_list.keys():
+            try:
+                if self.storage.extra_data[f'{step}-skipped']:
+                    skips.append(True)
+                else:
+                    skips.append(False)
+            except KeyError:
+                skips.append(False)
+
+        context['steps_verbose_data'] = list(zip(self.form_list, names, skips))
         dataset_id = self.storage.extra_data.get('dataset_id', None)
         if dataset_id is not None:
             context['dataset_id'] = Dataset.objects.get(pk=dataset_id).id

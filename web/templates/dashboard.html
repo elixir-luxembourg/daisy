@@ -11,7 +11,7 @@
     </div>
     <div class="row mt-4">
         <div class="col">
-            {% url 'dataset_add' as dataset_add_url %}
+            {% url 'wizard' as dataset_add_url %}
             {% include '_includes/card_list.html' with list=last_datasets list_title='My datasets' url_name='dataset' add_new_link=dataset_add_url  %}
         </div>
         <div class="col">

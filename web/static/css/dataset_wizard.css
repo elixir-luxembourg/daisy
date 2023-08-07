@@ -103,3 +103,7 @@
 .current-item .progress-count {
     color: #023452;
 }
+
+.skipped:after {
+    background: #e9ecef;
+}

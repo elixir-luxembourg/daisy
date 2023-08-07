@@ -9,9 +9,9 @@
     <div class="row">
         <div class="jumbotron mt-5 py-2 pt-4 px-4 w-100">
             <ul class="step-wizard-list">
-                {% for step, step_verbose_name in steps_verbose_data %}
+                {% for step, step_verbose_name, skipped in steps_verbose_data %}
                     <li class="step-wizard-item {% if wizard.steps.current == step %}current-item{% endif %}">
-                        <span class="progress-count">{{ forloop.counter }}</span>
+                        <span class="progress-count {% if skipped %}skipped{% endif %}">{{ forloop.counter }}</span>
                         <span class="progress-label">{{ step_verbose_name }}</span>
                     </li>
                 {% endfor %}
