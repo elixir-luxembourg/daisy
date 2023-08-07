@@ -4,36 +4,58 @@ import urllib3
 
 from datetime import datetime, date, timedelta
 from dateutil.parser import isoparse
-from typing import Dict, Union
+from typing import Dict, Union, Tuple
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest
 
 from core.synchronizers import DummyAccountSynchronizer
-from core.lcsb.oidc import get_keycloak_config_from_settings, KeycloakSynchronizationMethod, CachedKeycloakAccountSynchronizer
+from core.lcsb.oidc import (
+    get_keycloak_config_from_settings,
+    KeycloakSynchronizationMethod,
+    CachedKeycloakAccountSynchronizer,
+)
 from core.models.access import Access, StatusChoices
 from core.models.contact import Contact
 from core.models.dataset import Dataset
 from core.models.user import User
 from core.utils import DaisyLogger
-
+from django.db.models import Q
 
 logger = DaisyLogger(__name__)
 
-
-if getattr(settings, 'KEYCLOAK_INTEGRATION', False) == True:
+if getattr(settings, "KEYCLOAK_INTEGRATION", False) == True:
     urllib3.disable_warnings()
     keycloak_config = get_keycloak_config_from_settings()
     try:
         keycloak_backend = KeycloakSynchronizationMethod(keycloak_config)
         synchronizer = CachedKeycloakAccountSynchronizer(keycloak_backend)
     except Exception as ex:
-        logger.error(f'Keycloak integration failed to initialize!  {ex}')
-        logger.error('Falling back to the dummy synchronizer...')
-        synchronizer = DummyAccountSynchronizer()    
+        logger.error(f"Keycloak integration failed to initialize!  {ex}")
+        logger.error("Falling back to the dummy synchronizer...")
+        synchronizer = DummyAccountSynchronizer()
 else:
     synchronizer = DummyAccountSynchronizer()
+
+
+def check_existence_automatic(item: Dict[str, str]) -> bool:
+    """
+    Checks if an active access automatically created for the same received data already exists
+    """
+    application, resource, user_oidc_id, email, expiration_date = extract_rems_data(
+        item
+    )
+    filter_oidc = Q(user__oidc_id=user_oidc_id) | Q(contact__oidc_id=user_oidc_id)
+    filter_resource_and_status = Q(
+        dataset__elu_accession=resource,
+        grant_expires_on=expiration_date,
+        status=StatusChoices.active,
+    )
+    existing_accesses = Access.objects.filter(
+        filter_resource_and_status & filter_oidc
+    ).all()
+    return any([a.was_generated_automatically for a in existing_accesses])
 
 
 def handle_rems_callback(request: HttpRequest) -> bool:
@@ -46,57 +68,98 @@ def handle_rems_callback(request: HttpRequest) -> bool:
     :returns: True if everything was processed, False if not
     """
 
-    # Ensure the most recent account inforrmation by pulling it from Keycloak
-    logger.debug('REMS :: Requesting refreshing the account information from Keycloak Synchronizer...')
-    synchronizer.synchronize()
-    logger.debug('REMS :: ...assuming that the OIDC account information has been synchronized')
-
-    logger.debug('REMS :: Unpacking the data received from REMS...')
-    body_unicode = request.body.decode('utf-8')
+    logger.debug("REMS :: Unpacking the data received from REMS...")
+    body_unicode = request.body.decode("utf-8")
 
     try:
         request_post_data = json.loads(body_unicode)
     except:
-        message = f'REMS :: Received data in wrong format, because deserializing request''s POST body failed!)!'
+        message = (
+            f"REMS :: Received data in wrong format, because deserializing request"
+            "s POST body failed!)!"
+        )
         raise ValueError(message)
 
     if not isinstance(request_post_data, list):
         the_type = type(request_post_data)
         message = f'REMS :: Received data with wrong format (it is not a list, but "{the_type}" instead)!'
         raise TypeError(message)
+    # check if accesses already exist for the received data and eventually update them
+    # if all accesses already exist, return True and stop processing to avoid triggering again the synchronizer
+    logger.debug(
+        "REMS :: check if accesses automatically created already exists for the received data..."
+    )
+    already_existing_accesses = {
+        index
+        for index, item in enumerate(request_post_data)
+        if check_existence_automatic(item)
+    }
+    if len(already_existing_accesses) == len(request_post_data):
+        # all accesses already exist, stopping processing
+        logger.debug("REMS :: all accesses already exists, noop, stopping processing.")
+        return True
 
-    statuses = [handle_rems_entitlement(item) for item in request_post_data]
+    logger.debug("REMS :: some accesses do not exist yet")
+    # Ensure the most recent account information by pulling it from Keycloak
+    logger.debug(
+        "REMS :: requesting refreshing the account information from Keycloak Synchronizer..."
+    )
+    synchronizer.synchronize()
+    logger.debug(
+        "REMS :: ...assuming that the OIDC account information has been synchronized"
+    )
+    statuses = [
+        handle_rems_entitlement(item)
+        for index, item in enumerate(request_post_data)
+        if index not in already_existing_accesses
+    ]
     return all(statuses)
 
-def handle_rems_entitlement(data: Dict[str, str]) -> bool:
-    """
-    Handles a single information about the entitlement from REMS.
 
-    :returns: True if the user was found and the entitlement processed, False if not
+def extract_rems_data(data: Dict[str, str]) -> Tuple[str, str, str, str, date]:
     """
-    application = data.get('application')
-    resource = data.get('resource')
-    user_oidc_id = data.get('user')
-    email = data.get('mail')
-    expiration_date = data.get('end')
+    Extracts the data from the REMS request
+    """
+    application = data.get("application")
+    resource = data.get("resource")
+    user_oidc_id = data.get("user")
+    email = data.get("mail")
+    expiration_date = data.get("end")
 
     if expiration_date is None:
-        expiration_date = date.today() + timedelta(
-            days=getattr(settings, 'ACCESS_DEFAULT_EXPIRATION_DAYS', 90)
-        )
+        expiration_date = build_default_expiration_date()
     else:
         expiration_date = isoparse(expiration_date).date()
 
-    logger.debug(f'REMS :: * data access request id: {application}, user_oidc_id: {user_oidc_id}, user_email: {email}, resource: {resource}')
+    logger.debug(
+        f"REMS :: * data access request id: {application}, user_oidc_id: {user_oidc_id}, user_email: {email}, resource: {resource}"
+    )
+    return application, resource, user_oidc_id, email, expiration_date
 
+
+def build_default_expiration_date():
+    return date.today() + timedelta(
+        days=getattr(settings, "ACCESS_DEFAULT_EXPIRATION_DAYS", 90)
+    )
+
+
+def handle_rems_entitlement(data: Dict[str, str]) -> bool:
+    """
+    Handles a single piece of information about the entitlement from REMS.
+
+    :returns: True if the user was found and the entitlement processed, False if not
+    """
+    application, resource, user_oidc_id, email, expiration_date = extract_rems_data(
+        data
+    )
     try:
         Dataset.objects.get(elu_accession=resource)
     except Dataset.DoesNotExist:
-        message = f'REMS :: Dataset with such `elu_accession` ({resource}) does not exist! Quitting'
-        logger.error(f' * {message}')
+        message = f"REMS :: Dataset with such `elu_accession` ({resource}) does not exist! Quitting"
+        logger.error(f" * {message}")
         # TODO: E2E: Save and display a notification to DataStewards
         raise ValueError(message)
-    
+
     # First, tries to find a user with given OIDC ID
     # Then, it tries to find a contact with given OIDC ID
     # Then, it tries to find a user with given email address
@@ -108,45 +171,58 @@ def handle_rems_entitlement(data: Dict[str, str]) -> bool:
     users_by_email = User.objects.filter(email=email)
     contacts_by_email = Contact.objects.filter(email=email)
 
-    logger.debug(f'REMS :: Locating the User/Contact for the given Access information...')
-    
+    logger.debug(
+        f"REMS :: Locating the User/Contact for the given Access information..."
+    )
 
     if users_by_oidc.count() + contacts_by_oidc.count() > 1:
-        logger.error(f'REMS :: error, found multiple users or contacts with given OIDC_ID: {user_oidc_id}!')
+        logger.error(
+            f"REMS :: error, found multiple users or contacts with given OIDC_ID: {user_oidc_id}!"
+        )
         # Something is wrong - there are multiple users or contacts with given OIDC ID
         # TODO: E2E: Save and display a notification to DataStewards
         return False
 
     if users_by_oidc.count() == 1:
-        logger.debug(f'REMS :: OK, found a user with given OIDC_ID')
+        logger.debug(f"REMS :: OK, found a user with given OIDC_ID")
         user = users_by_oidc.first()
-        return create_rems_entitlement(user, application, resource, user_oidc_id, email, expiration_date)
-    logger.debug(f'REMS :: no users with given OIDC_ID')
+        return create_rems_entitlement(
+            user, application, resource, user_oidc_id, email, expiration_date
+        )
+    logger.debug(f"REMS :: no users with given OIDC_ID")
 
     if contacts_by_oidc.count() == 1:
         contact = contacts_by_oidc.first()
-        logger.debug(f'REMS :: OK, found a contact with given OIDC_ID')
-        return create_rems_entitlement(contact, application, resource, user_oidc_id, email, expiration_date)
-    logger.debug(f'REMS :: no contacts with given OIDC_ID')
+        logger.debug(f"REMS :: OK, found a contact with given OIDC_ID")
+        return create_rems_entitlement(
+            contact, application, resource, user_oidc_id, email, expiration_date
+        )
+    logger.debug(f"REMS :: no contacts with given OIDC_ID")
 
     if users_by_email.count() + contacts_by_email.count() > 1:
-        logger.error(f'REMS :: error, found multiple users or contacts with given email: {email}!')
+        logger.error(
+            f"REMS :: error, found multiple users or contacts with given email: {email}!"
+        )
         # Something is wrong - there are multiple users or contacts with given OIDC ID
         # TODO: E2E: Save and display a notification to DataStewards
         return False
 
     if users_by_email.count() == 1:
-        logger.debug(f'REMS :: OK, found a user with given email')
+        logger.debug(f"REMS :: OK, found a user with given email")
         user = users_by_email.first()
-        return create_rems_entitlement(user, application, resource, user_oidc_id, email, expiration_date)
-    logger.debug(f'REMS :: no users with given email')
+        return create_rems_entitlement(
+            user, application, resource, user_oidc_id, email, expiration_date
+        )
+    logger.debug(f"REMS :: no users with given email")
 
     if contacts_by_email.count() == 1:
         contact = contacts_by_email.first()
-        logger.debug(f'REMS :: OK, found a contact with given email')
-        return create_rems_entitlement(contact, application, resource, user_oidc_id, email, expiration_date)
-    logger.debug(f'REMS :: no contacts with given email')
-    
+        logger.debug(f"REMS :: OK, found a contact with given email")
+        return create_rems_entitlement(
+            contact, application, resource, user_oidc_id, email, expiration_date
+        )
+    logger.debug(f"REMS :: no contacts with given email")
+
     # At this moment, we didn't find any User nor Contact with given OIDC_ID nor email
     # Will attempt to create a new contact then
     Contact.get_or_create_from_rems(email, user_oidc_id)
@@ -155,37 +231,22 @@ def handle_rems_entitlement(data: Dict[str, str]) -> bool:
     return True
 
 
-def create_rems_entitlement(obj: Union[Access, User], 
-        application: str, 
-        dataset_id: str, 
-        user_oidc_id: str, 
-        email: str,
-        expiration_date: date) -> bool:
+def create_rems_entitlement(
+    obj: Union[Access, User],
+    application: str,
+    dataset_id: str,
+    user_oidc_id: str,
+    email: str,
+    expiration_date: date,
+) -> bool:
     """
     Tries to find a dataset with `elu_accession` equal to `dataset_id`.
     If it exists, it will add a new logbook entry (Access object) set to the current user/contact
     Assumes that the Dataset exists, otherwise will throw an exception.
     """
-    notes = f'Set automatically by REMS data access request #{application}'
-
     dataset = Dataset.objects.get(elu_accession=dataset_id)
-
-    system_rems_user = User.objects.filter(
-        username='system::REMS'
-    )
-
-    # The password is not a hash, therefore it is
-    # not possible to log into this account
-    if system_rems_user.count() == 0:
-        system_rems_user = User.objects.create(
-            username='system::REMS',
-            first_name=':REMS:',
-            last_name=':System Account:',
-            password='this is an invalid hash',
-            email='lcsb-sysadmins+REMS@uni.lu'
-        )
-    else:
-        system_rems_user = system_rems_user.first()
+    notes = build_access_notes_rems(application)
+    system_rems_user = get_or_create_rems_user()
 
     if type(obj) == User:
         new_logbook_entry = Access(
@@ -211,7 +272,36 @@ def create_rems_entitlement(obj: Union[Access, User],
         )
     else:
         klass = obj.__class__.__name__
-        raise TypeError(f'Wrong type of the object - should be Contact or User, is: {klass} instead')
-        
+        raise TypeError(
+            f"Wrong type of the object - should be Contact or User, is: {klass} instead"
+        )
+
     new_logbook_entry.save()
     return True
+
+
+def build_access_notes_rems(application: str) -> str:
+    """
+    Build and return note to be attached to the access created from a REMS application
+    """
+    return f"Set automatically by REMS data access request #{application}"
+
+
+def get_or_create_rems_user() -> User:
+    """
+    Check if rems system user already exists and either return it directly or create it and return it
+    """
+    system_rems_user = User.objects.filter(username="system::REMS")
+    # The password is not a hash, therefore it is
+    # not possible to log into this account
+    if system_rems_user.count() == 0:
+        system_rems_user = User.objects.create(
+            username="system::REMS",
+            first_name=":REMS:",
+            last_name=":System Account:",
+            password="this is an invalid hash",
+            email="lcsb-sysadmins+REMS@uni.lu",
+        )
+    else:
+        system_rems_user = system_rems_user.first()
+    return system_rems_user

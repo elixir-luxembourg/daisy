@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.apps import apps
 from django.db import models
 from django_countries.fields import CountryField
@@ -5,7 +6,6 @@ from django_countries.fields import CountryField
 from model_utils import Choices
 from .utils import CoreTrackedDBModel, TextFieldWithInputWidget
 
-from elixir_daisy import settings
 
 GEO_CATEGORY = Choices(
     ('EU', 'EU'),
