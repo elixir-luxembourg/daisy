@@ -67,7 +67,7 @@ class Access(CoreModel):
                 instance=access,
                 created=False,
                 raw=True,
-                update_fields=("status",)
+                update_fields=("status", "access_notes")
             )
         cls.objects.bulk_update(accesses_to_expire, ["status", "access_notes"])
         logger.debug("Accesses expired successfully")
