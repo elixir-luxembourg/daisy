@@ -23,6 +23,7 @@ def test_expire_accesses():
     for access in accesses:
         access.refresh_from_db()
         if access.status == StatusChoices.terminated:
+            assert "Automatically terminated" in access.access_notes
             logs = LogEntry.objects.get_for_object(access)
             assert len(logs) == 2
             assert logs.order_by("-timestamp").first().action == LogEntry.Action.UPDATE
