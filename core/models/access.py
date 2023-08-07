@@ -23,6 +23,7 @@ class StatusChoices(ChoiceEnum):
     active = "Active"
     suspended = "Suspended"
     terminated = "Terminated"
+    automatically_terminated = "Automatically terminated"
 
 
 class Access(CoreModel):
@@ -58,7 +59,7 @@ class Access(CoreModel):
         ).all()
         for access in accesses_to_expire:
             logger.debug(f"Expiring access {access.pk} because expiration date ({access.grant_expires_on}) is lower than {upper_date.strftime('%Y-%m-%d')}")
-            access.status = StatusChoices.terminated
+            access.status = StatusChoices.automatically_terminated
             # Necessary to manually send the signal because bulk_update does not use object.save()
             # Without this, auditlog cannot create a LogEntry for the change of status
             signals.pre_save.send(
