@@ -59,6 +59,7 @@ class Access(CoreModel):
         for access in accesses_to_expire:
             logger.debug(f"Expiring access {access.pk} because expiration date ({access.grant_expires_on}) is lower than {upper_date.strftime('%Y-%m-%d')}")
             access.status = StatusChoices.terminated
+            access.access_notes = "Automatically terminated"
             # Necessary to manually send the signal because bulk_update does not use object.save()
             # Without this, auditlog cannot create a LogEntry for the change of status
             signals.pre_save.send(
@@ -66,9 +67,9 @@ class Access(CoreModel):
                 instance=access,
                 created=False,
                 raw=True,
-                update_fields=("status",)
+                update_fields=("status", "access_notes")
             )
-        cls.objects.bulk_update(accesses_to_expire, ["status"])
+        cls.objects.bulk_update(accesses_to_expire, ["status", "access_notes"])
         logger.debug("Accesses expired successfully")
 
     def clean(self):
