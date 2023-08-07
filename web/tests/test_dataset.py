@@ -107,3 +107,9 @@ def test_dataset_wizard_form(client_user_normal,
             redirect_url = response.url
             expected_url = reverse('dataset', kwargs={'pk': dataset.id})
             assert redirect_url == expected_url
+
+    dataset = Dataset.objects.get(title='Hello Dataset')
+    assert dataset.data_declaration_set.all().count() == DataDeclaration.objects.all().count()
+    assert dataset.data_location_set.all().count() == DataLocation.objects.all().count()
+    assert dataset.legal_basis_set.all().count() == LegalBasis.objects.all().count()
+    assert dataset.access_set.all().count() == Access.objects.all().count()
