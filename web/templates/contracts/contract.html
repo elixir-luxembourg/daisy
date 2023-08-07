@@ -127,7 +127,9 @@
                             <button data-toggle="modal"
                                     data-target="#modal"
                                     data-modal-title="Add document to contract"
-                                    data-ajax-url="{% url 'document_add' object_id=object_id content_type=content_type content_type_name=content_type_name %}"
+                                    data-ajax-url="{% url 'document_add' object_id=object_id content_type=content_type %}"
+                                    data-ajax-redirect-uri="{% url 'contract' pk=object_id %}"
+                                    data-post-mode="true"
                                     class="dropdown-item" type="button" title="Add document to contract">
                                 Upload new document
                             </button>

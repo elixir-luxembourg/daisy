@@ -284,8 +284,16 @@
                             <i class="material-icons">add</i>
                         </button>
                         <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="adddocument">
-
-                            <button data-toggle="modal" data-target="#modal" data-modal-title="Add document to project" data-ajax-url="{% url 'document_add' object_id=object_id content_type=content_type content_type_name=content_type_name %}" class="dropdown-item" type="button" title="Add document to project">
+                            <button data-toggle="modal"
+                                    data-target="#modal"
+                                    data-modal-title="Add document to project"
+                                    data-ajax-url="{% url 'document_add' object_id=object_id content_type=content_type %}"
+                                    data-ajax-redirect-uri="{% url 'project' pk=object_id %}"
+                                    data-post-mode="true"
+                                    class="dropdown-item"
+                                    type="button"
+                                    title="Add document to project"
+                            >
                                 Upload new document
                             </button>
                         </div>

@@ -6,12 +6,14 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.http import urlquote
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
 
 from core.constants import Permissions
 from core.forms import DocumentForm
 from core.models import Document
 from core.permissions import permission_required, permission_required_from_content_type
 from core.utils import DaisyLogger
+from web.views.utils import is_ajax_request
 
 
 log = DaisyLogger(__name__)
@@ -28,24 +30,26 @@ def rfc5987_content_disposition(file_name):
 
 @permission_required_from_content_type(Permissions.PROTECTED, content_type_attr='content_type', object_id_attr='object_id')
 @permission_required_from_content_type(Permissions.EDIT, content_type_attr='content_type', object_id_attr='object_id')
-def upload_document(request, object_id, content_type, content_type_name):
+def upload_document(request, object_id, content_type):
     log.debug('uploading document', post=request.POST, files=request.FILES)
+    content_type_object = ContentType.objects.get(pk=content_type)
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if not form.is_valid():
             if not request.FILES:
                 log.error('Upload failed: no document found.')
-                messages.add_message(request, messages.ERROR, "No document selected for upload.")
             else:
-                messages.add_message(request, messages.ERROR, [str(e) for e in form.errors])
                 log.error([str(e) for e in form.errors])
-            return redirect(to=content_type_name, pk=object_id)
+            return JsonResponse(form.errors, status=400) if is_ajax_request(request) else redirect(to=content_type_object.name, pk=object_id)
 
         else:
             document = form.save()
             messages.add_message(request, messages.SUCCESS, "Document added")
             redirecturl = document.content_type.name
-            return redirect(to=redirecturl, pk=document.object_id)
+            if is_ajax_request(request):
+                return JsonResponse({"status_code": 200})
+            else:
+                return redirect(to=redirecturl, pk=document.object_id)
 
     else:
         form = DocumentForm(initial={'content_type':content_type, 'object_id': object_id})
@@ -63,16 +67,20 @@ def document_edit(request, pk):
         if form.is_valid():
             form.save()
             messages.add_message(request, messages.SUCCESS, "Document updated")
-            return JsonResponse({
-                'success': {},
-            })
+            if is_ajax_request(request):
+                return JsonResponse({
+                    'success': {},
+                })
+            else:
+                redirecturl = document.content_type.name
+                return redirect(to=redirecturl, pk=document.object_id)
         else:
             return JsonResponse({
                 'error': {
                     'type': 'Edit error',
                     'messages': form.errors,
                 },
-            }, status=405)
+            }, status=405) if is_ajax_request(request) else redirect(to=document.content_type.name, pk=document.object_id)
     else:
         form = DocumentForm(instance=document)
 

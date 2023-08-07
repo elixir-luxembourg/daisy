@@ -142,7 +142,7 @@ web_urls = [
     path('definitions/users/<int:pk>/edit', UserEditView.as_view(), name="user_edit"),
 
     # Documents
-    path('documents/<int:object_id>/<int:content_type>/<content_type_name>/add', documents.upload_document,  name='document_add'),
+    path('documents/<int:object_id>/<int:content_type>/add', documents.upload_document,  name='document_add'),
     path('documents/<int:pk>/delete', documents.delete_document, name='document_delete'),
     path('documents/<int:pk>/download', documents.download_document, name='document_download'),
     path('documents/<int:pk>/edit/', documents.document_edit, name='document_edit'),
