@@ -242,6 +242,12 @@ If tests dependencies are already installed, one can also run the tests just by 
 pytest
 ```
 
+To run them in Docker environment, build and run the containers (`docker-compose up --build`), and execute:
+
+```bash
+docker-compose exec web python setup.py pytest
+```
+
 ## Administration
 
 To get access to the admin page, you must log in with a superuser account.  

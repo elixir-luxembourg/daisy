@@ -100,9 +100,13 @@ class User(AbstractUser):
         default=create_api_key,
         help_text='A token used to authenticate the user for accessing API'
     )
+
     email = models.EmailField(blank=False)
+
     full_name = TextFieldWithInputWidget(max_length=128)
+
     objects = UserManager()
+
     oidc_id = models.CharField(verbose_name='OIDC user identifier',
         blank=True,
         null=True,
@@ -110,10 +114,20 @@ class User(AbstractUser):
         unique=True,
         help_text="Internal user identifier coming from OIDC's IdP"
     )
-    source = EnumChoiceField(UserSource, default=UserSource.MANUAL, blank=False, null=False)
 
+    source = EnumChoiceField(UserSource, 
+        default=UserSource.MANUAL, 
+        blank=False, 
+        null=False
+    )
+
+    should_receive_email_reports = models.BooleanField(verbose_name='Should receive email reports',
+        default=False,
+        blank=False,
+        null=False,
+        help_text="Should the user receive periodic email reports?"
+    )
     
-
     def __str__(self):
         fullname = self.get_full_name()
         return fullname or self.username

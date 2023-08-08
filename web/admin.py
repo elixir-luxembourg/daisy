@@ -183,7 +183,8 @@ class UserAdmin(BaseUserAdmin):
         user_admin_fieldset_row,
         ('Personal info', {'fields': ('first_name', 'last_name', 'full_name', 'oidc_id')}),
         ('Permissions', {'fields': ('is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Additional metdata', {'fields': ('date_joined', 'last_login', 'api_key')}),
+        ('Additional metadata', {'fields': ('date_joined', 'last_login', 'api_key')}),
+        ('E-mail reports', {'fields': ('should_receive_email_reports',)}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. BaseUserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.

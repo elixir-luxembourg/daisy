@@ -20,6 +20,7 @@ from web.views.datasets import DatasetCreateView, DatasetDetailView, DatasetEdit
                                dataset_list
 from web.views.export import cohorts_export, contacts_export, contracts_export, \
                              datasets_export, partners_export, projects_export
+from web.views.issues import issues
 from web.views.partner import PartnerCreateView, PartnerDelete, PartnerDetailView, \
                               PartnerEditView, partner_search_view, \
                               publish_partner, unpublish_partner
@@ -28,6 +29,8 @@ from web.views.projects import ProjectCreateView, ProjectEditView, ProjectDetail
 from web.views.publication import PublicationCreateView, PublicationListView, \
                                   PublicationEditView, add_publication_to_project, \
                                   remove_publication_from_project, pick_publication_for_project
+from web.views.reporting import email_reports, email_reports_preview, \
+                                email_reports_disable_for_user
 from web.views.user import change_password, UserCreateView, UserDetailView, \
                            UserDelete, UserEditView, UsersListView, UserPasswordChange 
 from web.views.users import add_personnel_to_project, remove_personnel_from_project
@@ -37,6 +40,7 @@ web_urls = [
     # Single pages
     path('', dashboard, name='dashboard'),
     path('about', about, name='about'),
+    path('issues', issues, name='issues'),
     path('profile', profile.ProfileEditView.as_view(), name='profile'),
 
     # API urls
@@ -146,6 +150,11 @@ web_urls = [
     path('documents/<int:pk>/delete', documents.delete_document, name='document_delete'),
     path('documents/<int:pk>/download', documents.download_document, name='document_download'),
     path('documents/<int:pk>/edit/', documents.document_edit, name='document_edit'),
+
+    # Email reports
+    path('email_reports', email_reports, name='email_reports'),
+    path('email_reports/<int:pk>/preview', email_reports_preview, name='email_reports_preview'),
+    path('email_reports/<int:pk>/delete', email_reports_disable_for_user, name='email_reports_disable_for_user'),
 
     # Notifications
     path('notifications/', notifications.index, name="notifications"),

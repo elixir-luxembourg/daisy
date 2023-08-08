@@ -2,9 +2,11 @@
 Module that regroup some utilities.
 """
 import logging
+from os.path import join
 
 from django.conf import settings
-from django.utils.module_loading import import_string
+from django.core.exceptions import ImproperlyConfigured
+
 
 class DaisyLogger:
     def __init__(self, logger_name):
@@ -26,23 +28,9 @@ class DaisyLogger:
         return wrap
 
 
-class BootstrapChecker:
-    """
-    This is a small helper class to find any problems with missing values
-    in Django configuration.
-    """
-    def __init__(self) -> None:
-        pass
-
-    def _check_idservice(self):
-        idservice_endpoint = getattr(settings, 'IDSERVICE_ENDPOINT', None)
-        # TODO: check ID service endpoint connectivity
-        # i.e.: make http GET request 
-
-        # Checks if the function can be importable
-        idservice_function = getattr(settings, 'IDSERVICE_FUNCTION', None)
-        generate_id_function = import_string(idservice_function)
-
-
-    def run(self):
-        self._check_idservice()
+def get_absolute_uri(uri):
+    if len(getattr(settings, 'SERVER_SCHEME', '')) == 0:
+        raise ImproperlyConfigured('You must specify "HTTP_SCHEME" in settings.py')
+    if len(getattr(settings, 'SERVER_URL', '')) == 0:
+        raise ImproperlyConfigured('You must specify "SERVER_URL" in settings.py')
+    return join(f'{settings.SERVER_SCHEME}://{settings.SERVER_URL}', uri)

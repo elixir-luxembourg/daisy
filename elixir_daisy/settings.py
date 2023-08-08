@@ -22,6 +22,8 @@ INSTANCE_LABEL = None
 # Override of the layout's primary color (used in e.g. navbar), e.g. '#076505'
 INSTANCE_PRIMARY_COLOR = None 
 
+EMAIL_REPORTS_ENABLED = False
+
 AUTH_USER_MODEL = 'core.User'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
