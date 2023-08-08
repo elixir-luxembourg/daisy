@@ -23,7 +23,6 @@ from core.lcsb.rems import synchronizer
 from core.models import User, Cohort, Dataset, Partner, Project, DiseaseTerm, Contact, Endpoint
 from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneTerm
 from core.utils import DaisyLogger
-from elixir_daisy import settings
 from web.views.utils import get_client_ip, get_user_or_contact_by_oidc_id
 
 
@@ -248,7 +247,7 @@ def rems_endpoint(request):
         message = f'REMS - something is wrong with the configuration!'
         more = str(ex)
         logger.debug(f'{message} ({more})')
-        return create_error_response(ex.message)
+        return create_error_response(message)
     except Exception as ex:
         message = f'REMS - something went wrong during the import!'
         more = str(ex)
@@ -307,4 +306,3 @@ def permissions(request, user_oidc_id: str) -> JsonResponse:
             {'more': more},
             status=404
         )
-    

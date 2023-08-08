@@ -37,7 +37,7 @@
     "concurrently": "4.1.0",
     "cssnano-cli": "1.0.5",
     "js-yaml": "3.13.1",
-    "node-sass": "4.13.1",
+    "node-sass": "9.0.0",
     "node-sass-tilde-importer": "1.0.2"
   }
 }

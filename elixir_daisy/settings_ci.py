@@ -61,3 +61,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']
 
 DEBUG = True
+
+REMS_INTEGRATION_ENABLED = True
+REMS_ALLOWED_IP_ADDRESSES = ['127.0.0.1']
