@@ -1,6 +1,6 @@
 from django.forms import ModelForm, DateInput, Textarea
 
-from core.models import Access
+from core.models import Access, Contact
 
 
 class AccessForm(ModelForm):
@@ -24,6 +24,9 @@ class AccessForm(ModelForm):
         self.fields["defined_on_locations"].choices = [
             (d.id, d) for d in dataset.data_locations.all()
         ]
+        # to improve form performance we directly select related contact types
+        contact_queryset = Contact.objects.all().select_related("type")
+        self.fields["contact"].queryset = contact_queryset
 
     field_order = [
         "contact",
@@ -39,8 +42,8 @@ class AccessForm(ModelForm):
 class AccessEditForm(ModelForm):
     class Meta:
         model = Access
-        fields = '__all__'
-        exclude = ['created_by', 'history']
+        fields = "__all__"
+        exclude = ["created_by", "history"]
         widgets = {
             # Date pickers
             "granted_on": DateInput(attrs={"class": "datepicker"}),
