@@ -58,6 +58,7 @@ You are encouraged to try Daisy for yourself using our [DEMO deployment](https:/
 1. Create initial data in the database
     
     ```bash
+    docker-compose exec web bash -c "apt update && apt install -y wget"
     docker-compose exec web bash -c "cd core/fixtures/ && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json"
     docker-compose exec web python manage.py load_initial_data
     ```
@@ -69,7 +70,7 @@ You are encouraged to try Daisy for yourself using our [DEMO deployment](https:/
     ```bash
     docker-compose exec web python manage.py load_demo_data
     ```
-    This will create mock datasets, projects and create an demo admin account.
+    This will create mock datasets, projects and create a demo admin account.
 
 1. Optional - import users from an active directory instance
 
@@ -170,7 +171,7 @@ where ${JSON_FILE} is the path to a json file that will be produced.  In additio
     
     ```bash
     docker-compose exec web python manage.py rebuild_index -u default
-    ```	
+    ```
 1. Reimport the users (optional).
 	    
     If LDAP was used during initial setup to import users, they have to be imported again:

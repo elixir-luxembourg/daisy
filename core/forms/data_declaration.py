@@ -1,10 +1,8 @@
 from django import forms
-from django.forms import  ValidationError
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 
-from core.forms import SkipFieldValidationMixin
-from core.forms import UseRestrictionForm
+from core.forms import UseRestrictionForm, SkipFieldValidationMixin
 from core.models import DataDeclaration, Partner, Contract, GDPRRole
 from core.models.contract import PartnerRole
 
@@ -12,31 +10,31 @@ from core.models.contract import PartnerRole
 class DataDeclarationEditForm(forms.ModelForm):
 
     class Meta:
-            model = DataDeclaration
-            fields = [
-                'title',
-                'cohorts',
-                'partner',
-                'contract',
-                'data_declarations_parents',
-                'comments',
-                'data_types_generated',
-                'data_types_received',
-                'deidentification_method',
-                'has_special_subjects',
-                'subjects_category',
-                'consent_status',
-                'special_subjects_description',
-                'end_of_storage_duration',
-                'storage_duration_criteria',
-                'embargo_date',
-                'data_types_notes'
-            ]
-            widgets = {
-                # Date pickers
-                'end_of_storage_duration': forms.DateInput(attrs={'class': 'datepicker'}),
-                'embargo_date': forms.DateInput(attrs={'class': 'datepicker'}),
-            }
+        model = DataDeclaration
+        fields = [
+            'title',
+            'cohorts',
+            'partner',
+            'contract',
+            'data_declarations_parents',
+            'comments',
+            'data_types_generated',
+            'data_types_received',
+            'deidentification_method',
+            'has_special_subjects',
+            'subjects_category',
+            'consent_status',
+            'special_subjects_description',
+            'end_of_storage_duration',
+            'storage_duration_criteria',
+            'embargo_date',
+            'data_types_notes'
+        ]
+        widgets = {
+            # Date pickers
+            'end_of_storage_duration': forms.DateInput(attrs={'class': 'datepicker'}),
+            'embargo_date': forms.DateInput(attrs={'class': 'datepicker'}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -45,7 +43,6 @@ class DataDeclarationEditForm(forms.ModelForm):
         self.fields['data_declarations_parents'].choices = [(p.id, p.get_long_name()) for p in instance.data_declarations_parents.all()]
         self.fields['data_declarations_parents'].widget.attrs['class'] = 'ontocomplete'+ ' '+ self.fields['data_declarations_parents'].widget.attrs.get('class','')
         self.fields['data_declarations_parents'].widget.attrs['data-url'] = reverse_lazy('data_dec_paginated_search')
-
 
     def clean(self):
         """
@@ -175,7 +172,7 @@ class DataDeclarationForm(SkipFieldValidationMixin, forms.ModelForm):
         model = DataDeclaration
         fields = ['title']
         heading = "Data declaration"
-        heading_help = "Please provide a help text for the Data declaration form"
+        heading_help = "Detail your data's origin for clarity. Knowing its provenance enhances its value and trust."
 
     def __init__(self, *args, **kwargs):
         self.dataset = kwargs.pop('dataset')

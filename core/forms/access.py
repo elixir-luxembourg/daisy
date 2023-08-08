@@ -17,16 +17,16 @@ class AccessForm(SkipFieldValidationMixin, ModelForm):
             "access_notes": Textarea(attrs={"rows": 2, "cols": 40}),
         }
         heading = "Access"
-        heading_help = "Please provide a help text for Access form"
+        heading_help = "Specify who can access the data, the duration, and any relevant notes. Ensure accuracy for data security."
+        
     def __init__(self, *args, **kwargs):
         dataset = kwargs.pop("dataset", None)
         super().__init__(*args, **kwargs)
         # we don't allow editing dataset
         self.fields.pop("dataset")
-        if dataset:
-            self.fields["defined_on_locations"].choices = [
-                (d.id, d) for d in dataset.data_locations.all()
-            ]
+        self.fields["defined_on_locations"].choices = [
+            (d.id, d) for d in dataset.data_locations.all()
+        ]
 
     field_order = [
         "contact",

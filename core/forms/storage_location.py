@@ -10,7 +10,7 @@ class StorageLocationForm(SkipFieldValidationMixin, forms.ModelForm):
         fields = '__all__'
         exclude = []
         heading = "Add a new storage location"
-        heading_help = "Please provide a title for this storage location"
+        heading_help = "Specify your data's home. Clear storage details ensure easy retrieval and management."
 
     def __init__(self, *args, **kwargs):
         dataset = kwargs.pop('dataset', None)

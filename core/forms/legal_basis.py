@@ -10,15 +10,14 @@ class LegalBasisForm(SkipFieldValidationMixin,ModelForm):
         fields = '__all__'
         exclude = []
         heading = "Data Legal Basis"
-        heading_help = "Please provide a title for this data declaration"
+        heading_help = "Define the legal grounds for processing. Ensure your data complies with relevant regulations."
 
     def __init__(self, *args, **kwargs):
         dataset = kwargs.pop('dataset', None)
         super().__init__(*args, **kwargs)
         # we don't allow editing dataset
         self.fields.pop('dataset')
-        if dataset:
-            self.fields['data_declarations'].choices = [(d.id, d.title) for d in dataset.data_declarations.all()]
+        self.fields['data_declarations'].choices = [(d.id, d.title) for d in dataset.data_declarations.all()]
 
     field_order = [
         'data_declarations',

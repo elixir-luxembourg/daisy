@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from formtools.wizard.views import NamedUrlSessionWizardView
@@ -14,6 +14,7 @@ from core.permissions import CheckerMixin
 from core.utils import DaisyLogger
 from core.constants import Permissions
 from . import facet_view_utils
+from typing import List, Tuple, Union, Any, Dict
 
 log = DaisyLogger(__name__)
 
@@ -21,6 +22,9 @@ FACET_FIELDS = settings.FACET_FIELDS['dataset']
 
 
 class DatasetWizardView(NamedUrlSessionWizardView):
+    """
+    View class for Dataset Wizard which guides users through a multi-step form process.
+    """
     template_name = "datasets/dataset_wizard_form.html"
     form_list = [
         ("dataset", DatasetForm),
@@ -30,7 +34,18 @@ class DatasetWizardView(NamedUrlSessionWizardView):
         ("access", AccessForm),
     ]
 
-    def render_done(self, form, **kwargs):
+    def render_done(self, form, **kwargs) -> HttpResponseRedirect:
+        """
+        Renders the final step of the form wizard.
+        Resets the storage and redirects to the created dataset or dataset list.
+
+        Args:
+            form: The form instance to render.
+            **kwargs: Optional keyword arguments.
+
+        Returns:
+            HttpResponseRedirect: Redirect response either to the created dataset or dataset list.
+        """
         dataset_id = self.storage.extra_data.get('dataset_id')
         self.storage.reset()
         if dataset_id:
@@ -39,14 +54,33 @@ class DatasetWizardView(NamedUrlSessionWizardView):
             done_response = HttpResponseRedirect(reverse_lazy('datasets'))
         return done_response
 
-    def get_form_kwargs(self, step=None):
+    def get_form_kwargs(self, step: str = None) -> Dict[str, Any]:
+        """
+        Returns the keyword arguments for instantiating the form.
+
+        Args:
+            step: The current step name.
+
+        Returns:
+            Dict: The keyword arguments to pass to the form instance.
+        """
         kwargs = super().get_form_kwargs(step)
-        dataset_id = self.storage.extra_data.get('dataset_id', None)
-        if dataset_id is not None:
-            kwargs['dataset'] = Dataset.objects.get(pk=dataset_id)
+        if step != 'dataset':
+            dataset = get_object_or_404(Dataset, pk=self.storage.extra_data.get('dataset_id'))
+            kwargs['dataset'] = dataset
         return kwargs
 
-    def process_step(self, form, **kwargs):
+    def process_step(self, form, **kwargs) -> Dict[str, Any]:
+        """
+        Processes the form at the current step.
+
+        Args:
+            form: The form instance to process.
+            **kwargs: Optional keyword arguments.
+
+        Returns:
+            Dict: The form data for the current step.
+        """
         self.storage.extra_data[f'{self.steps.current}-skipped'] = True
         if self.steps.current == 'dataset':
             dataset = form.save()
@@ -54,21 +88,27 @@ class DatasetWizardView(NamedUrlSessionWizardView):
             self.storage.extra_data[f'{self.steps.current}-skipped'] = False
         elif form.data.get(f'{self.steps.current}-skip_wizard') != 'True':
             self.storage.extra_data[f'{self.steps.current}-skipped'] = False
-            dataset_id = self.storage.extra_data.get('dataset_id')
-            try:
-                dataset = Dataset.objects.get(pk=dataset_id)
-                instance = form.save(commit=False)
-                instance.dataset = dataset
-                instance.save()
-                self.storage.extra_data[f'{self.steps.current}-skipped'] = False
-            except Dataset.DoesNotExist:
-                raise Http404(f"You need to have a dataset first")
+            dataset = get_object_or_404(Dataset, pk=self.storage.extra_data.get('dataset_id'))
+            instance = form.save(commit=False)
+            instance.dataset = dataset
+            instance.save()
+            self.storage.extra_data[f'{self.steps.current}-skipped'] = False
         return self.get_form_step_data(form)
 
-    def get_context_data(self, form, **kwargs):
+    def get_context_data(self, form, **kwargs) -> Dict[str, Any]:
+        """
+        Returns the context data for the template at the current step.
+
+        Args:
+            form: The form instance to render.
+            **kwargs: Optional keyword arguments.
+
+        Returns:
+            Dict: The context data to pass to the template.
+        """
         context = super().get_context_data(form=form, **kwargs)
         context.update({'step_name': self.steps.current})
-        names = [form_key.replace('_', ' ').title() for form_key, _ in self.form_list.items()]
+        names = [form_key.replace('_', ' ').title() for form_key in self.form_list.keys()]
         skips = []
         for step in self.form_list.keys():
             try:

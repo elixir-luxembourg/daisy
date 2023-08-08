@@ -4,13 +4,29 @@ from django.forms import ValidationError
 from core.models import Dataset, User, Project
 from core.models.contract import Contract
 
+from typing import Any
+
 
 class SkipFieldValidationMixin:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """
+        Initialize the mixin. Adds a hidden Boolean field named `skip_wizard`
+        to the form which determines if validation should be skipped.
+
+        Args:
+            *args: Variable arguments to pass to the superclass.
+            **kwargs: Keyword arguments to pass to the superclass.
+        """
         super().__init__(*args, **kwargs)
         self.fields['skip_wizard'] = forms.BooleanField(initial=False, required=False, widget=forms.HiddenInput())
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
+        """
+        Check if the form is valid. Validation is skipped if `skip_wizard` is True.
+
+        Returns:
+            bool: True if the form is valid or if `skip_wizard` is True, otherwise False.
+        """
         if self.data.get(f'{self.prefix}-skip_wizard') == 'True':
             return True
         return super().is_valid()
@@ -25,7 +41,7 @@ class DatasetForm(forms.ModelForm):
             'comments': forms.Textarea(attrs={'rows': 2, 'cols': 40}),
         }
         heading = "Dataset"
-        heading_help = "Please provide a help text for the dataset form"
+        heading_help = "Complete the form to enhance dataset quality. Your careful input benefits our community!"
 
     def __init__(self, *args, **kwargs):
         dataset = None

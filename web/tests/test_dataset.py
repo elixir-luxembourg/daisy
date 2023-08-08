@@ -2,7 +2,7 @@ import pytest
 from core.models import Dataset, DataDeclaration, DataLocation, LegalBasisType, LegalBasis, Access
 from test.factories import UserFactory, VIPGroup, StorageResourceFactory, LegalBasisFactory
 from django.urls import reverse
-
+from django.test import Client
 
 def test_get_dataset_add(client_user_normal):
     """
@@ -19,11 +19,31 @@ def test_get_dataset_add(client_user_normal):
 @pytest.mark.parametrize('storage_location_skip', [True, False])
 @pytest.mark.parametrize('legal_basis_skip', [True, False])
 @pytest.mark.parametrize('access_skip', [True, False])
-def test_dataset_wizard_form(client_user_normal,
-                             data_declaration_skip,
-                             storage_location_skip,
-                             legal_basis_skip,
-                             access_skip):
+def test_dataset_wizard_form(client_user_normal: Client,
+                             data_declaration_skip: bool,
+                             storage_location_skip: bool,
+                             legal_basis_skip: bool,
+                             access_skip: bool) -> None:
+    """
+    Test the behavior of the dataset wizard form in various scenarios.
+
+    The test checks the dataset wizard form's behavior based on different combinations
+    of skipping steps. The main objective is to verify that the data gets saved correctly
+    when the form is submitted with different values for each step's skip option.
+
+    Parameters:
+    - client_user_normal (Client): A Django test client instance with a user session.
+    - data_declaration_skip (bool): Whether the data declaration step should be skipped.
+    - storage_location_skip (bool): Whether the storage location step should be skipped.
+    - legal_basis_skip (bool): Whether the legal basis step should be skipped.
+    - access_skip (bool): Whether the access step should be skipped.
+
+    Asserts:
+    - The number of saved model instances matches the expected count based on the skip parameters.
+    - The redirect URL after the final step matches the expected URL for the created dataset.
+    - The relationships between the created dataset and other objects (like data declarations,
+      data locations, etc.) are correctly established.
+    """
     vip_user = UserFactory.create(groups=[VIPGroup()], first_name='Rebecca', last_name='Kafe')
     storage_backend = StorageResourceFactory.create(name='test_backend', managed_by='test')
     legal_basis_type = LegalBasisType(name='test_legal_basis', code='test')
@@ -87,12 +107,10 @@ def test_dataset_wizard_form(client_user_normal,
             Access,
         ],
     }
-    for step_name, step_data in wizard_test_data.items():
-        form_data, Model = step_data
-        assert Model.objects.all().count() == 0
 
     for step_name, step_data in wizard_test_data.items():
         form_data, Model = step_data
+        assert Model.objects.all().count() == 0
         response = client_user_normal.post(reverse('wizard'), form_data)
 
         if step_name != 'dataset':
