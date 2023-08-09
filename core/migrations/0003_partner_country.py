@@ -5,15 +5,16 @@ import django_countries.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0002_auto_20190715_1042'),
+        ("core", "0002_auto_20190715_1042"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='partner',
-            name='country',
-            field=django_countries.fields.CountryField(blank=True, max_length=2, null=True),
+            model_name="partner",
+            name="country",
+            field=django_countries.fields.CountryField(
+                blank=True, max_length=2, null=True
+            ),
         ),
     ]

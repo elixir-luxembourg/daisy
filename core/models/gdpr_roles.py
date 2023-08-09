@@ -17,9 +17,9 @@ class GDPRRole(CoreModel, metaclass=MetaGDRPRole):
     """
 
     class Meta:
-        app_label = 'core'
+        app_label = "core"
         get_latest_by = "added"
-        ordering = ['name']
+        ordering = ["name"]
 
     name = TextFieldWithInputWidget(blank=False)
     display_name = TextFieldWithInputWidget(blank=False)

@@ -20,16 +20,26 @@ requests_methods = {
 }
 
 
-def check_permissions(user: User, permissions: List[str], obj: Optional[Model] = None) -> bool:
+def check_permissions(
+    user: User, permissions: List[str], obj: Optional[Model] = None
+) -> bool:
     if obj is not None:
-        has_perm = all([user.has_permission_on_object(perm, obj) for perm in permissions])
+        has_perm = all(
+            [user.has_permission_on_object(perm, obj) for perm in permissions]
+        )
     else:
         has_perm = all([user.has_perm(perm)] for perm in permissions)
 
     return has_perm
 
 
-def check_response_status(url: str, user: User, permissions: List[str], obj: Optional[Model] = None, method: str = "GET") -> None:
+def check_response_status(
+    url: str,
+    user: User,
+    permissions: List[str],
+    obj: Optional[Model] = None,
+    method: str = "GET",
+) -> None:
     login_test_user(client, user)
     try:
         response = requests_methods[method](url)
@@ -50,7 +60,6 @@ def check_response_status(url: str, user: User, permissions: List[str], obj: Opt
 
 
 def check_datasteward_restricted_url(url, user):
-
     login_test_user(client, user)
     try:
         response = client.get(url)
@@ -79,5 +88,7 @@ def check_response_context_data(url, user, perm, obj, context_key):
     client.logout()
 
 
-def login_test_user(test_client: Client, user: User, password: Optional[str] = 'test-user'):
+def login_test_user(
+    test_client: Client, user: User, password: Optional[str] = "test-user"
+):
     assert test_client.login(username=user.username, password=password), "Login failed"

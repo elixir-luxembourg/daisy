@@ -6,15 +6,16 @@ import notification.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('notification', '0001_initial'),
+        ("notification", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='notification',
-            name='verb',
-            field=enumchoicefield.fields.EnumChoiceField(enum_class=notification.models.NotificationVerb, max_length=19),
+            model_name="notification",
+            name="verb",
+            field=enumchoicefield.fields.EnumChoiceField(
+                enum_class=notification.models.NotificationVerb, max_length=19
+            ),
         ),
     ]

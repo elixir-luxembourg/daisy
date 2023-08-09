@@ -51,13 +51,17 @@ class Access(CoreModel):
 
         @param upper_date: Date threshold.
         """
-        accesses_to_expire = cls.objects.filter(
-            grant_expires_on__lt=upper_date
-        ).exclude(
-            status=StatusChoices.terminated,
-        ).all()
+        accesses_to_expire = (
+            cls.objects.filter(grant_expires_on__lt=upper_date)
+            .exclude(
+                status=StatusChoices.terminated,
+            )
+            .all()
+        )
         for access in accesses_to_expire:
-            logger.debug(f"Expiring access {access.pk} because expiration date ({access.grant_expires_on}) is lower than {upper_date.strftime('%Y-%m-%d')}")
+            logger.debug(
+                f"Expiring access {access.pk} because expiration date ({access.grant_expires_on}) is lower than {upper_date.strftime('%Y-%m-%d')}"
+            )
             access.status = StatusChoices.terminated
             access.access_notes = "Automatically terminated"
             # Necessary to manually send the signal because bulk_update does not use object.save()
@@ -67,7 +71,7 @@ class Access(CoreModel):
                 instance=access,
                 created=False,
                 raw=True,
-                update_fields=("status", "access_notes")
+                update_fields=("status", "access_notes"),
             )
         cls.objects.bulk_update(accesses_to_expire, ["status", "access_notes"])
         logger.debug("Accesses expired successfully")
@@ -192,12 +196,16 @@ class Access(CoreModel):
 
     @classmethod
     def find_for_user(cls, user) -> List[str]:
-        accesses = cls.objects.annotate(c=Count("dataset__exposures")).filter(user=user, c__gt=0)
+        accesses = cls.objects.annotate(c=Count("dataset__exposures")).filter(
+            user=user, c__gt=0
+        )
         return cls._filter_expired(accesses)
 
     @classmethod
     def find_for_contact(cls, contact) -> List[str]:
-        accesses = cls.objects.annotate(c=Count("dataset__exposures")).filter(contact=contact, c__gt=0)
+        accesses = cls.objects.annotate(c=Count("dataset__exposures")).filter(
+            contact=contact, c__gt=0
+        )
         return cls._filter_expired(accesses)
 
     @staticmethod

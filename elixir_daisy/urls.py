@@ -24,15 +24,20 @@ from core.forms.user import UserAuthForm
 from web.urls import web_urls
 
 urlpatterns = [
-    url(r'^login/$', auth_views.LoginView.as_view(authentication_form=UserAuthForm), name='login'),
-    url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
-    url(r'^admin/', admin.site.urls),
-    url(r'', include(web_urls)),
+    url(
+        r"^login/$",
+        auth_views.LoginView.as_view(authentication_form=UserAuthForm),
+        name="login",
+    ),
+    url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
+    url(r"^admin/", admin.site.urls),
+    url(r"", include(web_urls)),
 ]
 
-# Custom error views, see e.g. 
+# Custom error views, see e.g.
 # https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-CSRF_FAILURE_VIEW
 from web.views.error_views import custom_400, custom_403, custom_404, custom_500
+
 handler400 = custom_400
 handler403 = custom_403
 handler404 = custom_404
@@ -43,7 +48,7 @@ if settings.DEBUG:
     from django.conf.urls.static import static
 
     urlpatterns += [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
+        url(r"^__debug__/", include(debug_toolbar.urls)),
     ]
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += url(r'^explorer/', include('explorer.urls')),
+    urlpatterns += (url(r"^explorer/", include("explorer.urls")),)

@@ -8,41 +8,48 @@ from core.models.contract import PartnerRole
 
 
 class DataDeclarationEditForm(forms.ModelForm):
-
     class Meta:
         model = DataDeclaration
         fields = [
-            'title',
-            'cohorts',
-            'partner',
-            'contract',
-            'data_declarations_parents',
-            'comments',
-            'data_types_generated',
-            'data_types_received',
-            'deidentification_method',
-            'has_special_subjects',
-            'subjects_category',
-            'consent_status',
-            'special_subjects_description',
-            'end_of_storage_duration',
-            'storage_duration_criteria',
-            'embargo_date',
-            'data_types_notes'
+            "title",
+            "cohorts",
+            "partner",
+            "contract",
+            "data_declarations_parents",
+            "comments",
+            "data_types_generated",
+            "data_types_received",
+            "deidentification_method",
+            "has_special_subjects",
+            "subjects_category",
+            "consent_status",
+            "special_subjects_description",
+            "end_of_storage_duration",
+            "storage_duration_criteria",
+            "embargo_date",
+            "data_types_notes",
         ]
         widgets = {
             # Date pickers
-            'end_of_storage_duration': forms.DateInput(attrs={'class': 'datepicker'}),
-            'embargo_date': forms.DateInput(attrs={'class': 'datepicker'}),
+            "end_of_storage_duration": forms.DateInput(attrs={"class": "datepicker"}),
+            "embargo_date": forms.DateInput(attrs={"class": "datepicker"}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        instance = kwargs.get('instance', None)
+        instance = kwargs.get("instance", None)
 
-        self.fields['data_declarations_parents'].choices = [(p.id, p.get_long_name()) for p in instance.data_declarations_parents.all()]
-        self.fields['data_declarations_parents'].widget.attrs['class'] = 'ontocomplete'+ ' '+ self.fields['data_declarations_parents'].widget.attrs.get('class','')
-        self.fields['data_declarations_parents'].widget.attrs['data-url'] = reverse_lazy('data_dec_paginated_search')
+        self.fields["data_declarations_parents"].choices = [
+            (p.id, p.get_long_name()) for p in instance.data_declarations_parents.all()
+        ]
+        self.fields["data_declarations_parents"].widget.attrs["class"] = (
+            "ontocomplete"
+            + " "
+            + self.fields["data_declarations_parents"].widget.attrs.get("class", "")
+        )
+        self.fields["data_declarations_parents"].widget.attrs[
+            "data-url"
+        ] = reverse_lazy("data_dec_paginated_search")
 
     def clean(self):
         """
@@ -58,19 +65,28 @@ class DataDeclarationEditForm(forms.ModelForm):
                 if p == source_partner:
                     is_signatory = True
             if not is_signatory:
-                self.add_error('contract', "Selected partner is not a signatory on the selected contract.")
+                self.add_error(
+                    "contract",
+                    "Selected partner is not a signatory on the selected contract.",
+                )
         return self.cleaned_data
 
     def clean_title(self):
-        title = self.cleaned_data['title']
-        duplicates = DataDeclaration.objects.filter(title=title,
-                                                    dataset=self.instance.dataset).exclude(pk=self.instance.pk)
+        title = self.cleaned_data["title"]
+        duplicates = DataDeclaration.objects.filter(
+            title=title, dataset=self.instance.dataset
+        ).exclude(pk=self.instance.pk)
         if duplicates.exists():
-            self.add_error('title', "Data declaration with the same title already exists for the dataset.")
+            self.add_error(
+                "title",
+                "Data declaration with the same title already exists for the dataset.",
+            )
         return title
 
 
-RestrictionFormset = forms.formset_factory(UseRestrictionForm, extra=1, min_num=0, max_num=25)
+RestrictionFormset = forms.formset_factory(
+    UseRestrictionForm, extra=1, min_num=0, max_num=25
+)
 
 
 class BaseDataDeclarationSubForm(forms.Form):
@@ -84,46 +100,50 @@ class BaseDataDeclarationSubForm(forms.Form):
         pass
 
     def __init__(self, *args, **kwargs):
-        self.dataset = kwargs.pop('dataset', None)
+        self.dataset = kwargs.pop("dataset", None)
         super().__init__(*args, **kwargs)
 
 
 class DataDeclarationSubFormOther(BaseDataDeclarationSubForm):
-    comment = forms.CharField(label="Please describe the source of this data", widget=forms.Textarea)
+    comment = forms.CharField(
+        label="Please describe the source of this data", widget=forms.Textarea
+    )
 
     def update(self, data_declaration):
-        data_declaration.comments = self.cleaned_data['comment']
+        data_declaration.comments = self.cleaned_data["comment"]
 
 
 class DataDeclarationSubFormNew(BaseDataDeclarationSubForm):
     partner = forms.ChoiceField(label="Select repository or partner")
-    contract = forms.ChoiceField(label="Select source contract", widget=forms.RadioSelect)
+    contract = forms.ChoiceField(
+        label="Select source contract", widget=forms.RadioSelect
+    )
 
     # order of fields is important here, as clean_partner needs to be called before contract value validation
     # keep partner before contract
 
     def __init__(self, *args, **kwargs):
-        partner = kwargs.pop('partner', None)
+        partner = kwargs.pop("partner", None)
         super().__init__(*args, **kwargs)
         partners = list(Partner.objects.all())
         partners_choices = [(p.id, str(p)) for p in partners]
         if partners:
             if not partner:
                 partner = partners[0]
-            self.contracts = Contract.objects.filter(partners_roles__partner=partner,
-                                                     local_custodians__in=self.dataset.local_custodians.all())
+            self.contracts = Contract.objects.filter(
+                partners_roles__partner=partner,
+                local_custodians__in=self.dataset.local_custodians.all(),
+            )
             contract_choices = [(c.id, str(c)) for c in self.contracts]
-            self.fields['contract'].choices = contract_choices
-        self.fields['partner'].choices = partners_choices
+            self.fields["contract"].choices = contract_choices
+        self.fields["partner"].choices = partners_choices
 
     def get_context(self):
-        return {
-            "contracts": self.contracts
-        }
+        return {"contracts": self.contracts}
 
     def update(self, data_declaration):
-        contract_id = int(self.cleaned_data['contract'])
-        partner_id = int(self.cleaned_data['partner'])
+        contract_id = int(self.cleaned_data["contract"])
+        partner_id = int(self.cleaned_data["partner"])
         if contract_id:
             data_declaration.contract_id = contract_id
         else:
@@ -131,7 +151,9 @@ class DataDeclarationSubFormNew(BaseDataDeclarationSubForm):
             contract = Contract.objects.create()
             contract.project = data_declaration.dataset.project
             contract.save()
-            contract.local_custodians.set(data_declaration.dataset.local_custodians.all())
+            contract.local_custodians.set(
+                data_declaration.dataset.local_custodians.all()
+            )
             contract.save()
             partner_role = PartnerRole()
             partner_role.partner_id = partner_id
@@ -143,25 +165,35 @@ class DataDeclarationSubFormNew(BaseDataDeclarationSubForm):
         data_declaration.partner_id = partner_id
 
     def after_save(self, data_declaration):
-        contract_id = int(self.cleaned_data['contract'])
+        contract_id = int(self.cleaned_data["contract"])
         if not contract_id:
-            data_declaration.contract.local_custodians.set(data_declaration.dataset.local_custodians.all())
+            data_declaration.contract.local_custodians.set(
+                data_declaration.dataset.local_custodians.all()
+            )
 
     def clean_partner(self):
-        partner_id = int(self.cleaned_data['partner'])
-        self.contracts = Contract.objects.filter(partners_roles__partner_id=partner_id,
-                                                 local_custodians__in=self.dataset.local_custodians.all())
-        contract_choices = [(c.id, str(c)) for c in self.contracts] + [(0, "new contract")]
-        self.fields['contract'].choices = contract_choices
+        partner_id = int(self.cleaned_data["partner"])
+        self.contracts = Contract.objects.filter(
+            partners_roles__partner_id=partner_id,
+            local_custodians__in=self.dataset.local_custodians.all(),
+        )
+        contract_choices = [(c.id, str(c)) for c in self.contracts] + [
+            (0, "new contract")
+        ]
+        self.fields["contract"].choices = contract_choices
         return partner_id
 
 
 class DataDeclarationSubFormFromExisting(BaseDataDeclarationSubForm):
-    query = forms.CharField(label="Select origin data/samples", widget=forms.Select(choices=[]))
+    query = forms.CharField(
+        label="Select origin data/samples", widget=forms.Select(choices=[])
+    )
 
     def after_save(self, data_declaration):
-        data_declaration_id = int(self.cleaned_data['query'])
-        data_declaration_parent = get_object_or_404(DataDeclaration, id=data_declaration_id)
+        data_declaration_id = int(self.cleaned_data["query"])
+        data_declaration_parent = get_object_or_404(
+            DataDeclaration, id=data_declaration_id
+        )
         data_declaration.copy(data_declaration_parent)
         data_declaration.data_declarations_parents.set([data_declaration_parent])
         data_declaration.save()
@@ -170,21 +202,26 @@ class DataDeclarationSubFormFromExisting(BaseDataDeclarationSubForm):
 class DataDeclarationForm(SkipFieldValidationMixin, forms.ModelForm):
     class Meta:
         model = DataDeclaration
-        fields = ['title']
+        fields = ["title"]
         heading = "Data declaration"
         heading_help = "Detail your data's origin for clarity. Knowing its provenance enhances its value and trust."
 
     def __init__(self, *args, **kwargs):
-        self.dataset = kwargs.pop('dataset')
+        self.dataset = kwargs.pop("dataset")
         super().__init__(*args, **kwargs)
         type_choices = [
-            (0, "From existing data/samples (from an LCSB collaborator or your own past project)"),
+            (
+                0,
+                "From existing data/samples (from an LCSB collaborator or your own past project)",
+            ),
             (1, "Newly Incoming data/samples (from external collaborator/repository)"),
-            (2, "Other (provenance unknown)")
+            (2, "Other (provenance unknown)"),
         ]
-        self.fields['type'] = forms.ChoiceField(label="Obtained from (choose one of the following)",
-                                                choices=type_choices,
-                                                widget=forms.RadioSelect())
+        self.fields["type"] = forms.ChoiceField(
+            label="Obtained from (choose one of the following)",
+            choices=type_choices,
+            widget=forms.RadioSelect(),
+        )
 
     def clean(self):
         """
@@ -192,15 +229,17 @@ class DataDeclarationForm(SkipFieldValidationMixin, forms.ModelForm):
         * One PI must be present in the responsible persons.
         * samples_location field can be specified only when the "generated_from_samples" field is true #70
         """
-        cleaned_data = super().clean()      
+        cleaned_data = super().clean()
         return cleaned_data
 
     def clean_title(self):
-        title = self.cleaned_data['title']
-        duplicates = DataDeclaration.objects.filter(title=title,
-                                                    dataset=self.dataset)
+        title = self.cleaned_data["title"]
+        duplicates = DataDeclaration.objects.filter(title=title, dataset=self.dataset)
         if duplicates.exists():
-            self.add_error('title', "Data declaration with the same title already exists for the dataset.")
+            self.add_error(
+                "title",
+                "Data declaration with the same title already exists for the dataset.",
+            )
 
         return title
 
@@ -209,6 +248,6 @@ class DataDeclarationForm(SkipFieldValidationMixin, forms.ModelForm):
         return super().save(commit)
 
     field_order = [
-        'title',
-        'type',
+        "title",
+        "type",
     ]

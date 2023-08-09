@@ -3,7 +3,6 @@ from urllib.parse import urlencode
 
 
 class DaisyWizard(NamedUrlSessionWizardView):
-
     def dispatch(self, request, *args, **kwargs):
         """
         Hook method to get parameters from the url.
@@ -13,13 +12,11 @@ class DaisyWizard(NamedUrlSessionWizardView):
 
         # get querystring from get parameters if any
         querystring = request.GET.copy()
-        querystring.pop('reset', {})
+        querystring.pop("reset", {})
         # store them in the wizard storage
-        extra_data =  self.storage.extra_data.get('querystring', {})
+        extra_data = self.storage.extra_data.get("querystring", {})
         extra_data.update(querystring)
-        self.storage.extra_data = {
-            'querystring': extra_data
-        }
+        self.storage.extra_data = {"querystring": extra_data}
         return response
 
     def _update_context_from_request(self, context, param):
@@ -28,9 +25,9 @@ class DaisyWizard(NamedUrlSessionWizardView):
         Update context based on the query parameters
         present on the wizard storage
         """
-        if param in self.storage.extra_data.get('querystring', {}):
+        if param in self.storage.extra_data.get("querystring", {}):
             try:
-                context.update({param: self.storage.extra_data['querystring'][param]})
+                context.update({param: self.storage.extra_data["querystring"][param]})
             except Exception:
                 pass
 
@@ -43,8 +40,8 @@ class DaisyWizard(NamedUrlSessionWizardView):
         between steps (remove reset param)
         """
         context = super().get_context_data(form=form, **kwargs)
-        querystring = self.storage.extra_data.get('querystring', False)
+        querystring = self.storage.extra_data.get("querystring", False)
         if querystring:
-            querystring = {k: v[0] for k,v in querystring.items()}
-            context.update({'querystring': urlencode(querystring)})
+            querystring = {k: v[0] for k, v in querystring.items()}
+            context.update({"querystring": urlencode(querystring)})
         return context

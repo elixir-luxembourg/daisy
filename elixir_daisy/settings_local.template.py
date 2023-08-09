@@ -1,27 +1,28 @@
 from celery.schedules import crontab
 
-#SECURITY WARNING: change the key used in production and keep it secret !
+# SECURITY WARNING: change the key used in production and keep it secret !
 GLOBAL_API_KEY = None  # Generate a global api key by e.g. django.core.management.utils.get_random_secret_key()
-if GLOBAL_API_KEY is None: raise NotImplementedError('You must specify GLOBAL_API_KEY in settings_local.py')
+if GLOBAL_API_KEY is None:
+    raise NotImplementedError("You must specify GLOBAL_API_KEY in settings_local.py")
 
 # Authentication backend
 # https://django-guardian.readthedocs.io/en/stable/configuration.html
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'guardian.backends.ObjectPermissionBackend',
+    "django.contrib.auth.backends.ModelBackend",
+    "guardian.backends.ObjectPermissionBackend",
 ]
 
 
-#SECURITY WARNING: change the secret key used in production and keep it secret !
+# SECURITY WARNING: change the secret key used in production and keep it secret !
 SECRET_KEY = None  # Generate a secret key by e.g. django.core.management.utils.get_random_secret_key()
-if SECRET_KEY is None: raise NotImplementedError('You must specify SECRET_KEY in settings_local.py')
+if SECRET_KEY is None:
+    raise NotImplementedError("You must specify SECRET_KEY in settings_local.py")
 
 
+COMPANY = "LCSB"  # Used for generating some models' verbose names
 
-COMPANY = 'LCSB'  # Used for generating some models' verbose names
-
-HELPDESK_EMAIL = 'lcsb-sysadmins@uni.lu'
+HELPDESK_EMAIL = "lcsb-sysadmins@uni.lu"
 
 # Placeholders on login page
 # LOGIN_USERNAME_PLACEHOLDER = ''
@@ -70,7 +71,7 @@ REMS_API_USER = ""
 REMS_VERIFY_SSL = True
 
 # IDSERVICE_FUNCTION = 'core.lcsb.idservice.generate_identifier'
-IDSERVICE_ENDPOINT = 'https://10.240.16.199:8080/v1/api/id'
+IDSERVICE_ENDPOINT = "https://10.240.16.199:8080/v1/api/id"
 
 # Keycloak integration, uncomment and fill the values below
 # KEYCLOAK_URL = 'https://root-address-to-your-keycloak.com:443'

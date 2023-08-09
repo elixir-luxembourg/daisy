@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0008_user_source_field'),
+        ("core", "0008_user_source_field"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='datadeclaration',
-            name='storage_duration_criteria',
-            field=models.TextField(blank=True, help_text='Please describe criteria used to determine storage duration.', null=True, verbose_name='Storage duration criteria'),
+            model_name="datadeclaration",
+            name="storage_duration_criteria",
+            field=models.TextField(
+                blank=True,
+                help_text="Please describe criteria used to determine storage duration.",
+                null=True,
+                verbose_name="Storage duration criteria",
+            ),
         ),
     ]

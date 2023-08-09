@@ -4,20 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0013_userestriction_use_class_note'),
+        ("core", "0013_userestriction_use_class_note"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='cohort',
-            name='cohort_web_page',
-            field=models.URLField(blank=True, help_text='If the cohort has a webpage, please provide its URL link here.', verbose_name='Cohorts URL page'),
+            model_name="cohort",
+            name="cohort_web_page",
+            field=models.URLField(
+                blank=True,
+                help_text="If the cohort has a webpage, please provide its URL link here.",
+                verbose_name="Cohorts URL page",
+            ),
         ),
         migrations.AddField(
-            model_name='cohort',
-            name='ethics_notes',
-            field=models.TextField(blank=True, default='', help_text='Provide notes on ethics approval. If it does not exist, please state justifications here.', null=True, verbose_name='Ethics Approval notes'),
+            model_name="cohort",
+            name="ethics_notes",
+            field=models.TextField(
+                blank=True,
+                default="",
+                help_text="Provide notes on ethics approval. If it does not exist, please state justifications here.",
+                null=True,
+                verbose_name="Ethics Approval notes",
+            ),
         ),
     ]

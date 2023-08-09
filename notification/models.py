@@ -13,26 +13,29 @@ from django.conf import settings
 
 from enumchoicefield import EnumChoiceField, ChoiceEnum
 
+
 class NotificationStyle(ChoiceEnum):
-    never = 'Never'
-    every_time = 'Every time'
-    once_per_day = 'Once per day'
-    once_per_week = 'Once per week'
-    once_per_month = 'Once per month'
+    never = "Never"
+    every_time = "Every time"
+    once_per_day = "Once per day"
+    once_per_week = "Once per week"
+    once_per_month = "Once per month"
 
 
 class NotificationVerb(ChoiceEnum):
-    new_dataset = 'New dataset'
-    update_dataset = 'Dataset update'
-    data_storage_expiry = 'Data storage expiry'
-    document_expiry = 'Document expiry'
+    new_dataset = "New dataset"
+    update_dataset = "Dataset update"
+    data_storage_expiry = "Data storage expiry"
+    document_expiry = "Document expiry"
 
 
 class NotificationSetting(models.Model):
     class Meta:
-        app_label = 'notification'
+        app_label = "notification"
 
-    user = models.OneToOneField('core.User', related_name='notification_setting', on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        "core.User", related_name="notification_setting", on_delete=models.CASCADE
+    )
     style = EnumChoiceField(NotificationStyle, default=NotificationStyle.never)
 
     def __str__(self):
@@ -41,7 +44,7 @@ class NotificationSetting(models.Model):
 
 class NotificationQuerySet(models.QuerySet):
     def ordered(self):
-        return self.order_by('-time')
+        return self.order_by("-time")
 
 
 class NotificationManager(models.Manager):
@@ -54,38 +57,41 @@ class NotificationManager(models.Manager):
 
 class Notification(models.Model):
     class Meta:
-        app_label = 'notification'
+        app_label = "notification"
 
-    actor = models.ForeignKey('core.User', related_name='notifications', on_delete=models.CASCADE)
+    actor = models.ForeignKey(
+        "core.User", related_name="notifications", on_delete=models.CASCADE
+    )
     verb = EnumChoiceField(NotificationVerb)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey("content_type", "object_id")
 
     time = models.DateTimeField(auto_now_add=True, db_index=True)
 
     objects = NotificationManager()
 
     def get_absolute_url(self):
-        if self.content_type.model_class() ==  apps.get_model('core.Dataset'):
-            return reverse('dataset', args=[str(self.object_id)])
-        elif self.content_type.model_class() == apps.get_model('core.DataDeclaration'):
-            return reverse('data_declaration', args=[str(self.object_id)])
-        elif self.content_type.model_class() == apps.get_model('core.Contract'):
-            return reverse('contract', args=[str(self.object_id)])
-        elif self.content_type.model_class() == apps.get_model('core.Project'):
-            return reverse('project', args=[str(self.object_id)])
-        raise Exception('No url defined for this content type')
+        if self.content_type.model_class() == apps.get_model("core.Dataset"):
+            return reverse("dataset", args=[str(self.object_id)])
+        elif self.content_type.model_class() == apps.get_model("core.DataDeclaration"):
+            return reverse("data_declaration", args=[str(self.object_id)])
+        elif self.content_type.model_class() == apps.get_model("core.Contract"):
+            return reverse("contract", args=[str(self.object_id)])
+        elif self.content_type.model_class() == apps.get_model("core.Project"):
+            return reverse("project", args=[str(self.object_id)])
+        raise Exception("No url defined for this content type")
 
     def get_full_url(self):
         """
         Get the full url of the content_object (with the server scheme and url).
         """
-        return '%s://%s%s' % (settings.SERVER_SCHEME, settings.SERVER_URL, self.get_absolute_url())
+        return "%s://%s%s" % (
+            settings.SERVER_SCHEME,
+            settings.SERVER_URL,
+            self.get_absolute_url(),
+        )
 
     def __str__(self):
-        return f'N: {self.actor} {self.verb} {self.object_id} {self.time}'
-
-
-
+        return f"N: {self.actor} {self.verb} {self.object_id} {self.time}"

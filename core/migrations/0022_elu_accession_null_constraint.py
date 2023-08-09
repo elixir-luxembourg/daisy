@@ -2,75 +2,75 @@
 
 from django.db import migrations, models
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('core', '0021_auto_20210720_1721'),
+        ("core", "0021_auto_20210720_1721"),
     ]
-    
+
     def set_empty_elu_accession_to_null(apps, schema_editor):
-        classes_to_update = ['Cohort', 'Dataset', 'Partner', 'Project']
+        classes_to_update = ["Cohort", "Dataset", "Partner", "Project"]
         for class_to_update in classes_to_update:
-            model_to_update = apps.get_model('core', class_to_update)
+            model_to_update = apps.get_model("core", class_to_update)
             for obj in model_to_update.objects.all():
-                if obj.elu_accession == '' or obj.elu_accession == '-':
+                if obj.elu_accession == "" or obj.elu_accession == "-":
                     obj.elu_accession = None
                     obj.save()
 
     def reverse_set_empty_elu_accession_to_null(apps, schema_editor):
-        classes_to_update = ['Cohort', 'Dataset', 'Partner', 'Project']
+        classes_to_update = ["Cohort", "Dataset", "Partner", "Project"]
         for class_to_update in classes_to_update:
-            model_to_update = apps.get_model('core', class_to_update)
+            model_to_update = apps.get_model("core", class_to_update)
             for obj in model_to_update.objects.all():
-                if obj.elu_accession is None or obj.elu_accession == '':
-                    obj.elu_accession = '-'
+                if obj.elu_accession is None or obj.elu_accession == "":
+                    obj.elu_accession = "-"
                     obj.save()
 
     operations = [
-    # Make the elu_accession attribute nullable
+        # Make the elu_accession attribute nullable
         migrations.AlterField(
-            model_name='cohort',
-            name='elu_accession',
+            model_name="cohort",
+            name="elu_accession",
             field=models.CharField(blank=True, max_length=20, null=True),
         ),
         migrations.AlterField(
-            model_name='dataset',
-            name='elu_accession',
+            model_name="dataset",
+            name="elu_accession",
             field=models.CharField(blank=True, max_length=20, null=True),
         ),
         migrations.AlterField(
-            model_name='partner',
-            name='elu_accession',
+            model_name="partner",
+            name="elu_accession",
             field=models.CharField(blank=True, max_length=20, null=True),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='elu_accession',
+            model_name="project",
+            name="elu_accession",
             field=models.CharField(blank=True, max_length=20, null=True),
         ),
-
-    # Set all elu_accession == '-' to null
-        migrations.RunPython(set_empty_elu_accession_to_null, reverse_set_empty_elu_accession_to_null),
-
-    # Make the elu_accession attribute nullable and unique
+        # Set all elu_accession == '-' to null
+        migrations.RunPython(
+            set_empty_elu_accession_to_null, reverse_set_empty_elu_accession_to_null
+        ),
+        # Make the elu_accession attribute nullable and unique
         migrations.AlterField(
-            model_name='cohort',
-            name='elu_accession',
+            model_name="cohort",
+            name="elu_accession",
             field=models.CharField(blank=True, max_length=20, null=True, unique=True),
         ),
         migrations.AlterField(
-            model_name='dataset',
-            name='elu_accession',
+            model_name="dataset",
+            name="elu_accession",
             field=models.CharField(blank=True, max_length=20, null=True, unique=True),
         ),
         migrations.AlterField(
-            model_name='partner',
-            name='elu_accession',
+            model_name="partner",
+            name="elu_accession",
             field=models.CharField(blank=True, max_length=20, null=True, unique=True),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='elu_accession',
+            model_name="project",
+            name="elu_accession",
             field=models.CharField(blank=True, max_length=20, null=True, unique=True),
         ),
     ]

@@ -13,60 +13,76 @@ from core.management.commands.load_initial_data import Command as CommandLoadIni
 from core.permissions import GROUP_PERMISSIONS
 
 
-FIXTURE_DIR = os.path.join(settings.BASE_DIR, 'core', 'fixtures')
+FIXTURE_DIR = os.path.join(settings.BASE_DIR, "core", "fixtures")
 
 ## FAKE LDAP DIRECTORY
-LCSB = ('OU=LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux', {'ou': ['LCSB']})
-disabled_lcsb = ('OU=LCSB,OU=Faculties,OU=UNI-DisabledUsers,DC=uni,DC=lux', {'ou': ['LCSB']})
+LCSB = ("OU=LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux", {"ou": ["LCSB"]})
+disabled_lcsb = (
+    "OU=LCSB,OU=Faculties,OU=UNI-DisabledUsers,DC=uni,DC=lux",
+    {"ou": ["LCSB"]},
+)
 administration = (
-    'OU=Administration,OU=LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux', {'ou': ['Administration']})
+    "OU=Administration,OU=LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux",
+    {"ou": ["Administration"]},
+)
 
 
-def make_fake_ldap_user(firstname, lastname, password='password', title='Test user', is_external=False):
+def make_fake_ldap_user(
+    firstname, lastname, password="password", title="Test user", is_external=False
+):
     """
     Create a fake LDAP user
     """
-    enc = lambda x: x.encode('utf-8')
-    dn = 'LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux'
+    enc = lambda x: x.encode("utf-8")
+    dn = "LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux"
     if is_external:
-        dn = 'Administration,OU=FSTC,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux'
+        dn = "Administration,OU=FSTC,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux"
 
-    small = '%s.%s' % (firstname.lower(), lastname.lower())
+    small = "%s.%s" % (firstname.lower(), lastname.lower())
     return (
-        'CN=%s,OU=%s' % (small, dn),
+        "CN=%s,OU=%s" % (small, dn),
         {
-            'cn': [enc('%s.%s' % (firstname, lastname))],
-            'userPassword': [password],
-            'accountExpires': ["0".encode("utf-8")],
-            'title': title,
-            'userprincipalname': [enc('%s@uni.lux' % small)],
-            'objectClass': 'person',
-            'givenName': [enc(firstname)],
-            'sn': [enc(lastname)],
-            'displayName': [enc('%s %s' % (firstname, lastname))],
-            'name': [enc('%s.%s' % (firstname, lastname))],
-            'mail': [enc('%s@uni.lu' % small)],
-            'manager': [
-                'cn=Superman,OU=Administration,OU=FSTC,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux'.encode('utf-8')],
-            'telephoneNumber': ['9999'.encode('utf-8')],
-        }
+            "cn": [enc("%s.%s" % (firstname, lastname))],
+            "userPassword": [password],
+            "accountExpires": ["0".encode("utf-8")],
+            "title": title,
+            "userprincipalname": [enc("%s@uni.lux" % small)],
+            "objectClass": "person",
+            "givenName": [enc(firstname)],
+            "sn": [enc(lastname)],
+            "displayName": [enc("%s %s" % (firstname, lastname))],
+            "name": [enc("%s.%s" % (firstname, lastname))],
+            "mail": [enc("%s@uni.lu" % small)],
+            "manager": [
+                "cn=Superman,OU=Administration,OU=FSTC,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux".encode(
+                    "utf-8"
+                )
+            ],
+            "telephoneNumber": ["9999".encode("utf-8")],
+        },
     )
 
 
 # This is the content of our mock LDAP directory. It takes the form
 # {dn: {attr: [value, ...], ...}, ...}.
-directory = dict([
-    administration, LCSB, disabled_lcsb,
-    make_fake_ldap_user('Normal', 'User'),
-    make_fake_ldap_user('PI', 'number1'),
-    make_fake_ldap_user('PI', 'number2'),
-    make_fake_ldap_user('Data', 'Steward'),
-    make_fake_ldap_user('External', 'User', is_external=True),
-])
- 
+directory = dict(
+    [
+        administration,
+        LCSB,
+        disabled_lcsb,
+        make_fake_ldap_user("Normal", "User"),
+        make_fake_ldap_user("PI", "number1"),
+        make_fake_ldap_user("PI", "number2"),
+        make_fake_ldap_user("Data", "Steward"),
+        make_fake_ldap_user("External", "User", is_external=True),
+    ]
+)
+
+
 @pytest.fixture(autouse=True)
 def configure_mock_ldap():
     from mockldap import MockLdap
+
     mockldap = MockLdap(directory)
     mockldap.start()
     yield
@@ -93,23 +109,25 @@ def enable_db_access_for_all_tests(db):
 # def enable_solr_access_for_all_tests(solr):
 #     pass
 
+
 @pytest.mark.transactional_db
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def celery_session_worker(celery_session_worker):
     yield celery_session_worker
+
 
 # clients / users fixtures
 # thoses users must correspond to those created in the LDAP tree
 @pytest.fixture
 def user_normal(django_user_model):
-    u = django_user_model.objects.create(username='normal.user', password='password')
+    u = django_user_model.objects.create(username="normal.user", password="password")
     u.save()
     return u
 
 
 @pytest.fixture
 def user_vip(django_user_model):
-    u = django_user_model.objects.create(username='pi.number1', password='password')
+    u = django_user_model.objects.create(username="pi.number1", password="password")
     g, _ = Group.objects.get_or_create(name=GroupConstants.VIP.value)
     u.groups.add(g)
     return u
@@ -117,7 +135,7 @@ def user_vip(django_user_model):
 
 @pytest.fixture
 def user_data_steward(django_user_model):
-    u = django_user_model.objects.create(username='data.steward', password='password')
+    u = django_user_model.objects.create(username="data.steward", password="password")
     g, _ = Group.objects.get_or_create(name=GroupConstants.DATA_STEWARD.value)
     u.groups.add(g)
     return u
@@ -125,9 +143,9 @@ def user_data_steward(django_user_model):
 
 @pytest.fixture
 def user_admin(django_user_model):
-    u = django_user_model.objects.create_superuser(username="test.admin",
-                                      email="test.admin@mail.com",
-                                      password="password")
+    u = django_user_model.objects.create_superuser(
+        username="test.admin", email="test.admin@mail.com", password="password"
+    )
     return u
 
 
@@ -136,14 +154,14 @@ def users(django_user_model, user_normal, user_vip, user_data_steward):
     """
     Fixture that create users based on the ldap directory created.
     """
-    password = 'password'
+    password = "password"
 
-    u = django_user_model.objects.create(username='pi.number2', password=password)
+    u = django_user_model.objects.create(username="pi.number2", password=password)
     g, _ = Group.objects.get_or_create(name=GroupConstants.VIP.value)
     u.groups.add(g)
     u.save()
 
-    u = django_user_model.objects.create(username='external.user', password=password)
+    u = django_user_model.objects.create(username="external.user", password=password)
     u.save()
 
 

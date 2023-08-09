@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.db.models import Q
 from core.models import Contract, DataDeclaration, Dataset, Document, Project, User
 from notification.email_sender import send_the_email
-from notification.models import (Notification, NotificationStyle, NotificationVerb)
+from notification.models import Notification, NotificationStyle, NotificationVerb
 
 # map each notification style to a delta
 # delta correspond to the interval + a small delta
@@ -25,10 +25,7 @@ def send_notifications_for_user_by_time(user_id, time):
     Send a notification report for the current user from the date to the most recent.
     """
     # get latest notifications for the user, grouped by verb
-    notifications = Notification.objects.filter(
-        actor__pk=user_id,
-        time__gte=time
-    )
+    notifications = Notification.objects.filter(actor__pk=user_id, time__gte=time)
 
     if not notifications:
         return
@@ -39,16 +36,12 @@ def send_notifications_for_user_by_time(user_id, time):
         notifications_by_verb[notif.verb].append(notif)
 
     user = User.objects.get(pk=user_id)
-    context = {
-        'time': time,
-        'user': user,
-        'notifications': dict(notifications_by_verb)
-    }
+    context = {"time": time, "user": user, "notifications": dict(notifications_by_verb)}
     send_the_email(
         settings.EMAIL_DONOTREPLY,
         user.email,
-        'Notifications',
-        'notification/notification_report',
+        "Notifications",
+        "notification/notification_report",
         context,
     )
 
@@ -60,16 +53,12 @@ def send_dataset_notification_for_user(user_id, dataset_id, created):
     """
     dataset = Dataset.objects.get(pk=dataset_id)
     user = User.objects.get(pk=user_id)
-    context = {
-        'user': user,
-        'dataset': dataset,
-        'created': created
-    }
+    context = {"user": user, "dataset": dataset, "created": created}
     send_the_email(
         settings.EMAIL_DONOTREPLY,
         user.email,
-        'Notifications',
-        'notification/dataset_notification',
+        "Notifications",
+        "notification/dataset_notification",
         context,
     )
 
@@ -82,7 +71,7 @@ def send_notifications(period):
     """
     notification_style = NotificationStyle[period]
     if notification_style is NotificationStyle.every_time:
-        raise KeyError('Key not permitted')
+        raise KeyError("Key not permitted")
     # get users with this setting
     users = User.objects.filter(
         notification_setting__style=notification_style
@@ -110,7 +99,16 @@ def data_storage_expiry_notifications():
     window_60_start = now + datetime.timedelta(days=59)
     window_60_end = now + datetime.timedelta(days=60)
 
-    data_declarations = DataDeclaration.objects.filter(Q(end_of_storage_duration__gte=window_60_start, end_of_storage_duration__lte=window_60_end) | Q(end_of_storage_duration__gte=window_2_start, end_of_storage_duration__lte=window_2_end)).order_by('end_of_storage_duration')
+    data_declarations = DataDeclaration.objects.filter(
+        Q(
+            end_of_storage_duration__gte=window_60_start,
+            end_of_storage_duration__lte=window_60_end,
+        )
+        | Q(
+            end_of_storage_duration__gte=window_2_start,
+            end_of_storage_duration__lte=window_2_end,
+        )
+    ).order_by("end_of_storage_duration")
 
     for ddec in data_declarations:
         for custodian in ddec.dataset.local_custodians.all():
@@ -119,6 +117,7 @@ def data_storage_expiry_notifications():
                 verb=NotificationVerb.data_storage_expiry,
                 content_object=ddec,
             )
+
 
 @shared_task
 def document_expiry_notifications():
@@ -132,13 +131,16 @@ def document_expiry_notifications():
     window_60_start = now + datetime.timedelta(days=59)
     window_60_end = now + datetime.timedelta(days=60)
 
-    documents = Document.objects.filter(Q(expiry_date__gte=window_60_start, expiry_date__lte=window_60_end) | Q(expiry_date__gte=window_2_start, expiry_date__lte=window_2_end)).order_by('expiry_date')
+    documents = Document.objects.filter(
+        Q(expiry_date__gte=window_60_start, expiry_date__lte=window_60_end)
+        | Q(expiry_date__gte=window_2_start, expiry_date__lte=window_2_end)
+    ).order_by("expiry_date")
 
     for document in documents:
         print(document.content_type)
-        if str(document.content_type) == 'project':
+        if str(document.content_type) == "project":
             obj = Project.objects.get(pk=document.object_id)
-        if str(document.content_type) == 'contract':
+        if str(document.content_type) == "contract":
             obj = Contract.objects.get(pk=document.object_id)
         if obj:
             for custodian in obj.local_custodians.all():
@@ -147,4 +149,3 @@ def document_expiry_notifications():
                     verb=NotificationVerb.document_expiry,
                     content_object=obj,
                 )
-
