@@ -17,8 +17,7 @@ class StorageLocationForm(SkipFieldValidationMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         # we don't allow editing dataset
         self.fields.pop('dataset')
-        if dataset:
-            self.fields['data_declarations'].choices = [(d.id, d.title) for d in dataset.data_declarations.all()]
+        self.fields['data_declarations'].choices = [(d.id, d.title) for d in dataset.data_declarations.all()]
 
     field_order = [
         'category',

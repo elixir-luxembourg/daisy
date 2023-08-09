@@ -1,12 +1,10 @@
 const skipInput = document.getElementById(skipInputID)
 const skipButton = document.getElementById('skipButton')
-
-if (skipButton) {
+//  check if skip button and skip input exist
+if (skipButton && skipInput) {
     skipButton.addEventListener('click', function () {
-        if (skipInput) {
             skipInput.value = 'True';
             document.getElementById('wizard-form').submit();
-        }
     });
 }
 
