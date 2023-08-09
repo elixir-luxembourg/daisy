@@ -43,6 +43,7 @@ requirements = [
     "jsonschema==3.2.0",
     "mockldap@git+https://github.com/elixir-luxembourg/mockldap2.git",
     "django-auditlog==2.1.1",
+    "black==23.7.0",
 ]
 
 test_requirements = [
@@ -52,11 +53,10 @@ test_requirements = [
     "pytest-django==4.5.2",
     "pytest-solr==1.0a1",
     "pytest-celery",
-    "black==23.7.0",
-    "pre-commit==3.3.3",
 ]
 
-dev_requirements = []
+dev_requirements = ["pre-commit==3.3.3"]
+
 
 setup(
     name="elixir-daisy",
