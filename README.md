@@ -236,6 +236,10 @@ The following command will install the test dependencies and execute the tests:
 ```bash
 python setup.py pytest
 ```
+run test for a specific file:
+```bash
+python setup.py pytest --addopts web/tests/test_dataset.py
+```
 
 If tests dependencies are already installed, one can also run the tests just by executing:
 
