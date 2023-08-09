@@ -25,13 +25,9 @@
           {% include '_includes/field.html' with field=field %}
       {% endfor %}
     {% if not hide_submit %}
-        {% if wizard and wizard_url_name %}
-            <div class="row">
+        {% if wizard %}
+            <div class="row" id="form_footer">
                 <div class="col">
-                    {% if wizard.steps.prev %}
-                        <a href="{% url wizard_url_name wizard.steps.prev %}"
-                           class="btn  btn-outline-secondary btn-raised float-left">previous step</a>
-                    {% endif %}
                     <button {% if submit_disabled %}disabled="disabled"{% endif %} type="submit"
                             class="btn btn-primary btn-raised float-right">{{ submit_label | default:"Submit" }}</button>
                 </div>

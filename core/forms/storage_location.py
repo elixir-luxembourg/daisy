@@ -1,12 +1,16 @@
 from django import forms
-from core.models.storage_location import DataLocation
+
+from core.forms import SkipFieldValidationMixin
+from core.models import DataLocation
 
 
-class StorageLocationForm(forms.ModelForm):
+class StorageLocationForm(SkipFieldValidationMixin, forms.ModelForm):
     class Meta:
         model = DataLocation
         fields = '__all__'
         exclude = []
+        heading = "Add a new storage location"
+        heading_help = "Specify your data's home. Clear storage details ensure easy retrieval and management."
 
     def __init__(self, *args, **kwargs):
         dataset = kwargs.pop('dataset', None)

@@ -1,13 +1,16 @@
 from django.forms import ModelForm
 
+from core.forms import SkipFieldValidationMixin
 from core.models import LegalBasis
 
 
-class LegalBasisForm(ModelForm):
+class LegalBasisForm(SkipFieldValidationMixin,ModelForm):
     class Meta:
         model = LegalBasis
         fields = '__all__'
         exclude = []
+        heading = "Data Legal Basis"
+        heading_help = "Define the legal grounds for processing. Ensure your data complies with relevant regulations."
 
     def __init__(self, *args, **kwargs):
         dataset = kwargs.pop('dataset', None)

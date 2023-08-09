@@ -1,9 +1,12 @@
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
-
-from core.forms import DatasetForm
+from formtools.wizard.views import NamedUrlSessionWizardView
+from django.http import HttpResponseRedirect, Http404
+from core.constants import Permissions
+from core.forms.storage_location import StorageLocationForm
+from core.forms import DatasetForm, DataDeclarationForm, LegalBasisForm, AccessForm
 from core.forms.dataset import DatasetFormEdit
 from core.models import Dataset, Exposure
 from core.models.utils import COMPANY
@@ -11,10 +14,117 @@ from core.permissions import CheckerMixin
 from core.utils import DaisyLogger
 from core.constants import Permissions
 from . import facet_view_utils
+from typing import List, Tuple, Union, Any, Dict
 
 log = DaisyLogger(__name__)
 
 FACET_FIELDS = settings.FACET_FIELDS['dataset']
+
+
+class DatasetWizardView(NamedUrlSessionWizardView):
+    """
+    View class for Dataset Wizard which guides users through a multi-step form process.
+    """
+    template_name = "datasets/dataset_wizard_form.html"
+    form_list = [
+        ("dataset", DatasetForm),
+        ("data_declaration", DataDeclarationForm),
+        ("storage_location", StorageLocationForm),
+        ("legal_basis", LegalBasisForm),
+        ("access", AccessForm),
+    ]
+
+    def render_done(self, form, **kwargs) -> HttpResponseRedirect:
+        """
+        Renders the final step of the form wizard.
+        Resets the storage and redirects to the created dataset or dataset list.
+
+        Args:
+            form: The form instance to render.
+            **kwargs: Optional keyword arguments.
+
+        Returns:
+            HttpResponseRedirect: Redirect response either to the created dataset or dataset list.
+        """
+        dataset_id = self.storage.extra_data.get('dataset_id')
+        self.storage.reset()
+        if dataset_id:
+            done_response = HttpResponseRedirect(reverse_lazy('dataset', kwargs={'pk': dataset_id}))
+        else:
+            done_response = HttpResponseRedirect(reverse_lazy('datasets'))
+        return done_response
+
+    def get_form_kwargs(self, step: str = None) -> Dict[str, Any]:
+        """
+        Returns the keyword arguments for instantiating the form.
+
+        Args:
+            step: The current step name.
+
+        Returns:
+            Dict: The keyword arguments to pass to the form instance.
+        """
+        kwargs = super().get_form_kwargs(step)
+        if step != 'dataset':
+            dataset = get_object_or_404(Dataset, pk=self.storage.extra_data.get('dataset_id'))
+            kwargs['dataset'] = dataset
+        return kwargs
+
+    def process_step(self, form, **kwargs) -> Dict[str, Any]:
+        """
+        Processes the form at the current step.
+
+        Args:
+            form: The form instance to process.
+            **kwargs: Optional keyword arguments.
+
+        Returns:
+            Dict: The form data for the current step.
+        """
+        self.storage.extra_data[f'{self.steps.current}-skipped'] = True
+        if self.steps.current == 'dataset':
+            dataset = form.save()
+            self.storage.extra_data['dataset_id'] = dataset.id
+            self.storage.extra_data[f'{self.steps.current}-skipped'] = False
+        elif form.data.get(f'{self.steps.current}-skip_wizard') != 'True':
+            self.storage.extra_data[f'{self.steps.current}-skipped'] = False
+            dataset = get_object_or_404(Dataset, pk=self.storage.extra_data.get('dataset_id'))
+            instance = form.save(commit=False)
+            instance.dataset = dataset
+            instance.save()
+            self.storage.extra_data[f'{self.steps.current}-skipped'] = False
+        return self.get_form_step_data(form)
+
+    def get_context_data(self, form, **kwargs) -> Dict[str, Any]:
+        """
+        Returns the context data for the template at the current step.
+
+        Args:
+            form: The form instance to render.
+            **kwargs: Optional keyword arguments.
+
+        Returns:
+            Dict: The context data to pass to the template.
+        """
+        context = super().get_context_data(form=form, **kwargs)
+        context.update({'step_name': self.steps.current})
+        names = [form_key.replace('_', ' ').title() for form_key in self.form_list.keys()]
+        skips = []
+        for step in self.form_list.keys():
+            try:
+                if self.storage.extra_data[f'{step}-skipped']:
+                    skips.append(True)
+                else:
+                    skips.append(False)
+            except KeyError:
+                skips.append(False)
+
+        context['steps_verbose_data'] = list(zip(self.form_list, names, skips))
+        dataset_id = self.storage.extra_data.get('dataset_id', None)
+        if dataset_id is not None:
+            context['dataset_id'] = Dataset.objects.get(pk=dataset_id).id
+        return context
+
 
 class DatasetCreateView(CreateView):
     model = Dataset
@@ -56,7 +166,8 @@ class DatasetDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['is_admin'] = self.request.user.is_admin_of_dataset(self.object)
         context['can_edit'] = self.request.user.can_edit_dataset(self.object)
-        context['can_see_protected'] = self.request.user.has_permission_on_object(f'core.{Permissions.PROTECTED.value}_dataset', self.object)
+        context['can_see_protected'] = self.request.user.has_permission_on_object(
+            f'core.{Permissions.PROTECTED.value}_dataset', self.object)
         context['company_name'] = COMPANY
         context['exposure_list'] = Exposure.objects.filter(dataset=self.object)
         return context
@@ -68,7 +179,6 @@ class DatasetEditView(CheckerMixin, UpdateView):
     form_class = DatasetFormEdit
     permission_required = Permissions.EDIT
     permission_target = 'dataset'
-
 
     def get_initial(self):
         initial = super().get_initial()
@@ -103,7 +213,7 @@ def dataset_list(request):
         'facets': facet_view_utils.filter_empty_facets(datasets.facet_counts()),
         'query': query or '',
         'title': 'Datasets',
-        'help_text' : Dataset.AppMeta.help_text,
+        'help_text': Dataset.AppMeta.help_text,
         'search_url': 'datasets',
         'add_url': 'dataset_add',
         'data': {'datasets': datasets},

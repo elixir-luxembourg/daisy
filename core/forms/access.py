@@ -1,9 +1,9 @@
 from django.forms import ModelForm, DateInput, Textarea
-
+from core.forms import SkipFieldValidationMixin
 from core.models import Access, Contact
 
 
-class AccessForm(ModelForm):
+class AccessForm(SkipFieldValidationMixin, ModelForm):
     class Meta:
         model = Access
         fields = "__all__"
@@ -15,7 +15,9 @@ class AccessForm(ModelForm):
             # Textareas
             "access_notes": Textarea(attrs={"rows": 2, "cols": 40}),
         }
-
+        heading = "Access"
+        heading_help = "Specify who can access the data, the duration, and any relevant notes. Ensure accuracy for data security."
+        
     def __init__(self, *args, **kwargs):
         dataset = kwargs.pop("dataset", None)
         super().__init__(*args, **kwargs)

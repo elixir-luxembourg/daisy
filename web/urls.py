@@ -17,7 +17,7 @@ from web.views.contracts import ContractCreateView, ContractEditView, \
 from web.views.dashboard import dashboard
 from web.views.data_declarations import DatadeclarationDetailView, DatadeclarationEditView
 from web.views.datasets import DatasetCreateView, DatasetDetailView, DatasetEditView, DatasetDelete, \
-                               dataset_list
+    dataset_list, DatasetWizardView
 from web.views.export import cohorts_export, contacts_export, contracts_export, \
                              datasets_export, partners_export, projects_export
 from web.views.partner import PartnerCreateView, PartnerDelete, PartnerDetailView, \
@@ -32,6 +32,8 @@ from web.views.user import change_password, UserCreateView, UserDetailView, \
                            UserDelete, UserEditView, UsersListView, UserPasswordChange 
 from web.views.users import add_personnel_to_project, remove_personnel_from_project
 from web.views.log_entry import LogEntryListView
+
+wizard_view = DatasetWizardView.as_view(url_name='wizard_step')
 
 web_urls = [
     # Single pages
@@ -75,6 +77,8 @@ web_urls = [
     path('data-dec-paginated-search', data_declarations.data_dec_paginated_search, name="data_dec_paginated_search"),
 
     # Datasets
+    path('wizard/<str:step>/', wizard_view, name='wizard_step'),
+    path('wizard/', wizard_view, name='wizard'),
     path('datasets/', dataset_list, name="datasets"),
     path('datasets/export', datasets_export, name="datasets_export"),
     path('dataset/add/', DatasetCreateView.as_view(), name='dataset_add'),
