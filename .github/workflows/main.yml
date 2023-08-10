@@ -27,6 +27,9 @@ jobs:
     - name: Build and start containers
       run: docker-compose up -d --build
 
+    - name: Check code formatting with Black
+      run: docker-compose exec -T web black --check .
+
     - name: Execute the tests
       run: docker-compose exec -T web python setup.py pytest
 

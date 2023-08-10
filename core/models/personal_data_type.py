@@ -8,23 +8,20 @@ class PersonalDataType(CoreModel):
     """
 
     class Meta:
-        app_label = 'core'
+        app_label = "core"
         get_latest_by = "added"
-        ordering = ['name']
+        ordering = ["name"]
 
-    code = TextFieldWithInputWidget(max_length=20,
-                                    blank=False,
-                                    verbose_name='Code', unique=True)
+    code = TextFieldWithInputWidget(
+        max_length=20, blank=False, verbose_name="Code", unique=True
+    )
 
-    name = TextFieldWithInputWidget(max_length=120,
-                                    blank=False,
-                                    verbose_name='Name', unique=True)
+    name = TextFieldWithInputWidget(
+        max_length=120, blank=False, verbose_name="Name", unique=True
+    )
 
     def __str__(self):
         return self.name
 
     def to_dict(self):
-        return {
-            'code': self.code,
-            'name': self.name
-        }
+        return {"code": self.code, "name": self.name}

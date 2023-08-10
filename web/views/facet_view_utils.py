@@ -13,19 +13,21 @@ log = DaisyLogger(__name__)
 Utility method to rapidly build a facetted view of a search index.
 """
 
+
 def _filter_facets(facets):
     """
     Filter facets that are empty or that all terms have 0 results
     """
-    fields = facets.get('fields', {})
+    fields = facets.get("fields", {})
     filtered = {}
     for item, values in fields.items():
         for term, count in values:
             if count > 0:
                 filtered[item] = values
                 break
-    facets['fields'] = filtered
+    facets["fields"] = filtered
     return facets
+
 
 def _filter_query_to_search_parameters(request, filters):
     """
@@ -36,8 +38,8 @@ def _filter_query_to_search_parameters(request, filters):
     """
     parameters = defaultdict(list)
     for element in filters:
-        name, *value = element.split(':')
-        value = ':'.join(value)
+        name, *value = element.split(":")
+        value = ":".join(value)
         parameters[name].append(value)
     return parameters
 
@@ -52,9 +54,18 @@ def _search_objects(query, filters, facets, model_object, order_by=None):
     If a filter key is repeated, we apply a OR lookup.
     return a queryset
     """
-    log.debug('search_objects', query=query, filter=filters, facets=facets, model_object=model_object, order_by=order_by)
+    log.debug(
+        "search_objects",
+        query=query,
+        filter=filters,
+        facets=facets,
+        model_object=model_object,
+        order_by=order_by,
+    )
     # start queryset
-    queryset = SearchQuerySet().models(model_object)  # .narrow("namespace:(%s)" % namespace.name)
+    queryset = SearchQuerySet().models(
+        model_object
+    )  # .narrow("namespace:(%s)" % namespace.name)
     # filter by facets filters
     for key, values in filters.items():
         tmp = None
@@ -82,19 +93,20 @@ def _search_objects(query, filters, facets, model_object, order_by=None):
         queryset = queryset.order_by(order_by)
     return queryset
 
+
 def filter_empty_facets(facets):
     """
     Filter facets that are empty or that all terms have 0 results.
     facets: the facets_counts() result from the search result
     """
-    fields = facets.get('fields', {})
+    fields = facets.get("fields", {})
     filtered = {}
     for item, values in fields.items():
         for term, count in values:
             if count > 0:
                 filtered[item] = values
                 break
-    facets['fields'] = filtered
+    facets["fields"] = filtered
     return facets
 
 

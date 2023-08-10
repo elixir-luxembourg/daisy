@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from core.models.contact import Contact
 
 
-logger = logging.getLogger('daisy.permissions')
+logger = logging.getLogger("daisy.permissions")
 
 
 class AbstractChecker(metaclass=ABCMeta):
@@ -40,7 +40,11 @@ class AbstractChecker(metaclass=ABCMeta):
     Abstract Base Class to check objects permission in  DAISY.
     """
 
-    def __init__(self, user_or_group: Union["User", "Group"], checker: Optional[ObjectPermissionChecker] = None) -> None:
+    def __init__(
+        self,
+        user_or_group: Union["User", "Group"],
+        checker: Optional[ObjectPermissionChecker] = None,
+    ) -> None:
         self.user_or_group = user_or_group
         self.checker = checker
         if checker is None:
@@ -80,27 +84,33 @@ class DatasetChecker(AbstractChecker):
 
     def _check(self, perm: str, obj: "Dataset", **kwargs) -> bool:
         has_perm = self.checker.has_perm(perm, obj)
-        logger.debug(f'[DatasetChecker _check] Checking permission "{perm}" on: "{obj}": {has_perm}.')
+        logger.debug(
+            f'[DatasetChecker _check] Checking permission "{perm}" on: "{obj}": {has_perm}.'
+        )
         if has_perm:
             return True
-        nofollow = kwargs.pop('nofollow', False)
+        nofollow = kwargs.pop("nofollow", False)
         if nofollow:
             return False
         try:
             project = obj.project
             if project is None:
                 return False
-            project_perm = perm.replace('dataset', 'project')
-            return ProjectChecker(self.user_or_group, checker=self.checker).check(project_perm, project, **kwargs)
+            project_perm = perm.replace("dataset", "project")
+            return ProjectChecker(self.user_or_group, checker=self.checker).check(
+                project_perm, project, **kwargs
+            )
         except ObjectDoesNotExist:
             return False
 
 
 class DataDeclarationChecker(AbstractChecker):
-    """ Check permissions on data declaration"""
+    """Check permissions on data declaration"""
 
     def _check(self, perm: str, obj: "DataDeclaration", **kwargs) -> bool:
-        return DatasetChecker(self.user_or_group, checker=self.checker).check(perm, obj.dataset, **kwargs)
+        return DatasetChecker(self.user_or_group, checker=self.checker).check(
+            perm, obj.dataset, **kwargs
+        )
 
 
 class ContractChecker(AbstractChecker):
@@ -111,19 +121,22 @@ class ContractChecker(AbstractChecker):
     def _check(self, perm: str, obj: "Contract", **kwargs) -> bool:
         if self.checker.has_perm(perm, obj):
             return True
-        no_follow = kwargs.pop('nofollow', False)
+        no_follow = kwargs.pop("nofollow", False)
         if no_follow:
             return False
         if obj.project is None:
             return False
-        project_perm = perm.replace('contract', 'project')
-        return ProjectChecker(self.user_or_group, checker=self.checker).check(project_perm, obj.project, **kwargs)
+        project_perm = perm.replace("contract", "project")
+        return ProjectChecker(self.user_or_group, checker=self.checker).check(
+            project_perm, obj.project, **kwargs
+        )
 
 
 class CohortChecker(AbstractChecker):
     """
     Checks permissions on Cohort.
     """
+
     def _check(self, perm: str, obj: "Cohort", **kwargs) -> bool:
         return self.checker.has_perm(perm, obj)
 
@@ -132,6 +145,7 @@ class ContactChecker(AbstractChecker):
     """
     Checks permissions on Contact
     """
+
     def _check(self, perm: str, obj: "Contact", **kwargs) -> bool:
         return self.checker.has_perm(perm, obj)
 
@@ -140,6 +154,7 @@ class PartnerChecker(AbstractChecker):
     """
     Check permission on Partner.
     """
+
     def _check(self, perm: str, obj: "Partner", **kwargs) -> bool:
         return self.checker.has_perm(perm, obj)
 
@@ -148,6 +163,7 @@ class ContractEntityChecker(ContractChecker):
     """
     Check permission on Contract dependent entities, like PartnerRole
     """
+
     def _check(self, perm: str, obj: Union["PartnerRole"], **kwargs) -> bool:
         return super()._check(perm, obj.contract, **kwargs)
 
@@ -161,9 +177,9 @@ class DocumentChecker(AbstractChecker):
     """
 
     def check(self, perm: str, obj: "Document", **kwargs) -> bool:
-        if perm.endswith('document'):
+        if perm.endswith("document"):
             target = obj.content_object.__class__.__name__.lower()
-            perm = perm.replace('document', target)
+            perm = perm.replace("document", target)
 
         perm = self._set_perm(perm)
         # does not check global perm for document.
@@ -175,26 +191,20 @@ class DocumentChecker(AbstractChecker):
         """
         if self.checker.has_perm(perm, obj):
             return True
-        nofollow = kwargs.pop('nofollow', False)
+        nofollow = kwargs.pop("nofollow", False)
         if nofollow:
             return False
-        if obj.content_type.name == 'project':
+        if obj.content_type.name == "project":
             return ProjectChecker(self.user_or_group, checker=self.checker).check(
-                self._perm,
-                obj.content_object,
-                **kwargs
+                self._perm, obj.content_object, **kwargs
             )
-        elif obj.content_type.name == 'dataset':
+        elif obj.content_type.name == "dataset":
             return DatasetChecker(self.user_or_group, checker=self.checker).check(
-                self._perm,
-                obj.content_object,
-                **kwargs
+                self._perm, obj.content_object, **kwargs
             )
         else:
             return ContractChecker(self.user_or_group, checker=self.checker).check(
-                self._perm,
-                obj.content_object,
-                **kwargs
+                self._perm, obj.content_object, **kwargs
             )
 
 
@@ -204,7 +214,9 @@ class UserChecker(AbstractChecker):
 
 
 class DatasetEntityChecker(DatasetChecker):
-    def check(self, perm: str, obj: Union["DataDeclaration", "LegalBasis", "Share"], **kwargs) -> bool:
+    def check(
+        self, perm: str, obj: Union["DataDeclaration", "LegalBasis", "Share"], **kwargs
+    ) -> bool:
         return super().check(perm, obj.dataset, **kwargs)
 
 
@@ -224,20 +236,20 @@ class AutoChecker(AbstractChecker):
     """
 
     __mapping = {
-        'Dataset': DatasetChecker,
-        'Cohort': CohortChecker,
-        'Project': ProjectChecker,
-        'Partner': PartnerChecker,
-        'PartnerRole': ContractEntityChecker,
-        'Contact': ContactChecker,
-        'Contract': ContractChecker,
-        'Document': DocumentChecker,
-        'DataDeclaration': DatasetEntityChecker,
-        'User': UserChecker,
-        'Access': AccessChecker,
-        'LegalBasis': DatasetEntityChecker,
-        'Share': DatasetEntityChecker,
-        'DataLocation': DatasetEntityChecker,
+        "Dataset": DatasetChecker,
+        "Cohort": CohortChecker,
+        "Project": ProjectChecker,
+        "Partner": PartnerChecker,
+        "PartnerRole": ContractEntityChecker,
+        "Contact": ContactChecker,
+        "Contract": ContractChecker,
+        "Document": DocumentChecker,
+        "DataDeclaration": DatasetEntityChecker,
+        "User": UserChecker,
+        "Access": AccessChecker,
+        "LegalBasis": DatasetEntityChecker,
+        "Share": DatasetEntityChecker,
+        "DataLocation": DatasetEntityChecker,
     }
 
     # override default check method
@@ -250,12 +262,23 @@ class AutoChecker(AbstractChecker):
         Automatically determines which permission class to use.
         """
         if not isinstance(perm, list):
-            value = self.__mapping[obj.__class__.__name__](self.user_or_group, checker=self.checker).check(perm, obj, **kwargs)
-            logger.debug(f'[AutoChecker] Checking permission "{perm}" on {obj.__class__.__name__}: "{obj}" for "{self.user_or_group}": {value}.')
+            value = self.__mapping[obj.__class__.__name__](
+                self.user_or_group, checker=self.checker
+            ).check(perm, obj, **kwargs)
+            logger.debug(
+                f'[AutoChecker] Checking permission "{perm}" on {obj.__class__.__name__}: "{obj}" for "{self.user_or_group}": {value}.'
+            )
             return value
         else:
-            value = [self.__mapping[obj.__class__.__name__](self.user_or_group, checker=self.checker).check(perm_unit, obj, **kwargs) for perm_unit in perm]
-            logger.debug(f'[AutoChecker] Checking permissions "{perm}" on {obj.__class__.__name__}: "{obj}" for "{self.user_or_group}": {value}.')
+            value = [
+                self.__mapping[obj.__class__.__name__](
+                    self.user_or_group, checker=self.checker
+                ).check(perm_unit, obj, **kwargs)
+                for perm_unit in perm
+            ]
+            logger.debug(
+                f'[AutoChecker] Checking permissions "{perm}" on {obj.__class__.__name__}: "{obj}" for "{self.user_or_group}": {value}.'
+            )
             return all(value)
 
 
@@ -269,17 +292,23 @@ def permission_required(perm, target, lookup_variables):
             # get object
             model, lookups = lookup_variables[0], lookup_variables[1:]
             if len(lookups) % 2 != 0:
-                raise DaisyError("Lookup variables must be provided as pairs of lookup_string and view_arg")
+                raise DaisyError(
+                    "Lookup variables must be provided as pairs of lookup_string and view_arg"
+                )
             lookup_dict = {}
             for lookup, view_arg in zip(lookups[::2], lookups[1::2]):
                 if view_arg not in kwargs:
-                    raise DaisyError("Argument '%s' was not passed into view function" % view_arg)
+                    raise DaisyError(
+                        "Argument '%s' was not passed into view function" % view_arg
+                    )
                 lookup_dict[lookup] = kwargs[view_arg]
             obj = get_object_or_404(model, **lookup_dict)
 
             # check permission
-            has_perm = AutoChecker(request.user).check(f'core.{perm.value}_{target}', obj)
-            if not AutoChecker(request.user).check(f'core.{perm.value}_{target}', obj):
+            has_perm = AutoChecker(request.user).check(
+                f"core.{perm.value}_{target}", obj
+            )
+            if not AutoChecker(request.user).check(f"core.{perm.value}_{target}", obj):
                 raise PermissionDenied
             return view_func(request, *args, **kwargs)
 
@@ -288,7 +317,9 @@ def permission_required(perm, target, lookup_variables):
     return dec
 
 
-def permission_required_from_content_type(perm, content_type_attr, object_id_attr, from_post=False):
+def permission_required_from_content_type(
+    perm, content_type_attr, object_id_attr, from_post=False
+):
     """
     Simplified version of https://github.com/django-guardian/django-guardian/blob/master/guardian/decorators.py
     """
@@ -301,9 +332,15 @@ def permission_required_from_content_type(perm, content_type_attr, object_id_att
                 object_id = request.POST.get(object_id_attr)
             else:
                 if content_type_attr not in kwargs:
-                    raise DaisyError("Argument '%s' was not passed into view function" % content_type_attr)
+                    raise DaisyError(
+                        "Argument '%s' was not passed into view function"
+                        % content_type_attr
+                    )
                 if object_id_attr not in kwargs:
-                    raise DaisyError("Argument '%s' was not passed into view function" % object_id_attr)
+                    raise DaisyError(
+                        "Argument '%s' was not passed into view function"
+                        % object_id_attr
+                    )
                 content_type_pk = kwargs.get(content_type_attr)
                 object_id = kwargs.get(object_id_attr)
             # get content type object
@@ -313,7 +350,9 @@ def permission_required_from_content_type(perm, content_type_attr, object_id_att
             except ObjectDoesNotExist:
                 raise Http404
             # check permission
-            if not AutoChecker(request.user).check(f'core.{perm.value}_{obj.__class__.__name__.lower()}', obj):
+            if not AutoChecker(request.user).check(
+                f"core.{perm.value}_{obj.__class__.__name__.lower()}", obj
+            ):
                 raise PermissionDenied
             return view_func(request, *args, **kwargs)
 
@@ -327,6 +366,7 @@ class CheckerMixin(PermissionRequiredMixin):
     A view mixin that verifies if the current logged-in user has the specified permission
     using our checker methods.
     """
+
     permission_target = None
 
     def check_permissions(self, request):
@@ -339,10 +379,10 @@ class CheckerMixin(PermissionRequiredMixin):
         obj = self.get_permission_object()
 
         if self.permission_target is None:
-            logger.warning(f'No permission target defined, using the object class name')
+            logger.warning(f"No permission target defined, using the object class name")
             self.permission_target = obj.__class__.__name__.lower()
 
-        perm = f'core.{self.permission_required.value}_{self.permission_target}'
+        perm = f"core.{self.permission_required.value}_{self.permission_target}"
         has_permission = AutoChecker(request.user).check(perm, obj)
         if not has_permission:
             raise PermissionDenied()

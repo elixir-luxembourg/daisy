@@ -8,16 +8,16 @@ from .utils import CoreTrackedDBModel, TextFieldWithInputWidget
 
 
 GEO_CATEGORY = Choices(
-    ('EU', 'EU'),
-    ('Non_EU', 'Non-EU'),
-    ('International', 'International'),
-    ('National', 'National')
+    ("EU", "EU"),
+    ("Non_EU", "Non-EU"),
+    ("International", "International"),
+    ("National", "National"),
 )
 
 SECTOR_CATEGORY = Choices(
-    ('PUBLIC', 'Public'),
-    ('PRIVATE_NP', 'Private Non-Profit'),
-    ('PRIVATE_P', 'Private For-Profit')
+    ("PUBLIC", "Public"),
+    ("PRIVATE_NP", "Private Non-Profit"),
+    ("PRIVATE_P", "Private For-Profit"),
 )
 
 
@@ -35,51 +35,69 @@ class Partner(CoreTrackedDBModel):
     """
 
     class Meta:
-        app_label = 'core'
+        app_label = "core"
         get_latest_by = "added"
-        ordering = ['name']
-
-
+        ordering = ["name"]
 
     class AppMeta:
-        help_text = "Partners are collaborators which are the source and/or recipient of data. " \
-                    "Partners are also legal entities with which contracts are signed. " \
-                    "Clinics, research institutes, or data hubs are examples of Partners."
-
+        help_text = (
+            "Partners are collaborators which are the source and/or recipient of data. "
+            "Partners are also legal entities with which contracts are signed. "
+            "Clinics, research institutes, or data hubs are examples of Partners."
+        )
 
     acronym = TextFieldWithInputWidget(
         max_length=255,
-        verbose_name='Acronym',
-        help_text='The acronym for the partner institutes name e.g. EMBL for European Molecular Biology Laboratory.'
+        verbose_name="Acronym",
+        help_text="The acronym for the partner institutes name e.g. EMBL for European Molecular Biology Laboratory.",
     )
 
-    address = TextFieldWithInputWidget(verbose_name='Address', help_text='The contact address of the partner.')
+    address = TextFieldWithInputWidget(
+        verbose_name="Address", help_text="The contact address of the partner."
+    )
 
-    country = CountryField(blank_label='select country', blank=True, null=True)
+    country = CountryField(blank_label="select country", blank=True, null=True)
 
-    geo_category = models.CharField(choices=GEO_CATEGORY, blank=False, null=False, default=GEO_CATEGORY.EU,
-                                    max_length=20, verbose_name='Geo-Category',
-                                    help_text='The  category of the geo-location of partner.')
+    geo_category = models.CharField(
+        choices=GEO_CATEGORY,
+        blank=False,
+        null=False,
+        default=GEO_CATEGORY.EU,
+        max_length=20,
+        verbose_name="Geo-Category",
+        help_text="The  category of the geo-location of partner.",
+    )
 
-    sector_category = models.CharField(choices=SECTOR_CATEGORY, blank=False, null=False, default=SECTOR_CATEGORY.PUBLIC,
-                                       max_length=20, verbose_name='Sector-Category',
-                                       help_text='The  category of the sector that the partner operates in.')
+    sector_category = models.CharField(
+        choices=SECTOR_CATEGORY,
+        blank=False,
+        null=False,
+        default=SECTOR_CATEGORY.PUBLIC,
+        max_length=20,
+        verbose_name="Sector-Category",
+        help_text="The  category of the sector that the partner operates in.",
+    )
 
-    is_clinical = models.BooleanField(default=False, blank=False, null=False, verbose_name='Is clinical?',
-                                      help_text='Please select if this is a clinical partner.')
+    is_clinical = models.BooleanField(
+        default=False,
+        blank=False,
+        null=False,
+        verbose_name="Is clinical?",
+        help_text="Please select if this is a clinical partner.",
+    )
 
     name = TextFieldWithInputWidget(
         blank=False,
         null=False,
-        verbose_name='Name',
-        help_text='The name of the partner institute.',
-        unique=True
+        verbose_name="Name",
+        help_text="The name of the partner institute.",
+        unique=True,
     )
 
     @property
     def contracts(self):
         # retrieve model dynamically to prevent circular dependencies
-        contract_model = apps.get_model('core', 'Contract')
+        contract_model = apps.get_model("core", "Contract")
         return contract_model.objects.filter(partners_roles__partner=self)
 
     def __str__(self):
@@ -105,7 +123,7 @@ class Partner(CoreTrackedDBModel):
             "sector_category": self.sector_category,
             "address": self.address if self.address else None,
             "country_code": self.country.ioc_code if self.country.ioc_code else None,
-            "metadata": self.scientific_metadata
+            "metadata": self.scientific_metadata,
         }
         return base_dict
 
@@ -114,7 +132,7 @@ class Partner(CoreTrackedDBModel):
         return d
 
 
-class HomeOrganisation():
+class HomeOrganisation:
     _instance = None
 
     def __new__(cls, *args, **kwargs):

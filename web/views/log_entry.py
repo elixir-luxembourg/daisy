@@ -13,23 +13,26 @@ from collections import defaultdict
 import datetime
 import json
 
+
 class LogEntryListView(CheckerMixin, ListView):
     DATE_FORMAT = "%Y-%m-%d"
     model = LogEntry
     allow_empty = True
     permission_required = constants.Permissions.PROTECTED
 
-    template_name = 'history/log_entry_list.html'
+    template_name = "history/log_entry_list.html"
 
     target_mapping = {
-        'access': 'dataset',
-        'dataset': 'dataset',
+        "access": "dataset",
+        "dataset": "dataset",
     }
 
     # TODO
     #  - Make cleaner
     def get_list_of_model_fields(self):
-        fields_per_model = LogEntry.objects.values("content_type", "changes").distinct().all()
+        fields_per_model = (
+            LogEntry.objects.values("content_type", "changes").distinct().all()
+        )
         tmp_dict = defaultdict(lambda: {})
         for entry in fields_per_model:
             entry_content_type = ContentType.objects.get(pk=entry["content_type"])
@@ -42,7 +45,10 @@ class LogEntryListView(CheckerMixin, ListView):
                 tmp_dict[entry_model_name].update({key: field_name})
 
         model_fields_dict = {
-            key: {name: verbose_name for name, verbose_name in sorted(values.items(), key=lambda x: x[1])}
+            key: {
+                name: verbose_name
+                for name, verbose_name in sorted(values.items(), key=lambda x: x[1])
+            }
             for key, values in tmp_dict.items()
         }
         return model_fields_dict
@@ -60,15 +66,19 @@ class LogEntryListView(CheckerMixin, ListView):
         query_filters = {}
         hidden_filters = {}
 
-        start_date = datetime.datetime.strptime(filters["start_date"], self.DATE_FORMAT) \
-            if "start_date" in filters \
+        start_date = (
+            datetime.datetime.strptime(filters["start_date"], self.DATE_FORMAT)
+            if "start_date" in filters
             else datetime.date.today() - datetime.timedelta(days=90)
+        )
 
         query_filters.update({"timestamp__date__gte": start_date})
 
-        end_date = datetime.datetime.strptime(filters["end_date"], self.DATE_FORMAT) \
-            if "end_date" in filters \
+        end_date = (
+            datetime.datetime.strptime(filters["end_date"], self.DATE_FORMAT)
+            if "end_date" in filters
             else datetime.datetime.now()
+        )
         query_filters.update({"timestamp__date__lte": end_date})
 
         if "action" in filters:
@@ -85,7 +95,9 @@ class LogEntryListView(CheckerMixin, ListView):
                 query_filters.update({"changes__regex": rf'"{field}": \['})
 
             if "entity_id" in filters:
-                entity_class = get_object_or_404(ContentType, model=filters["entity_name"]).model_class()
+                entity_class = get_object_or_404(
+                    ContentType, model=filters["entity_name"]
+                ).model_class()
                 entity_object = get_object_or_404(entity_class, pk=filters["entity_id"])
                 self.object_list = [
                     {"action": log.Action.choices[log.action], "log": log}
@@ -94,48 +106,86 @@ class LogEntryListView(CheckerMixin, ListView):
                 hidden_filters.update({"entity_id": filters["entity_id"]})
             else:
                 if "parent_entity_name" in filters and "parent_entity_id" in filters:
-                    entity_class = get_object_or_404(ContentType, model=filters["entity_name"]).model_class()
+                    entity_class = get_object_or_404(
+                        ContentType, model=filters["entity_name"]
+                    ).model_class()
                     entity_ids_list = [
-                        o.pk for o in entity_class.objects.filter(**{filters["parent_entity_name"]: filters["parent_entity_id"]})
+                        o.pk
+                        for o in entity_class.objects.filter(
+                            **{
+                                filters["parent_entity_name"]: filters[
+                                    "parent_entity_id"
+                                ]
+                            }
+                        )
                     ]
                     query_filters.update({"object_id__in": entity_ids_list})
-                    hidden_filters.update({
-                        "parent_entity_name": filters["parent_entity_name"],
-                        "parent_entity_id": filters["parent_entity_id"],
-                    })
+                    hidden_filters.update(
+                        {
+                            "parent_entity_name": filters["parent_entity_name"],
+                            "parent_entity_id": filters["parent_entity_id"],
+                        }
+                    )
 
         if not hasattr(self, "object_list"):
-            self.object_list = [{"action": log.Action.choices[log.action], "log": log} for log in LogEntry.objects.filter(**query_filters).all()]
+            self.object_list = [
+                {"action": log.Action.choices[log.action], "log": log}
+                for log in LogEntry.objects.filter(**query_filters).all()
+            ]
 
         context = super().get_context_data(**kwargs)
 
         models_list_fk = LogEntry.objects.values("content_type").distinct().all()
-        models_list_names = [ct["model"] for ct in ContentType.objects.values("model").filter(pk__in=models_list_fk).all()]
+        models_list_names = [
+            ct["model"]
+            for ct in ContentType.objects.values("model")
+            .filter(pk__in=models_list_fk)
+            .all()
+        ]
         users_list_fk = LogEntry.objects.values("actor").distinct().all()
-        users_list_names = User.objects.values("pk", "full_name").filter(pk__in=users_list_fk).all()
+        users_list_names = (
+            User.objects.values("pk", "full_name").filter(pk__in=users_list_fk).all()
+        )
         context["models_list"] = models_list_names
         context["users_list"] = users_list_names
         context["start_date"] = start_date.strftime(self.DATE_FORMAT)
         context["end_date"] = end_date.strftime(self.DATE_FORMAT)
-        context['hidden_filters'] = hidden_filters
+        context["hidden_filters"] = hidden_filters
         context["log_actions"] = LogEntry.Action.choices
         context["model_fields"] = self.get_list_of_model_fields()
 
         return context
 
     def check_permissions(self, request):
-        if request.user.is_superuser or request.user.is_part_of(constants.Groups.DATA_STEWARD.value) or request.user.is_part_of(constants.Groups.AUDITOR.value):
+        if (
+            request.user.is_superuser
+            or request.user.is_part_of(constants.Groups.DATA_STEWARD.value)
+            or request.user.is_part_of(constants.Groups.AUDITOR.value)
+        ):
             return None
         else:
             if "entity_name" in request.GET and "entity_id" in request.GET:
-                self.referenced_class = get_object_or_404(ContentType, model=request.GET.get("entity_name")).model_class()
-                self.object = get_object_or_404(self.referenced_class, pk=request.GET.get("entity_id"))
-            elif "parent_entity_name" in request.GET and "parent_entity_id" in request.GET:
-                self.referenced_class = get_object_or_404(ContentType, model=request.GET.get("parent_entity_name")).model_class()
-                self.object = get_object_or_404(self.referenced_class, pk=request.GET.get("parent_entity_id"))
+                self.referenced_class = get_object_or_404(
+                    ContentType, model=request.GET.get("entity_name")
+                ).model_class()
+                self.object = get_object_or_404(
+                    self.referenced_class, pk=request.GET.get("entity_id")
+                )
+            elif (
+                "parent_entity_name" in request.GET
+                and "parent_entity_id" in request.GET
+            ):
+                self.referenced_class = get_object_or_404(
+                    ContentType, model=request.GET.get("parent_entity_name")
+                ).model_class()
+                self.object = get_object_or_404(
+                    self.referenced_class, pk=request.GET.get("parent_entity_id")
+                )
             else:
                 raise PermissionDenied()
-            self.permission_target = self.target_mapping[self.object.__class__.__name__.lower()]
+            self.permission_target = self.target_mapping[
+                self.object.__class__.__name__.lower()
+            ]
             super().check_permissions(request)
 
     def get(self, request, *args, **kwargs):

@@ -4,20 +4,33 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0011_auto_20200130_1138'),
+        ("core", "0011_auto_20200130_1138"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='datadeclaration',
-            name='access_procedure',
-            field=models.TextField(blank=True, help_text='In case the access type is "open" or "controlled", you can elaborate on that', null=True, verbose_name='Remarks on the access procedure'),
+            model_name="datadeclaration",
+            name="access_procedure",
+            field=models.TextField(
+                blank=True,
+                help_text='In case the access type is "open" or "controlled", you can elaborate on that',
+                null=True,
+                verbose_name="Remarks on the access procedure",
+            ),
         ),
         migrations.AddField(
-            model_name='userestriction',
-            name='use_restriction_rule',
-            field=models.TextField(choices=[('CONSTRAINTS', 'CONSTRAINTS'), ('NO_CONSTRAINTS', 'NO_CONSTRAINTS'), ('FORBIDDEN', 'FORBIDDEN')], default='NO_CONSTRAINTS', max_length=64, verbose_name='Does the rule forbid (FORBIDDEN), constraint (CONSTRAINTS) or have no constraints (NO_CONSTRAINTS)?'),
+            model_name="userestriction",
+            name="use_restriction_rule",
+            field=models.TextField(
+                choices=[
+                    ("CONSTRAINTS", "CONSTRAINTS"),
+                    ("NO_CONSTRAINTS", "NO_CONSTRAINTS"),
+                    ("FORBIDDEN", "FORBIDDEN"),
+                ],
+                default="NO_CONSTRAINTS",
+                max_length=64,
+                verbose_name="Does the rule forbid (FORBIDDEN), constraint (CONSTRAINTS) or have no constraints (NO_CONSTRAINTS)?",
+            ),
         ),
     ]

@@ -4,7 +4,13 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
-from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
+from django.views.generic import (
+    CreateView,
+    ListView,
+    DetailView,
+    UpdateView,
+    DeleteView,
+)
 
 from core.constants import Permissions
 from core.forms import ContractForm, ContractFormEdit, PartnerRoleForm
@@ -13,55 +19,55 @@ from core.permissions import CheckerMixin
 from . import facet_view_utils
 
 
-FACET_FIELDS = settings.FACET_FIELDS['contract']
+FACET_FIELDS = settings.FACET_FIELDS["contract"]
 
 
 class ContractCreateView(CreateView):
     model = Contract
-    template_name = 'contracts/contract_form.html'
+    template_name = "contracts/contract_form.html"
     form_class = ContractForm
 
     def get_initial(self):
         initial = super().get_initial()
-        initial.update({'user': self.request.user})
+        initial.update({"user": self.request.user})
         return initial
 
     def get_success_url(self):
-        return reverse_lazy('contract', kwargs={'pk': self.object.id})
+        return reverse_lazy("contract", kwargs={"pk": self.object.id})
 
 
 class ContractListView(ListView):
     model = Contract
-    template_name = 'contracts/contract_list.html'
-    get_objects_for_user_extra_kwargs = {'use_groups': True}
+    template_name = "contracts/contract_list.html"
+    get_objects_for_user_extra_kwargs = {"use_groups": True}
 
 
 class ContractDetailView(DetailView):
     model = Contract
-    template_name = 'contracts/contract.html'
+    template_name = "contracts/contract.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         the_user = self.request.user
         can_edit = the_user.can_edit_contract(self.object)
-        context['can_edit'] = can_edit
-        pk = ContentType.objects.get(model='contract').pk
-        context['content_type'] = pk
-        context['object_id'] = self.object.pk
-        context['datafiles'] = [d for d in self.object.legal_documents.all()]
+        context["can_edit"] = can_edit
+        pk = ContentType.objects.get(model="contract").pk
+        context["content_type"] = pk
+        context["object_id"] = self.object.pk
+        context["datafiles"] = [d for d in self.object.legal_documents.all()]
 
         return context
 
 
 class ContractEditView(CheckerMixin, UpdateView):
     model = Contract
-    template_name = 'contracts/contract_form_edit.html'
+    template_name = "contracts/contract_form_edit.html"
     form_class = ContractFormEdit
     permission_required = Permissions.EDIT
-    permission_target = 'contract'
+    permission_target = "contract"
 
     def dispatch(self, request, *args, **kwargs):
-        the_contract = Contract.objects.get(id=kwargs.get('pk'))
+        the_contract = Contract.objects.get(id=kwargs.get("pk"))
         the_user = request.user
         can_edit = the_user.can_edit_contract(the_contract)
         if can_edit:
@@ -71,52 +77,53 @@ class ContractEditView(CheckerMixin, UpdateView):
 
     def get_initial(self):
         initial = super().get_initial()
-        initial.update({'user': self.request.user})
+        initial.update({"user": self.request.user})
         return initial
 
     def get_success_url(self):
-        return reverse_lazy('contract', kwargs={'pk': self.object.id})
+        return reverse_lazy("contract", kwargs={"pk": self.object.id})
 
 
 def contract_list(request):
-    query = request.GET.get('query')
-    order_by = request.GET.get('order_by')
+    query = request.GET.get("query")
+    order_by = request.GET.get("order_by")
     contracts = facet_view_utils.search_objects(
         request,
-        filters=request.GET.getlist('filters'),
+        filters=request.GET.getlist("filters"),
         query=query,
         object_model=Contract,
         facets=FACET_FIELDS,
-        order_by=order_by
+        order_by=order_by,
     )
-    return render(request, 'search/search_page.html', {
-        'reset': True,
-        'facets': facet_view_utils.filter_empty_facets(contracts.facet_counts()),
-        'query': query or '',
-        'order_by': order_by or '',
-        'filters': request.GET.get('filters') or '',
-        'title': 'Contracts',
-        'help_text' : Contract.AppMeta.help_text,
-        'search_url': 'contracts',
-        'add_url': 'contract_add',
-        'data': {'contracts': contracts},
-        'results_template_name': 'search/_items/contracts.html',
-        'order_by_fields': [
-            ('Contact', 'contact'),
-            ('Project', 'project')
-        ]
-    })
+    return render(
+        request,
+        "search/search_page.html",
+        {
+            "reset": True,
+            "facets": facet_view_utils.filter_empty_facets(contracts.facet_counts()),
+            "query": query or "",
+            "order_by": order_by or "",
+            "filters": request.GET.get("filters") or "",
+            "title": "Contracts",
+            "help_text": Contract.AppMeta.help_text,
+            "search_url": "contracts",
+            "add_url": "contract_add",
+            "data": {"contracts": contracts},
+            "results_template_name": "search/_items/contracts.html",
+            "order_by_fields": [("Contact", "contact"), ("Project", "project")],
+        },
+    )
 
 
 class PartnerRoleCreateView(CreateView):
     model = PartnerRole
-    template_name = 'contracts/partner_role_form.html'
+    template_name = "contracts/partner_role_form.html"
     form_class = PartnerRoleForm
     permission_required = Permissions.EDIT
-    permission_target = 'contract'
+    permission_target = "contract"
 
     def dispatch(self, request, *args, **kwargs):
-        self.contract = Contract.objects.get(id=kwargs.get('pk'))
+        self.contract = Contract.objects.get(id=kwargs.get("pk"))
         the_user = request.user
         can_edit = the_user.can_edit_contract(self.contract)
         if can_edit:
@@ -126,32 +133,32 @@ class PartnerRoleCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(PartnerRoleCreateView, self).get_context_data(**kwargs)
-        context['card_title'] = 'Add partner and role'
-        context['page_title'] = 'Add partner and role to contract'
+        context["card_title"] = "Add partner and role"
+        context["page_title"] = "Add partner and role to contract"
         return context
 
     def get_initial(self):
         initial = super().get_initial()
-        contract_id = self.kwargs.get('pk')
-        initial.update({'user': self.request.user})
+        contract_id = self.kwargs.get("pk")
+        initial.update({"user": self.request.user})
         if contract_id:
-            initial.update({'contract': contract_id})
+            initial.update({"contract": contract_id})
         return initial
 
     def get_success_url(self):
-        return reverse_lazy('contract', kwargs={'pk': self.contract.id})
+        return reverse_lazy("contract", kwargs={"pk": self.contract.id})
 
     def form_valid(self, form):
         response = super().form_valid(form)
         return response
 
-    
+
 class PartnerRoleEditView(CheckerMixin, UpdateView):
     model = PartnerRole
-    template_name = 'contracts/partner_role_form.html'
+    template_name = "contracts/partner_role_form.html"
     form_class = PartnerRoleForm
     permission_required = Permissions.EDIT
-    permission_target = 'contract'
+    permission_target = "contract"
 
     def dispatch(self, request, *args, **kwargs):
         self.contract = self.get_object().contract
@@ -164,20 +171,20 @@ class PartnerRoleEditView(CheckerMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(PartnerRoleEditView, self).get_context_data(**kwargs)
-        context['card_title'] = 'Edit partner and role'
-        context['page_title'] = 'Edit partner and role'
+        context["card_title"] = "Edit partner and role"
+        context["page_title"] = "Edit partner and role"
         return context
 
     def get_initial(self):
         initial = super().get_initial()
         contract_id = self.get_object().contract.id
-        initial.update({'user': self.request.user})
+        initial.update({"user": self.request.user})
         if contract_id:
-            initial.update({'contract': contract_id})
+            initial.update({"contract": contract_id})
         return initial
 
     def get_success_url(self):
-        return reverse_lazy('contract', kwargs={'pk': self.contract.id})
+        return reverse_lazy("contract", kwargs={"pk": self.contract.id})
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -189,6 +196,7 @@ def partner_role_delete(request, pk):
     partner_role = get_object_or_404(PartnerRole, id=pk)
     partner_role.delete()
     return HttpResponse("Partner (signatory) removed from contract.")
+
 
 #
 # @permission_required(Permissions.EDIT, (Contract, 'pk', 'pk'))
@@ -268,14 +276,14 @@ def partner_role_delete(request, pk):
 
 class ContractDelete(CheckerMixin, DeleteView):
     model = Contract
-    template_name = '../templates/generic_confirm_delete.html'
-    success_url = reverse_lazy('contracts')
+    template_name = "../templates/generic_confirm_delete.html"
+    success_url = reverse_lazy("contracts")
     success_message = "Contract was deleted successfully."
     permission_required = Permissions.DELETE
-    permission_target = 'contract'
+    permission_target = "contract"
 
     def get_context_data(self, **kwargs):
         context = super(ContractDelete, self).get_context_data(**kwargs)
-        context['action_url'] = 'contract_delete'
-        context['id'] = self.object.id
+        context["action_url"] = "contract_delete"
+        context["id"] = self.object.id
         return context

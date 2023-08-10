@@ -16,7 +16,10 @@ def test_expire_accesses():
         date.today(),
         date.today() + timedelta(days=1),
     ]
-    accesses = [AccessFactory(status=StatusChoices.active, grant_expires_on=dates[i]) for i in range(5)]
+    accesses = [
+        AccessFactory(status=StatusChoices.active, grant_expires_on=dates[i])
+        for i in range(5)
+    ]
 
     Access.expire_accesses(date.today())
 
@@ -32,10 +35,8 @@ def test_expire_accesses():
             assert "status" in last_log.changes
             assert "access_notes" in last_log.changes
 
-
     assert accesses[0].status == StatusChoices.terminated
     assert accesses[1].status == StatusChoices.terminated
     assert accesses[2].status == StatusChoices.terminated
     assert accesses[3].status == StatusChoices.active
     assert accesses[4].status == StatusChoices.active
-

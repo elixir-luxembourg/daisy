@@ -10,17 +10,22 @@ def generate_user_permission_form(permission_cls):
     """
     Generate user/permissions form based on a permission set
     """
+
     class UserPermForm(forms.Form):
-        user = forms.ModelChoiceField(required=True, queryset=User.objects.exclude(username='AnonymousUser'))
+        user = forms.ModelChoiceField(
+            required=True, queryset=User.objects.exclude(username="AnonymousUser")
+        )
 
         def __init__(self, *args, **kwargs):
             """
             Add permissions
             """
-            model_selection = kwargs.pop('model')
+            model_selection = kwargs.pop("model")
             super().__init__(*args, **kwargs)
             for perm in permission_cls:
-                self.fields[f"{perm.value}_{model_selection}"] = forms.BooleanField(label=perm.name, required=False)
+                self.fields[f"{perm.value}_{model_selection}"] = forms.BooleanField(
+                    label=perm.name, required=False
+                )
 
     return UserPermForm
 
@@ -33,4 +38,5 @@ def generate_user_permission_form(permission_cls):
 #     generate_user_permission_form(constants.Permissions), can_delete=True,  extra=1)
 
 UserPermFormSet = forms.formset_factory(
-    generate_user_permission_form(constants.Permissions), can_delete=True,  extra=1)
+    generate_user_permission_form(constants.Permissions), can_delete=True, extra=1
+)

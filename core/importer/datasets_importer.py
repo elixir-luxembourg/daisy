@@ -1,13 +1,31 @@
 from core.exceptions import DatasetImportError
 from core.importer.base_importer import BaseImporter
 from core.importer.JSONSchemaValidator import DatasetJSONSchemaValidator
-from core.models import Access, Cohort, DataDeclaration, Dataset, DataType, Partner, \
-    Project, StorageResource, Share, UseRestriction, PersonalDataType, LegalBasisType, LegalBasis
-from core.models.data_declaration import ConsentStatus, DeidentificationMethod, \
-    ShareCategory, SubjectCategory
+from core.models import (
+    Access,
+    Cohort,
+    DataDeclaration,
+    Dataset,
+    DataType,
+    Partner,
+    Project,
+    StorageResource,
+    Share,
+    UseRestriction,
+    PersonalDataType,
+    LegalBasisType,
+    LegalBasis,
+)
+from core.models.data_declaration import (
+    ConsentStatus,
+    DeidentificationMethod,
+    ShareCategory,
+    SubjectCategory,
+)
 from core.models.storage_location import StorageLocationCategory, DataLocation
 from core.models.use_restriction import USE_RESTRICTION_CHOICES
 from django.db.models import Count
+
 
 class DatasetsImporter(BaseImporter):
     """
@@ -15,39 +33,49 @@ class DatasetsImporter(BaseImporter):
     """
 
     json_schema_validator = DatasetJSONSchemaValidator()
-    #json_schema_uri = 'https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-dataset.json'
+    # json_schema_uri = 'https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/master/schemas/elu-dataset.json'
 
     def process_json(self, dataset_dict):
         try:
-            title = dataset_dict['name'].strip()
+            title = dataset_dict["name"].strip()
         except KeyError:
-            raise DatasetImportError(data='dataset without title')
+            raise DatasetImportError(data="dataset without title")
 
         def get_dataset(elu_accession, title):
             if elu_accession:
                 dataset = Dataset.objects.get(elu_accession=elu_accession)
-            else: 
+            else:
                 dataset = Dataset.objects.get(title=title)
             return dataset
-      
+
         try:
-            dataset = get_dataset(elu_accession = dataset_dict.get('external_id', None), title=title)
-            title_to_show = title.encode('utf8')
+            dataset = get_dataset(
+                elu_accession=dataset_dict.get("external_id", None), title=title
+            )
+            title_to_show = title.encode("utf8")
             if self.skip_on_exist:
-                self.logger.warning(f"Dataset with title '{title_to_show}' already found. The update will be skipped")
+                self.logger.warning(
+                    f"Dataset with title '{title_to_show}' already found. The update will be skipped"
+                )
                 return True
-            self.logger.warning(f"Dataset with title '{title_to_show}' already found. It will be updated.")
+            self.logger.warning(
+                f"Dataset with title '{title_to_show}' already found. It will be updated."
+            )
             if dataset.is_published:
-                raise DatasetImportError(data=f'Updating published entity is not supported - dataset: "{dataset.title}".')
+                raise DatasetImportError(
+                    data=f'Updating published entity is not supported - dataset: "{dataset.title}".'
+                )
         except Dataset.DoesNotExist:
             dataset = Dataset.objects.create(title=title)
 
-        if 'project' in dataset_dict and dataset_dict['project']:
-            dataset.project = self.process_project(dataset_dict['project'])
+        if "project" in dataset_dict and dataset_dict["project"]:
+            dataset.project = self.process_project(dataset_dict["project"])
 
-        dataset.sensitivity = dataset_dict.get('sensitivity', None)
+        dataset.sensitivity = dataset_dict.get("sensitivity", None)
 
-        local_custodians, local_personnel, external_contacts = self.process_contacts(dataset_dict.get("contacts", []))
+        local_custodians, local_personnel, external_contacts = self.process_contacts(
+            dataset_dict.get("contacts", [])
+        )
 
         if local_custodians:
             dataset.local_custodians.set(local_custodians, clear=True)
@@ -66,7 +94,7 @@ class DatasetsImporter(BaseImporter):
         if shares:
             dataset.shares.set(shares, bulk=False)
 
-        dataset.scientific_metadata = dataset_dict.get('metadata', '{}') or '{}'
+        dataset.scientific_metadata = dataset_dict.get("metadata", "{}") or "{}"
 
         dataset.save()
         dataset.updated = True
@@ -85,13 +113,12 @@ class DatasetsImporter(BaseImporter):
 
         dataset.save()
 
-        dataset.elu_accession = dataset_dict.get('elu_accession', None)
+        dataset.elu_accession = dataset_dict.get("elu_accession", None)
 
         if self.publish_on_import:
             self.publish_object(dataset)
 
         return True
-
 
     def process_project(self, project_acronym):
         try:
@@ -108,77 +135,75 @@ class DatasetsImporter(BaseImporter):
         except Project.DoesNotExist:
             msg = f"Tried to find project with title ='{acronym}'; it was not found. Will create a new one."
             self.logger.warning(msg)
-            project = Project.objects.create(
-                acronym=acronym,
-                title=acronym
-            )
+            project = Project.objects.create(acronym=acronym, title=acronym)
         return project
 
     def process_data_locations(self, dataset, dataset_dict):
         data_locations = []
         backend_mapping = {
-            'aspera': 'lcsb-aspera',
-            'atlas': 'atlas-server',
-            'atlas_personal': 'atlas-server',
-            'atlas_project': 'atlas-server',
-            'hpc_backup_gaia': 'gaia-cluster',
-            'hpc_gaia_home': 'gaia-cluster',
-            'hpc_gaia_project': 'gaia-cluster',
-            'hpc_gaia_work': 'gaia-cluster',
-            'hpc_isilon': 'hpc-isilon',
-            'lcsb_desktop': 'uni-desktop',
-            'external storage  (e.g. hard disk, dvd)': 'external-device',
-            'lcsb_group_server': 'group-server',
-            'lcsb_laptop': 'uni-laptop',
-            'owncloud': 'lcsb-owncloud',
-            'personal_laptop': 'personal-laptop',
-            'sample-storage': 'sample-storage',
-            'other': 'other'
+            "aspera": "lcsb-aspera",
+            "atlas": "atlas-server",
+            "atlas_personal": "atlas-server",
+            "atlas_project": "atlas-server",
+            "hpc_backup_gaia": "gaia-cluster",
+            "hpc_gaia_home": "gaia-cluster",
+            "hpc_gaia_project": "gaia-cluster",
+            "hpc_gaia_work": "gaia-cluster",
+            "hpc_isilon": "hpc-isilon",
+            "lcsb_desktop": "uni-desktop",
+            "external storage  (e.g. hard disk, dvd)": "external-device",
+            "lcsb_group_server": "group-server",
+            "lcsb_laptop": "uni-laptop",
+            "owncloud": "lcsb-owncloud",
+            "personal_laptop": "personal-laptop",
+            "sample-storage": "sample-storage",
+            "other": "other",
         }
-        if 'storages' in dataset_dict:
-
-            for storage_location_dict in dataset_dict['storages']:
-                backend_name = storage_location_dict['platform'].lower().strip()
+        if "storages" in dataset_dict:
+            for storage_location_dict in dataset_dict["storages"]:
+                backend_name = storage_location_dict["platform"].lower().strip()
                 backend_name = backend_mapping.get(backend_name, backend_name)
                 if not backend_name:
-                    raise DatasetImportError(data=f'Not a proper backend name: "{backend_name}".')
+                    raise DatasetImportError(
+                        data=f'Not a proper backend name: "{backend_name}".'
+                    )
                 try:
                     backend = StorageResource.objects.get(slug=backend_name)
                 except StorageResource.DoesNotExist:
-                    raise DatasetImportError(data=f'Cannot find StorageResource with slug: "{backend_name}".')
+                    raise DatasetImportError(
+                        data=f'Cannot find StorageResource with slug: "{backend_name}".'
+                    )
                 category = self.process_location_category(storage_location_dict)
 
-
-                location_delimeted = '\n'.join(storage_location_dict['location'])
+                location_delimeted = "\n".join(storage_location_dict["location"])
 
                 dl = DataLocation.objects.create(
                     category=category,
                     backend=backend,
                     dataset=dataset,
-                    **{'location_description': location_delimeted}
+                    **{"location_description": location_delimeted},
                 )
-                master_locations = DataLocation.objects.filter(category=StorageLocationCategory.master, dataset=dataset)
+                master_locations = DataLocation.objects.filter(
+                    category=StorageLocationCategory.master, dataset=dataset
+                )
 
                 acl_policy_description = self.process_acl_info(storage_location_dict)
                 if acl_policy_description:
                     acc = Access.objects.create(
-                        dataset=dataset,
-                        access_notes=acl_policy_description
+                        dataset=dataset, access_notes=acl_policy_description
                     )
                     acc.defined_on_locations.set(master_locations)
                     acc.save()
                 data_locations.append(dl)
         return data_locations
 
-
     def process_transfers(self, dataset_dict, dataset):
-
         def process_transfer(share_dict, dataset):
             share = Share()
-            share.share_notes = share_dict.get('transfer_details')
+            share.share_notes = share_dict.get("transfer_details")
             share.dataset = dataset
-            share.partner = self.process_partner(share_dict.get('partner'))
-            share.granted_on = share_dict.get('transfer_date', None)
+            share.partner = self.process_partner(share_dict.get("partner"))
+            share.granted_on = share_dict.get("transfer_date", None)
             # project = dataset.project
             # if share_institution and project:
             #     contracts = project.contracts.all()
@@ -198,38 +223,40 @@ class DatasetsImporter(BaseImporter):
             #         share.contract = contract
             return share
 
-        transfers = dataset_dict.get('transfers', [])
+        transfers = dataset_dict.get("transfers", [])
         return [process_transfer(transfer_dict, dataset) for transfer_dict in transfers]
 
     def process_location_category(self, storage_location_dict):
-        category_str = storage_location_dict.get('category', '').strip().lower()
+        category_str = storage_location_dict.get("category", "").strip().lower()
         try:
             return StorageLocationCategory[category_str]
         except KeyError:
             return StorageLocationCategory.not_specified
 
     def process_acl_info(self, storage_location_dict):
-        if 'accesses' in storage_location_dict:
-            return "\n".join(storage_location_dict['accesses'])
+        if "accesses" in storage_location_dict:
+            return "\n".join(storage_location_dict["accesses"])
         else:
             return None
 
     def process_datadeclarations(self, dataset_dict, dataset):
         studies_map = {}
-        datadec_dicts = dataset_dict.get('data_declarations', [])
+        datadec_dicts = dataset_dict.get("data_declarations", [])
 
         for ddec_dict in datadec_dicts:
-            data_declaration, studies_map_key = self.process_datadeclaration(ddec_dict, dataset)
+            data_declaration, studies_map_key = self.process_datadeclaration(
+                ddec_dict, dataset
+            )
             studies_map[studies_map_key] = data_declaration
 
         return studies_map
 
     def process_datadeclaration(self, datadec_dict, dataset):
         try:
-            title = datadec_dict['title']
-            title_to_show = title.encode('utf-8')
+            title = datadec_dict["title"]
+            title_to_show = title.encode("utf-8")
         except KeyError:
-            raise DatasetImportError(data='Data declaration title missing')
+            raise DatasetImportError(data="Data declaration title missing")
 
         try:
             datadec = DataDeclaration.objects.get(title=title.strip(), dataset=dataset)
@@ -242,23 +269,34 @@ class DatasetsImporter(BaseImporter):
         else:
             datadec = DataDeclaration.objects.create(title=title, dataset=dataset)
 
-        if 'source_study' not in datadec_dict or len(datadec_dict.get('source_study')) == 0:
-            self.logger.warning(f"Data declaration with title '{title_to_show}' has no `source_study` set - there will be a problem processing study/cohort data.")
+        if (
+            "source_study" not in datadec_dict
+            or len(datadec_dict.get("source_study")) == 0
+        ):
+            self.logger.warning(
+                f"Data declaration with title '{title_to_show}' has no `source_study` set - there will be a problem processing study/cohort data."
+            )
 
-        datadec.has_special_subjects = datadec_dict.get('has_special_subjects', False)
-        datadec.data_types_notes = datadec_dict.get('data_type_notes', None)
-        datadec.deidentification_method = self.process_deidentification_method(datadec_dict)
+        datadec.has_special_subjects = datadec_dict.get("has_special_subjects", False)
+        datadec.data_types_notes = datadec_dict.get("data_type_notes", None)
+        datadec.deidentification_method = self.process_deidentification_method(
+            datadec_dict
+        )
         datadec.subjects_category = self.process_subjects_category(datadec_dict)
-        datadec.special_subjects_description = datadec_dict.get('special_subjects_description', None)
-        datadec.other_external_id = datadec_dict.get('other_external_id', None)
+        datadec.special_subjects_description = datadec_dict.get(
+            "special_subjects_description", None
+        )
+        datadec.other_external_id = datadec_dict.get("other_external_id", None)
         datadec.share_category = self.process_access_category(datadec_dict)
-        datadec.access_procedure = datadec_dict.get('access_procedure', '')
+        datadec.access_procedure = datadec_dict.get("access_procedure", "")
         datadec.consent_status = self.process_constent_status(datadec_dict)
-        datadec.comments = datadec_dict.get('source_notes', None)
-        datadec.embargo_date = datadec_dict.get('embargo_date', None)
-        datadec.storage_duration_criteria = datadec_dict.get("storage_duration_criteria", None)
+        datadec.comments = datadec_dict.get("source_notes", None)
+        datadec.embargo_date = datadec_dict.get("embargo_date", None)
+        datadec.storage_duration_criteria = datadec_dict.get(
+            "storage_duration_criteria", None
+        )
         datadec.end_of_storage_duration = datadec_dict.get("storage_end_date", None)
-        if 'data_types' in datadec_dict:
+        if "data_types" in datadec_dict:
             datadec.data_types_received.set(self.process_datatypes(datadec_dict))
 
         # if 'contract_obj' not in kwargs:
@@ -273,30 +311,32 @@ class DatasetsImporter(BaseImporter):
         datadec.save()
         datadec.updated = True
 
-        return datadec, datadec_dict.get('source_study')
+        return datadec, datadec_dict.get("source_study")
 
     def process_datatypes(self, datadec_dict):
         datatypes = []
-        for datatype_str in datadec_dict.get('data_types', []):
+        for datatype_str in datadec_dict.get("data_types", []):
             datatype_str = datatype_str.strip()
             try:
                 datatype, _ = DataType.objects.get_or_create(name=datatype_str)
             except DataType.DoesNotExist:
-                self.logger.error('Import failed')
-                raise DatasetImportError(data=f'Cannot find data type: "{datatype_str}".')
+                self.logger.error("Import failed")
+                raise DatasetImportError(
+                    data=f'Cannot find data type: "{datatype_str}".'
+                )
             datatypes.append(datatype)
         return datatypes
 
     def process_deidentification_method(self, datadec_dict):
-        deidentification_method_str = datadec_dict.get('de_identification', '')
+        deidentification_method_str = datadec_dict.get("de_identification", "")
         try:
             return DeidentificationMethod[deidentification_method_str]
         except KeyError:
             return DeidentificationMethod.pseudonymization
 
     def process_subjects_category(self, datadec_dict):
-        if 'subjects_category' in datadec_dict:
-            sub_category_str = datadec_dict.get('subjects_category', '').strip()
+        if "subjects_category" in datadec_dict:
+            sub_category_str = datadec_dict.get("subjects_category", "").strip()
             try:
                 return SubjectCategory[sub_category_str]
             except KeyError:
@@ -375,28 +415,30 @@ class DatasetsImporter(BaseImporter):
 
     def process_use_restrictions(self, data_dec, datadec_dict):
         use_restrictions = []
-        for user_restriction_dict in datadec_dict['use_restrictions']:
-            ga4gh_code = user_restriction_dict.get('use_class', '')
-            notes = user_restriction_dict.get('use_restriction_note', '')
-            use_class_note = user_restriction_dict.get('use_class_note', '')
-            use_restriction_rule_str = user_restriction_dict.get('use_restriction_rule', '')
+        for user_restriction_dict in datadec_dict["use_restrictions"]:
+            ga4gh_code = user_restriction_dict.get("use_class", "")
+            notes = user_restriction_dict.get("use_restriction_note", "")
+            use_class_note = user_restriction_dict.get("use_class_note", "")
+            use_restriction_rule_str = user_restriction_dict.get(
+                "use_restriction_rule", ""
+            )
             try:
                 use_restriction_rule = USE_RESTRICTION_CHOICES[use_restriction_rule_str]
             except KeyError:
-                use_restriction_rule = '-'
+                use_restriction_rule = "-"
 
             use_restriction, _ = UseRestriction.objects.get_or_create(
                 data_declaration=data_dec,
                 restriction_class=ga4gh_code,
                 notes=notes,
                 use_class_note=use_class_note,
-                use_restriction_rule=use_restriction_rule
+                use_restriction_rule=use_restriction_rule,
             )
             use_restrictions.append(use_restriction)
         return use_restrictions
 
     def process_access_category(self, datadec_dict):
-        share_category_str = datadec_dict.get('access_category', '')
+        share_category_str = datadec_dict.get("access_category", "")
         if share_category_str:
             try:
                 return ShareCategory[share_category_str]
@@ -405,60 +447,75 @@ class DatasetsImporter(BaseImporter):
         return None
 
     def process_constent_status(self, datadec_dict):
-        if 'consent_status' not in datadec_dict:
+        if "consent_status" not in datadec_dict:
             return ConsentStatus.unknown
-        if datadec_dict['consent_status'] is None:
+        if datadec_dict["consent_status"] is None:
             return ConsentStatus.unknown
-        consent_status_str = datadec_dict.get('consent_status', '').strip()
+        consent_status_str = datadec_dict.get("consent_status", "").strip()
         try:
             return ConsentStatus[consent_status_str]
         except KeyError:
             return ConsentStatus.unknown
-            
+
     def process_legal_bases(self, dataset_dict, dataset_object):
         """
         This should be called after data-declarations have been processed
         (they rely on data-declaration's acronyms to be properly imported)
         """
-        if 'legal_bases' not in dataset_dict:
+        if "legal_bases" not in dataset_dict:
             return
-        
-        return [self.process_legal_basis(legal_basis, dataset_object) for legal_basis in dataset_dict.get('legal_bases')]
+
+        return [
+            self.process_legal_basis(legal_basis, dataset_object)
+            for legal_basis in dataset_dict.get("legal_bases")
+        ]
 
     def process_legal_basis(self, legal_basis, dataset_object):
         """
         This should be called after data-declarations have been processed
         (they rely on data-declaration's acronyms to be properly imported)
-        """   
+        """
         datasets_legal_bases = LegalBasis.objects.filter(
-                dataset=dataset_object,
-                remarks=legal_basis.get('legal_basis_notes', '')
-                )
+            dataset=dataset_object, remarks=legal_basis.get("legal_basis_notes", "")
+        )
         # get only those legal bases with matching data types and basis codes
-        legal_basis_types_titles = legal_basis.get('legal_basis_codes', [])
-        legal_basis_types = [LegalBasisType.objects.get(code=code) for code in legal_basis_types_titles]
-        personal_data_types_titles = legal_basis.get('personal_data_codes', [])
-        personal_data_types = [PersonalDataType.objects.get(code=code) for code in personal_data_types_titles]
-        datasets_legal_bases = datasets_legal_bases.annotate(data_types_count=Count('personal_data_types'),
-                                    basis_types_count=Count('legal_basis_types')).filter(
-                                        data_types_count=len(personal_data_types),
-                                        basis_types_count=len(legal_basis_types)
-                                    )
+        legal_basis_types_titles = legal_basis.get("legal_basis_codes", [])
+        legal_basis_types = [
+            LegalBasisType.objects.get(code=code) for code in legal_basis_types_titles
+        ]
+        personal_data_types_titles = legal_basis.get("personal_data_codes", [])
+        personal_data_types = [
+            PersonalDataType.objects.get(code=code)
+            for code in personal_data_types_titles
+        ]
+        datasets_legal_bases = datasets_legal_bases.annotate(
+            data_types_count=Count("personal_data_types"),
+            basis_types_count=Count("legal_basis_types"),
+        ).filter(
+            data_types_count=len(personal_data_types),
+            basis_types_count=len(legal_basis_types),
+        )
         # get only those with same data types
         for personal_data_type in personal_data_types:
-            datasets_legal_bases =  datasets_legal_bases.filter(personal_data_types=personal_data_type)                            
-        
+            datasets_legal_bases = datasets_legal_bases.filter(
+                personal_data_types=personal_data_type
+            )
+
         # get only those with same basis types
         for legal_basis_type in legal_basis_types:
-            datasets_legal_bases = datasets_legal_bases.filter(legal_basis_types=legal_basis_type)
-        
-        data_declaration_titles = legal_basis.get('data_declarations', [])
-        data_declarations = [DataDeclaration.objects.get(title=title, dataset=dataset_object) for title in data_declaration_titles]
-        
+            datasets_legal_bases = datasets_legal_bases.filter(
+                legal_basis_types=legal_basis_type
+            )
+
+        data_declaration_titles = legal_basis.get("data_declarations", [])
+        data_declarations = [
+            DataDeclaration.objects.get(title=title, dataset=dataset_object)
+            for title in data_declaration_titles
+        ]
+
         if len(datasets_legal_bases) == 0:
             legal_basis_obj = LegalBasis.objects.create(
-                dataset=dataset_object,
-                remarks=legal_basis.get('legal_basis_notes', '')
+                dataset=dataset_object, remarks=legal_basis.get("legal_basis_notes", "")
             )
             legal_basis_obj.data_declarations.set(data_declarations)
             legal_basis_obj.legal_basis_types.set(legal_basis_types)
@@ -475,19 +532,19 @@ class DatasetsImporter(BaseImporter):
 
     def process_studies(self, dataset_dict, studies_map):
         def _process_study(study):
-            name = study.get('name', '')
-            safe_name = name.encode('utf-8')
-            description = study.get('description', '')
-            has_ethics_approval = study.get('has_ethics_approval', False)
-            ethics_approval_notes = study.get('ethics_approval_notes', '')
-            url = study.get('url', '')
-            metadata = study.get('metadata', '{}') or '{}'
+            name = study.get("name", "")
+            safe_name = name.encode("utf-8")
+            description = study.get("description", "")
+            has_ethics_approval = study.get("has_ethics_approval", False)
+            ethics_approval_notes = study.get("ethics_approval_notes", "")
+            url = study.get("url", "")
+            metadata = study.get("metadata", "{}") or "{}"
 
             try:
                 cohort = Cohort.objects.get(title=name)
             except Cohort.DoesNotExist:
                 cohort = None
-            
+
             if cohort:
                 msg = f"Cohort with title '{safe_name}' already found. All fields are going to be updated."
                 self.logger.warning(msg)
@@ -501,8 +558,12 @@ class DatasetsImporter(BaseImporter):
             cohort.scientific_metadata = metadata
             cohort.save()
             cohort.updated = True
-            
-            local_custodians, local_personnel, external_contacts = self.process_contacts(study.get("contacts", []))
+
+            (
+                local_custodians,
+                local_personnel,
+                external_contacts,
+            ) = self.process_contacts(study.get("contacts", []))
             cohort.owners.set(external_contacts)
 
             cohort.save()
@@ -518,13 +579,17 @@ class DatasetsImporter(BaseImporter):
                     raise KeyError()
                 data_declaration.cohorts.add(cohort)
                 data_declaration.save()
-                safe_title = data_declaration.title.encode('utf8')
-                self.logger.info(f"Cohort '{safe_name}' linked successfully to data declaration '{safe_title}'")
+                safe_title = data_declaration.title.encode("utf8")
+                self.logger.info(
+                    f"Cohort '{safe_name}' linked successfully to data declaration '{safe_title}'"
+                )
             except:
-                self.logger.warning(f"The data declaration for the study '{safe_name}' not found. ")
+                self.logger.warning(
+                    f"The data declaration for the study '{safe_name}' not found. "
+                )
 
-        if 'studies' not in dataset_dict:
+        if "studies" not in dataset_dict:
             return
 
-        for study in dataset_dict.get('studies'):
+        for study in dataset_dict.get("studies"):
             _process_study(study)

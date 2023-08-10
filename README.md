@@ -92,6 +92,14 @@ You are encouraged to try Daisy for yourself using our [DEMO deployment](https:/
         password: demo
     ```
 
+### Linting
+
+pip install black==23.7.0
+pre-commit install
+black --check .
+black .
+
+
 ### Operation manual
 
 

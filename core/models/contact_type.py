@@ -9,13 +9,16 @@ class ContactType(CoreModel):
     """
 
     class Meta:
-        app_label = 'core'
+        app_label = "core"
         get_latest_by = "added"
-        ordering = ['added']
+        ordering = ["added"]
 
-    name = TextFieldWithInputWidget(max_length=128,
-                                    blank=False,
-                                    verbose_name='Name of the contact type', unique=True)
+    name = TextFieldWithInputWidget(
+        max_length=128,
+        blank=False,
+        verbose_name="Name of the contact type",
+        unique=True,
+    )
 
     def __str__(self):
         return f"{self.name}"

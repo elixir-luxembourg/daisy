@@ -6,10 +6,8 @@ from core.models import Publication
 class PublicationForm(ModelForm):
     class Meta:
         model = Publication
-        fields = '__all__'
-        widgets = {
-            'citation': Textarea(attrs={'max_length': '256'})
-        }
+        fields = "__all__"
+        widgets = {"citation": Textarea(attrs={"max_length": "256"})}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -17,14 +15,12 @@ class PublicationForm(ModelForm):
     def clean(self):
         pass
 
-    field_order = [
-        'citation',
-        'doi'
-    ]
+    field_order = ["citation", "doi"]
 
 
 class PickPublicationForm(Form):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['publication'] = ChoiceField(choices=[(d.id, str(d)) for d in Publication.objects.all()])
+        self.fields["publication"] = ChoiceField(
+            choices=[(d.id, str(d)) for d in Publication.objects.all()]
+        )

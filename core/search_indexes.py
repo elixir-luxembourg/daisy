@@ -1,24 +1,38 @@
 from celery_haystack.indexes import CelerySearchIndex
 from haystack import indexes
 
-from core.models import Dataset, Contract, Project, DataDeclaration, Cohort, Contact, Partner, GDPRRole
+from core.models import (
+    Dataset,
+    Contract,
+    Project,
+    DataDeclaration,
+    Cohort,
+    Contact,
+    Partner,
+    GDPRRole,
+)
 
 
 class DataDeclarationIndex(CelerySearchIndex, indexes.Indexable):
-
     def get_model(self):
         return DataDeclaration
 
     def get_updated_field(self):
-        return 'updated'
+        return "updated"
 
     text = indexes.CharField(document=True, use_template=True)
     pk = indexes.IntegerField(indexed=True, stored=True, faceted=True)
     cohorts = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
-    consent_status = indexes.CharField(model_attr='consent_status', indexed=True, stored=True, faceted=True)
+    consent_status = indexes.CharField(
+        model_attr="consent_status", indexed=True, stored=True, faceted=True
+    )
     data_types = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
-    data_types_generated = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
-    data_types_received = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
+    data_types_generated = indexes.MultiValueField(
+        indexed=True, stored=True, faceted=True
+    )
+    data_types_received = indexes.MultiValueField(
+        indexed=True, stored=True, faceted=True
+    )
     deidentification_method = indexes.CharField(indexed=True, stored=True, faceted=True)
     embargo_date = indexes.DateField(indexed=True, stored=True)
     end_of_storage_duration = indexes.DateField(indexed=True, stored=True)
@@ -26,7 +40,9 @@ class DataDeclarationIndex(CelerySearchIndex, indexes.Indexable):
     local_custodians = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
     other_external_id = indexes.CharField(indexed=True, stored=True, faceted=True)
     project = indexes.CharField(indexed=True, stored=True, faceted=True)
-    special_subjects_description = indexes.CharField(indexed=True, stored=True, faceted=True)
+    special_subjects_description = indexes.CharField(
+        indexed=True, stored=True, faceted=True
+    )
     subjects_category = indexes.CharField(indexed=True, stored=True, faceted=True)
     submission_id = indexes.CharField(indexed=True, stored=True, faceted=True)
     title = indexes.CharField(indexed=True, stored=True, faceted=True)
@@ -39,7 +55,7 @@ class DataDeclarationIndex(CelerySearchIndex, indexes.Indexable):
             obj.title,
             str(obj.dataset),
             " ".join([str(c for c in obj.cohorts.all())]),
-            " ".join([str(l) for l in obj.dataset.local_custodians.all()])
+            " ".join([str(l) for l in obj.dataset.local_custodians.all()]),
         ]
         if obj.dataset.project:
             text_parts.append(str(obj.dataset.project))
@@ -74,12 +90,11 @@ class DataDeclarationIndex(CelerySearchIndex, indexes.Indexable):
 
 
 class CohortIndex(CelerySearchIndex, indexes.Indexable):
-
     def get_model(self):
         return Cohort
 
     def get_updated_field(self):
-        return 'updated'
+        return "updated"
 
     text = indexes.CharField(document=True, use_template=True)
     pk = indexes.IntegerField(indexed=True, stored=True, faceted=True)
@@ -107,7 +122,6 @@ class CohortIndex(CelerySearchIndex, indexes.Indexable):
 
 
 class DatasetIndex(CelerySearchIndex, indexes.Indexable):
-
     def get_model(self):
         return Dataset
 
@@ -154,7 +168,7 @@ class DatasetIndex(CelerySearchIndex, indexes.Indexable):
         return [u.full_name for u in obj.local_custodians.all()]
 
     def get_updated_field(self):
-        return 'updated'
+        return "updated"
 
 
 class ContractIndex(CelerySearchIndex, indexes.Indexable):
@@ -162,7 +176,7 @@ class ContractIndex(CelerySearchIndex, indexes.Indexable):
         return Contract
 
     def get_updated_field(self):
-        return 'updated'
+        return "updated"
 
     # needed
     text = indexes.CharField(document=True, use_template=True)
@@ -194,11 +208,11 @@ class ContractIndex(CelerySearchIndex, indexes.Indexable):
         contacts = []
         for p in obj.partners_roles.all():
             for c in p.contacts.all():
-                contacts.append('%s %s' % (c.first_name, c.last_name))
+                contacts.append("%s %s" % (c.first_name, c.last_name))
         if contacts:
             return contacts
         else:
-            return ['no collaborator']
+            return ["no collaborator"]
 
     def prepare_partners(self, obj):
         return [p.partner.name for p in obj.partners_roles.all()]
@@ -214,16 +228,17 @@ class ContractIndex(CelerySearchIndex, indexes.Indexable):
             return None
 
     def prepare_data_declarations(self, obj):
-        return [data_declaration.title for data_declaration in obj.data_declarations.all()]
+        return [
+            data_declaration.title for data_declaration in obj.data_declarations.all()
+        ]
 
 
 class PartnerIndex(CelerySearchIndex, indexes.Indexable):
-
     def get_model(self):
         return Partner
 
     def get_updated_field(self):
-        return 'updated'
+        return "updated"
 
     text = indexes.CharField(document=True, use_template=True)
     acronym = indexes.CharField(indexed=True, stored=True)
@@ -268,12 +283,11 @@ class PartnerIndex(CelerySearchIndex, indexes.Indexable):
 
 
 class ContactIndex(CelerySearchIndex, indexes.Indexable):
-
     def get_model(self):
         return Contact
 
     def get_updated_field(self):
-        return 'updated'
+        return "updated"
 
     # needed
     text = indexes.CharField(document=True, use_template=True)
@@ -314,7 +328,7 @@ class ProjectIndex(CelerySearchIndex, indexes.Indexable):
         return Project
 
     def get_updated_field(self):
-        return 'updated'
+        return "updated"
 
     # needed
     text = indexes.CharField(document=True, use_template=True)
@@ -417,7 +431,7 @@ class ProjectIndex(CelerySearchIndex, indexes.Indexable):
     def prepare_start_date(self, obj):
         if obj.start_date:
             return obj.start_date
-        else: 
+        else:
             return None
 
     def prepare_study_terms(self, obj):

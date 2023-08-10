@@ -17,20 +17,22 @@ class DishSubmissionImporter(BaseImporter):
     and create relevant  Dataset, Collaboration, (external Project) and DataDeclaration records in DAISY
     """
 
-    schema_name = ''
+    schema_name = ""
 
     def __init__(self, elixir_project_name):
         self.elixir_project_name = elixir_project_name
 
     def import_json(self, json_string, stop_on_error=False, verbose=False):
         try:
-            logger.info('Import started')
+            logger.info("Import started")
             submission_dict = json.loads(json_string)
-            submission_name = submission_dict['name'].encode('utf8')
+            submission_name = submission_dict["name"].encode("utf8")
             logger.debug(f' * Importing Data Declaration: "{submission_name}"...')
 
             if self.is_elixir_submission(submission_dict):
-                project = Project.objects.filter(acronym=self.elixir_project_name).first()
+                project = Project.objects.filter(
+                    acronym=self.elixir_project_name
+                ).first()
 
             dataset = self.process_submission_as_dataset(submission_dict, project)
             # contract = self.process_submission_as_contract(submission_dict, project)
@@ -38,15 +40,14 @@ class DishSubmissionImporter(BaseImporter):
             # for study_dict in submission_dict.get('studies', []):
             #     study = self.process_study(study_dict)
 
-
-
         except Exception as e:
-            logger.error('Import failed')
+            logger.error("Import failed")
             logger.error(str(e))
             if verbose:
                 import traceback
+
                 ex = traceback.format_exception(*sys.exc_info())
-                logger.error('\n'.join([e for e in ex]))
+                logger.error("\n".join([e for e in ex]))
             if stop_on_error:
                 raise e
             return False
@@ -145,31 +146,34 @@ class DishSubmissionImporter(BaseImporter):
     #     return contacts
 
     def is_elixir_submission(self, submission_dict):
-        return submission_dict['scope'] == 'e'
+        return submission_dict["scope"] == "e"
 
     def process_submission_as_dataset(self, submission_dict, project):
         try:
-            elu_accession = submission_dict['external_id']
+            elu_accession = submission_dict["external_id"]
         except KeyError:
-            raise DatasetImportError(data='submission without accession number')
+            raise DatasetImportError(data="submission without accession number")
 
         dataset = Dataset.objects.filter(title=elu_accession.strip()).first()
         if dataset is not None:
             msg = f"Dataset with title '{elu_accession.strip()}' already found. It will be updated."
             logger.warning(msg)
         else:
-
             dataset = Dataset.objects.create(title=elu_accession.strip())
 
         dataset.project = project
 
-        created_on_str = submission_dict['created_on']
-        title = submission_dict['name']
-        scope_str = 'Elixir' if submission_dict['scope'] == 'e' else 'LCSB Collaboration'
-        local_project_str = submission_dict.get('local_project', '')
+        created_on_str = submission_dict["created_on"]
+        title = submission_dict["name"]
+        scope_str = (
+            "Elixir" if submission_dict["scope"] == "e" else "LCSB Collaboration"
+        )
+        local_project_str = submission_dict.get("local_project", "")
         dataset.comments = f"ELU Accession: {elu_accession}\nTitle: {title}\nCreated On: {created_on_str}\nScope: {scope_str}\nSubmitted to Project: {local_project_str}"
 
-        local_custodians, local_personnel, external_contacts = self.process_contacts(submission_dict)
+        local_custodians, local_personnel, external_contacts = self.process_contacts(
+            submission_dict
+        )
 
         if local_custodians:
             dataset.local_custodians.set(local_custodians, clear=True)

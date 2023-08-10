@@ -5,25 +5,31 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0032_auto_20230508_1200'),
+        ("core", "0032_auto_20230508_1200"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='exposure',
-            name='form_name',
-            field=models.CharField(help_text='The REMS form name.', max_length=500, null=True),
+            model_name="exposure",
+            name="form_name",
+            field=models.CharField(
+                help_text="The REMS form name.", max_length=500, null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='endpoint',
-            name='api_key',
-            field=core.models.utils.HashedField(help_text="\n        * Please specify the API key to the endpoint,\n        head <a href='https://generate-random.org/api-key-generator?count=1&length=64&type=mixed-numbers&prefix=' target='_blank'> here </a>\n        to generate a random key and keep it somewhere, we only store a hash.\n        ", max_length=128, unique=True, verbose_name='API Key'),
+            model_name="endpoint",
+            name="api_key",
+            field=core.models.utils.HashedField(
+                help_text="\n        * Please specify the API key to the endpoint,\n        head <a href='https://generate-random.org/api-key-generator?count=1&length=64&type=mixed-numbers&prefix=' target='_blank'> here </a>\n        to generate a random key and keep it somewhere, we only store a hash.\n        ",
+                max_length=128,
+                unique=True,
+                verbose_name="API Key",
+            ),
         ),
         migrations.AlterField(
-            model_name='exposure',
-            name='form_id',
-            field=models.IntegerField(help_text='The REMS form of the dataset.'),
+            model_name="exposure",
+            name="form_id",
+            field=models.IntegerField(help_text="The REMS form of the dataset."),
         ),
     ]

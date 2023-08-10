@@ -4,19 +4,34 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0020_auto_20210713_1325'),
+        ("core", "0020_auto_20210713_1325"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='project',
-            name='dpia',
+            model_name="project",
+            name="dpia",
         ),
         migrations.AlterField(
-            model_name='document',
-            name='domain_type',
-            field=models.TextField(choices=[('not_specified', 'Not Specified'), ('agreement', 'Agreement'), ('ethics_approval', 'Ethics Approval'), ('consent_form', 'Consent Form'), ('subject_informationsheet', 'Subject InformationSheet'), ('project_proposal', 'Project Proposal'), ('data_protection_impact_assessment', 'Data Protection Impact Assessment'), ('other', 'Other')], default='not_specified', verbose_name='Domain Type'),
+            model_name="document",
+            name="domain_type",
+            field=models.TextField(
+                choices=[
+                    ("not_specified", "Not Specified"),
+                    ("agreement", "Agreement"),
+                    ("ethics_approval", "Ethics Approval"),
+                    ("consent_form", "Consent Form"),
+                    ("subject_informationsheet", "Subject InformationSheet"),
+                    ("project_proposal", "Project Proposal"),
+                    (
+                        "data_protection_impact_assessment",
+                        "Data Protection Impact Assessment",
+                    ),
+                    ("other", "Other"),
+                ],
+                default="not_specified",
+                verbose_name="Domain Type",
+            ),
         ),
     ]
