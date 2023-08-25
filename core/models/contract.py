@@ -201,6 +201,12 @@ class Contract(CoreModel):
         )
 
         d["local_custodians"] = ",".join(local_custodians)
+        
+        partners = map(
+            lambda v: f"[{v['partner']}, roles:{','.join(v['partner_roles'])}, comments:{v['comments']}]",
+            d["partners"],
+        )
+        d["partners"] = ",".join(partners)
 
         if "project" in d and d["project"]:
             d["project"] = d["project"].title
