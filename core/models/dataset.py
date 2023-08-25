@@ -207,8 +207,8 @@ class Dataset(CoreTrackedModel):
         data_declarations = map(lambda v: f"[{v['title']}]", d["data_declarations"])
         d["data_declarations"] = ",".join(data_declarations)
 
-        legal_bases = map(lambda v: f"[{v['platform']} {v['location']}]", d["storages"])
-        d["legal_bases"] = legal_bases
+        legal_bases = map(lambda v: f"[{v['legal_basis_codes']} {v['legal_basis_notes'] or ''}]", d['legal_bases'])
+        d['legal_bases'] = ','.join(legal_bases)
         return d
 
     def publish(self, save=True):
