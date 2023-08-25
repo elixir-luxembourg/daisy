@@ -59,10 +59,10 @@ class LegalBasis(CoreModel):
 
     def to_dict(self):
         return {
-            'legal_basis_codes': [x.code for x in self.legal_basis_types.all()],
-            'personal_data_codes': [x.code for x in self.personal_data_types.all()],
-            'legal_basis_notes': self.remarks,
-            'data_declarations': [x.title for x in self.data_declarations.all()]
+            "legal_basis_codes": [x.code for x in self.legal_basis_types.all()],
+            "personal_data_codes": [x.code for x in self.personal_data_types.all()],
+            "legal_basis_notes": self.remarks,
+            "data_declarations": [x.title for x in self.data_declarations.all()]
         }
 
     def serialize(self):
