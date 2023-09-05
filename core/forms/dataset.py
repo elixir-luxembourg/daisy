@@ -37,7 +37,7 @@ class SkipFieldValidationMixin:
 class DatasetForm(forms.ModelForm):
     class Meta:
         model = Dataset
-        fields = ["local_custodians", "elu_accession", "title", "comments"]
+        fields = ["local_custodians", "elu_accession", "title", "comments", "scientific_metadata"]
         exclude = ("is_published",)
         widgets = {
             "comments": forms.Textarea(attrs={"rows": 2, "cols": 40}),
