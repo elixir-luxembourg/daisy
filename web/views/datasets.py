@@ -218,7 +218,7 @@ def dataset_list(request):
     )
     return render(
         request,
-        "search/search_page.html",
+        "search/search_datasets.html",
         {
             "reset": True,
             "filters": request.GET.get("filters") or "",
