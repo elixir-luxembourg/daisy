@@ -97,10 +97,11 @@ class Cohort(CoreTrackedDBModel):
         d = self.to_dict()
 
         owners = map(
-            lambda v: f"[{v['first_name']} {v['last_name']}, {v['email']}]", d["contacts"]
+            lambda v: f"[{v['first_name']} {v['last_name']}, {v['email']}]",
+            d["contacts"],
         )
         d["owners"] = ",".join(owners)
-        del d['contacts']
+        del d["contacts"]
 
         institutes = map(lambda v: f"[{v.to_dict()['name']}]", self.institutes.all())
         d["institutes"] = ",".join(institutes)
