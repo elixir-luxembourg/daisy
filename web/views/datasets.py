@@ -218,7 +218,7 @@ def dataset_list(request):
     )
     return render(
         request,
-        "search/search_datasets.html",
+        "search/search_page.html",
         {
             "reset": True,
             "filters": request.GET.get("filters") or "",
@@ -228,7 +228,7 @@ def dataset_list(request):
             "title": "Datasets",
             "help_text": Dataset.AppMeta.help_text,
             "search_url": "datasets",
-            "add_url": "dataset_add",
+            "add_url": "wizard",
             "data": {"datasets": datasets},
             "results_template_name": "search/_items/datasets.html",
             "company_name": COMPANY,
