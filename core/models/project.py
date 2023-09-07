@@ -1,7 +1,7 @@
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.safestring import mark_safe
-
+from django.utils.module_loading import import_string
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from core import constants
@@ -296,7 +296,15 @@ class Project(CoreTrackedModel):
         return d
 
     def publish(self):
-        pass
+        """
+        An ELU accession will be generated if absent. This function is triggered by the dataset's publish method
+        and should be invoked only when an ELU accession can and should be generated.
+        """
+        if not self.elu_accession:
+            generate_id_function_path = getattr(settings, "IDSERVICE_FUNCTION")
+            generate_id_function = import_string(generate_id_function_path)
+            self.elu_accession = generate_id_function(self)
+            self.save()
 
 
 # faster lookup for permissions
