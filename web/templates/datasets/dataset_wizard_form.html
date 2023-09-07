@@ -7,8 +7,8 @@
 
 {% block content %}
     <div class="row">
-        <div class="jumbotron mt-5 py-2 pt-4 px-4 w-100">
-            <ul class="step-wizard-list">
+        <div class="mt-3 py-0 pt-3 w-100">
+            <ul class="step-wizard-list shadow-sm">
                 {% for step, step_verbose_name, skipped in steps_verbose_data %}
                     <li class="step-wizard-item {% if wizard.steps.current == step %}current-item{% endif %}">
                         <span class="progress-count {% if skipped %}skipped{% endif %}">{{ forloop.counter }}</span>
@@ -19,13 +19,6 @@
         </div>
 
         <div class="col-md-12 card">
-            <div class="d-flex justify-content-end mt-3">
-                {% if wizard.steps.step0 != 0 %}
-                    <a type="button" id="skipButton" class="btn btn-outline-secondary btn-raised float-left">
-                        <i class="material-icons" style="line-height:1.5;">skip_next</i>
-                    </a>
-                {% endif %}
-            </div>
             <form action="" method="post" class="form col-md-12 nice-selects" id="wizard-form">
                 {% csrf_token %}
                 <table>
@@ -44,8 +37,15 @@
                     {% else %}
                         <!-- If wizard.form.forms is empty or evaluates to False -->
                         <!-- Display form information -->
-                        <div class="jumbotron mt-2 p-4">
-                            <h1 class="display-4">{{ form.Meta.heading }}</h1>
+                        <div class="mt-2 p-0">
+                            <div class="d-flex justify-content-between mt-3">
+                                <h1 class="display-4">{{ form.Meta.heading }}</h1>
+                                {% if wizard.steps.step0 != 0 %}
+                                    <a type="button" id="skipButton" class="btn btn-secondary float-left text-secondary">
+                                        Skip <i class="material-icons" style="vertical-align: bottom;">skip_next</i>
+                                    </a>
+                                {% endif %}
+                            </div>
                             <p class="text-muted">{{ form.Meta.heading_help }}</p>
                         </div>
                         {% include '_includes/forms.html' with form=wizard.form %}
