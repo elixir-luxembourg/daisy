@@ -42,8 +42,8 @@ class DatasetForm(forms.ModelForm):
         widgets = {
             "comments": forms.Textarea(attrs={"rows": 2, "cols": 40}),
         }
-        heading = "Dataset"
-        heading_help = "Complete the form to enhance dataset quality. Your careful input benefits our community!"
+        heading = "Add new Dataset"
+        heading_help = "Provide basic information for the new dataset."
 
     def __init__(self, *args, **kwargs):
         dataset = None
