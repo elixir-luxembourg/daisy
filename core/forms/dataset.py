@@ -37,7 +37,13 @@ class SkipFieldValidationMixin:
 class DatasetForm(forms.ModelForm):
     class Meta:
         model = Dataset
-        fields = [ "title", "local_custodians", "sensitivity", "comments", "other_external_id"]
+        fields = [
+            "title",
+            "local_custodians",
+            "sensitivity",
+            "comments",
+            "other_external_id",
+        ]
         exclude = ("is_published",)
         widgets = {
             "comments": forms.Textarea(attrs={"rows": 2, "cols": 40}),
@@ -63,7 +69,13 @@ class DatasetForm(forms.ModelForm):
             label=Dataset.project.field.verbose_name,
             help_text=Dataset.project.field.help_text,
         )
-        self.fields_order = ["title", "local_custodians", "project", "comments", "other_external_id"]
+        self.fields_order = [
+            "title",
+            "local_custodians",
+            "project",
+            "comments",
+            "other_external_id",
+        ]
         self.order_fields(self.fields_order)
 
     def clean(self):
@@ -117,6 +129,7 @@ class DatasetFormEdit(DatasetForm):
         super().__init__(*args, **kwargs)
 
         self.fields["elu_accession"].disabled = True
+
 
 class ContractSelection(forms.Form):
     def __init__(self, *args, **kwargs):
