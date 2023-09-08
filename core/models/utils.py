@@ -47,7 +47,14 @@ class CoreModel(models.Model):
 
 
 class CoreTrackedModel(CoreModel):
-    elu_accession = models.CharField(unique=True, blank=True, null=True, max_length=20)
+    elu_accession = models.CharField(
+        unique=True,
+        blank=True,
+        null=True,
+        verbose_name="Accession number",
+        help_text="Unique persistent identifier of the record.",
+        max_length=20,
+    )
 
     scientific_metadata = models.TextField(
         default="{}",
