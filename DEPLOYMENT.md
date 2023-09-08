@@ -36,7 +36,7 @@ sudo /usr/local/bin/pip3.9 install gunicorn
 ## NPM and Node.js
 
 ```bash
-curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
+curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
 sudo yum install nodejs
 ```
 
@@ -675,6 +675,14 @@ systemctl start celery_beat
 ```
 
 # Migration
+## Daisy 1.7.12 to 1.7.13
+
+Update of nodejs is required:
+
+```bash
+curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
+sudo yum install nodejs
+```
 
 ## Daisy 1.7.0 to 1.7.1
 The migration introduced breaking change by updating python-keycloak to version `2.6.0`. If you are using Keycloak integration, update your `elixir_daisy/settings_local.py` file to contain **all** Keyclock related variables defined in README Keycloak [section](https://github.com/elixir-luxembourg/daisy/blob/master/README.md#keycloak).

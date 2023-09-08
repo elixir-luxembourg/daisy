@@ -43,6 +43,7 @@ class DatasetForm(forms.ModelForm):
             "sensitivity",
             "comments",
             "other_external_id",
+            "scientific_metadata",
         ]
         exclude = ("is_published",)
         widgets = {
