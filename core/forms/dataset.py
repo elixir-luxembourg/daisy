@@ -37,7 +37,7 @@ class SkipFieldValidationMixin:
 class DatasetForm(forms.ModelForm):
     class Meta:
         model = Dataset
-        fields = ["local_custodians", "elu_accession", "title", "comments"]
+        fields = [ "title", "local_custodians", "sensitivity", "comments", "other_external_id"]
         exclude = ("is_published",)
         widgets = {
             "comments": forms.Textarea(attrs={"rows": 2, "cols": 40}),
@@ -53,7 +53,6 @@ class DatasetForm(forms.ModelForm):
         self.fields["local_custodians"].queryset = User.objects.exclude(
             username="AnonymousUser"
         )
-        self.fields["elu_accession"].disabled = True
         projects = Project.objects.filter().all()
         project_choices = [(None, "---------------------")]
         project_choices.extend([(p.id, str(p)) for p in projects])
@@ -64,7 +63,7 @@ class DatasetForm(forms.ModelForm):
             label=Dataset.project.field.verbose_name,
             help_text=Dataset.project.field.help_text,
         )
-        self.fields_order = ["local_custodians", "title", "project", "comments"]
+        self.fields_order = ["title", "local_custodians", "project", "comments", "other_external_id"]
         self.order_fields(self.fields_order)
 
     def clean(self):
@@ -112,11 +111,12 @@ class DatasetForm(forms.ModelForm):
 
 class DatasetFormEdit(DatasetForm):
     class Meta(DatasetForm.Meta):
-        fields = DatasetForm.Meta.fields + ["other_external_id", "sensitivity"]
+        fields = DatasetForm.Meta.fields + ["elu_accession"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.fields["elu_accession"].disabled = True
 
 class ContractSelection(forms.Form):
     def __init__(self, *args, **kwargs):
