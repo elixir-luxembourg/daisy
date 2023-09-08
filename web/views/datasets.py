@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
+from django.contrib import messages
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from formtools.wizard.views import NamedUrlSessionWizardView
 from django.http import HttpResponseRedirect, Http404
@@ -50,6 +51,10 @@ class DatasetWizardView(NamedUrlSessionWizardView):
         dataset_id = self.storage.extra_data.get("dataset_id")
         self.storage.reset()
         if dataset_id:
+            messages.success(
+                self.request,
+                "Your dataset was created successfully. You can add more details below.",
+            )
             done_response = HttpResponseRedirect(
                 reverse_lazy("dataset", kwargs={"pk": dataset_id})
             )
