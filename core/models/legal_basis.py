@@ -61,7 +61,7 @@ class LegalBasis(CoreModel):
         return {
             "legal_basis_codes": [x.code for x in self.legal_basis_types.all()],
             "personal_data_codes": [x.code for x in self.personal_data_types.all()],
-            "legal_basis_notes": self.remarks if self.remarks else None,
+            "legal_basis_notes": self.remarks,
             "data_declarations": [x.title for x in self.data_declarations.all()],
         }
 
