@@ -2,7 +2,7 @@ FROM python:3.9.6-slim
 ENV PYTHONUNBUFFERED 1
 RUN mkdir -p /code/log /static \
     && apt-get update \
-    && apt-get install -yq libsasl2-dev python-dev libldap2-dev git libssl-dev build-essential \
+    && apt-get install -yq libsasl2-dev python-dev libldap2-dev git libssl-dev build-essential wget \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /code
 
@@ -14,3 +14,17 @@ RUN pip install --no-cache-dir -e . 2>/dev/null || true
 COPY . /code/
 # ... and this will be blazing fast
 RUN pip install --no-cache-dir -e .
+
+# Install node 
+RUN apt-get update \
+    && apt-get install -y ca-certificates curl gnupg
+RUN mkdir -p /etc/apt/keyrings
+RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+RUN apt-get update \
+    && apt-get install -y nodejs
+
+# Install npm dependencies
+RUN cd /code/web/static/vendor \
+    && npm ci \
+    && npm run-script build
