@@ -4,16 +4,6 @@ RUN mkdir -p /code/log /static \
     && apt-get update \
     && apt-get install -yq libsasl2-dev python-dev libldap2-dev git libssl-dev build-essential wget \
     && rm -rf /var/lib/apt/lists/*
-WORKDIR /code
-
-# Copy the list of Python dependencies
-COPY ./setup.py /code/.
-# Try to install as many Python dependencies as possible...
-RUN pip install --no-cache-dir -e . 2>/dev/null || true
-# ... so that next time the project changes, the previous steps will be cached...
-COPY . /code/
-# ... and this will be blazing fast
-RUN pip install --no-cache-dir -e .
 
 # Install node 
 RUN apt-get update \
@@ -24,7 +14,20 @@ RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesourc
 RUN apt-get update \
     && apt-get install -y nodejs
 
+COPY web/static /static
+
 # Install npm dependencies
-RUN cd /code/web/static/vendor \
+RUN cd /static/vendor \
     && npm ci \
     && npm run-script build
+
+WORKDIR /code
+
+# Copy the list of Python dependencies
+COPY ./setup.py /code/.
+# Try to install as many Python dependencies as possible...
+RUN pip install --no-cache-dir -e . 2>/dev/null || true
+# ... so that next time the project changes, the previous steps will be cached...
+COPY . /code/
+# ... and this will be blazing fast
+RUN pip install --no-cache-dir -e .
