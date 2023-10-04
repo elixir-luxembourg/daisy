@@ -1,13 +1,6 @@
 version: '3'
 
 services:
-    # dummy node image @install time to compile assets
-    node:
-        build:
-            context: ./
-            dockerfile: ./docker/node/Dockerfile
-        volumes:
-            - statics:/static
     # web app
     web:
         build: .
@@ -23,7 +16,6 @@ services:
             - "5000:5000"
         depends_on:
             - db
-            - node
             - solr
             - mq
         command: gunicorn --reload -w 2 -b :5000 --pid /run/gunicorn.pid elixir_daisy.wsgi
@@ -50,7 +42,6 @@ services:
             - '443:443'
         depends_on:
             - web
-            - node
     # FTS db
     solr:
         build: ./docker/solr
