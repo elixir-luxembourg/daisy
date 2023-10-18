@@ -9,7 +9,7 @@ class ProfileEditView(UpdateView):
     model = NotificationSetting
     template_name = "profile.html"
     # form_class = ProfileForm
-    fields = ("style",)
+    fields = ("email_notification", "app_notification", "notification_offset")
 
     def get_success_url(self):
         return reverse_lazy("profile")

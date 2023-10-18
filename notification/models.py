@@ -36,10 +36,12 @@ class NotificationSetting(models.Model):
     user = models.OneToOneField(
         "core.User", related_name="notification_setting", on_delete=models.CASCADE
     )
-    style = EnumChoiceField(NotificationStyle, default=NotificationStyle.never)
+    email_notification = models.BooleanField(default=False)
+    app_notification = models.BooleanField(default=True)
+    notification_offset = models.PositiveSmallIntegerField(default=90)
 
     def __str__(self):
-        return f"{self.user}: {self.style}"
+        return f"{self.user}: {self.notification_offset} days"
 
 
 class NotificationQuerySet(models.QuerySet):
@@ -63,6 +65,11 @@ class Notification(models.Model):
         "core.User", related_name="notifications", on_delete=models.CASCADE
     )
     verb = EnumChoiceField(NotificationVerb)
+    sent_in_app = models.BooleanField(default=False)
+    sent_by_email = models.BooleanField(default=False)
+    dismissed = models.BooleanField(default=False)
+
+    message = models.TextField(default="")
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
