@@ -4,49 +4,48 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('notification', '0003_auto_20220726_1343'),
+        ("notification", "0003_auto_20220726_1343"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='notificationsetting',
-            name='style',
+            model_name="notificationsetting",
+            name="style",
         ),
         migrations.AddField(
-            model_name='notification',
-            name='dismissed',
+            model_name="notification",
+            name="dismissed",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='notification',
-            name='message',
-            field=models.TextField(default=''),
+            model_name="notification",
+            name="message",
+            field=models.TextField(default=""),
         ),
         migrations.AddField(
-            model_name='notification',
-            name='sent_by_email',
+            model_name="notification",
+            name="sent_by_email",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='notification',
-            name='sent_in_app',
+            model_name="notification",
+            name="sent_in_app",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='notificationsetting',
-            name='notification_offset',
+            model_name="notificationsetting",
+            name="notification_offset",
             field=models.PositiveSmallIntegerField(default=90),
         ),
         migrations.AddField(
-            model_name='notificationsetting',
-            name='send_email',
+            model_name="notificationsetting",
+            name="send_email",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='notificationsetting',
-            name='send_in_app',
+            model_name="notificationsetting",
+            name="send_in_app",
             field=models.BooleanField(default=True),
         ),
     ]
