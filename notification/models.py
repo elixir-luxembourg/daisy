@@ -36,8 +36,8 @@ class NotificationSetting(models.Model):
     user = models.OneToOneField(
         "core.User", related_name="notification_setting", on_delete=models.CASCADE
     )
-    email_notification = models.BooleanField(default=False)
-    app_notification = models.BooleanField(default=True)
+    send_email = models.BooleanField(default=False)
+    send_in_app = models.BooleanField(default=True)
     notification_offset = models.PositiveSmallIntegerField(default=90)
 
     def __str__(self):
