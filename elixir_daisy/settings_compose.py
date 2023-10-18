@@ -72,6 +72,10 @@ TESTING = os.environ.get("TEST", False)
 
 # import also local settings
 try:
+    from .settings_local import *
+except ImportError as e:
+    pass
+try:
     if TESTING:
         from .settings_ci import *
 except ImportError as e:
