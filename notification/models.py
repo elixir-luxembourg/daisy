@@ -102,4 +102,4 @@ class Notification(models.Model):
         )
 
     def __str__(self):
-        return f"N: {self.actor} {self.verb} {self.object_id} {self.time}"
+        return f"N: {self.recipient} {self.verb} {self.object_id} {self.time}"
