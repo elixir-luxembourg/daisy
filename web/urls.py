@@ -65,6 +65,7 @@ from web.views.export import (
     partners_export,
     projects_export,
 )
+from web.views.importer import import_data
 from web.views.partner import (
     PartnerCreateView,
     PartnerDelete,
@@ -485,4 +486,5 @@ web_urls = [
     ),
     # Activity log
     path("history/", LogEntryListView.as_view(), name="history"),
+    path("import_data/<str:model_type>/", import_data, name="import_data"),
 ]

@@ -1,0 +1,58 @@
+<style>
+    .log-container {
+        max-height: 500px;
+        overflow-y: auto;
+        white-space: pre-line;
+    }
+</style>
+<div id="importForm">
+    {% if form %}
+        <!-- Display the form -->
+        <form class="form col-md-12 nice-selects" method="post" enctype="multipart/form-data" novalidate
+              action="{% url 'import_data' model_type=model_type %}">
+            {% csrf_token %}
+            <!-- File Upload Field -->
+            <div class="form-group required">
+                <strong>{{ form.file.label_tag }}</strong>
+                <input type="file" name="{{ form.file.name }}" class="form-control" required
+                       id="{{ form.file.id_for_label }}" accept=".json">
+                {% if form.file.errors %}
+                    <div class="text-danger">
+                        {{ form.file.errors|striptags }}
+                    </div>
+                {% endif %}
+            </div>
+            <button id="ajaxSubmitButton" type="button" class="btn btn-primary btn-raised btn-block">Submit</button>
+        </form>
+    {% else %}
+        <div class="p-0">
+            <!-- Display output message -->
+            {% if output.message %}
+
+                <div class="alert alert-{% if output.success %}success{% else %}info{% endif %} rounded" role="alert">
+                    <strong>Output:</strong>
+                    <p>{{ output.message|linebreaksbr }}</p>
+                </div>
+            {% endif %}
+            <!-- Display error -->
+            {% if output.error %}
+                <div class="alert alert-danger rounded" role="alert">
+                    <strong>Error:</strong>
+                    <p>{{ output.error|linebreaksbr }}</p>
+                </div>
+            {% endif %}
+
+            <!-- Display logs -->
+            {% if output.logs %}
+                <div class="alert alert-secondary rounded" role="alert">
+                    <strong> Logs:</strong>
+                    <div class="log-container">
+                        <p>{{ output.logs|linebreaksbr }}</p>
+                    </div>
+                </div>
+            {% endif %}
+
+
+        </div>
+    {% endif %}
+</div>
