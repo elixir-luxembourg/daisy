@@ -23,10 +23,11 @@ class NotificationStyle(ChoiceEnum):
 
 
 class NotificationVerb(ChoiceEnum):
-    new_dataset = "New dataset"
-    update_dataset = "Dataset update"
-    data_storage_expiry = "Data storage expiry"
-    document_expiry = "Document expiry"
+    expiration = "expiration"
+    start = "start"
+    end = "end"
+    embargo_start = "embargo_start"
+    embargo_end = "embargo_end"
 
 
 class NotificationSetting(models.Model):
@@ -61,7 +62,7 @@ class Notification(models.Model):
     class Meta:
         app_label = "notification"
 
-    actor = models.ForeignKey(
+    recipient = models.ForeignKey(
         "core.User", related_name="notifications", on_delete=models.CASCADE
     )
     verb = EnumChoiceField(NotificationVerb)
