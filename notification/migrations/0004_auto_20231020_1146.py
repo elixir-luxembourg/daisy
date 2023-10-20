@@ -55,17 +55,27 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="notificationsetting",
             name="notification_offset",
-            field=models.PositiveSmallIntegerField(default=90),
+            field=models.PositiveSmallIntegerField(
+                default=90,
+                help_text="Define how many days before the actual event you want to receive the notification",
+                verbose_name="Notification time",
+            ),
         ),
         migrations.AddField(
             model_name="notificationsetting",
             name="send_email",
-            field=models.BooleanField(default=False),
+            field=models.BooleanField(
+                default=False,
+                help_text="Notifications will be send directly to your email. See your [profile page] for more detail.",
+            ),
         ),
         migrations.AddField(
             model_name="notificationsetting",
             name="send_in_app",
-            field=models.BooleanField(default=True),
+            field=models.BooleanField(
+                default=True,
+                help_text="Notification will be displayed in DAISY interface",
+            ),
         ),
         migrations.AlterField(
             model_name="notification",

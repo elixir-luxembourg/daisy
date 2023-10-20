@@ -38,9 +38,19 @@ class NotificationSetting(models.Model):
     user = models.OneToOneField(
         get_user_model(), related_name="notification_setting", on_delete=models.CASCADE
     )
-    send_email = models.BooleanField(default=False)
-    send_in_app = models.BooleanField(default=True)
-    notification_offset = models.PositiveSmallIntegerField(default=90)
+    send_email = models.BooleanField(
+        default=False,
+        help_text="Notifications will be send directly to your email. See your [profile page] for more detail.",
+    )
+    send_in_app = models.BooleanField(
+        default=True,
+        help_text="Notification will be displayed in DAISY interface",
+    )
+    notification_offset = models.PositiveSmallIntegerField(
+        default=90,
+        verbose_name="Notification time",
+        help_text="Define how many days before the actual event you want to receive the notification",
+    )
 
     def __str__(self):
         return f"{self.user}: {self.notification_offset} days"
