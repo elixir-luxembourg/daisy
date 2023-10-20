@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.apps import apps
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth import get_user_model
 
 from django.conf import settings
 
@@ -23,7 +24,7 @@ class NotificationStyle(ChoiceEnum):
 
 
 class NotificationVerb(ChoiceEnum):
-    expiration = "expiration"
+    expire = "expire"
     start = "start"
     end = "end"
     embargo_start = "embargo_start"
@@ -35,7 +36,7 @@ class NotificationSetting(models.Model):
         app_label = "notification"
 
     user = models.OneToOneField(
-        "core.User", related_name="notification_setting", on_delete=models.CASCADE
+        get_user_model(), related_name="notification_setting", on_delete=models.CASCADE
     )
     send_email = models.BooleanField(default=False)
     send_in_app = models.BooleanField(default=True)
@@ -63,7 +64,7 @@ class Notification(models.Model):
         app_label = "notification"
 
     recipient = models.ForeignKey(
-        "core.User", related_name="notifications", on_delete=models.CASCADE
+        get_user_model(), related_name="notifications", on_delete=models.CASCADE
     )
     verb = EnumChoiceField(NotificationVerb)
     sent_in_app = models.BooleanField(default=True)
