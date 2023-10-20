@@ -368,14 +368,6 @@ web_urls = [
         name="document_download",
     ),
     path("documents/<int:pk>/edit/", documents.document_edit, name="document_edit"),
-    # Notifications
-    path("notifications/", notifications.index, name="notifications"),
-    path("notifications/admin", notifications.admin, name="notifications_admin"),
-    path(
-        "notifications/admin/<int:pk>",
-        notifications.admin,
-        name="notifications_admin_for_user",
-    ),
     # Permissions
     path("permissions/", permissions.index, name="permissions"),
     path(

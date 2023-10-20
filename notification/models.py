@@ -102,7 +102,8 @@ class Notification(models.Model):
             return reverse("contract", args=[str(self.object_id)])
         elif self.content_type.model_class() == apps.get_model("core.Project"):
             return reverse("project", args=[str(self.object_id)])
-        raise Exception("No url defined for this content type")
+        else:
+            return None
 
     def get_full_url(self):
         """

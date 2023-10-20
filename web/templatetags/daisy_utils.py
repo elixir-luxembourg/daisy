@@ -36,6 +36,14 @@ def can_see_protected(user, obj: Union[Project, Contract, Dataset]):
     return has_perm
 
 
+@register.filter
+def is_part_of_group(user, group_name):
+    """
+    Returns true if the user is part of the group given as argument, False otherwise
+    """
+    return user.is_part_of(group_name)
+
+
 # @register.simple_tag
 # def url_replace_facet(request, field, value):
 

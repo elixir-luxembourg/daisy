@@ -1,0 +1,58 @@
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_processing,
+.dataTables_wrapper .dataTables_paginate {
+  display: flex;
+  color: #333333;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  min-width: 2.6em;
+  margin-right: 0.5em;
+  text-align: center;
+  border-radius: 4em;
+  position: relative;
+  display: block;
+  padding: 0.5rem 0.75rem;
+  margin-left: 0;
+  line-height: 1.25;
+  color: #023452 !important;
+  background: transparent !important;
+  border: 0 solid #dee2e6 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  z-index: 2;
+  text-decoration: none;
+  color: #000507 !important;
+  background-color: #e9ecef !important;
+  border-color: #dee2e6 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:active,
+.dataTables_wrapper .dataTables_paginate .paginate_button:not(:disabled):not(.disabled).active,
+.dataTables_wrapper .dataTables_paginate .paginate_button:not(:disabled):not(.disabled).active:hover,
+.dataTables_wrapper .dataTables_paginate .paginate_button:not(:disabled):not(.disabled).current,
+.dataTables_wrapper .dataTables_paginate .paginate_button:not(:disabled):not(.disabled).current:hover {
+  z-index: 1;
+  color: #fff !important;
+  background-color: #023452 !important;
+  border-color: #023452 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:focus {
+  z-index: 2;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(2, 52, 82, 0.25);
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active {
+  cursor: default;
+  color: #666 !important;
+  border: 0 solid transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
