@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prepare": "npm run build",
     "build": "npm run build:css && npm run build:css-min && npm run build:js",
     "watch": "concurrently --kill-others --names \"css\"  \"npm run watch:css\"",
     "watch:css": "npm run build:css && npm run build:css -- --watch",
     "build:js": "webpack --mode production",
+    "watch:js": "webpack --mode development --watch",
     "build:css": "node-sass --importer=node_modules/node-sass-tilde-importer ../css/daisy.scss  ../css/daisy.css",
     "build:css-min": "cssnano ../css/daisy.css ../css/daisy.min.css"
   },
@@ -20,11 +20,12 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@babel/core": "^7.23.2",
+    "@babel/plugin-transform-class-properties": "^7.22.5",
     "@babel/plugin-transform-runtime": "^7.23.2",
     "@babel/preset-env": "^7.23.2",
     "@babel/preset-react": "^7.22.15",
-    "babel-loader": "^8.2.2",
     "@ds-wizard/integration-widget-sdk": "^0.3.0",
+    "babel-loader": "^8.2.2",
     "bootstrap": "4.2.1",
     "bootstrap-material-design": "4.1.1",
     "datatables.net": "1.10.19",
@@ -44,6 +45,10 @@
     "webpack-cli": "^5.1.4"
   },
   "devDependencies": {
+    "@types/react": "^18.2.31",
+    "@types/react-dom": "^18.2.14",
+    "@typescript-eslint/eslint-plugin": "^6.9.0",
+    "@typescript-eslint/parser": "^6.9.0",
     "concurrently": "4.1.0",
     "cssnano-cli": "1.0.5",
     "eslint": "^8.52.0",

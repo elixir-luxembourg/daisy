@@ -1,41 +1,26 @@
-const webpack = require('webpack');
+const webpack = require("webpack");
 
 module.exports = {
-    mode: 'production',
+    mode: "production",
     entry: {
-        notification: './components/index_notif.jsx',
+        notification: "./components/notification/index_notif.tsx",
     },
     output: {
-        filename: '/static/js/react/[name].bundle.js'
+        filename: "../../js/[name].bundle.js"
     },
-    devtool: 'inline-source-map',
+    resolve: {
+        extensions: [".tsx", ".ts", ".jsx", ".js"]
+    },
+    devtool: "inline-source-map",
     module: {
         rules: [
 
             // First Rule
             {
-                test: /\.(jsx?)$/,
+                test: /\.(tsx?)$/,
                 exclude: /node_modules/,
-                use: ['babel-loader']
+                use: ["babel-loader"]
             },
-
-            // Second Rule
-            {
-                test: /\.css$/,
-                use: [
-                    {
-                        loader: 'style-loader'
-                    },
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            modules: true,
-                            localsConvention: 'camelCase',
-                            sourceMap: true
-                        }
-                    }
-                ]
-            }
         ]
     },
 };

@@ -4,7 +4,7 @@ from notification.views import (
     NotificationsListView,
     NotificationSettingEditView,
 )
-from notification.api import dismiss_notification
+from notification.api import api_dismiss_notification, api_get_notifications
 
 notif_urls = [
     # Notifications
@@ -29,5 +29,6 @@ notif_urls = [
         name="notifications_settings",
     ),
     # API
-    path("/api/dismiss/<int:pk>", dismiss_notification, name="dismiss"),
+    path("api/notifications", api_get_notifications, name="api_notifications"),
+    path("api/dismiss/<int:pk>", api_dismiss_notification, name="api_dismiss"),
 ]

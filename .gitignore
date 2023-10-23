@@ -164,7 +164,7 @@ fabric.properties
 elixir_daisy/settings_local.py
 static/css/*
 web/static/vendor/node_modules/*
-
+web/static/js/*.bundle.js
 
 
 /log/*.log
