@@ -1,19 +1,20 @@
 import uuid
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.utils.module_loading import import_string
-
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
+
 from core import constants
 from core.permissions.mapping import PERMISSION_MAPPING
-
+from notification import NotifyMixin
 from .utils import CoreTrackedModel, TextFieldWithInputWidget
 from .partner import HomeOrganisation
 
 
-class Dataset(CoreTrackedModel):
+class Dataset(CoreTrackedModel, NotifyMixin):
     class Meta:
         app_label = "core"
         get_latest_by = "added"
@@ -226,6 +227,13 @@ class Dataset(CoreTrackedModel):
 
         for data_declaration in self.data_declarations.all():
             data_declaration.publish_subentities()
+
+    def get_notification_recipients():
+        """
+        Get distinct users that are local custodian of a dataset.
+        """
+
+        return get_user_model().objects.filter(datasets__isnull=False).distinct()
 
 
 # faster lookup for permissions

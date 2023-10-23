@@ -28,10 +28,6 @@ def create_notifications_for_entities():
     """
     now = timezone.now()
 
-    # Get all the users that are local custodians of a contract
-
-    pass
-
 
 @shared_task
 def send_notifications_for_user_by_time(user_id, time):
