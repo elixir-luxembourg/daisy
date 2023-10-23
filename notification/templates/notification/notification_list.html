@@ -1,12 +1,6 @@
 {% extends 'layout.html' %}
 {% load static %}
 
-{% block head_end %}
-    {{ block.super }}
-    <link href="{% static 'notification/css/datatables.css' %}" rel="stylesheet"/>
-
-{% endblock %}
-
 {% block content %}
     <div class="row mt-4">
         <div class="jumbotron col">
@@ -16,107 +10,10 @@
         </div>
     </div>
 
+    <div id="react-notifications"></div>
 
-    {% if form %}
-    <div class="row mt-4">
-        <div class="card col">
-            <div class="card-body">
-                <h2 class="card-title">Filter by user</h2>
-                {% include '_includes/forms.html' with method='get' %}
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-
-    {% regroup object_list|dictsort:"content_type.id" by content_type as notifications_per_model %}
-    {% for model in notifications_per_model|dictsort:"grouper.model" %}
-    <div class="row mt-4 accordion">
-        <div class="card col px-0">
-            <div
-                id="accordion-header-{{ model.grouper.model }}"
-                class="card-header btn btn-link"
-                data-toggle="collapse"
-                data-target="#accordion-body-{{ model.grouper.model }}"
-                aria-expanded="false"
-                aria-controls="accordion-body-{{ model.grouper.model }}"
-            >
-                <h2 class="card-title">{{ model.grouper.model | title }} Notifications</h2>
-            </div>
-            <div id="accordion-body-{{ model.grouper.model }}" class="collapse">
-                <div class="card-body">
-                    <div id="form-container-{{ model.grouper.model }}" class="card-text">
-                        <table id="{{ model.grouper.model }}-notifications-dt" class="table table-borderless table-sm display notifications-dt">
-                            <thead>
-                                <tr>
-                                    {% if admin %}
-                                        <th scope="col">Recipient</th>
-                                    {% endif %}
-                                    <th scope="col">{{ model.grouper.model | title }}</th>
-                                    <th scope="col">Description</th>
-                                    <th scope="col">Received on</th>
-                                    <th scope="col">Event date</th>
-                                    {% if not admin %}
-                                        <th scope="col">Dismissed</th>
-                                        <th scope="col" class="text-center"><a href="#" class="btn btn-link p-0">Dismiss all</a></th>
-                                    {% endif %}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for n in model.list %}
-                                    <tr>
-                                        {% if admin %}
-                                            <td>{{ n.recipient }}</td>
-                                        {% endif %}
-                                        <td>
-                                            {% with object_url=n.get_absolute_url %}
-                                            <a {% if object_url is not None %}href="{{ object_url }}"{% endif %}>{{ n.content_object }}</a>
-                                            {% endwith %}
-                                        </td>
-                                        <td>{{ n.message }}</td>
-                                        <td>{{ n.time }}</td>
-                                        <td>{{ n.event_time }}</td>
-                                        {% if not admin %}
-                                            <td>{{ n.dismissed }}</td>
-                                            <td class="text-center">{% if not n.dismissed %}<a href="#">Dismiss</a>{% endif %}</td>
-                                        {% endif %}
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                {% include '_includes/pagination.html' with page_object=page_obj url=submit_url %}
-            </div>
-        </div>
-    </div>
-    {% empty %}
-    <div class="row mt-4">
-        <div class="card col">
-            <div class="card-header">
-                <h2 class="card-title">Notifications</h2>
-            </div>
-            <div class="card-body">
-                <div class="card-text">
-                    <h5>No notification was ever sent to selected user.</h5>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-
-<!--    <div class="row mt-4">-->
-<!--        <div class="col-2"></div>-->
-<!--        <div class="card pt-4 mt-4 col">-->
-<!--            {% include '_includes/pagination.html' with page_object=page_obj url=submit_url %}-->
-<!--        </div>-->
-<!--        <div class="col-2"></div>-->
-<!--    </div>-->
-
-{% endblock content %}
+{% endblock %}
 
 {% block js %}
-    {{ block.super }}
-    <script src="{% static 'notification/js/datatables.js' %}" type="module"></script>
-{% endblock js %}
-
+    <script src="{% static 'js/notification.bundle.js' %}"></script>
+{% endblock %}
