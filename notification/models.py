@@ -3,6 +3,8 @@ model classes based on http://activitystrea.ms/specs/json/1.0/
 
 Notification class does not have any target at the moment.
 """
+from datetime import datetime
+
 from django.db import models
 from django.urls import reverse
 from django.apps import apps
@@ -114,6 +116,10 @@ class Notification(models.Model):
             settings.SERVER_URL,
             self.get_absolute_url(),
         )
+
+    @property
+    def event_time(self):
+        return datetime.now()
 
     def __str__(self):
         return f"N: {self.recipient} {self.verb} {self.object_id} {self.time}"

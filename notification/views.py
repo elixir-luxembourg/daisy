@@ -39,7 +39,6 @@ class NotificationSettingEditView(UpdateView):
 class NotificationsListView(ListView):
     model = Notification
     template_name = "notification/notification_list.html"
-    paginate_by = 20
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()

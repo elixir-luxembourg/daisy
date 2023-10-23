@@ -7,6 +7,10 @@
   color: #333333;
 }
 
+.dataTables_wrapper .dataTables_paginate span {
+  display: flex;
+}
+
 .dataTables_wrapper .dataTables_paginate .paginate_button {
   min-width: 2.6em;
   margin-right: 0.5em;

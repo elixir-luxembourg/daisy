@@ -11,6 +11,8 @@
     <div class="row mt-4">
         <div class="jumbotron col">
             <h1 class="display-4">Notifications</h1>
+            <hr />
+            <p>If you would like to change the way DAISY handles your notifications, please update your <a href="{% url 'notifications_settings' %}">notifications settings</a>.</p>
         </div>
     </div>
 
@@ -27,7 +29,7 @@
     {% endif %}
 
 
-    {% regroup object_list by content_type as notifications_per_model %}
+    {% regroup object_list|dictsort:"content_type.id" by content_type as notifications_per_model %}
     {% for model in notifications_per_model|dictsort:"grouper.model" %}
     <div class="row mt-4 accordion">
         <div class="card col px-0">
@@ -44,15 +46,20 @@
             <div id="accordion-body-{{ model.grouper.model }}" class="collapse">
                 <div class="card-body">
                     <div id="form-container-{{ model.grouper.model }}" class="card-text">
-                        <table id="{{ model.grouper.model}}-notifications-dt" class="table table-borderless table-sm display notifications-dt">
+                        <table id="{{ model.grouper.model }}-notifications-dt" class="table table-borderless table-sm display notifications-dt">
                             <thead>
                                 <tr>
                                     {% if admin %}
                                         <th scope="col">Recipient</th>
                                     {% endif %}
-                                    <th scope="col">Action</th>
-                                    <th scope="col">Target</th>
-                                    <th scope="col">Datetime</th>
+                                    <th scope="col">{{ model.grouper.model | title }}</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Received on</th>
+                                    <th scope="col">Event date</th>
+                                    {% if not admin %}
+                                        <th scope="col">Dismissed</th>
+                                        <th scope="col" class="text-center"><a href="#" class="btn btn-link p-0">Dismiss all</a></th>
+                                    {% endif %}
                                 </tr>
                             </thead>
                             <tbody>
@@ -61,12 +68,18 @@
                                         {% if admin %}
                                             <td>{{ n.recipient }}</td>
                                         {% endif %}
-                                        <td>{{ n.verb }}</td>
                                         <td>
                                             {% with object_url=n.get_absolute_url %}
-                                            <a {% if object_url is not None %}href="{{ object_url }}"{% endif %}>{{ n.content_object }}</a></td>
+                                            <a {% if object_url is not None %}href="{{ object_url }}"{% endif %}>{{ n.content_object }}</a>
                                             {% endwith %}
+                                        </td>
+                                        <td>{{ n.message }}</td>
                                         <td>{{ n.time }}</td>
+                                        <td>{{ n.event_time }}</td>
+                                        {% if not admin %}
+                                            <td>{{ n.dismissed }}</td>
+                                            <td class="text-center">{% if not n.dismissed %}<a href="#">Dismiss</a>{% endif %}</td>
+                                        {% endif %}
                                     </tr>
                                 {% endfor %}
                             </tbody>
