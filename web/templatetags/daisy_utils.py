@@ -30,7 +30,7 @@ def form_add_class(field, css_class):
     return field.as_widget(attrs={"class": css_class})
 
 
-@register.filter(name='has_group')
+@register.filter(name="has_group")
 def has_group(user, group_name):
     return user.groups.filter(name=group_name).exists()
 
