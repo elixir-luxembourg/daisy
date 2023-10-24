@@ -1,13 +1,10 @@
 {
-  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.5/schemas/elu-core.json",
+  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.6/schemas/elu-core.json",
   "title": "ELIXIR Luxembourg Core json schema",
   "description": "Schema containing core attributes for any json serialisable ELIXIR Luxembourg record.",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
-  "required": [
-    "source",
-    "name"
-  ],
+  "required": ["source", "name"],
   "properties": {
     "source": {
       "type": "string",
@@ -20,7 +17,7 @@
       "type": "string"
     },
     "description": {
-      "type":  ["string", "null"]
+      "type": ["string", "null"]
     },
     "external_id": {
       "type": ["string", "null"]
@@ -32,7 +29,7 @@
       "type": ["string", "null"]
     },
     "url": {
-      "type":  ["string", "null"]
+      "type": ["string", "null"]
     },
     "contacts": {
       "type": "array",
@@ -46,7 +43,6 @@
             "type": "string"
           },
           "role": {
-            "type": "string",
             "enum": [
               "Principal_Investigator",
               "Researcher",
@@ -70,15 +66,8 @@
             }
           }
         },
-        "required": [
-          "first_name",
-          "last_name",
-          "role",
-          "email",
-          "affiliations"
-        ]
+        "required": ["first_name", "last_name", "role", "email", "affiliations"]
       }
     }
   }
 }
-
