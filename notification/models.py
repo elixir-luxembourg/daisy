@@ -77,6 +77,8 @@ class Notification(models.Model):
         get_user_model(), related_name="notifications", on_delete=models.CASCADE
     )
     verb = EnumChoiceField(NotificationVerb)
+    on = models.DateTimeField(null=True, blank=True, default=None)
+
     sent_in_app = models.BooleanField(default=True)
     sent_by_email = models.BooleanField(default=False)
     dismissed = models.BooleanField(default=False)
