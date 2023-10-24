@@ -293,7 +293,7 @@ class DataDeclaration(CoreModel):
             "de_identification": self.deidentification_method.name
             if self.deidentification_method
             else None,
-            "consent_status": self.consent_status.name if self.consent_status else None,
+            "consent_status": self.consent_status.name if self.consent_status != ConsentStatus.unknown else None,
             "has_special_subjects": self.has_special_subjects,
             "special_subjects_description": self.special_subjects_description,
             "embargo_date": self.embargo_date.strftime("%Y-%m-%d")
