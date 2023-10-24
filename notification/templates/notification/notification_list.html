@@ -1,6 +1,11 @@
 {% extends 'layout.html' %}
 {% load static %}
 
+{% block head_end %}
+    {{ block.super }}
+    <link href="{% static 'notification/css/notification.css' %}" rel="stylesheet"/>
+{% endblock %}
+
 {% block content %}
     <div class="row mt-4">
         <div class="jumbotron col">

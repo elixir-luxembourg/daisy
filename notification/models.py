@@ -121,5 +121,25 @@ class Notification(models.Model):
     def event_time(self):
         return datetime.now()
 
+    def to_json(self):
+        user_json = (
+            self.recipient.to_json()
+            if hasattr(self.recipient, "to_json")
+            else {"id": self.recipient.id, "name": self.recipient.get_full_name()}
+        )
+        return {
+            "id": self.id,
+            "recipient": user_json,
+            "verb": self.verb.value,
+            "on": self.on,
+            "time": self.time,
+            "sentInApp": self.sent_in_app,
+            "sentByEmail": self.sent_by_email,
+            "dismissed": self.dismissed,
+            "message": self.message,
+            "objectType": self.content_type.name,
+            "objectName": self.content_object.__str__(),
+        }
+
     def __str__(self):
         return f"N: {self.recipient} {self.verb} {self.object_id} {self.time}"

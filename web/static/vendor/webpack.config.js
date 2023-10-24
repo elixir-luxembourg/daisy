@@ -15,12 +15,24 @@ module.exports = {
     module: {
         rules: [
 
-            // First Rule
+            // First Rule: JavaScript JS/JSX files
             {
-                test: /\.(tsx?)$/,
+                test: /\.(jsx?)$/,
                 exclude: /node_modules/,
                 use: ["babel-loader"]
             },
+            // Second Rule: TypeScript TS/TSX files
+            {
+                test: /\.(tsx?)$/,
+                exclude: /node_modules/,
+                use: ["ts-loader"]
+            },
+            // Third rule: Image files
+            {
+                test: /\.(gif|png|jpg|jpeg)$/,
+                exclude: /node_modules/,
+                type: "asset/resource"
+            }
         ]
     },
 };

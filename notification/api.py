@@ -3,15 +3,18 @@ import json
 from django.views.decorators.http import require_http_methods
 from django.core.exceptions import PermissionDenied
 from django.db.models import QuerySet
+from django.http import JsonResponse
 
 from notification.models import Notification
 
 
 def jsonify(data):
-    if isinstance(data, QuerySet):
-        data = list(data)
+    if isinstance(data, QuerySet) or isinstance(data, list):
+        data = [o.to_json() for o in data]
+    else:
+        data = data.to_json()
 
-    return json.dumps({"data": data})
+    return JsonResponse({"data": data}, status=200)
 
 
 @require_http_methods(["PATCH"])
@@ -25,9 +28,9 @@ def api_dismiss_notification(request, pk):
         notification.dismissed = True
         notification.save()
     except Exception:
-        return jsonify(False)
+        return JsonResponse({"success": False})
 
-    return jsonify(True)
+    return JsonResponse({"success": True})
 
 
 @require_http_methods(["GET"])

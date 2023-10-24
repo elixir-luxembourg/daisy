@@ -1,7 +1,7 @@
 "use strict";
 import React from "react";
 import {createRoot} from "react-dom/client";
-import {NotificationList} from "./notifTable";
+import {NotificationList} from "./notifications_list";
 
 
 const notifDivDOM = document.getElementById("react-notifications");
