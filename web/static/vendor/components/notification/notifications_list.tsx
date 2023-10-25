@@ -7,23 +7,28 @@ import {NotificationsTable} from "./notification_table";
 const API_URL_NOTIFICATIONS_LIST = "/notifications/api/notifications";
 
 
-export const NotificationList = ({showDismissed}: {showDismissed: boolean}) => {
+type NotificationListProps = {
+    showDismissed: boolean,
+    showRecipientColumn: boolean,
+    showDismissColumn: boolean
+}
+export const NotificationList = ({showDismissed, showRecipientColumn, showDismissColumn}: NotificationListProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [notifications, setNotifications] = useState<CustomType.Notification[]>([]);
 
     // Getting list of notifications from Django
     useEffect(() => {
         fetch(
-            `${API_URL_NOTIFICATIONS_LIST}?show_dismissed=${showDismissed}`,
+            `${API_URL_NOTIFICATIONS_LIST}?show_dismissed=${showDismissed}&as_admin=${showRecipientColumn}`,
         ).then(response => response.json() as Promise<CustomType.NotifApiResponse>
         ).then(json => {
-            console.log("Retrieved data", json.data);
+            console.log(json.data);
             setNotifications(json.data);
             setIsLoading(false);
         }).catch(error => {
             console.error(error);
         });
-    }, []);
+    }, [showDismissed]);
 
     const notificationsPerContentType = notifications.reduce(
         (accumulator: {[key:string]: CustomType.Notification[]}, currentValue) => {
@@ -48,8 +53,8 @@ export const NotificationList = ({showDismissed}: {showDismissed: boolean}) => {
                     >
                         <NotificationsTable
                             data={notificationsPerContentType[contentType]}
-                            showRecipient={true}
-                            showDismiss={true} onDismiss={dismissNotification}/>
+                            showRecipient={showRecipientColumn}
+                            showDismiss={showDismissColumn} onDismiss={dismissNotification}/>
                     </NotificationCard>
                 );
             })}

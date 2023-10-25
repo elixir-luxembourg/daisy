@@ -9,7 +9,11 @@ if (notifDivDOM){
     const root = createRoot(notifDivDOM);
     root.render(
         <React.StrictMode>
-            <NotificationList showDismissed={notifDivDOM.dataset.showDismissed === "true"}/>
+            <NotificationList
+                showDismissed={notifDivDOM.dataset.showDismissed === "true"}
+                showRecipientColumn={notifDivDOM.dataset.showRecipientColumn === "true"}
+                showDismissColumn={notifDivDOM.dataset.showDismissColumn === "true"}
+            />
         </React.StrictMode>
     );
 }

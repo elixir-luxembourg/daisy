@@ -13,12 +13,16 @@
             <hr />
             <p>If you would like to change the way DAISY handles your notifications, please update your <a href="{% url 'notifications_settings' %}">notifications settings</a>.</p>
             {% if not show_dismissed %}
-                <p>By default, dismissed notifications are not shown. You can display dismissed notifications by clicking <a href="{% url 'notifications' %}?show_dismissed=true">here</a></p>
+                <p>By default, dismissed notifications are not shown. You can display dismissed notifications by clicking <a href="{{ request.path }}?show_dismissed=true">here</a></p>
             {% endif %}
         </div>
     </div>
 
-    <div id="react-notifications" data-show-dismissed="{{ show_dismissed | lower }}"></div>
+    <div id="react-notifications"
+         data-show-dismissed="{{ show_dismissed | lower }}"
+         data-show-dismiss-column="{% if admin is False %}true{% endif %}"
+         data-show-recipient-column="{{ admin | lower}}"
+    ></div>
 
 {% endblock %}
 
