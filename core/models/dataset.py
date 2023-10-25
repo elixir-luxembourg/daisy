@@ -258,22 +258,20 @@ class Dataset(CoreTrackedModel, NotifyMixin):
             day_offset = timedelta(days=notification_setting.notification_offset)
 
             # Considering users that are indirectly responsible for the dataset (through projects)
-            possible_datasets = set(
-                list(user.datasets.all())
-                + [p.datasets.all() for p in user.projects.all()]
-            )
+            possible_datasets = set(user.datasets.all())
+            for project in user.projects.all():
+                possible_datasets.update(list(project.datasets.all()))
             for dataset in possible_datasets:
                 # Data Declaration (Embargo Date & End of Storage Duration)
                 for data_declaration in dataset.data_declarations.all():
                     if (
                         data_declaration.embargo_date
-                        and data_declaration.embargo_date.date() - day_offset
-                        == exec_date
+                        and data_declaration.embargo_date - day_offset == exec_date
                     ):
                         cls.notify(user, data_declaration, NotificationVerb.embargo_end)
                     if (
                         data_declaration.end_of_storage_duration
-                        and data_declaration.end_of_storage_duration.date() - day_offset
+                        and data_declaration.end_of_storage_duration - day_offset
                         == exec_date
                     ):
                         cls.notify(user, data_declaration, NotificationVerb.end)
