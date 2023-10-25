@@ -1,6 +1,4 @@
 import React from "react";
-import {Notification} from "./custom_types";
-import {NotificationsTable} from "./notification_table";
 
 type NotificationHeaderProps = {
     category: string,
@@ -28,19 +26,19 @@ const NotificationHeader = (props: NotificationHeaderProps) => {
 
 type NotificationCardProps = {
     type: string
-    data: Notification[],
+    children: React.ReactElement,
+    newNotifNumber: number,
 };
 
-export const NotificationCard = ({type, data}: NotificationCardProps) => {
-    const newNotificationsNumber = data.filter(notif => !notif.dismissed).length;
+export const NotificationCard = ({type, newNotifNumber, children}: NotificationCardProps) => {
     return (
         <div className={"row mt-4 accordion"}>
             <div className={"card col px-0"}>
-                <NotificationHeader category={type} newNotifications={newNotificationsNumber} />
+                <NotificationHeader category={type} newNotifications={newNotifNumber} />
                 <div id={`accordion-body-${type}`} className={"collapse"}>
                     <div className={"card-body"}>
-                        <div id={`form-container-${type}`} className={"card-text"}>
-                            <NotificationsTable data={data} showRecipient={true} showDismiss={true} />
+                        <div id={`form-container-${type}`} className={"card-text table-responsive"}>
+                            { children }
                         </div>
                     </div>
                 </div>

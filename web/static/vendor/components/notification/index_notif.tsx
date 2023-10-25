@@ -9,7 +9,7 @@ if (notifDivDOM){
     const root = createRoot(notifDivDOM);
     root.render(
         <React.StrictMode>
-            <NotificationList />
+            <NotificationList showDismissed={notifDivDOM.dataset.showDismissed === "true"}/>
         </React.StrictMode>
     );
 }

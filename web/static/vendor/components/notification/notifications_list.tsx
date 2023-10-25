@@ -2,17 +2,19 @@
 import React, {useEffect, useState} from "react";
 import {NotificationCard} from "./notification_card";
 import * as CustomType from "./custom_types";
+import {NotificationsTable} from "./notification_table";
 
 const API_URL_NOTIFICATIONS_LIST = "/notifications/api/notifications";
 
-export const NotificationList = () => {
+
+export const NotificationList = ({showDismissed}: {showDismissed: boolean}) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [notifications, setNotifications] = useState<CustomType.Notification[]>([]);
 
     // Getting list of notifications from Django
     useEffect(() => {
         fetch(
-            API_URL_NOTIFICATIONS_LIST,
+            `${API_URL_NOTIFICATIONS_LIST}?show_dismissed=${showDismissed}`,
         ).then(response => response.json() as Promise<CustomType.NotifApiResponse>
         ).then(json => {
             setNotifications(json.data);
@@ -29,15 +31,27 @@ export const NotificationList = () => {
         }, {}
     );
 
+    const dismissNotification = (id: number) => {
+        console.log(`Dismissing notification ${id}`);
+    };
+
     return (
         <>
-            {isLoading || Object.keys(notificationsPerContentType).map(contentType =>
-                <NotificationCard
-                    key={`${contentType}-notifications`}
-                    type={contentType}
-                    data={notificationsPerContentType[contentType]}
-                />
-            )}
+            {isLoading || Object.keys(notificationsPerContentType).map(contentType => {
+                const newNotifNumber = notificationsPerContentType[contentType].filter(notif => !notif.dismissed).length;
+                return (
+                    <NotificationCard
+                        key={`${contentType}-notifications`}
+                        type={contentType}
+                        newNotifNumber={newNotifNumber}
+                    >
+                        <NotificationsTable
+                            data={notificationsPerContentType[contentType]}
+                            showRecipient={true}
+                            showDismiss={true} onDismiss={dismissNotification}/>
+                    </NotificationCard>
+                );
+            })}
         </>
     );
 };

@@ -43,6 +43,7 @@ class NotificationsListView(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         context["submit_url"] = reverse("notifications")
+        context["show_dismissed"] = self.request.GET.get("show_dismissed") == "true"
         return context
 
     def get(self, request, *args, **kwargs):
@@ -73,6 +74,7 @@ class NotificationAdminView(UserPassesTestMixin, ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         context["form"] = self.UserSelection(initial={})
+        context["show_dismissed"] = self.request.GET.get("show_dismissed") == "true"
         if "pk" in self.kwargs:
             user = get_object_or_404(User, pk=self.kwargs["pk"])
             submit_url = reverse("notifications_admin_for_user", kwargs={"pk": user.pk})

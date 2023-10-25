@@ -12,10 +12,13 @@
             <h1 class="display-4">Notifications</h1>
             <hr />
             <p>If you would like to change the way DAISY handles your notifications, please update your <a href="{% url 'notifications_settings' %}">notifications settings</a>.</p>
+            {% if not show_dismissed %}
+                <p>By default, dismissed notifications are not shown. You can display dismissed notifications by clicking <a href="{% url 'notifications' %}?show_dismissed=true">here</a></p>
+            {% endif %}
         </div>
     </div>
 
-    <div id="react-notifications"></div>
+    <div id="react-notifications" data-show-dismissed="{{ show_dismissed }}"></div>
 
 {% endblock %}
 

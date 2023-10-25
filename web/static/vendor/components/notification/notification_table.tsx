@@ -3,29 +3,33 @@ import {createColumnHelper, flexRender, getCoreRowModel, useReactTable} from "@t
 import type {Notification} from "./custom_types";
 
 // TODO:
-// - Fix the width of the columns
 // - Add links to objects (where possible)
-// - Format the dates
 // - Set the behavior for the DISMISS btn
 
 type DismissButtonProps = {
     id: number
+    onClick: (id: number) => void,
 }
 
-const DismissButton = ({id}: DismissButtonProps) => {
-    const onClick = () => {
-        console.log(`Dismissing notification ${id}`);
-    };
-
-    return <span className={"btn btn-link p-0 m-0"} onClick={onClick}>Dismiss</span>;
+const DismissButton = ({id, onClick}: DismissButtonProps) => {
+    return <span className={"btn btn-link p-0 m-0"} onClick={() => onClick(id)}>Dismiss</span>;
 };
 
 const columnHelper = createColumnHelper<Notification>();
+const dateFormatter = new Intl.DateTimeFormat(
+    Intl.DateTimeFormat().resolvedOptions().locale,
+    {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    }
+);
 
 type NotificationsTableProps = {
     data: Notification[]
     showRecipient: boolean,
     showDismiss: boolean,
+    onDismiss: (id: number) => void,
 }
 
 export const NotificationsTable = (props: NotificationsTableProps) => {
@@ -35,38 +39,46 @@ export const NotificationsTable = (props: NotificationsTableProps) => {
         columnHelper.accessor("recipient.name", {
             header: "Recipient",
             enableHiding: true,
-            size: 150,
         }),
         columnHelper.accessor("objectName", {
             header: () => {
                 const title = notifications[0].objectType;
                 return title.charAt(0).toUpperCase() + title.substring(1);
             },
-            size: 350,
-            cell: cell => <span className={"text-truncate d-block"}>{cell.getValue()}</span>
+            cell: cell => {
+                const text = cell.getValue();
+                return (
+                    <span>
+                        {text.length < 70 ? text : text.substring(0, 70) + "..."}
+                    </span>
+                );
+            }
         }),
         columnHelper.accessor("message", {
             header: "Description",
-            size: 350,
-            cell: cell => <span className={"text-truncate d-block"}>{cell.getValue()}</span>
+            cell: cell => {
+                const text = cell.getValue();
+                return (
+                    <span>
+                        {text.length < 70 ? text : text.substring(0, 70) + "..."}
+                    </span>
+                );
+            }
         }),
         columnHelper.accessor("on", {
             header: "Event date",
             cell: cell => {
                 const isoDateTime = cell.getValue();
-                return isoDateTime ? new Date(isoDateTime).toDateString() : "";
+                return isoDateTime ? dateFormatter.format(new Date(isoDateTime)) : "";
             },
-            size: 150,
         }),
         columnHelper.accessor("time", {
             header: "Sent on",
-            cell: cell => new Date(cell.getValue()).toDateString(),
-            size: 150,
+            cell: cell => dateFormatter.format(new Date(cell.getValue())),
         }),
         columnHelper.display({
             id: "dismiss",
-            cell: cell => cell.row.original.dismissed || <DismissButton id={cell.row.original.id} />,
-            size: 85,
+            cell: cell => cell.row.original.dismissed || <DismissButton id={cell.row.original.id} onClick={props.onDismiss}/>,
         }),
     ];
     const columnVisibility = {
@@ -84,7 +96,7 @@ export const NotificationsTable = (props: NotificationsTableProps) => {
         getCoreRowModel: getCoreRowModel(),
     });
     return (
-        <table className={"table table-striped table-borderless table-sm"}>
+        <table className={"table table-striped"}>
             <thead>
                 {table.getHeaderGroups().map(headerGroup => (
                     <tr key={headerGroup.id} style={{position: "relative"}}>
@@ -92,7 +104,6 @@ export const NotificationsTable = (props: NotificationsTableProps) => {
                             <th
                                 key={header.id}
                                 scope="col"
-                                style={{maxWidth: header.getSize()}}
                             >
                                 {header.isPlaceholder ?
                                     null :
@@ -107,7 +118,7 @@ export const NotificationsTable = (props: NotificationsTableProps) => {
                 {table.getRowModel().rows.map(row => (
                     <tr key={row.id}>
                         {row.getVisibleCells().map(cell => (
-                            <td key={cell.id} style={{maxWidth: cell.column.getSize()}}>
+                            <td key={cell.id}>
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </td>
                         ))}
