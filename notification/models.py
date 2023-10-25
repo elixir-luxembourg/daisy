@@ -79,10 +79,10 @@ class Notification(models.Model):
     verb = EnumChoiceField(NotificationVerb)
     on = models.DateTimeField(null=True, blank=True, default=None)
 
-    sent_in_app = models.BooleanField(default=True)
-    sent_by_email = models.BooleanField(default=False)
+    dispatch_in_app = models.BooleanField(default=True)
+    dispatch_by_email = models.BooleanField(default=False)
     dismissed = models.BooleanField(default=False)
-
+    processing_date = models.DateField(default=None, null=True, blank=True)
     message = models.TextField(default="")
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
