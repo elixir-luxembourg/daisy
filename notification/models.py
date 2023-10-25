@@ -36,7 +36,9 @@ class NotificationSetting(models.Model):
         app_label = "notification"
 
     user = models.OneToOneField(
-        get_user_model(), related_name="notification_setting", on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL,
+        related_name="notification_setting",
+        on_delete=models.CASCADE,
     )
     send_email = models.BooleanField(
         default=False,
@@ -74,7 +76,7 @@ class Notification(models.Model):
         app_label = "notification"
 
     recipient = models.ForeignKey(
-        get_user_model(), related_name="notifications", on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL, related_name="notifications", on_delete=models.CASCADE
     )
     verb = EnumChoiceField(NotificationVerb)
     on = models.DateTimeField(null=True, blank=True, default=None)
