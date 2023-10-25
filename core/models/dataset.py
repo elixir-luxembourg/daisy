@@ -1,15 +1,21 @@
 import uuid
+import datetime
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
 from django.utils.module_loading import import_string
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from core import constants
+from core.models import DataDeclaration
 from core.permissions.mapping import PERMISSION_MAPPING
 from notification import NotifyMixin
+from notification.models import Notification, NotificationVerb
 from .utils import CoreTrackedModel, TextFieldWithInputWidget
 from .partner import HomeOrganisation
 
@@ -228,12 +234,73 @@ class Dataset(CoreTrackedModel, NotifyMixin):
         for data_declaration in self.data_declarations.all():
             data_declaration.publish_subentities()
 
+    @staticmethod
     def get_notification_recipients():
         """
         Get distinct users that are local custodian of a dataset.
         """
 
-        return get_user_model().objects.filter(datasets__isnull=False).distinct()
+        return (
+            get_user_model()
+            .objects.filter(Q(datasets__isnull=False) | Q(projects__isnull=False))
+            .distinct()
+        )
+
+    @classmethod
+    def make_notifications(cls, exec_date: datetime.date):
+        recipients = cls.get_notification_recipients()
+        for user in recipients:
+            notification_setting = user.notification_setting
+            if not (
+                notification_setting.send_email or notification_setting.send_in_app
+            ):
+                continue
+            day_offset = timedelta(days=notification_setting.notification_offset)
+
+            # Considering users that are indirectly responsible for the dataset (through projects)
+            possible_datasets = set(
+                list(user.datasets.all())
+                + [p.datasets.all() for p in user.projects.all()]
+            )
+            for dataset in possible_datasets:
+                # Data Declaration (Embargo Date & End of Storage Duration)
+                for data_declaration in dataset.data_declarations.all():
+                    if (
+                        data_declaration.embargo_date
+                        and data_declaration.embargo_date.date() - day_offset
+                        == exec_date
+                    ):
+                        cls.notify(user, data_declaration, NotificationVerb.embargo_end)
+                    if (
+                        data_declaration.end_of_storage_duration
+                        and data_declaration.end_of_storage_duration.date() - day_offset
+                        == exec_date
+                    ):
+                        cls.notify(user, data_declaration, NotificationVerb.end)
+
+    @staticmethod
+    def notify(
+        user: settings.AUTH_USER_MODEL, obj: "DataDeclaration", verb: NotificationVerb
+    ):
+        """
+        Notifies concerning users about the entity.
+        """
+        offset = user.notification_setting.notification_offset
+
+        if verb == NotificationVerb.embargo_end:
+            msg = f"Embargo for {obj.dataset.title} is ending in {offset} days."
+        else:
+            msg = (
+                f"Storage duration for {obj.dataset.title} is ending in {offset} days."
+            )
+
+        Notification.objects.create(
+            recipient=user,
+            verb=verb,
+            msg=msg,
+            content_type=ContentType.objects.get_for_model(obj.dataset),
+            object_id=obj.dataset.id,
+        ).save()
 
 
 # faster lookup for permissions
