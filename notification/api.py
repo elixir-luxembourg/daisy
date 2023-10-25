@@ -36,10 +36,15 @@ def api_dismiss_notification(request, pk):
 @require_http_methods(["GET"])
 def api_get_notifications(request):
     notifications_list = Notification.objects.filter(
-        recipient__pk=request.user.pk
-    ).all()
+        recipient__pk=request.user.pk,
+        dispatch_in_app=True,
+    )
 
-    return jsonify(notifications_list)
+    if request.GET.get("show_dismissed") != "true":
+        notifications_list = notifications_list.filter(dismissed=False)
+    print(request.GET)
+    print(notifications_list.all())
+    return jsonify(notifications_list.all())
 
 
 @require_http_methods(["GET", "POST"])

@@ -17,6 +17,7 @@ export const NotificationList = ({showDismissed}: {showDismissed: boolean}) => {
             `${API_URL_NOTIFICATIONS_LIST}?show_dismissed=${showDismissed}`,
         ).then(response => response.json() as Promise<CustomType.NotifApiResponse>
         ).then(json => {
+            console.log("Retrieved data", json.data);
             setNotifications(json.data);
             setIsLoading(false);
         }).catch(error => {
