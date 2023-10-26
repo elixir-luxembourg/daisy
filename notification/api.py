@@ -64,18 +64,3 @@ def api_get_notifications(request):
         notifications_list = notifications_list.filter(recipient__pk=request.user.pk)
 
     return jsonify(notifications_list.all())
-
-
-@require_http_methods(["GET", "POST"])
-def api_get_notifications_admin(request):
-    if not request.user.is_staff:
-        raise PermissionDenied("Only admin users can access this api endpoint")
-
-    if request.method == "POST" and "pk" in request.POST:
-        notifications_list = Notification.objects.filter(
-            recipient__pk=request.POST["pk"]
-        ).all()
-    else:
-        notifications_list = Notification.objects.all()
-
-    return jsonify(notifications_list)
