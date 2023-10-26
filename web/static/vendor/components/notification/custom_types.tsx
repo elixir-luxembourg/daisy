@@ -1,4 +1,4 @@
-// TYPES
+"use strict";
 import type {UserObject} from "../../customtypes/customtypes";
 
 export type Notification = {
@@ -13,6 +13,7 @@ export type Notification = {
     message: string,
     objectType: string,
     objectName: string,
+    objectUrl: string,
 };
 
 export type NotifApiResponse = {

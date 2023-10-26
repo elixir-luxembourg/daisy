@@ -1,10 +1,10 @@
+"use strict";
 import React, {useState, useEffect} from "react";
 import {createColumnHelper, flexRender, getCoreRowModel, useReactTable} from "@tanstack/react-table";
 import type {Notification} from "./custom_types";
 
 // TODO:
 // - Add links to objects (where possible)
-// - Set the behavior for the DISMISS btn
 
 type DismissButtonProps = {
     notification: Notification
@@ -51,10 +51,15 @@ export const NotificationsTable = (props: NotificationsTableProps) => {
             },
             cell: cell => {
                 const text = cell.getValue();
+                const displayedText = text.length < 70 ? text : text.substring(0, 70) + "...";
                 return (
-                    <span>
-                        {text.length < 70 ? text : text.substring(0, 70) + "..."}
-                    </span>
+                    cell.row.original.objectUrl ?
+                        <a href={cell.row.original.objectUrl}>
+                            {displayedText}
+                        </a> :
+                        <span>
+                            {displayedText}
+                        </span>
                 );
             }
         }),

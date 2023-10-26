@@ -139,6 +139,7 @@ class Notification(models.Model):
             "message": self.message,
             "objectType": self.content_type.name,
             "objectName": self.content_object.__str__(),
+            "objectUrl": self.get_absolute_url() or "",
         }
 
     def __str__(self):

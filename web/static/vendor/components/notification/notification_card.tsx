@@ -1,8 +1,10 @@
+"use strict";
 import React from "react";
 
 type NotificationHeaderProps = {
     category: string,
     newNotifications: number
+    showDismissNumber: boolean
 };
 
 const NotificationHeader = (props: NotificationHeaderProps) => {
@@ -17,7 +19,7 @@ const NotificationHeader = (props: NotificationHeaderProps) => {
             aria-controls={`accordion-body-${props.category}`}
         >
             <h2 className={"card-title"}>{title}</h2>
-            {props.newNotifications > 0 &&
+            {props.showDismissNumber && props.newNotifications > 0 &&
                 <h5 className={"badge badge-primary card-badge"}>{props.newNotifications}</h5>
             }
         </div>
@@ -36,7 +38,7 @@ export const NotificationCard = ({type, newNotifNumber, children, showDismissBtn
     return (
         <div className={"row mt-4 accordion"}>
             <div className={"card col px-0"}>
-                <NotificationHeader category={type} newNotifications={newNotifNumber} />
+                <NotificationHeader category={type} showDismissNumber={showDismissBtn} newNotifications={newNotifNumber} />
                 <div id={`accordion-body-${type}`} className={"collapse p-3"}>
                     {showDismissBtn &&
                         <div className={"d-flex justify-content-end"}>

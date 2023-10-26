@@ -6,7 +6,7 @@ import {NotificationsTable} from "./notification_table";
 
 const API_URL_NOTIFICATIONS_LIST = "/notifications/api/notifications";
 const API_URL_DISMISS_NOTIFICATION = "/notifications/api/dismiss";
-const API_URL_DISMIS_ALL_NOTIFICATION = "/notifications/api/dismiss-all";
+const API_URL_DISMISS_ALL_NOTIFICATION = "/notifications/api/dismiss-all";
 
 type NotificationListProps = {
     showDismissed: boolean,
@@ -48,52 +48,52 @@ export const NotificationList = ({showDismissed, showRecipientColumn, showDismis
                 body: null,
                 headers: {"Content-Type": "application/json", "X-CSRFToken": csrf}
             },
-        ).then(() => {
-            const newNotifications = JSON.parse(JSON.stringify(notifications)) as {[key:string]: CustomType.Notification[]};
-            if (showDismissed) {
-                const updatedNotification = newNotifications[notification.objectType].find(notif => notif.id === notification.id);
-                if (updatedNotification){
-                    updatedNotification.dismissed = true;
+        )
+            .then(response => response.json() as Promise<CustomType.NotifApiResponse>)
+            .then((json) => {
+                const newNotifications = {...notifications};
+                newNotifications[notification.objectType] = [...json.data];
+                if (showDismissed) {
                     setNotifications(newNotifications);
                 }
                 else {
-                    throw `Notification ${notification.id} was not found in list of notifications`;
+                    newNotifications[notification.objectType] = newNotifications[notification.objectType].filter((notif) => notif.id !== notification.id);
+                    setNotifications(newNotifications);
                 }
-            }
-            else {
-                newNotifications[notification.objectType] = newNotifications[notification.objectType].filter((notif) => notif.id !== notification.id);
-                setNotifications(newNotifications);
-            }
-        }).catch(error => {
-            console.error(`An error occurred while dismissing notification ${notification.id}`, error);
-        });
+            })
+            .catch(error => {
+                console.error(`An error occurred while dismissing notification ${notification.id}`, error);
+            });
     };
 
     const dismissAllNotifications = (contentType: string) => {
         fetch(
-            `${API_URL_DISMIS_ALL_NOTIFICATION}/${contentType}`,
+            `${API_URL_DISMISS_ALL_NOTIFICATION}/${contentType}`,
             {
                 method: "PATCH",
                 body: null,
                 headers: {"Content-Type": "application/json", "X-CSRFToken": csrf},
             }
-        ).then(() => {
-            const newNotifications = JSON.parse(JSON.stringify(notifications)) as {[key:string]: CustomType.Notification[]};
-            if (showDismissed) {
-                newNotifications[contentType].forEach(notif => notif.dismissed = true);
-                setNotifications(newNotifications);
-            }
-            else {
-                newNotifications[contentType] = [];
-                setNotifications(newNotifications);
-            }
-        }).catch(error => {
-            console.error(`An error occurred while dismissing notifications for ${contentType}`, error);
-        });
+        )
+            .then(response => response.json() as Promise<CustomType.NotifApiResponse>)
+            .then((json) => {
+                const newNotifications = {...notifications};
+                if (showDismissed) {
+                    newNotifications[contentType] = json.data;
+                    setNotifications(newNotifications);
+                }
+                else {
+                    newNotifications[contentType] = [];
+                    setNotifications(newNotifications);
+                }
+            })
+            .catch(error => {
+                console.error(`An error occurred while dismissing notifications for ${contentType}`, error);
+            });
     };
     if (Object.keys(notifications).some(contentType => notifications[contentType].length > 0)){
         return (
-            isLoading || Object.keys(notifications).map(contentType => {
+            isLoading || Object.keys(notifications).sort().map(contentType => {
                 if (notifications[contentType].length > 0) {
                     const newNotifNumber = notifications[contentType].filter(notif => !notif.dismissed).length;
                     return (

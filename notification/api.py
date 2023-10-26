@@ -27,32 +27,29 @@ def api_dismiss_notification(request, pk):
         raise PermissionDenied(
             "You cannot dismiss a notification you are not the recipient of"
         )
-    try:
-        logger.debug(
-            f"Dismissing user {request.user.pk} notification {notification.pk}"
-        )
-        notification.dismissed = True
-        notification.save()
-    except Exception:
-        return JsonResponse({"success": False})
+    logger.debug(f"Dismissing user {request.user.pk} notification {notification.pk}")
+    notification.dismissed = True
+    notification.save()
 
-    return JsonResponse({"success": True})
+    notification_list = Notification.objects.filter(
+        recipient=request.user, content_type=notification.content_type
+    )
+    return jsonify(notification_list)
 
 
 @require_http_methods(["PATCH"])
 def api_dismiss_all_notifications(request, object_type):
-    try:
-        dismissedNotifications = Notification.objects.filter(
-            recipient=request.user, content_type__name=object_type
-        ).update(dismissed=True)
+    notification_list = Notification.objects.filter(
+        recipient=request.user, content_type__model=object_type
+    )
+    for notif in notification_list:
+        notif.dismissed = True
+        notif.save()
 
-        logger.debug(
-            f"Successfully dismissed {dismissedNotifications} notifications for user {request.user.pk}"
-        )
-    except:
-        return JsonResponse({"success": False})
-
-    return JsonResponse({"success": True})
+    logger.debug(
+        f"Successfully dismissed {len(notification_list)} notifications for user {request.user.pk}"
+    )
+    return jsonify(notification_list)
 
 
 @require_http_methods(["GET"])
