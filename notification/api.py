@@ -1,4 +1,4 @@
-import json
+import logging
 
 from django.views.decorators.http import require_http_methods
 from django.core.exceptions import PermissionDenied
@@ -6,6 +6,9 @@ from django.db.models import QuerySet
 from django.http import JsonResponse
 
 from notification.models import Notification
+
+
+logger = logging.getLogger(__name__)
 
 
 def jsonify(data):
@@ -20,15 +23,33 @@ def jsonify(data):
 @require_http_methods(["PATCH"])
 def api_dismiss_notification(request, pk):
     notification = Notification.objects.get(pk=pk)
-    print(f"Received request to dismiss notification {notification}")
     if request.user != notification.recipient:
         raise PermissionDenied(
             "You cannot dismiss a notification you are not the recipient of"
         )
     try:
+        logger.debug(
+            f"Dismissing user {request.user.pk} notification {notification.pk}"
+        )
         notification.dismissed = True
         notification.save()
     except Exception:
+        return JsonResponse({"success": False})
+
+    return JsonResponse({"success": True})
+
+
+@require_http_methods(["PATCH"])
+def api_dismiss_all_notifications(request, object_type):
+    try:
+        dismissedNotifications = Notification.objects.filter(
+            recipient=request.user, content_type__name=object_type
+        ).update(dismissed=True)
+
+        logger.debug(
+            f"Successfully dismissed {dismissedNotifications} notifications for user {request.user.pk}"
+        )
+    except:
         return JsonResponse({"success": False})
 
     return JsonResponse({"success": True})

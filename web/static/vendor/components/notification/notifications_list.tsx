@@ -6,7 +6,7 @@ import {NotificationsTable} from "./notification_table";
 
 const API_URL_NOTIFICATIONS_LIST = "/notifications/api/notifications";
 const API_URL_DISMISS_NOTIFICATION = "/notifications/api/dismiss";
-// const API_URL_DISMIS_ALL_NOTIFICATION = "/notifications/api/dismiss-all";
+const API_URL_DISMIS_ALL_NOTIFICATION = "/notifications/api/dismiss-all";
 
 type NotificationListProps = {
     showDismissed: boolean,
@@ -49,18 +49,47 @@ export const NotificationList = ({showDismissed, showRecipientColumn, showDismis
                 headers: {"Content-Type": "application/json", "X-CSRFToken": csrf}
             },
         ).then(() => {
-            if (!showDismissed){
-                const nonDismissedNotifications = JSON.parse(JSON.stringify(notifications)) as {[key:string]: CustomType.Notification[]};
-                nonDismissedNotifications[notification.objectType] = nonDismissedNotifications[notification.objectType].filter((notif) => notif.id !== notification.id);
-                setNotifications(nonDismissedNotifications);
+            const newNotifications = JSON.parse(JSON.stringify(notifications)) as {[key:string]: CustomType.Notification[]};
+            if (showDismissed) {
+                const updatedNotification = newNotifications[notification.objectType].find(notif => notif.id === notification.id);
+                if (updatedNotification){
+                    updatedNotification.dismissed = true;
+                    setNotifications(newNotifications);
+                }
+                else {
+                    throw `Notification ${notification.id} was not found in list of notifications`;
+                }
+            }
+            else {
+                newNotifications[notification.objectType] = newNotifications[notification.objectType].filter((notif) => notif.id !== notification.id);
+                setNotifications(newNotifications);
             }
         }).catch(error => {
             console.error(`An error occurred while dismissing notification ${notification.id}`, error);
         });
     };
 
-    const dismissAllNotifications = (contenttype: string) => {
-        console.log(`Dismissing all notifications for content type ${contenttype}`);
+    const dismissAllNotifications = (contentType: string) => {
+        fetch(
+            `${API_URL_DISMIS_ALL_NOTIFICATION}/${contentType}`,
+            {
+                method: "PATCH",
+                body: null,
+                headers: {"Content-Type": "application/json", "X-CSRFToken": csrf},
+            }
+        ).then(() => {
+            const newNotifications = JSON.parse(JSON.stringify(notifications)) as {[key:string]: CustomType.Notification[]};
+            if (showDismissed) {
+                newNotifications[contentType].forEach(notif => notif.dismissed = true);
+                setNotifications(newNotifications);
+            }
+            else {
+                newNotifications[contentType] = [];
+                setNotifications(newNotifications);
+            }
+        }).catch(error => {
+            console.error(`An error occurred while dismissing notifications for ${contentType}`, error);
+        });
     };
     if (Object.keys(notifications).some(contentType => notifications[contentType].length > 0)){
         return (
