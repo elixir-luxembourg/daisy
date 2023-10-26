@@ -28,14 +28,21 @@ type NotificationCardProps = {
     type: string
     children: React.ReactElement,
     newNotifNumber: number,
+    showDismissBtn: boolean,
+    dismissAll: (contentType: string) => void,
 };
 
-export const NotificationCard = ({type, newNotifNumber, children}: NotificationCardProps) => {
+export const NotificationCard = ({type, newNotifNumber, children, showDismissBtn, dismissAll}: NotificationCardProps) => {
     return (
         <div className={"row mt-4 accordion"}>
             <div className={"card col px-0"}>
                 <NotificationHeader category={type} newNotifications={newNotifNumber} />
-                <div id={`accordion-body-${type}`} className={"collapse"}>
+                <div id={`accordion-body-${type}`} className={"collapse p-3"}>
+                    {showDismissBtn &&
+                        <div className={"d-flex justify-content-end"}>
+                            <a className={"btn btn-link btn-outline float-right"} onClick={() => dismissAll(type)}>Dismiss all</a>
+                        </div>
+                    }
                     <div className={"card-body"}>
                         <div id={`form-container-${type}`} className={"card-text table-responsive"}>
                             { children }

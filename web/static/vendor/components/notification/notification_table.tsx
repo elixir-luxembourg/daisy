@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {createColumnHelper, flexRender, getCoreRowModel, useReactTable} from "@tanstack/react-table";
 import type {Notification} from "./custom_types";
 
@@ -7,12 +7,12 @@ import type {Notification} from "./custom_types";
 // - Set the behavior for the DISMISS btn
 
 type DismissButtonProps = {
-    id: number
-    onClick: (id: number) => void,
+    notification: Notification
+    onClick: (notification: Notification) => void,
 }
 
-const DismissButton = ({id, onClick}: DismissButtonProps) => {
-    return <span className={"btn btn-link p-0 m-0"} onClick={() => onClick(id)}>Dismiss</span>;
+const DismissButton = ({notification, onClick}: DismissButtonProps) => {
+    return <span className={"btn btn-link p-0 m-0"} onClick={() => onClick(notification)}>Dismiss</span>;
 };
 
 const columnHelper = createColumnHelper<Notification>();
@@ -29,15 +29,19 @@ type NotificationsTableProps = {
     data: Notification[]
     showRecipient: boolean,
     showDismiss: boolean,
-    onDismiss: (id: number) => void,
+    onDismiss: (notification: Notification) => void,
 }
 
 export const NotificationsTable = (props: NotificationsTableProps) => {
-    const [notifications,] = useState(props.data);
+    const [notifications, setNotifications] = useState(props.data);
+    useEffect(() => {
+        setNotifications(props.data);
+    }, [props.data]);
 
     const columns = [
         columnHelper.accessor("recipient.name", {
             header: "Recipient",
+            id: "fullName",
             enableHiding: true,
         }),
         columnHelper.accessor("objectName", {
@@ -77,13 +81,14 @@ export const NotificationsTable = (props: NotificationsTableProps) => {
             cell: cell => dateFormatter.format(new Date(cell.getValue())),
         }),
         columnHelper.display({
-            id: "dismiss",
-            cell: cell => cell.row.original.dismissed || <DismissButton id={cell.row.original.id} onClick={props.onDismiss}/>,
+            id: "dismissAction",
+            cell: cell => cell.row.original.dismissed || <DismissButton notification={cell.row.original} onClick={props.onDismiss}/>,
+            enableHiding: true,
         }),
     ];
     const columnVisibility = {
-        "recipient": !props.showRecipient,
-        "dismissAction": !props.showDismiss,
+        "fullName": props.showRecipient,
+        "dismissAction": props.showDismiss,
     };
 
 

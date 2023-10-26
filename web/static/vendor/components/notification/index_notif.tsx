@@ -5,7 +5,8 @@ import {NotificationList} from "./notifications_list";
 
 
 const notifDivDOM = document.getElementById("react-notifications");
-if (notifDivDOM){
+const csrfTokenNode: HTMLInputElement | null = document.querySelector<HTMLInputElement>("input[name=csrfmiddlewaretoken]");
+if (notifDivDOM && csrfTokenNode){
     const root = createRoot(notifDivDOM);
     root.render(
         <React.StrictMode>
@@ -13,6 +14,7 @@ if (notifDivDOM){
                 showDismissed={notifDivDOM.dataset.showDismissed === "true"}
                 showRecipientColumn={notifDivDOM.dataset.showRecipientColumn === "true"}
                 showDismissColumn={notifDivDOM.dataset.showDismissColumn === "true"}
+                csrf={csrfTokenNode.value}
             />
         </React.StrictMode>
     );

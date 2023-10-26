@@ -19,7 +19,8 @@ def jsonify(data):
 
 @require_http_methods(["PATCH"])
 def api_dismiss_notification(request, pk):
-    notification = Notification.objects.get(pk)
+    notification = Notification.objects.get(pk=pk)
+    print(f"Received request to dismiss notification {notification}")
     if request.user != notification.recipient:
         raise PermissionDenied(
             "You cannot dismiss a notification you are not the recipient of"
