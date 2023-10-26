@@ -1,11 +1,7 @@
 import os
-
-from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 import pytest
 from django.shortcuts import reverse
-
-from core.constants import Groups
 
 
 def upload_test_file(client, model_type, user=None):
