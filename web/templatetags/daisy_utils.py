@@ -32,7 +32,7 @@ def form_add_class(field, css_class):
 
 @register.filter(name="has_group")
 def has_group(user, group_name):
-    return user.groups.filter(name=group_name).exists()
+    return user.is_part_of(group_name)
 
 
 @register.filter
