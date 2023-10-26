@@ -1,41 +1,26 @@
 {
-  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.6/schemas/elu-institution.json",
-  "title": "ELIXIR Luxembourg Partner Schema",
-  "description": "A JSON Schema for describing partners institutes.",
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "type": "object",
-  "allOf": [
-    {
-      "$ref": "#/definitions/elu:partner"
-    }
-  ],
-  "definitions": {
-    "elu:partner": {
-      "type": "object",
-      "allOf": [
+    "items": [
         {
-          "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.6/schemas/elu-core.json"
+            "name": "Centre Hospitalier de Togo",
+            "external_id": "ELU_I_19309",
+            "acronym": "CHT",
+            "is_clinical": true,
+            "geo_category": "National",
+            "sector_category": "PUBLIC",
+            "address": "Ave De La 6, Espoir Vie Togo, Lome",
+            "country_code": "TO",
+            "source": "example.com"
+        },
+        {
+            "name": "Hospitalier de Madagascar",
+            "external_id": "ELU_I_1939",
+            "acronym": "HMDGSK",
+            "is_clinical": true,
+            "geo_category": "National",
+            "sector_category": "PUBLIC",
+            "address": "Ave De La 6, Espoir Vie Togo, Antananarivo",
+            "country_code": "MG",
+            "source": "example.com"
         }
-      ],
-      "properties": {
-        "is_clinical": {
-          "type": "boolean"
-        },
-        "geo_category": {
-          "enum": ["National", "EU", "Non_EU", "International"]
-        },
-        "sector_category": {
-          "enum": ["PUBLIC", "PRIVATE_P", "PRIVATE_NP"]
-        },
-        "address": {
-          "type": ["string", "null"]
-        },
-        "country_code": {
-          "title": "ISO 3166-1 Alpha-2 Country code",
-          "type": ["string", "null"],
-          "pattern": "^[A-Z]{2}$"
-        }
-      }
-    }
-  }
+    ]
 }
