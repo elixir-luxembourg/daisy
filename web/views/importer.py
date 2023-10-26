@@ -1,6 +1,6 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.template.loader import render_to_string
-from core.constants import Groups
+from django.views.decorators.http import require_http_methods
 from core.forms.importer import ImportForm
 from django.core.management import call_command
 from django.conf import settings
@@ -8,9 +8,12 @@ import os
 import logging
 from io import StringIO
 from django.http import JsonResponse, HttpResponseForbidden
+from web.views.utils import is_ajax_request, is_data_steward
 
 
 @login_required
+@require_http_methods(["GET", "POST"])
+@user_passes_test(is_data_steward)
 def import_data(request, model_type):
     """
     Handle the importation of data based on the provided model type.
@@ -25,9 +28,7 @@ def import_data(request, model_type):
     Returns:
         JsonResponse: A JSON response containing the rendered HTML form or errors.
     """
-    has_permission = request.user.groups.filter(name=Groups.DATA_STEWARD.value).exists()
-    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
-    if not (has_permission and is_ajax):
+    if not is_ajax_request(request):
         return HttpResponseForbidden()
     if request.method == "GET":
         form = ImportForm(initial={"model_type": model_type})
