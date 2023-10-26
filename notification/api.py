@@ -64,3 +64,14 @@ def api_get_notifications(request):
         notifications_list = notifications_list.filter(recipient__pk=request.user.pk)
 
     return jsonify(notifications_list.all())
+
+
+@require_http_methods(["GET"])
+def api_get_notifications_number(request):
+    number = Notification.objects.filter(
+        recipient=request.user,
+        dismissed=False,
+        dispatch_in_app=True,
+    ).count()
+
+    return JsonResponse({"success": True, "data": number}, status=200)

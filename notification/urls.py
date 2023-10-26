@@ -8,6 +8,7 @@ from notification.api import (
     api_dismiss_notification,
     api_dismiss_all_notifications,
     api_get_notifications,
+    api_get_notifications_number,
 )
 
 notif_urls = [
@@ -39,5 +40,10 @@ notif_urls = [
         "api/dismiss-all/<str:object_type>",
         api_dismiss_all_notifications,
         name="api_dismiss_all",
+    ),
+    path(
+        "api/notifications-number",
+        api_get_notifications_number,
+        name="api_notif_number",
     ),
 ]

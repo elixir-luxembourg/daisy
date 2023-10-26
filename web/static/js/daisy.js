@@ -41,6 +41,17 @@ function initFormsets(elements) {
     });
 }
 
+function setupNotificationsIcon(){
+    // Get number of new notifications
+    const bellIcon = $("#notifications-bell");
+    $.get(bellIcon.data().ajaxUrl, function(data){
+        if (data.data > 0){
+            bellIcon.find("i").addClass("text-light");
+            bellIcon.find("#notifications-badge").text(data.data);
+        }
+    });
+}
+
 $(document).ready(function () {
 
     csrftoken = Cookies.get("csrftoken");
@@ -279,6 +290,9 @@ $(document).ready(function () {
             });
     }
     });
+
+    // Load notifications bell
+    setupNotificationsIcon();
 
     $(document).on('click', 'a[data-confirm]', function(e) {
         var message = $(this).data('confirm');
