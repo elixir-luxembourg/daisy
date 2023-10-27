@@ -124,19 +124,13 @@ def process_uploaded_file(file_path, model_type):
 
     try:
         call_command(*cmd_args, stdout=stdout_buffer, stderr=stderr_buffer)
-        if stderr_buffer.getvalue():
-            success = False
-        else:
-            success = True
         return {
-            "success": success,
             "message": stdout_buffer.getvalue(),
             "error": stderr_buffer.getvalue(),
             "logs": log_buffer.getvalue(),
         }
     except Exception as e:
         return {
-            "success": False,
             "message": stdout_buffer.getvalue(),
             "error": str(e) + "\n" + stderr_buffer.getvalue(),
             "logs": log_buffer.getvalue(),

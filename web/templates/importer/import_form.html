@@ -21,8 +21,7 @@
         <div class="p-0">
             <!-- Display output message -->
             {% if output.message %}
-
-                <div class="alert alert-{% if output.success %}success{% else %}info{% endif %} rounded" role="alert">
+                <div class="alert alert-{% if not output.error %}success{% else %}info{% endif %} rounded" role="alert">
                     <strong>Output:</strong>
                     <p>{{ output.message|linebreaksbr }}</p>
                 </div>
@@ -34,7 +33,6 @@
                     <p>{{ output.error|linebreaksbr }}</p>
                 </div>
             {% endif %}
-
             <!-- Display logs -->
             {% if output.logs %}
                 <div class="alert alert-secondary rounded" role="alert">
