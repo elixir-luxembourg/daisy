@@ -11,7 +11,9 @@ def upload_test_file(client, model_type, user=None):
     """
     if user:
         client.logout()
-        client.login(username=user.username, password=user.password)
+        assert client.login(
+            username=user.username, password=user.password
+        ), "Login failed"
 
     url = reverse("import_data", args=[model_type])
 
@@ -40,33 +42,33 @@ def upload_test_file(client, model_type, user=None):
         "partners",
     ],
 )
+@pytest.mark.parametrize(
+    "user_type, expected_status_code",
+    [
+        ("user_data_steward", 200),
+        ("user_normal", 403),
+        ("user_legal", 403),
+        ("user_vip", 403),
+    ],
+)
 @pytest.mark.django_db
 def test_importer_requests(
-    user_normal,
-    user_vip,
-    client_user_data_steward,
     model_type,
+    user_type,
+    expected_status_code,
+    client,
+    request,
 ):
+    # Running fixture to get user
+    user = request.getfixturevalue(user_type)
+
     # Test POST request for data steward
-    response = upload_test_file(client_user_data_steward, model_type)
-    assert response.status_code == 200
+    response = upload_test_file(client, model_type, user)
+    assert response.status_code == expected_status_code
 
     # Test GET request for data steward
     url = reverse("import_data", args=[model_type])
-    response = client_user_data_steward.get(url, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
-    assert response.status_code == 200
-    assert "importer/import_form.html" in [t.name for t in response.templates]
-
-    for user in [user_normal, user_vip]:
-        # Test POST request for other users
-        response = upload_test_file(client_user_data_steward, model_type, user)
-        assert response.status_code == 403
-
-        # Test GET request for other users
-        client_user_data_steward.logout()
-        client_user_data_steward.login(username=user.username, password=user.password)
-        url = reverse("import_data", args=[model_type])
-        response = client_user_data_steward.get(
-            url, HTTP_X_REQUESTED_WITH="XMLHttpRequest"
-        )
-        assert response.status_code == 403
+    response = client.get(url, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+    assert response.status_code == expected_status_code
+    if expected_status_code == 200:
+        assert "importer/import_form.html" in [t.name for t in response.templates]
