@@ -11,6 +11,7 @@ from .data_declaration import (
     DataDeclarationSubFormFromExisting,
 )
 from .document import DocumentForm
+from .project import ProjectForm
 from .partner import PartnerForm
 from .permission import UserPermFormSet
 from .legal_basis import LegalBasisForm
@@ -35,6 +36,7 @@ __all__ = [
     "PartnerForm",
     "LegalBasisForm",
     "PartnerRoleForm",
+    "ProjectForm",
     "UserPermFormSet",
     "PublicationForm",
     "ShareForm",

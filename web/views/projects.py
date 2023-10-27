@@ -88,6 +88,8 @@ class ProjectCreateView(CreateView):
             ):
                 data.update({"local_custodians": str(self.request.user.pk)})
             kwargs.update({"data": data})
+        if self.request.user.is_part_of(Groups.DATA_STEWARD.value):
+            kwargs.update({"keep_metadata_field": True})
         return kwargs
 
     def form_valid(self, form):
@@ -146,6 +148,12 @@ class ProjectEditView(CheckerMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.request.user.is_part_of(Groups.DATA_STEWARD.value):
+            kwargs.update({"keep_metadata_field": True})
+        return kwargs
 
     def form_valid(self, form):
         response = super().form_valid(form)
