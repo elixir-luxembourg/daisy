@@ -1,10 +1,19 @@
+{% load static daisy_utils %}
 <div class="row">
     <div class="col-6">
         <h1 class="display-4">
             Browse {{title}}
         </h1>
     </div>
-    <div class="col-5">
+    <div class="col-5 d-flex align-items-center justify-content-end">
+        {% if request.user|has_group:"daisy-data-steward" %}
+            {% if search_url == 'projects' or search_url == 'datasets' or search_url == 'partners' %}
+                <button id="importModalButton" type="button" class="btn btn-secondary btn-outline float-right mx-2">
+                    Import
+                </button>
+                {% include 'importer/import_modal.html' %}
+            {% endif %}
+        {% endif %}
         {% if request.user.is_superuser %}
             <a class="btn btn-secondary btn-outline float-right" href="export?{% if filters %}filters={{ filters }}&{% endif %}{% if order_by %}order_by={{ order_by | default:'' }}&{% endif %}{% if query %}query={{ query | default:'' }}{% endif %}">Save the results as xlsx</a>
         {% endif %}
@@ -29,13 +38,13 @@
                         </div>
                         {% endif %}
                     </div>
-                    
+
                     <span class="form-group bmd-form-group"> <!-- needed to match padding for floating labels -->
                         <button type="submit" class="btn btn-primary">Search</button>
                     </span>
                 </form>
             </div>
-    
+
             <div class="col-xl-7 col-lg-12 mt-4 mb-2">
                 {% if order_by_fields %}
                 <div class="mr-auto float-right">
@@ -50,3 +59,8 @@
         </div>
     </div>
 </div>
+<script>
+    const importDataUrl = `/import_data/{{ search_url }}/`;
+</script>
+<script defer src="{% static 'js/daisy.js' %}"></script>
+<script defer src="{% static 'js/importer.js' %}"></script>
