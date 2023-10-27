@@ -6,7 +6,7 @@
         </h1>
     </div>
     <div class="col-5 d-flex align-items-center justify-content-end">
-        {% if request.user|has_group:"daisy-data-steward" and not request.user.is_superuser%}
+        {% if request.user|has_group:"daisy-data-steward" %}
             {% if search_url == 'projects' or search_url == 'datasets' or search_url == 'partners' %}
                 <button id="importModalButton" type="button" class="btn btn-secondary btn-outline float-right mx-2">
                     Import
