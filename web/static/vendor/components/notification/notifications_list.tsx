@@ -14,20 +14,34 @@ type NotificationListProps = {
     showDismissColumn: boolean
     csrf: string,
 }
+
+/**
+ * NotificationList: React component that displays a list of notifications
+ * @param showDismissed - If true, the list will display dismissed notifications
+ * @param showRecipientColumn - If true, the list will display the recipient column
+ * @param showDismissColumn - If true, the list will display the dismiss column
+ * @param csrf - CSRF token
+ *
+ * @return - The list of notifications divided into cards by content type
+ */
 export const NotificationList = ({showDismissed, showRecipientColumn, showDismissColumn, csrf}: NotificationListProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [notifications, setNotifications] = useState<{[key: string]: CustomType.Notification[]}>({});
+    const [notifications, setNotifications] = useState<Record<string, CustomType.Notification[]>>({});
 
+    /**
+     * Group notifications by content type
+     * @param data - List of notifications
+     */
     const groupNotifications = (data: CustomType.Notification[]) => {
         return data.reduce(
-            (accumulator: {[key:string]: CustomType.Notification[]}, currentValue) => {
+            (accumulator: Record<string, CustomType.Notification[]>, currentValue) => {
                 (accumulator[currentValue.objectType] = accumulator[currentValue.objectType] || []).push(currentValue);
                 return accumulator;
             }, {}
         );
     };
 
-    // Getting list of notifications from Django
+    // Fetch notifications from the API
     useEffect(() => {
         fetch(
             `${API_URL_NOTIFICATIONS_LIST}?show_dismissed=${showDismissed}&as_admin=${showRecipientColumn}`,
@@ -40,6 +54,10 @@ export const NotificationList = ({showDismissed, showRecipientColumn, showDismis
         });
     }, [showDismissed, showRecipientColumn]);
 
+    /**
+     * Method to dismiss a notification
+     * @param notification - Notification to dismiss
+     */
     const dismissNotification = (notification: CustomType.Notification) => {
         fetch(
             `${API_URL_DISMISS_NOTIFICATION}/${notification.id}`,
@@ -66,6 +84,10 @@ export const NotificationList = ({showDismissed, showRecipientColumn, showDismis
             });
     };
 
+    /**
+     * Method to dismiss all notifications of a given content type
+     * @param contentType - Content type of the notifications to dismiss
+     */
     const dismissAllNotifications = (contentType: string) => {
         fetch(
             `${API_URL_DISMISS_ALL_NOTIFICATION}/${contentType}`,
@@ -91,7 +113,9 @@ export const NotificationList = ({showDismissed, showRecipientColumn, showDismis
                 console.error(`An error occurred while dismissing notifications for ${contentType}`, error);
             });
     };
+
     if (Object.keys(notifications).some(contentType => notifications[contentType].length > 0)){
+        // Display the list of notifications if there are any
         return (
             isLoading || Object.keys(notifications).sort().map(contentType => {
                 if (notifications[contentType].length > 0) {
@@ -107,13 +131,15 @@ export const NotificationList = ({showDismissed, showRecipientColumn, showDismis
                             <NotificationsTable
                                 data={notifications[contentType]}
                                 showRecipient={showRecipientColumn}
-                                showDismiss={showDismissColumn} onDismiss={dismissNotification}/>
+                                showDismiss={showDismissColumn} onDismiss={dismissNotification}
+                            />
                         </NotificationCard>
                     );
                 }
             })
         );
     } else {
+        // Display a message if there are no notifications
         return (
             <div className={"row mt-4 accordion"}>
                 <div className={"card col px-0"}>

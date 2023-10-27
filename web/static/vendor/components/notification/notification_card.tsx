@@ -7,20 +7,28 @@ type NotificationHeaderProps = {
     showDismissNumber: boolean
 };
 
-const NotificationHeader = (props: NotificationHeaderProps) => {
-    const title = `${props.category.charAt(0).toUpperCase()}${props.category.substring(1)} Notifications`;
+/**
+ * NotificationHeader: The header for each notification card
+ * @param category - The category of the notification
+ * @param newNotifications - The number of new notifications in the category
+ * @param showDismissNumber - Whether to show the number of new notifications
+ *
+ * @return - The header for the notification card
+ */
+const NotificationHeader = ({category, newNotifications, showDismissNumber}: NotificationHeaderProps) => {
+    const title = `${category.charAt(0).toUpperCase()}${category.substring(1)} Notifications`;
     return (
         <div
-            id={`accordion-header-${props.category}`}
+            id={`accordion-header-${category}`}
             className={"card-header btn btn-link position-relative"}
             data-toggle={"collapse"}
-            data-target={`#accordion-body-${props.category}`}
+            data-target={`#accordion-body-${category}`}
             aria-expanded={"false"}
-            aria-controls={`accordion-body-${props.category}`}
+            aria-controls={`accordion-body-${category}`}
         >
             <h2 className={"card-title"}>{title}</h2>
-            {props.showDismissNumber && props.newNotifications > 0 &&
-                <h5 className={"badge badge-primary card-badge"}>{props.newNotifications}</h5>
+            {showDismissNumber && newNotifications > 0 &&
+                <h5 className={"badge badge-primary card-badge"}>{newNotifications}</h5>
             }
         </div>
     );
@@ -34,6 +42,16 @@ type NotificationCardProps = {
     dismissAll: (contentType: string) => void,
 };
 
+/**
+ * NotificationCard: The card for each notification category
+ * @param type - The category of the notification
+ * @param newNotifNumber - The number of new notifications in the category
+ * @param children - The React components to render in the card
+ * @param showDismissBtn - Whether to show the dismiss all button
+ * @param dismissAll - The function to dismiss all notifications in the category
+ *
+ * @return - The card for the notification category
+ */
 export const NotificationCard = ({type, newNotifNumber, children, showDismissBtn, dismissAll}: NotificationCardProps) => {
     return (
         <div className={"row mt-4 accordion"}>
@@ -55,6 +73,3 @@ export const NotificationCard = ({type, newNotifNumber, children, showDismissBtn
         </div>
     );
 };
-
-
-

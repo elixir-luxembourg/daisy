@@ -1,5 +1,7 @@
 "use strict";
-import type {UserObject} from "../../customtypes/customtypes";
+// Defined custom types that are specific to the notification app here
+
+import type {UserObject} from "../common/custom_types";
 
 export type Notification = {
     id: number

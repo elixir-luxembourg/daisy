@@ -1,19 +1,40 @@
 import pytest
-
+from typing import TYPE_CHECKING
 from notification.models import Notification, NotificationVerb
 
+if TYPE_CHECKING:
+    from django.conf import settings
+    from django.db.models import Model
 
-# notifications fixtures
+
 @pytest.fixture
 def notifications_for_user():
-    def _method(user, number=10, content_type=None):
-        if content_type is None:
-            content_type = user
+    """
+    Fixture that builds a method to create notifications for a given user
+
+    :return: a method to create notifications for a given user
+    """
+
+    def _method(
+        user: "settings.AUTH_USER_MODEL",
+        number: int = 10,
+        content_object: "Model" = None,
+    ):
+        """
+        Create notifications for a given user
+
+        :param user: The user to create notifications for
+        :param number: The number of notifications to create
+        :param content_object: The content object to attach to the notifications
+        :return: The list of created notifications
+        """
+        if content_object is None:
+            content_object = user
         for i in range(number):
             Notification.objects.create(
                 recipient=user,
                 verb=i % 2 == 0 and NotificationVerb.start or NotificationVerb.end,
-                content_object=content_type,  # should be a dataset but not tested yet
+                content_object=content_object,  # should be a dataset but not tested yet
             )
         return Notification.objects.all()
 
