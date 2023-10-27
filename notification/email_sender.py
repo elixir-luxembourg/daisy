@@ -11,7 +11,7 @@ SUBJECT_PREFIX = "[DAISY]"
 
 def send_the_email(sender_email, recipients, subject, template, context):
     """
-    Send an email to the recipents using the templates,
+    Send an email to the recipients using the templates,
     """
     # recipients can be a list or single email
     if not isinstance(recipients, (list, tuple)):

@@ -1,0 +1,50 @@
+{% extends 'notification/email.html' %}
+
+{% block content %}
+    <p style="padding-left: 10px">
+        {% if error_message %}
+            Hello, <br> {{ error_message }}
+        {% else %}
+            Dear {{ user }},<br>please find below list of approaching events that were detected
+        {% endif %} in <a href="{{ server_url }}" style="color: #f47d20;">DAISY</a></p>
+
+    {% for content_type, notifs in notifications.items %}
+        <p style="margin: 10px;background: #d3d3d3;padding: 5px;font-weight: bold;">{{ content_type | title }} notifications</p>
+        <table border="0" cellspacing="0" cellpadding="20">
+            <tr>
+                <td width="100%">
+                    <table
+                            border="0" cellspacing="0" cellpadding="0"
+                            style="table-layout: fixed; font-family: 'Roboto','Helvetica','Arial',sans-serif;
+                            border-bottom: 2px solid #d3d3d3;font-weight: 300; background-color: rgba(158, 158, 158, 0.2);
+                            padding: 10px;font-size: 13px;"
+                            width="660">
+                        <tr style="border-bottom: 2px solid #d3d3d3;background-color: #fff;">
+                            <th style="text-align: left; padding: 10px;" width="40%">{{ content_type | title }}</th>
+                            <th style="text-align: left; padding: 10px;" width="30%">Description</th>
+                            <th style="text-align: left; padding: 10px;" width="30%">Event Date</th>
+                        </tr>
+                        {% for notif in notifs %}
+                            <tr style="background-color: #fff;border-bottom:1px #f0f0f0 solid;">
+                                <td style="text-align: left; padding: 10px;">
+                                    {% with object_url=notif.get_absolute_url %}
+                                        {% if object_url %}
+                                            <a style="text-decoration: none; color:#2B6777"
+                                               title="{{ notif.get_full_url }}"
+                                               href="{{ notif.get_full_url }}">{{ notif.content_object }}</a>
+                                        {% else %}
+                                            {{ notif.content_object }}
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td style="text-align: left; padding: 10px;">{{ notif.message }}</td>
+                                <td style="text-align: left; padding: 10px;">{{ notif.on }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+
+                </td>
+            </tr>
+        </table>
+    {% endfor %}
+{% endblock %}

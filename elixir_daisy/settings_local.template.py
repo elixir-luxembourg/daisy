@@ -23,6 +23,7 @@ if SECRET_KEY is None:
 COMPANY = "LCSB"  # Used for generating some models' verbose names
 
 HELPDESK_EMAIL = "lcsb-sysadmins@uni.lu"
+DATASTEWARD_MAILING_LIST = ""  # used when there are notifications errors
 
 # Placeholders on login page
 # LOGIN_USERNAME_PLACEHOLDER = ''

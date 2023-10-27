@@ -1,5 +1,6 @@
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
+from django.urls import reverse
 
 from core import constants
 from core.permissions.mapping import PERMISSION_MAPPING
@@ -118,6 +119,8 @@ class Contract(CoreModel):
     )
 
     # metadata = JSONField(null=True, blank=True, default=dict)
+    def get_absolute_url(self):
+        return reverse("contract", args=[str(self.pk)])
 
     def add_partner_with_role(self, partner, role, contact=None):
         partner_role = self.partners_roles.create(partner=partner)

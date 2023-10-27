@@ -4,8 +4,6 @@ model classes based on http://activitystrea.ms/specs/json/1.0/
 Notification class does not have any target at the moment.
 """
 from django.db import models
-from django.urls import reverse
-from django.apps import apps
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
@@ -94,15 +92,10 @@ class Notification(models.Model):
     objects = NotificationManager()
 
     def get_absolute_url(self):
-        if self.content_type.model_class() == apps.get_model("core.Dataset"):
-            return reverse("dataset", args=[str(self.object_id)])
-        elif self.content_type.model_class() == apps.get_model("core.DataDeclaration"):
-            return reverse("data_declaration", args=[str(self.object_id)])
-        elif self.content_type.model_class() == apps.get_model("core.Contract"):
-            return reverse("contract", args=[str(self.object_id)])
-        elif self.content_type.model_class() == apps.get_model("core.Project"):
-            return reverse("project", args=[str(self.object_id)])
-        raise Exception("No url defined for this content type")
+        model_class = self.content_type.model_class()
+        if hasattr(model_class, "get_absolute_url"):
+            return model_class.objects.get(pk=self.object_id).get_absolute_url()
+        return None
 
     def get_full_url(self):
         """
