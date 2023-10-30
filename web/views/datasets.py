@@ -78,7 +78,7 @@ class DatasetWizardView(NamedUrlSessionWizardView):
                 Dataset, pk=self.storage.extra_data.get("dataset_id")
             )
             kwargs["dataset"] = dataset
-        elif self.request.user.is_part_of(Groups.DATA_STEWARD.value):
+        elif self.request.user.can_edit_metadata():
             # If the user is a data steward, we want to keep the scientific metadata field
             kwargs["keep_metadata_field"] = True
 
@@ -162,7 +162,7 @@ class DatasetCreateView(CreateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        if self.request.user.is_part_of(Groups.DATA_STEWARD.value):
+        if self.request.user.can_edit_metadata():
             # If the user is a data steward, we want to keep the scientific metadata field
             kwargs["keep_metadata_field"] = True
         return kwargs
@@ -219,7 +219,7 @@ class DatasetEditView(CheckerMixin, UpdateView):
         kwargs = super().get_form_kwargs()
         kwargs.update({"dataset": self.object})
 
-        if self.request.user.is_part_of(Groups.DATA_STEWARD.value):
+        if self.request.user.can_edit_metadata():
             kwargs.update({"keep_metadata_field": True})
         return kwargs
 

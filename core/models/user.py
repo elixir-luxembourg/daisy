@@ -160,6 +160,9 @@ class User(AbstractUser):
     def can_publish(self):
         return self.is_superuser or self.is_part_of(constants.Groups.DATA_STEWARD.value)
 
+    def can_edit_metadata(self):
+        return self.is_part_of(constants.Groups.DATA_STEWARD.value)
+
     # Permission management
     # ======================================================================
 
