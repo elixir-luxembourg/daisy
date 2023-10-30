@@ -13,8 +13,6 @@
                 </button>
                 {% include 'importer/import_modal.html' %}
             {% endif %}
-        {% endif %}
-        {% if request.user.is_superuser %}
             <a class="btn btn-secondary btn-outline float-right" href="export?{% if filters %}filters={{ filters }}&{% endif %}{% if order_by %}order_by={{ order_by | default:'' }}&{% endif %}{% if query %}query={{ query | default:'' }}{% endif %}">Save the results as xlsx</a>
         {% endif %}
     </div>
