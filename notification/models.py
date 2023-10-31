@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.apps import apps
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth import get_user_model
 
 from django.conf import settings
 
@@ -23,10 +24,11 @@ class NotificationStyle(ChoiceEnum):
 
 
 class NotificationVerb(ChoiceEnum):
-    new_dataset = "New dataset"
-    update_dataset = "Dataset update"
-    data_storage_expiry = "Data storage expiry"
-    document_expiry = "Document expiry"
+    expire = "expire"
+    start = "start"
+    end = "end"
+    embargo_start = "embargo_start"
+    embargo_end = "embargo_end"
 
 
 class NotificationSetting(models.Model):
@@ -34,12 +36,24 @@ class NotificationSetting(models.Model):
         app_label = "notification"
 
     user = models.OneToOneField(
-        "core.User", related_name="notification_setting", on_delete=models.CASCADE
+        get_user_model(), related_name="notification_setting", on_delete=models.CASCADE
     )
-    style = EnumChoiceField(NotificationStyle, default=NotificationStyle.never)
+    send_email = models.BooleanField(
+        default=False,
+        help_text="Notifications will be send directly to your email. See your [profile page] for more detail.",
+    )
+    send_in_app = models.BooleanField(
+        default=True,
+        help_text="Notification will be displayed in DAISY interface",
+    )
+    notification_offset = models.PositiveSmallIntegerField(
+        default=90,
+        verbose_name="Notification time",
+        help_text="Define how many days before the actual event you want to receive the notification",
+    )
 
     def __str__(self):
-        return f"{self.user}: {self.style}"
+        return f"{self.user}: {self.notification_offset} days"
 
 
 class NotificationQuerySet(models.QuerySet):
@@ -59,10 +73,17 @@ class Notification(models.Model):
     class Meta:
         app_label = "notification"
 
-    actor = models.ForeignKey(
-        "core.User", related_name="notifications", on_delete=models.CASCADE
+    recipient = models.ForeignKey(
+        get_user_model(), related_name="notifications", on_delete=models.CASCADE
     )
     verb = EnumChoiceField(NotificationVerb)
+    on = models.DateTimeField(null=True, blank=True, default=None)
+
+    dispatch_in_app = models.BooleanField(default=True)
+    dispatch_by_email = models.BooleanField(default=False)
+    dismissed = models.BooleanField(default=False)
+    processing_date = models.DateField(default=None, null=True, blank=True)
+    message = models.TextField(default="")
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
@@ -94,4 +115,4 @@ class Notification(models.Model):
         )
 
     def __str__(self):
-        return f"N: {self.actor} {self.verb} {self.object_id} {self.time}"
+        return f"N: {self.recipient} {self.verb} {self.object_id} {self.time}"

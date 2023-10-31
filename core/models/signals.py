@@ -5,36 +5,8 @@ from django.dispatch import receiver
 
 from core.models import Dataset, Project, User, Contract
 from core.search_indexes import DatasetIndex, ProjectIndex, ContractIndex
-from notification.models import Notification, NotificationVerb, NotificationStyle
 
 logger = logging.getLogger("daisy.signals")
-
-
-@receiver(post_save, sender=Dataset, dispatch_uid="dataset_change")
-def dataset_changed(sender, instance, created, **kwargs):
-    """
-    Dataset changed
-    * create a notification
-    """
-    from notification import tasks
-
-    # log an activity for each custodians
-    for custodian in instance.local_custodians.all():
-        Notification.objects.create(
-            actor=custodian,
-            verb=created
-            and NotificationVerb.new_dataset
-            or NotificationVerb.update_dataset,
-            content_object=instance,
-        )
-        # send an email if notif setting is every time
-        if not settings.NOTIFICATIONS_DISABLED and (
-            not hasattr(custodian, "notification_setting")
-            or custodian.notification_setting == NotificationStyle.every_time
-        ):
-            tasks.send_dataset_notification_for_user.delay(
-                custodian.pk, instance.pk, created
-            )
 
 
 @receiver(

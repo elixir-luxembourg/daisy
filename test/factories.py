@@ -363,7 +363,7 @@ class AbstractNotificationFactory(factory.django.DjangoModelFactory):
         exclude = ["content_object"]
         abstract = True
 
-    actor = factory.Iterator(User.objects.all())
+    recipient = factory.Iterator(User.objects.all())
     verb = factory.Iterator(NotificationVerb)
 
     object_id = factory.SelfAttribute("content_object.id")
@@ -382,7 +382,7 @@ class DatasetNotificationFactory(AbstractNotificationFactory):
     class Meta:
         model = "notification.Notification"
         django_get_or_create = (
-            "actor",
+            "recipient",
             "verb",
             "time",
         )
