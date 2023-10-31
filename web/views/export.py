@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.http import HttpResponse
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
 
 from excel_response import ExcelResponse
 
@@ -12,6 +12,7 @@ from . import facet_view_utils
 log = DaisyLogger(__name__)
 
 
+@login_required
 @user_passes_test(is_data_steward)
 def generic_export(request, object_model_class, object_name):
     def _get_objects(request, object_model_class, object_name):

@@ -1,6 +1,6 @@
 import os
 import pytest
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from django.shortcuts import reverse
 from django.test.client import Client
 
@@ -16,6 +16,7 @@ from test.factories import (
 from core.constants import Permissions
 from core.models.user import User
 from core.models.dataset import Dataset
+from core.forms import DatasetForm
 
 from .utils import (
     check_response_status,
@@ -23,6 +24,9 @@ from .utils import (
     login_test_user,
     check_response_context_data,
 )
+
+if TYPE_CHECKING:
+    from test.factories import GroupFactory
 
 
 def check_dataset_views_permissions(
@@ -203,3 +207,40 @@ def test_dataset_views_context(permissions, context_key, permission_key, group):
 
     url = reverse("dataset", kwargs={"pk": dataset.pk})
     check_response_context_data(url, user, permission_key, dataset, context_key)
+
+
+@pytest.mark.parametrize("url_name", ("dataset_add", "dataset_edit"))
+@pytest.mark.parametrize(
+    "group, expected_result",
+    [
+        (VIPGroup, False),
+        (DataStewardGroup, True),
+        (LegalGroup, False),
+        (AuditorGroup, False),
+    ],
+)
+def test_dataset_views_scientific_metadata_field(
+    url_name: str, group: "type[GroupFactory]", client: "Client", expected_result: bool
+):
+    """
+    Test that the scientific_metadata field is not rendered in the form unless the user is a data steward
+    :param url_name: The name of the endpoint to test
+    :param group: The group the test user will belong to
+    :param client: The Django test client
+    :param expected_result: Whether the field should be rendered
+    """
+    field_node = DatasetForm(keep_metadata_field=True)[
+        "scientific_metadata"
+    ].label_tag()
+    user = UserFactory(groups=[group()])
+    login_test_user(client, user)
+
+    if url_name == "dataset_edit":
+        dataset = DatasetFactory()
+        dataset.local_custodians.set([user])
+        dataset.save()
+        url = reverse(url_name, kwargs={"pk": dataset.pk})
+    else:
+        url = reverse(url_name)
+    response = client.get(url)
+    assert (field_node in response.content.decode("utf-8")) is expected_result

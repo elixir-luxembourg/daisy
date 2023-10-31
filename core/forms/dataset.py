@@ -53,10 +53,13 @@ class DatasetForm(forms.ModelForm):
         heading_help = "Provide basic information for the new dataset."
 
     def __init__(self, *args, **kwargs):
-        dataset = None
-        if "dataset" in kwargs:
-            dataset = kwargs.pop("dataset")
+        kwargs.pop("dataset", None)
+        keep_metadata = kwargs.pop("keep_metadata_field", False)
+
         super().__init__(*args, **kwargs)
+        if not keep_metadata:
+            del self.fields["scientific_metadata"]
+
         self.fields["local_custodians"].queryset = User.objects.exclude(
             username="AnonymousUser"
         )
