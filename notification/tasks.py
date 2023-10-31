@@ -108,6 +108,7 @@ def send_notifications_for_user_upcoming_events(execution_date: str = None):
         for notif in notifications_exec_date:
             notifications_by_content_type[notif.content_type.model].append(notif)
             notif.processing_date = datetime.now().date()
+            notif.save()
 
         context = {
             "user": user.full_name,
@@ -157,6 +158,7 @@ def send_missed_notifications_for_user_upcoming_events(execution_date: str = Non
         for notif in notifications_lte_exec_date:
             notifications_by_content_type[notif.content_type.model].append(notif)
             notif.processing_date = datetime.now().date()
+            notif.save()
 
         context = {
             "user": user.full_name,
