@@ -1,9 +1,17 @@
-from datetime import date
+import typing
+from typing import List
+
+if typing.TYPE_CHECKING:
+    from django.conf import settings
+    from datetime import date
+    from notification.models import NotificationVerb
+
+    User = settings.AUTH_USER_MODEL
 
 
 class NotifyMixin:
     @staticmethod
-    def get_notification_recipients():
+    def get_notification_recipients() -> List["User"]:
         """
         Should Query the users based on their notification settings
         and the entity.
@@ -16,7 +24,7 @@ class NotifyMixin:
         )
 
     @classmethod
-    def make_notifications(cls, exec_date: date):
+    def make_notifications(cls, exec_date: "date"):
         """
         Creates a notifications for the reciepients based on
         the business logic of the entity.
@@ -32,7 +40,7 @@ class NotifyMixin:
         )
 
     @staticmethod
-    def notify(obj: object, verb):
+    def notify(user: "User", obj: object, verb: "NotificationVerb"):
         """
         Notify the user about the entity.
         """
@@ -40,7 +48,7 @@ class NotifyMixin:
             f"Subclasses of {NotifyMixin.__name__} must implement {NotifyMixin.notify.__name__}"
         )
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         """
         Returns the absolute url of the entity.
         """

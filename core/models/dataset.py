@@ -12,10 +12,10 @@ from django.utils.module_loading import import_string
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from core import constants
-from core.models import DataDeclaration
+from core.models import DataDeclaration, User
 from core.permissions.mapping import PERMISSION_MAPPING
 from notification import NotifyMixin
-from notification.models import Notification, NotificationVerb
+from notification.models import Notification, NotificationVerb, NotificationSetting
 from .utils import CoreTrackedModel, TextFieldWithInputWidget
 from .partner import HomeOrganisation
 
@@ -250,7 +250,9 @@ class Dataset(CoreTrackedModel, NotifyMixin):
     def make_notifications(cls, exec_date: datetime.date):
         recipients = cls.get_notification_recipients()
         for user in recipients:
-            notification_setting = user.notification_setting
+            notification_setting: NotificationSetting = (
+                user.notification_setting or NotificationSetting()
+            )
             if not (
                 notification_setting.send_email or notification_setting.send_in_app
             ):
@@ -277,25 +279,30 @@ class Dataset(CoreTrackedModel, NotifyMixin):
                         cls.notify(user, data_declaration, NotificationVerb.end)
 
     @staticmethod
-    def notify(
-        user: settings.AUTH_USER_MODEL, obj: "DataDeclaration", verb: NotificationVerb
-    ):
+    def notify(user: "User", obj: "DataDeclaration", verb: "NotificationVerb"):
         """
         Notifies concerning users about the entity.
         """
         offset = user.notification_setting.notification_offset
+        dispatch_by_email = user.notification_setting.send_email
+        dispatch_in_app = user.notification_setting.send_in_app
 
         if verb == NotificationVerb.embargo_end:
             msg = f"Embargo for {obj.dataset.title} is ending in {offset} days."
+            on = obj.embargo_date
         else:
             msg = (
                 f"Storage duration for {obj.dataset.title} is ending in {offset} days."
             )
+            on = obj.end_of_storage_duration
 
         Notification.objects.create(
             recipient=user,
             verb=verb,
             msg=msg,
+            on=on,
+            dispatch_by_email=dispatch_by_email,
+            dispatch_in_app=dispatch_in_app,
             content_type=ContentType.objects.get_for_model(obj.dataset),
             object_id=obj.dataset.id,
         ).save()
