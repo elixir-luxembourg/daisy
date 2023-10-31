@@ -8,20 +8,20 @@ from test.factories import *
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize(
-    " object_factory", [DatasetFactory]
-)
-def test_send_notifications_for_user_upcoming_events_today(
-        user_normal, object_factory
-):
+@pytest.mark.parametrize(" object_factory", [DatasetFactory])
+def test_send_notifications_for_user_upcoming_events_today(user_normal, object_factory):
     """
-    Test notification report
+    Test notification report processing for today's notifications
     """
     # Enable user notification setting send_email
     ns = NotificationSetting(user=user_normal, send_email=True)
     ns.save()
-    n = Notification(recipient=user_normal, content_object=object_factory(), dispatch_by_email=True,
-                     verb=NotificationVerb.expire)
+    n = Notification(
+        recipient=user_normal,
+        content_object=object_factory(),
+        dispatch_by_email=True,
+        verb=NotificationVerb.expire,
+    )
     n.save()
 
     notifications_not_processed = Notification.objects.filter(
@@ -37,62 +37,83 @@ def test_send_notifications_for_user_upcoming_events_today(
     )
     assert len(notifications_after_sending) == 0
 
-# @pytest.mark.django_db
-# @pytest.mark.parametrize(
-#     " object_factory", [DatasetFactory]
-# )
-# def test_send_notifications_for_user_upcoming_events_execution_date(
-#         user_normal, object_factory
-# ):
-#     """
-#     Test notification report
-#     """
-#     # Enable user notification setting send_email
-#     ns = NotificationSetting(user=user_normal, send_email=True)
-#     ns.save()
-#
-#     n = Notification(recipient=user_normal, content_object=object_factory(), dispatch_by_email=True,
-#                      verb=NotificationVerb.expire)
-#     n.save()
-#
-#     yesterday = datetime.now() - timedelta(days=1)
-#
-#     n2 = Notification(recipient=user_normal, content_object=object_factory(), dispatch_by_email=True,
-#                       verb=NotificationVerb.expire, time=yesterday)
-#     n2.save()
-#
-#     notifications_not_processed = Notification.objects.filter(
-#         recipient=user_normal.id, dispatch_by_email=True, processing_date=None
-#     )
-#     assert len(notifications_not_processed) == 2
-#
-#     # send notifications
-#     tasks.send_notifications_for_user_upcoming_events(yesterday.date().strftime('%Y-%m-%d'))
-#
-#     notifications_after_sending = Notification.objects.filter(
-#         recipient=user_normal.id, dispatch_by_email=True, processing_date=None
-#     )
-#     assert len(notifications_after_sending) == 1
 
 @pytest.mark.django_db
-@pytest.mark.parametrize(
-    " object_factory", [DatasetFactory]
-)
-def test_send_missed_notifications_for_user_upcoming_events(
-        user_normal, object_factory
+@pytest.mark.parametrize(" object_factory", [DatasetFactory])
+def test_send_notifications_for_user_upcoming_events_execution_date(
+    user_normal, object_factory
 ):
     """
-    Test notification report
+    Test notification report processing for exexution date notifications
     """
     # Enable user notification setting send_email
     ns = NotificationSetting(user=user_normal, send_email=True)
     ns.save()
-    n = Notification(recipient=user_normal, content_object=object_factory(), dispatch_by_email=True,
-                     verb=NotificationVerb.expire)
+
+    n = Notification(
+        recipient=user_normal,
+        content_object=object_factory(),
+        dispatch_by_email=True,
+        verb=NotificationVerb.expire,
+    )
     n.save()
-    n2 = Notification(recipient=user_normal, content_object=object_factory(), dispatch_by_email=True,
-                      verb=NotificationVerb.expire, time=datetime.now() - timedelta(days=1))
+
+    yesterday = datetime.now() - timedelta(days=1)
+
+    n2 = Notification(
+        recipient=user_normal,
+        content_object=object_factory(),
+        dispatch_by_email=True,
+        verb=NotificationVerb.expire,
+    )
     n2.save()
+    # Force change of n2 time
+    Notification.objects.filter(pk=n2.pk).update(time=yesterday)
+
+    notifications_not_processed = Notification.objects.filter(
+        recipient=user_normal.id, dispatch_by_email=True, processing_date=None
+    )
+    assert len(notifications_not_processed) == 2
+
+    # send notifications
+    tasks.send_notifications_for_user_upcoming_events(
+        yesterday.date().strftime("%Y-%m-%d")
+    )
+
+    notifications_after_sending = Notification.objects.filter(
+        recipient=user_normal.id, dispatch_by_email=True, processing_date=None
+    )
+    assert len(notifications_after_sending) == 1
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(" object_factory", [DatasetFactory])
+def test_send_missed_notifications_for_user_upcoming_events(
+    user_normal, object_factory
+):
+    """
+    Test notification report processing for all missed notifications
+    """
+    # Enable user notification setting send_email
+    ns = NotificationSetting(user=user_normal, send_email=True)
+    ns.save()
+    n = Notification(
+        recipient=user_normal,
+        content_object=object_factory(),
+        dispatch_by_email=True,
+        verb=NotificationVerb.expire,
+    )
+    n.save()
+    n2 = Notification(
+        recipient=user_normal,
+        content_object=object_factory(),
+        dispatch_by_email=True,
+        verb=NotificationVerb.expire,
+    )
+    n2.save()
+    Notification.objects.filter(pk=n2.pk).update(
+        time=datetime.now() - timedelta(days=1)
+    )
 
     notifications_not_processed = Notification.objects.filter(
         recipient=user_normal.id, dispatch_by_email=True, processing_date=None
