@@ -1,6 +1,7 @@
 import uuid
 import datetime
 from datetime import timedelta
+import typing
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -12,12 +13,15 @@ from django.utils.module_loading import import_string
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from core import constants
-from core.models import DataDeclaration, User
+from core.models import DataDeclaration
 from core.permissions.mapping import PERMISSION_MAPPING
 from notification import NotifyMixin
 from notification.models import Notification, NotificationVerb, NotificationSetting
 from .utils import CoreTrackedModel, TextFieldWithInputWidget
 from .partner import HomeOrganisation
+
+if typing.TYPE_CHECKING:
+    User = settings.AUTH_USER_MODEL
 
 
 class Dataset(CoreTrackedModel, NotifyMixin):
