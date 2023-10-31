@@ -1,6 +1,6 @@
 import os
 import pytest
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from django.shortcuts import reverse
 from django.test.client import Client
 
@@ -23,7 +23,12 @@ from .utils import (
     check_response_status,
     check_datasteward_restricted_url,
     check_response_context_data,
+    login_test_user,
 )
+from core.forms import ProjectForm
+
+if TYPE_CHECKING:
+    from test.factories import GroupFactory
 
 
 def check_project_views_permissions(
@@ -238,3 +243,41 @@ def test_project_views_context(permissions, context_key, permission_key, group):
 
     url = reverse("project", kwargs={"pk": project.pk})
     check_response_context_data(url, user, permission_key, project, context_key)
+
+
+@pytest.mark.parametrize("url_name", ("project_add", "project_edit"))
+@pytest.mark.parametrize(
+    "group, expected_result",
+    [
+        (VIPGroup, False),
+        (DataStewardGroup, True),
+        (LegalGroup, False),
+        (AuditorGroup, False),
+    ],
+)
+def test_project_views_scientific_metadata_field(
+    url_name: str, group: "type[GroupFactory]", client: "Client", expected_result: bool
+):
+    """
+    Test that the scientific_metadata field is not rendered in the form unless the user is a data steward
+    :param url_name: The name of the endpoint to test
+    :param group: The group the test user will belong to
+    :param client: The Django test client
+    :param expected_result: Whether the field should be rendered
+    """
+    field_node = ProjectForm(keep_metadata_field=True)[
+        "scientific_metadata"
+    ].label_tag()
+    user = UserFactory(groups=[group()])
+    login_test_user(client, user)
+
+    if url_name == "project_edit":
+        project = ProjectFactory()
+        project.local_custodians.set([user])
+        project.save()
+        url = reverse(url_name, kwargs={"pk": project.pk})
+    else:
+        url = reverse(url_name)
+
+    response = client.get(url)
+    assert (field_node in response.content.decode("utf-8")) is expected_result

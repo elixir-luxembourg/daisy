@@ -1,11 +1,11 @@
 from django.conf import settings
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
+from django.http import HttpResponseRedirect
 from formtools.wizard.views import NamedUrlSessionWizardView
-from django.http import HttpResponseRedirect, Http404
-from core.constants import Permissions
+
 from core.forms.storage_location import StorageLocationForm
 from core.forms import DatasetForm, DataDeclarationForm, LegalBasisForm, AccessForm
 from core.forms.dataset import DatasetFormEdit
@@ -15,7 +15,8 @@ from core.permissions import CheckerMixin
 from core.utils import DaisyLogger
 from core.constants import Permissions
 from . import facet_view_utils
-from typing import List, Tuple, Union, Any, Dict
+
+from typing import Any, Dict
 
 log = DaisyLogger(__name__)
 
@@ -78,6 +79,10 @@ class DatasetWizardView(NamedUrlSessionWizardView):
                 Dataset, pk=self.storage.extra_data.get("dataset_id")
             )
             kwargs["dataset"] = dataset
+        elif self.request.user.can_edit_metadata():
+            # If the user is a data steward, we want to keep the scientific metadata field
+            kwargs["keep_metadata_field"] = True
+
         return kwargs
 
     def process_step(self, form, **kwargs) -> Dict[str, Any]:
@@ -156,6 +161,13 @@ class DatasetCreateView(CreateView):
     def get_success_url(self):
         return reverse_lazy("dataset", kwargs={"pk": self.object.id})
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.request.user.can_edit_metadata():
+            # If the user is a data steward, we want to keep the scientific metadata field
+            kwargs["keep_metadata_field"] = True
+        return kwargs
+
     def form_valid(self, form):
         response = super().form_valid(form)
         #  assign permissions to the user
@@ -207,6 +219,9 @@ class DatasetEditView(CheckerMixin, UpdateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs.update({"dataset": self.object})
+
+        if self.request.user.can_edit_metadata():
+            kwargs.update({"keep_metadata_field": True})
         return kwargs
 
 
