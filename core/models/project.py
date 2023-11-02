@@ -1,16 +1,28 @@
+import datetime
+import typing
+from datetime import timedelta
+
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.utils.module_loading import import_string
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from core import constants
 from core.permissions.mapping import PERMISSION_MAPPING
+from notification import NotifyMixin
+from notification.models import NotificationVerb, Notification, NotificationSetting
 
 from .utils import CoreTrackedModel, COMPANY
 from .partner import HomeOrganisation
 
-from django.conf import settings
+
+if typing.TYPE_CHECKING:
+    User = settings.AUTH_USER_MODEL
 
 
 class Project(CoreTrackedModel):
@@ -305,6 +317,62 @@ class Project(CoreTrackedModel):
             generate_id_function = import_string(generate_id_function_path)
             self.elu_accession = generate_id_function(self)
             self.save()
+
+    @staticmethod
+    def get_notification_recipients():
+        """
+        Get distinct users that are local custodian of a dataset.
+        """
+
+        return get_user_model().objects.filter(Q(projects__isnull=False)).distinct()
+
+    @classmethod
+    def make_notifications(cls, exec_date: datetime.date):
+        recipients = cls.get_notification_recipients()
+        for user in recipients:
+            notification_setting: NotificationSetting = (
+                user.notification_setting or NotificationSetting()
+            )
+            if not (
+                notification_setting.send_email or notification_setting.send_in_app
+            ):
+                continue
+            day_offset = timedelta(days=notification_setting.notification_offset)
+
+            for project in user.projects.all():
+                # Project start date
+                if project.start_date and project.start_date - day_offset == exec_date:
+                    cls.notify(user, project, NotificationVerb.start)
+                # Project end date
+                if project.end_date and project.end_date - day_offset == exec_date:
+                    cls.notify(user, project, NotificationVerb.end)
+
+    @staticmethod
+    def notify(user: "User", obj: "Project", verb: "NotificationVerb"):
+        """
+        Notifies concerning users about the entity.
+        """
+        offset = user.notification_setting.notification_offset
+        dispatch_by_email = user.notification_setting.send_email
+        dispatch_in_app = user.notification_setting.send_in_app
+
+        if verb == NotificationVerb.start:
+            msg = f"The project {obj.title} is starting in {offset} days."
+            on = obj.start_date
+        else:
+            msg = f"The project {obj.title} is ending in {offset} days."
+            on = obj.end_date
+
+        Notification.objects.create(
+            recipient=user,
+            verb=verb,
+            msg=msg,
+            on=on,
+            dispatch_by_email=dispatch_by_email,
+            dispatch_in_app=dispatch_in_app,
+            content_type=ContentType.objects.get_for_model(obj),
+            object_id=obj.id,
+        ).save()
 
 
 # faster lookup for permissions
