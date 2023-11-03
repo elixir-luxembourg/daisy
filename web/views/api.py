@@ -23,11 +23,8 @@ from core.lcsb.rems import synchronizer
 from core.models import (
     User,
     Cohort,
-    Dataset,
     Partner,
-    Project,
     DiseaseTerm,
-    Contact,
     Endpoint,
 )
 from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneTerm
@@ -310,7 +307,7 @@ def rems_endpoint(request):
 def force_keycloak_synchronization(request) -> JsonResponse:
     try:
         logger.debug("Forcing refreshing the account information from Keycloak...")
-        synchronizer.synchronize()
+        synchronizer.synchronize_all()
         logger.debug("...successfully refreshed the information from Keycloak!")
         return JsonResponse(
             f"OK ({synchronizer.__class__.__name__})", status=200, safe=False

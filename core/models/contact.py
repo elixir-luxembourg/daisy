@@ -94,29 +94,6 @@ class Contact(CoreModel):
 
         return d
 
-    @classmethod
-    def get_or_create_from_rems(cls, email: str, oidc_id: str):
-        try:
-            if cls.objects.filter(oidc_id=oidc_id).count() == 1:
-                return cls.objects.get(oidc_id=oidc_id)
-            if cls.objects.filter(email=email).count() == 1:
-                return cls.objects.get(email=email)
-            else:
-                message = f"There are either zero, or 2 and more contacts with such `email` and `oidc_id`!"
-                raise ValueError(message)
-        except cls.DoesNotExist:
-            contact_type = ContactType.objects.get_or_create(
-                name="Other (imported from Keycloak)"
-            )
-            new_object = cls(
-                email=email,
-                first_name="IMPORTED BY REMS",
-                last_name="IMPORTED BY REMS",
-                type=contact_type,
-            )
-            new_object.save()
-            return new_object
-
     def get_access_permissions(self):
         """
         Finds Accesses of the user, and returns a list of their dataset IDs

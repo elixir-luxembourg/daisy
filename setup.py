@@ -53,6 +53,7 @@ test_requirements = [
     "pytest-django==4.5.2",
     "pytest-solr==1.0a1",
     "pytest-celery",
+    "pytest-mock==3.12.0",
 ]
 
 dev_requirements = ["pre-commit==3.3.3"]

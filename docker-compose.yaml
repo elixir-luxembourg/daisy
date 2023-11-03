@@ -86,7 +86,7 @@ services:
         depends_on:
             - db
             - mq
-        command: " celery -A elixir_daisy beat --loglevel=DEBUG --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+        command: "celery -A elixir_daisy beat --loglevel=DEBUG --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler"
 
 
 volumes:
