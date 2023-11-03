@@ -19,21 +19,28 @@
     </style>
   </head>
   <body style="background-color: #fff; margin: 0 !important; padding:0 !important;">
-    <table border="0" cellspacing="0" cellpadding="0" role="presentation" width="700">
-      <tr  width="100%">
-          <td bgcolor="#fafafa" style="border-radius: 4px; color: #212529; font-family: sans-serif; font-size: 16px; line-height: 28px; padding: 40px 40px;">
-            <article>
-              <img src="{{server_url}}{% static '/images/banner.png' %}" alt="Daisy Banner" width="100%">
-              {% block content %}{% endblock %}
-              <p style="color: #212529; font-size:13px; margin: 0 10px;">
-                {% block footer %}
-                This email has been generated from <a href="{{server_url}}" style="color: #f47d20;">DAISY</a>.
-                You can change your notifications settings in your <a href="{{profile_url}}" style="color: #f47d20;">profile</a>.
-                {% endblock %}
-              </p>
-            </article>
-          </td>
-      </tr>
+    <!-- Header -->
+    <table role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%">
+        <tr>
+            <td bgcolor="#fafafa" align="center">
+                <img src="{{server_url}}{% static '/images/banner.png' %}" alt="Daisy Banner" width="100%">
+            </td>
+        </tr>
+    </table>
+    <!-- Body -->
+    <table role="presentation" border="0" width="100%" cellspacing="0" style="color: #212529; font-family: sans-serif; font-size: 16px;">
+        {% block content %}{% endblock %}
+    </table>
+    <!-- footer -->
+    <table role="presentation" border="0" width="100%" cellspacing="0">
+        <tr>
+            <td style="color: #212529; font-size:13px; padding-left: 10px;" width="100%">
+                    {% block footer %}
+                    This email has been generated from <a href="{{server_url}}" style="color: #f47d20;">DAISY</a>.
+                    You can change your notifications settings in your <a href="{{profile_url}}" style="color: #f47d20;">profile</a>.
+                    {% endblock %}
+            </td>
+        </tr>
     </table>
   </body>
 </html>

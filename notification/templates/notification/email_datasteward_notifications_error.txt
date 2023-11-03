@@ -4,7 +4,7 @@
     Hello, {{ error_message }}
 
     {% for content_type, notifs in notifications.items %}
-        - {{content_type|title}}
+        - {{content_type.name|title}}
         {% for notif in notifs %}
             * {{notif.message}}:
             - ID: {{notif.content_object.id}} | Name: {{notif.content_object}} | Notification Date:{{ notif.on}}.

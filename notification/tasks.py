@@ -33,9 +33,9 @@ def report_notifications_upcoming_events_errors_for_datasteward(user):
         notifications_not_processed_by_content_type = defaultdict(list)
 
         for notif in notifications_not_processed:
-            notifications_not_processed_by_content_type[
-                notif.content_type.model
-            ].append(notif)
+            notifications_not_processed_by_content_type[notif.content_type].append(
+                notif
+            )
 
         context = {
             "notifications": dict(notifications_not_processed_by_content_type),
@@ -96,7 +96,7 @@ def send_notifications_for_user_upcoming_events(execution_date: str = None):
         # group notifications per content type and set processed to today
         notifications_by_content_type = defaultdict(list)
         for notif in notifications_exec_date:
-            notifications_by_content_type[notif.content_type.model].append(notif)
+            notifications_by_content_type[notif.content_type].append(notif)
 
         context = {
             "user": user.full_name,
@@ -163,7 +163,7 @@ def send_all_notifications_for_user_upcoming_events(execution_date: str = None):
         # group notifications per content type and set processed to today
         notifications_by_content_type = defaultdict(list)
         for notif in notifications_lte_exec_date:
-            notifications_by_content_type[notif.content_type.model].append(notif)
+            notifications_by_content_type[notif.content_type].append(notif)
 
         context = {
             "user": user.full_name,
