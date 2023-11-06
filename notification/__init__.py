@@ -1,3 +1,4 @@
+from abc import ABC, abstractclassmethod, abstractstaticmethod
 import typing
 from typing import List
 
@@ -10,7 +11,7 @@ if typing.TYPE_CHECKING:
 
 
 class NotifyMixin:
-    @staticmethod
+    @abstractstaticmethod
     def get_notification_recipients() -> List["User"]:
         """
         Should Query the users based on their notification settings
@@ -19,11 +20,9 @@ class NotifyMixin:
         Raises:
             NotImplementedError: It should be implemented by the subclass
         """
-        raise NotImplementedError(
-            f"Subclasses of {NotifyMixin.__name__} must implement {NotifyMixin.get_notification_recipients.__name__}"
-        )
+        pass
 
-    @classmethod
+    @abstractclassmethod
     def make_notifications(cls, exec_date: "date"):
         """
         Creates a notifications for the reciepients based on
@@ -35,18 +34,14 @@ class NotifyMixin:
         Raises:
             NotImplementedError: It should be implemented by the subclass
         """
-        raise NotImplementedError(
-            f"Subclasses of {NotifyMixin.__name__} must implement {cls.make_notification.__name__}"
-        )
+        pass
 
-    @staticmethod
+    @abstractstaticmethod
     def notify(user: "User", obj: object, verb: "NotificationVerb"):
         """
         Notify the user about the entity.
         """
-        raise NotImplementedError(
-            f"Subclasses of {NotifyMixin.__name__} must implement {NotifyMixin.notify.__name__}"
-        )
+        pass
 
     @staticmethod
     def get_notification_setting(user: "User"):
