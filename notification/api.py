@@ -66,7 +66,6 @@ def api_get_notifications(request):
             recipient__pk=request.GET.get("recipient")
         )
 
-    breakpoint()
     return jsonify(notifications_list.all())
 
 
