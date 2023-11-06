@@ -78,6 +78,7 @@ class NotificationAdminView(UserPassesTestMixin, ListView):
         if "pk" in self.kwargs:
             user = get_object_or_404(User, pk=self.kwargs["pk"])
             submit_url = reverse("notifications_admin_for_user", kwargs={"pk": user.pk})
+            context["recipient_filter"] = user.pk
         else:
             submit_url = reverse("notifications_admin")
         context["submit_url"] = submit_url

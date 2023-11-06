@@ -65,6 +65,36 @@ def test_api_get_notifications_wrong_user(
     is_valid_api_response(json_response, 0)
 
 
+def test_api_get_notifications_admin_with_recipient(
+    client: "Client",
+    user_normal: "settings.AUTH_USER_MODEL",
+    user_staff: "settings.AUTH_USER_MODEL",
+    notifications_for_user: callable,
+):
+    """
+
+    :param client:
+    :param user_normal:
+    :param user_staff:
+    :param notifications_for_user:
+    :return:
+    """
+    notifications = notifications_for_user(user_normal)
+    unwanted_notifications = notifications_for_user(user_staff)
+
+    assert client.login(
+        username=user_staff.username, password="password"
+    ), "Login failed"
+
+    json_response = client.get(
+        reverse("api_notifications"), {"as_admin": "true", "recipient": user_normal.pk}
+    )
+    data = is_valid_api_response(json_response, len(notifications))
+    received_ids = [n["id"] for n in data]
+    for notification in unwanted_notifications:
+        assert notification.to_json()["id"] not in received_ids
+
+
 def test_api_get_notifications_admin(
     client: "Client",
     user_normal: "settings.AUTH_USER_MODEL",

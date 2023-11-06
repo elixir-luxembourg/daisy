@@ -11,7 +11,8 @@ const API_URL_DISMISS_ALL_NOTIFICATION = "/notifications/api/dismiss-all";
 type NotificationListProps = {
     showDismissed: boolean,
     showRecipientColumn: boolean,
-    showDismissColumn: boolean
+    showDismissColumn: boolean,
+    recipientFilter: number | null,
     csrf: string,
 }
 
@@ -20,11 +21,12 @@ type NotificationListProps = {
  * @param showDismissed - If true, the list will display dismissed notifications
  * @param showRecipientColumn - If true, the list will display the recipient column
  * @param showDismissColumn - If true, the list will display the dismiss column
+ * @param recipientFilter - If not null, the list will only display notifications for the given recipient
  * @param csrf - CSRF token
  *
  * @return - The list of notifications divided into cards by content type
  */
-export const NotificationList = ({showDismissed, showRecipientColumn, showDismissColumn, csrf}: NotificationListProps) => {
+export const NotificationList = ({showDismissed, showRecipientColumn, showDismissColumn, recipientFilter, csrf}: NotificationListProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [notifications, setNotifications] = useState<Record<string, CustomType.Notification[]>>({});
 
@@ -43,16 +45,19 @@ export const NotificationList = ({showDismissed, showRecipientColumn, showDismis
 
     // Fetch notifications from the API
     useEffect(() => {
-        fetch(
-            `${API_URL_NOTIFICATIONS_LIST}?show_dismissed=${showDismissed}&as_admin=${showRecipientColumn}`,
-        ).then(response => response.json() as Promise<CustomType.NotifApiResponse>
-        ).then(json => {
-            setNotifications(groupNotifications(json.data));
-            setIsLoading(false);
-        }).catch(error => {
-            console.error(error);
-        });
-    }, [showDismissed, showRecipientColumn]);
+        let url = `${API_URL_NOTIFICATIONS_LIST}?show_dismissed=${showDismissed}&as_admin=${showRecipientColumn}`;
+        if (recipientFilter) {
+            url += `&recipient=${recipientFilter}`;
+        }
+        fetch(url)
+            .then(response => response.json() as Promise<CustomType.NotifApiResponse>)
+            .then(json => {
+                setNotifications(groupNotifications(json.data));
+                setIsLoading(false);
+            }).catch(error => {
+                console.error(error);
+            });
+    }, [showDismissed, showRecipientColumn, recipientFilter]);
 
     /**
      * Method to dismiss a notification

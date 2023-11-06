@@ -19,9 +19,24 @@
         </div>
     </div>
 
+    {% if form %}
+        <div class="row mt-4">
+            <div class="card col">
+                <div class="card-body">
+                    <h2 class="card-title">Filter by user</h2>
+                    {% include '_includes/forms.html' with method='get' %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+
     <div id="react-notifications"
          data-show-dismissed="{{ show_dismissed | lower }}"
          data-show-dismiss-column="{% if not admin %}true{% endif %}"
+         {% if admin %}
+            data-recipient-filter="{{ recipient_filter }}"
+         {% endif %}
          data-show-recipient-column="{{ admin | lower }}"
     ></div>
 

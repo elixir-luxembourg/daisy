@@ -36,7 +36,7 @@ def notifications_for_user():
                 verb=i % 2 == 0 and NotificationVerb.start or NotificationVerb.end,
                 content_object=content_object,  # should be a dataset but not tested yet
             )
-        return Notification.objects.all()
+        return Notification.objects.filter(recipient__pk=user.pk).all()
 
     return _method
 

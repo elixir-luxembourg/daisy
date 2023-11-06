@@ -57,12 +57,16 @@ def api_get_notifications(request):
     notifications_list = Notification.objects.filter(
         dispatch_in_app=True,
     )
-
     if request.GET.get("show_dismissed") != "true":
         notifications_list = notifications_list.filter(dismissed=False)
     if request.GET.get("as_admin") != "true":
         notifications_list = notifications_list.filter(recipient__pk=request.user.pk)
+    elif request.GET.get("recipient", ""):
+        notifications_list = notifications_list.filter(
+            recipient__pk=request.GET.get("recipient")
+        )
 
+    breakpoint()
     return jsonify(notifications_list.all())
 
 
