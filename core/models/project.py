@@ -25,7 +25,7 @@ if typing.TYPE_CHECKING:
     User = settings.AUTH_USER_MODEL
 
 
-class Project(CoreTrackedModel):
+class Project(CoreTrackedModel, NotifyMixin):
     class Meta:
         app_label = "core"
         get_latest_by = "added"
@@ -331,7 +331,7 @@ class Project(CoreTrackedModel):
         recipients = cls.get_notification_recipients()
         for user in recipients:
             notification_setting: NotificationSetting = (
-                user.notification_setting or NotificationSetting()
+                Project.get_notification_setting(user)
             )
             if not (
                 notification_setting.send_email or notification_setting.send_in_app
@@ -366,7 +366,7 @@ class Project(CoreTrackedModel):
         Notification.objects.create(
             recipient=user,
             verb=verb,
-            msg=msg,
+            message=msg,
             on=on,
             dispatch_by_email=dispatch_by_email,
             dispatch_in_app=dispatch_in_app,

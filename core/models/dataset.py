@@ -255,7 +255,7 @@ class Dataset(CoreTrackedModel, NotifyMixin):
         recipients = cls.get_notification_recipients()
         for user in recipients:
             notification_setting: NotificationSetting = (
-                user.notification_setting or NotificationSetting()
+                Dataset.get_notification_setting(user)
             )
             if not (
                 notification_setting.send_email or notification_setting.send_in_app
@@ -303,7 +303,7 @@ class Dataset(CoreTrackedModel, NotifyMixin):
         Notification.objects.create(
             recipient=user,
             verb=verb,
-            msg=msg,
+            message=msg,
             on=on,
             dispatch_by_email=dispatch_by_email,
             dispatch_in_app=dispatch_in_app,

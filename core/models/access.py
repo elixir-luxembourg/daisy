@@ -265,8 +265,8 @@ class Access(CoreModel, NotifyMixin):
     def make_notifications(cls, exec_date: date):
         recipients = cls.get_notification_recipients()
         for user in recipients:
-            notification_setting: NotificationSetting = (
-                user.notification_setting or NotificationSetting()
+            notification_setting: NotificationSetting = Access.get_notification_setting(
+                user
             )
             if not (
                 notification_setting.send_email or notification_setting.send_in_app
@@ -296,13 +296,13 @@ class Access(CoreModel, NotifyMixin):
         dispatch_by_email = user.notification_setting.send_email
         dispatch_in_app = user.notification_setting.send_in_app
 
-        msg = f"Access for {obj.dataset.title} of the user: {obj.user or obj.contact} is ending in {offset} days."
+        msg = f"Access for {obj.dataset.title} of the user {obj.user or obj.contact} is ending in {offset} days."
         on = obj.grant_expires_on
 
         Notification.objects.create(
             recipient=user,
             verb=verb,
-            msg=msg,
+            message=msg,
             on=on,
             dispatch_by_email=dispatch_by_email,
             dispatch_in_app=dispatch_in_app,

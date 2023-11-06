@@ -1,6 +1,7 @@
 from datetime import datetime
 from collections import defaultdict
 from datetime import timedelta
+import logging
 
 from celery import shared_task
 from django.conf import settings
@@ -12,13 +13,7 @@ from notification.email_sender import send_the_email
 from notification.models import Notification, NotificationStyle, NotificationVerb
 from notification import NotifyMixin
 
-# map each notification style to a delta
-# delta correspond to the interval + a small delta
-NOTIFICATION_MAPPING = {
-    NotificationStyle.once_per_day: timedelta(days=1, hours=8),
-    NotificationStyle.once_per_week: timedelta(days=7, hours=16),
-    NotificationStyle.once_per_month: timedelta(days=33),
-}
+logger = logging.getLogger(__name__)
 
 
 @shared_task
@@ -34,6 +29,8 @@ def create_notifications_for_entities(executation_date: str = None):
         exec_date = datetime.now().date()
     else:
         exec_date = datetime.strptime(executation_date, "%Y-%m-%d").date()
+
+    logger.info(f"Creating notifications for {exec_date}")
 
     for cls in NotifyMixin.__subclasses__():
         cls.make_notifications(exec_date)

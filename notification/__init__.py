@@ -48,6 +48,20 @@ class NotifyMixin:
             f"Subclasses of {NotifyMixin.__name__} must implement {NotifyMixin.notify.__name__}"
         )
 
+    @staticmethod
+    def get_notification_setting(user: "User"):
+        """
+        Get the notification setting of the user.
+        """
+        from notification.models import NotificationSetting
+
+        try:
+            setting = user.notification_setting
+        except Exception:
+            setting = NotificationSetting(user=user)
+            setting.save()
+        return setting
+
     def get_absolute_url(self) -> str:
         """
         Returns the absolute url of the entity.

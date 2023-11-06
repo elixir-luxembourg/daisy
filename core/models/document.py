@@ -106,7 +106,7 @@ class Document(CoreModel, NotifyMixin):
         recipients = cls.get_notification_recipients()
         for user in recipients:
             notification_setting: NotificationSetting = (
-                user.notification_setting or NotificationSetting()
+                Document.get_notification_setting(user)
             )
             if not (
                 notification_setting.send_email or notification_setting.send_in_app
@@ -114,8 +114,9 @@ class Document(CoreModel, NotifyMixin):
                 continue
             day_offset = timedelta(days=notification_setting.notification_offset)
 
-            docs = set([p.legal_documents for p in user.projects.all()])
-            docs.update([c.legal_documents for c in user.contracts.all()])
+            docs = set()
+            _ = [docs.update(p.legal_documents.all()) for p in user.projects.all()]
+            _ = [docs.update(c.legal_documents.all()) for c in user.contracts.all()]
 
             for doc in docs:
                 if doc.expiry_date and doc.expiry_date - day_offset == exec_date:
@@ -136,7 +137,7 @@ class Document(CoreModel, NotifyMixin):
         Notification.objects.create(
             recipient=user,
             verb=verb,
-            msg=msg,
+            message=msg,
             on=on,
             dispatch_by_email=dispatch_by_email,
             dispatch_in_app=dispatch_in_app,
