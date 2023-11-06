@@ -1,14 +1,26 @@
 import os
+import typing
+import datetime
+from datetime import timedelta
+from model_utils import Choices
+
 from django.db import models
+from django.conf import settings
+from django.db.models import Q
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.core.files.storage import default_storage
-from model_utils import Choices
+
 from .utils import CoreModel
-from core import constants
+from notification.models import Notification, NotificationVerb, NotificationSetting
+from notification import NotifyMixin
+
+if typing.TYPE_CHECKING:
+    User = settings.AUTH_USER_MODEL
 
 
 def get_file_name(instance, filename):
@@ -21,7 +33,7 @@ def get_file_name(instance, filename):
     )
 
 
-class Document(CoreModel):
+class Document(CoreModel, NotifyMixin):
     """
     Represents a document
     """
@@ -76,6 +88,61 @@ class Document(CoreModel):
     @property
     def size(self):
         return self.content.size
+
+    @staticmethod
+    def get_notification_recipients():
+        """
+        Get distinct users that are local custodian of a dataset.
+        """
+
+        return (
+            get_user_model()
+            .objects.filter(Q(projects__isnull=False) | Q(contracts__isnull=False))
+            .distinct()
+        )
+
+    @classmethod
+    def make_notifications(cls, exec_date: datetime.date):
+        recipients = cls.get_notification_recipients()
+        for user in recipients:
+            notification_setting: NotificationSetting = (
+                user.notification_setting or NotificationSetting()
+            )
+            if not (
+                notification_setting.send_email or notification_setting.send_in_app
+            ):
+                continue
+            day_offset = timedelta(days=notification_setting.notification_offset)
+
+            docs = set([p.legal_documents for p in user.projects.all()])
+            docs.update([c.legal_documents for c in user.contracts.all()])
+
+            for doc in docs:
+                if doc.expiry_date and doc.expiry_date - day_offset == exec_date:
+                    cls.notify(user, doc, NotificationVerb.expire)
+
+    @staticmethod
+    def notify(user: "User", obj: "Document", verb: "NotificationVerb"):
+        """
+        Notifies concerning users about the entity.
+        """
+        offset = user.notification_setting.notification_offset
+        dispatch_by_email = user.notification_setting.send_email
+        dispatch_in_app = user.notification_setting.send_in_app
+
+        msg = f"The Document {obj.shortname} is expiring in {offset} days."
+        on = obj.expiry_date
+
+        Notification.objects.create(
+            recipient=user,
+            verb=verb,
+            msg=msg,
+            on=on,
+            dispatch_by_email=dispatch_by_email,
+            dispatch_in_app=dispatch_in_app,
+            content_type=ContentType.objects.get_for_model(obj),
+            object_id=obj.id,
+        ).save()
 
 
 @receiver(post_delete, sender=Document, dispatch_uid="document_delete")
