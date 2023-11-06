@@ -2,7 +2,7 @@
 
 {% block content %}
     <tr>
-        <td style="padding-left: 10px;display: block; box-sizing: border-box; clear: both;margin: 15px 0" width="100%">
+        <td style="padding-left: 10px;display: block; box-sizing: border-box; clear: both;margin-bottom: 15px;" width="100%">
             {% if error_message %}
                 Hello, <br> {{ error_message }}
             {% else %}
@@ -17,17 +17,17 @@
                 <table
                         border="0" cellspacing="0" cellpadding="20"
                         style="table-layout: fixed; font-family: 'Roboto','Helvetica','Arial',sans-serif;
-                        border-bottom: 2px solid #d3d3d3;font-weight: 300; background-color: #fff;
+                        border-bottom: 1px solid #d3d3d3;font-weight: 300; background-color: #fff;
                         padding: 10px;font-size: 16px;"
                         width="100%">
-                    <tr style="border-bottom: 2px solid #d3d3d3;background-color: #fff;">
-                        <th style="text-align: left; padding: 10px;" width="40%">{{ content_type.name | title }}</th>
-                        <th style="text-align: left; padding: 10px;" width="30%">Description</th>
-                        <th style="text-align: left; padding: 10px;" width="30%">Event Date</th>
+                    <tr>
+                        <th style="text-align: left; padding: 10px;border-bottom: 1px solid #d3d3d3;" width="40%">{{ content_type.name | title }}</th>
+                        <th style="text-align: left; padding: 10px;border-bottom: 1px solid #d3d3d3;" width="30%">Description</th>
+                        <th style="text-align: left; padding: 10px;border-bottom: 1px solid #d3d3d3;" width="30%">Event Date</th>
                     </tr>
                     {% for notif in notifs %}
-                        <tr style="background-color: #fff;border-bottom:1px #f0f0f0 solid;">
-                            <td style="text-align: left; padding: 10px;">
+                        <tr>
+                            <td style="text-align: left; padding: 10px;border-bottom: 1px solid #d3d3d3;">
                                 {% with object_url=notif.get_absolute_url %}
                                     {% if object_url %}
                                         <a style="text-decoration: none; color:#2B6777"
@@ -38,8 +38,8 @@
                                     {% endif %}
                                 {% endwith %}
                             </td>
-                            <td style="text-align: left; padding: 10px;">{{ notif.message }}</td>
-                            <td style="text-align: left; padding: 10px;">{{ notif.on }}</td>
+                            <td style="text-align: left; padding: 10px;border-bottom: 1px solid #d3d3d3;">{{ notif.message }}</td>
+                            <td style="text-align: left; padding: 10px;border-bottom: 1px solid #d3d3d3;">{{ notif.on }}</td>
                         </tr>
                     {% endfor %}
                 </table>

@@ -29,7 +29,7 @@ def test_send_notifications_for_user_upcoming_events_today(user_normal):
     assert len(notifications_not_processed) == 1
 
     # send notifications
-    tasks.send_notifications_for_user_upcoming_events()
+    tasks.send_notifications_for_user_upcoming_events(only_one_day=True)
 
     notifications_after_sending = Notification.objects.filter(
         recipient=user_normal.id, dispatch_by_email=True, processing_date=None
@@ -114,7 +114,7 @@ def test_send_all_notifications_for_user_upcoming_events(user_normal):
     assert len(notifications_not_processed) == 2
 
     # send notifications
-    tasks.send_all_notifications_for_user_upcoming_events()
+    tasks.send_notifications_for_user_upcoming_events()
 
     notifications_after_sending = Notification.objects.filter(
         recipient=user_normal.id, dispatch_by_email=True, processing_date=None

@@ -62,15 +62,16 @@ def report_notifications_upcoming_events_errors_for_datasteward(user):
 
 
 @shared_task
-def send_notifications_for_user_upcoming_events(execution_date: str = None):
+def send_notifications_for_user_upcoming_events(execution_date: str = None, only_one_day: bool = False):
     """
     Send upcoming events notification report for all users, if any.
 
     Params:
         execution_date: The date of the execution of the task. FORMAT: YYYY-MM-DD (DEFAULT: Today)
+        only_one_day: If true send the notifications of the execution date only.
     """
 
-    logger.info("Sending notification for user upcoming events")
+    logger.info("Sending all notification for user upcoming events")
 
     if not execution_date:
         exec_date = datetime.now().date()
@@ -80,12 +81,21 @@ def send_notifications_for_user_upcoming_events(execution_date: str = None):
     users = get_user_model().objects.all()
 
     for user in users:
-        notifications_exec_date = Notification.objects.filter(
-            recipient=user.id,
-            dispatch_by_email=True,
-            processing_date=None,
-            time__date=exec_date,
-        )
+
+        if only_one_day:
+            notifications_exec_date = Notification.objects.filter(
+                recipient=user.id,
+                dispatch_by_email=True,
+                processing_date=None,
+                time__date=exec_date,
+            )
+        else:
+            notifications_exec_date = Notification.objects.filter(
+                recipient=user.id,
+                dispatch_by_email=True,
+                processing_date=None,
+                time__date__lte=exec_date,
+            )
 
         # send notification report to user, if any
         if not notifications_exec_date:
@@ -102,6 +112,7 @@ def send_notifications_for_user_upcoming_events(execution_date: str = None):
             "user": user.full_name,
             "notifications": dict(notifications_by_content_type),
         }
+
         try:
             send_the_email(
                 settings.EMAIL_DONOTREPLY,
@@ -115,78 +126,6 @@ def send_notifications_for_user_upcoming_events(execution_date: str = None):
                 notif.save()
         except Exception as e:
             logger.error(
-                f"Failed: An error occurred while sending upcoming events Email notification for user {user.full_name}."
-                f" Error: {e}"
-            )
-            print(
-                f"Failed: An error occurred while sending upcoming events Email notification for user {user.full_name}."
-                f" Error: {e}"
-            )
-        finally:
-            # report error to data-stewards
-            report_notifications_upcoming_events_errors_for_datasteward(user)
-            continue
-
-
-@shared_task
-def send_all_notifications_for_user_upcoming_events(execution_date: str = None):
-    """
-    Send all upcoming events notification report for all users, if any.
-
-    Params:
-        execution_date: The date of the execution of the task. FORMAT: YYYY-MM-DD (DEFAULT: Today)
-    """
-
-    logger.info("Sending all notification for user upcoming events")
-
-    if not execution_date:
-        exec_date = datetime.now().date()
-    else:
-        exec_date = datetime.strptime(execution_date, "%Y-%m-%d").date()
-
-    users = get_user_model().objects.all()
-
-    for user in users:
-        notifications_lte_exec_date = Notification.objects.filter(
-            recipient=user.id,
-            dispatch_by_email=True,
-            processing_date=None,
-            time__date__lte=exec_date,
-        )
-
-        # send notification report to user, if any
-        if not notifications_lte_exec_date:
-            # Checks if there is missed notification for this user and report errors to data-stewards, if any
-            report_notifications_upcoming_events_errors_for_datasteward(user)
-            continue
-
-        # group notifications per content type and set processed to today
-        notifications_by_content_type = defaultdict(list)
-        for notif in notifications_lte_exec_date:
-            notifications_by_content_type[notif.content_type].append(notif)
-
-        context = {
-            "user": user.full_name,
-            "notifications": dict(notifications_by_content_type),
-        }
-
-        try:
-            send_the_email(
-                settings.EMAIL_DONOTREPLY,
-                user.email,
-                "Notifications",
-                "notification/email_list_notifications",
-                context,
-            )
-            for notif in notifications_lte_exec_date:
-                notif.processing_date = datetime.now().date()
-                notif.save()
-        except Exception as e:
-            logger.error(
-                f"Failed: An error occurred while sending upcoming events Email notification for user {user.full_name}."
-                f" Error: {e}"
-            )
-            print(
                 f"Failed: An error occurred while sending upcoming events Email notification for user {user.full_name}."
                 f" Error: {e}"
             )
