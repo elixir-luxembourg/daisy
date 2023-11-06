@@ -62,7 +62,9 @@ def report_notifications_upcoming_events_errors_for_datasteward(user):
 
 
 @shared_task
-def send_notifications_for_user_upcoming_events(execution_date: str = None, only_one_day: bool = False):
+def send_notifications_for_user_upcoming_events(
+    execution_date: str = None, only_one_day: bool = False
+):
     """
     Send upcoming events notification report for all users, if any.
 
@@ -71,7 +73,7 @@ def send_notifications_for_user_upcoming_events(execution_date: str = None, only
         only_one_day: If true send the notifications of the execution date only.
     """
 
-    logger.info("Sending all notification for user upcoming events")
+    logger.info("Sending notification for user upcoming events")
 
     if not execution_date:
         exec_date = datetime.now().date()
@@ -81,7 +83,6 @@ def send_notifications_for_user_upcoming_events(execution_date: str = None, only
     users = get_user_model().objects.all()
 
     for user in users:
-
         if only_one_day:
             notifications_exec_date = Notification.objects.filter(
                 recipient=user.id,
