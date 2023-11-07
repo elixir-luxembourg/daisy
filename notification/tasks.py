@@ -1,16 +1,8 @@
 from datetime import datetime
-from collections import defaultdict
-from datetime import timedelta
 import logging
 
 from celery import shared_task
-from django.conf import settings
-from django.utils import timezone
-from django.db.models import Q
 
-from core.models import Contract, DataDeclaration, Dataset, Document, Project, User
-from notification.email_sender import send_the_email
-from notification.models import Notification, NotificationStyle, NotificationVerb
 from notification import NotifyMixin
 
 logger = logging.getLogger(__name__)
