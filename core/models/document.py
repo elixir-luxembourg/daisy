@@ -92,7 +92,7 @@ class Document(CoreModel, NotifyMixin):
     @staticmethod
     def get_notification_recipients():
         """
-        Get distinct users that are local custodian of a dataset.
+        Get distinct users that are local custodian of a project or a contract.
         """
 
         return (
@@ -117,6 +117,9 @@ class Document(CoreModel, NotifyMixin):
             docs = set()
             _ = [docs.update(p.legal_documents.all()) for p in user.project_set.all()]
             _ = [docs.update(c.legal_documents.all()) for c in user.contracts.all()]
+            # Also add all the documents of all contracts of all projects to address the indirect LCs of parent projects
+            for p in user.project_set.all():
+                _ = [docs.update(c.legal_documents.all()) for c in p.contracts.all()]
 
             for doc in docs:
                 if doc.expiry_date and doc.expiry_date - day_offset == exec_date:

@@ -321,7 +321,7 @@ class Project(CoreTrackedModel, NotifyMixin):
     @staticmethod
     def get_notification_recipients():
         """
-        Get distinct users that are local custodian of a dataset.
+        Get distinct users that are local custodian of a project.
         """
 
         return get_user_model().objects.filter(Q(project_set__isnull=False)).distinct()
