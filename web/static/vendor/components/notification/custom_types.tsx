@@ -14,6 +14,7 @@ export type Notification = {
     dismissed: boolean,
     message: string,
     objectType: string,
+    objectDisplayName: string,
     objectName: string,
     objectUrl: string,
 };

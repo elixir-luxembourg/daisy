@@ -137,7 +137,8 @@ class Notification(models.Model):
             "sentByEmail": self.dispatch_by_email,
             "dismissed": self.dismissed,
             "message": self.message,
-            "objectType": self.content_type.name,
+            "objectType": self.content_type.model,
+            "objectDisplayName": self.content_type.name,
             "objectName": self.content_object.__str__(),
             "objectUrl": self.get_absolute_url() or "",
         }

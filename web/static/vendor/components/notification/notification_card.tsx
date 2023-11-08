@@ -2,6 +2,7 @@
 import React from "react";
 
 type NotificationHeaderProps = {
+    className: string,
     category: string,
     newNotifications: number
     showDismissNumber: boolean
@@ -9,14 +10,15 @@ type NotificationHeaderProps = {
 
 /**
  * NotificationHeader: The header for each notification card
+ * @param className - The title of the notification card
  * @param category - The category of the notification
  * @param newNotifications - The number of new notifications in the category
  * @param showDismissNumber - Whether to show the number of new notifications
  *
  * @return - The header for the notification card
  */
-const NotificationHeader = ({category, newNotifications, showDismissNumber}: NotificationHeaderProps) => {
-    const title = `${category.charAt(0).toUpperCase()}${category.substring(1)} Notifications`;
+const NotificationHeader = ({className, category, newNotifications, showDismissNumber}: NotificationHeaderProps) => {
+    const title = `${className.charAt(0).toUpperCase()}${className.substring(1)} Notifications`;
     return (
         <div
             id={`accordion-header-${category}`}
@@ -35,6 +37,7 @@ const NotificationHeader = ({category, newNotifications, showDismissNumber}: Not
 };
 
 type NotificationCardProps = {
+    title: string,
     type: string
     children: React.ReactElement,
     newNotifNumber: number,
@@ -44,6 +47,7 @@ type NotificationCardProps = {
 
 /**
  * NotificationCard: The card for each notification category
+ * @param title - The title of the notification card
  * @param type - The category of the notification
  * @param newNotifNumber - The number of new notifications in the category
  * @param children - The React components to render in the card
@@ -52,11 +56,11 @@ type NotificationCardProps = {
  *
  * @return - The card for the notification category
  */
-export const NotificationCard = ({type, newNotifNumber, children, showDismissBtn, dismissAll}: NotificationCardProps) => {
+export const NotificationCard = ({title, type, newNotifNumber, children, showDismissBtn, dismissAll}: NotificationCardProps) => {
     return (
         <div className={"row mt-4 accordion"}>
             <div className={"card col px-0"}>
-                <NotificationHeader category={type} showDismissNumber={showDismissBtn} newNotifications={newNotifNumber} />
+                <NotificationHeader className={title} category={type} showDismissNumber={showDismissBtn} newNotifications={newNotifNumber} />
                 <div id={`accordion-body-${type}`} className={"collapse p-3"}>
                     {showDismissBtn &&
                         <div className={"d-flex justify-content-end"}>

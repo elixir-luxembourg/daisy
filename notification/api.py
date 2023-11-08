@@ -39,6 +39,7 @@ def api_dismiss_notification(request, pk):
 
 @require_http_methods(["PATCH"])
 def api_dismiss_all_notifications(request, object_type):
+    logger.debug(f"Dismissing notifications for object_type {object_type}")
     notification_list = Notification.objects.filter(
         recipient=request.user, content_type__model=object_type
     )
