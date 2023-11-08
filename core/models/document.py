@@ -97,7 +97,7 @@ class Document(CoreModel, NotifyMixin):
 
         return (
             get_user_model()
-            .objects.filter(Q(projects__isnull=False) | Q(contracts__isnull=False))
+            .objects.filter(Q(project_set__isnull=False) | Q(contracts__isnull=False))
             .distinct()
         )
 
@@ -115,7 +115,7 @@ class Document(CoreModel, NotifyMixin):
             day_offset = timedelta(days=notification_setting.notification_offset)
 
             docs = set()
-            _ = [docs.update(p.legal_documents.all()) for p in user.projects.all()]
+            _ = [docs.update(p.legal_documents.all()) for p in user.project_set.all()]
             _ = [docs.update(c.legal_documents.all()) for c in user.contracts.all()]
 
             for doc in docs:

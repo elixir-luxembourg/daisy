@@ -207,7 +207,7 @@ class Project(CoreTrackedModel, NotifyMixin):
 
     local_custodians = models.ManyToManyField(
         "core.User",
-        related_name="+",
+        related_name="project_set",
         verbose_name="Local custodians",
         help_text="Custodians are the local responsibles for the project. This list must include a PI.",
     )
@@ -324,7 +324,7 @@ class Project(CoreTrackedModel, NotifyMixin):
         Get distinct users that are local custodian of a dataset.
         """
 
-        return get_user_model().objects.filter(Q(projects__isnull=False)).distinct()
+        return get_user_model().objects.filter(Q(project_set__isnull=False)).distinct()
 
     @classmethod
     def make_notifications(cls, exec_date: datetime.date):
@@ -339,7 +339,7 @@ class Project(CoreTrackedModel, NotifyMixin):
                 continue
             day_offset = timedelta(days=notification_setting.notification_offset)
 
-            for project in user.projects.all():
+            for project in user.project_set.all():
                 # Project start date
                 if project.start_date and project.start_date - day_offset == exec_date:
                     cls.notify(user, project, NotificationVerb.start)

@@ -246,7 +246,7 @@ class Dataset(CoreTrackedModel, NotifyMixin):
 
         return (
             get_user_model()
-            .objects.filter(Q(datasets__isnull=False) | Q(projects__isnull=False))
+            .objects.filter(Q(datasets__isnull=False) | Q(project_set__isnull=False))
             .distinct()
         )
 
@@ -265,7 +265,7 @@ class Dataset(CoreTrackedModel, NotifyMixin):
 
             # Considering users that are indirectly responsible for the dataset (through projects)
             possible_datasets = set(user.datasets.all())
-            for project in user.projects.all():
+            for project in user.project_set.all():
                 possible_datasets.update(list(project.datasets.all()))
             for dataset in possible_datasets:
                 # Data Declaration (Embargo Date & End of Storage Duration)

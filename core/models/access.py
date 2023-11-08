@@ -252,12 +252,12 @@ class Access(CoreModel, NotifyMixin):
     @staticmethod
     def get_notification_recipients():
         """
-        Get distinct users that are local custodian of a dataset.
+        Get distinct users that are local custodian of a dataset or a project.
         """
 
         return (
             get_user_model()
-            .objects.filter(Q(datasets__isnull=False) | Q(projects__isnull=False))
+            .objects.filter(Q(datasets__isnull=False) | Q(project_set__isnull=False))
             .distinct()
         )
 
@@ -276,16 +276,19 @@ class Access(CoreModel, NotifyMixin):
 
             # Considering users that are indirectly responsible for the dataset (through projects)
             possible_datasets = set(user.datasets.all())
-            for project in user.projects.all():
+            for project in user.project_set.all():
                 possible_datasets.update(list(project.datasets.all()))
-            for dataset in possible_datasets:
+            # Fetch all necessary data at once before the loop
+            dataset_ids = [dataset.id for dataset in possible_datasets]
+            accesses = Access.objects.filter(dataset_id__in=dataset_ids)
+
+            for access in accesses:
                 # Check if the dataset has an access that is about to expire
-                for access in dataset.accesses.all():
-                    if (
-                        access.grant_expires_on
-                        and access.grant_expires_on - day_offset == exec_date
-                    ):
-                        cls.notify(user, access, NotificationVerb.expire)
+                if (
+                    access.grant_expires_on
+                    and access.grant_expires_on - day_offset == exec_date
+                ):
+                    cls.notify(user, access, NotificationVerb.expire)
 
     @staticmethod
     def notify(user: "User", obj: "Access", verb: "NotificationVerb"):
