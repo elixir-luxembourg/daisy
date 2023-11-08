@@ -3,20 +3,14 @@ from datetime import timedelta
 
 import pytest
 
-from test.factories import (
-    DatasetFactory,
-    UserFactory,
-    DataDeclarationFactory,
-    ProjectFactory,
-)
-from core.models import Dataset
+from test.factories import DatasetFactory, UserFactory, ProjectFactory, AccessFactory
+from core.models import Access
 from notification.models import Notification, NotificationSetting
 
 
-@pytest.mark.parametrize("event", ["embargo_date", "end_of_storage_duration"])
 @pytest.mark.parametrize("offset", [1, 10, 30, 60, 90])
 @pytest.mark.django_db
-def test_dataset_notification_creation(event, offset):
+def test_access_success_notification_creation(offset):
     today = datetime.date.today()
     event_date = today + timedelta(days=offset)
 
@@ -25,18 +19,15 @@ def test_dataset_notification_creation(event, offset):
     notif_setting.save()
 
     dataset = DatasetFactory.create(title="Test dataset", local_custodians=[user])
-    data_declaration = DataDeclarationFactory(dataset=dataset)
-    setattr(data_declaration, event, event_date)
-    data_declaration.save()
+    _ = AccessFactory.create(dataset=dataset, grant_expires_on=event_date)
 
     assert Notification.objects.count() == 0
-    Dataset.make_notifications(today)
+    Access.make_notifications(today)
     assert Notification.objects.count() == 1
 
 
-@pytest.mark.parametrize("event", ["embargo_date", "end_of_storage_duration"])
 @pytest.mark.parametrize("offset", [1, 10, 30, 60, 90])
-def test_dataset_project_lc_notification(event, offset):
+def test_access_project_lc_notification(offset):
     today = datetime.date.today()
     event_date = today + timedelta(days=offset)
 
@@ -58,12 +49,10 @@ def test_dataset_project_lc_notification(event, offset):
     dataset = DatasetFactory.create(
         title="Test dataset", project=project, local_custodians=[dataset_lc, p1_lc]
     )
-    data_declaration = DataDeclarationFactory(dataset=dataset)
-    setattr(data_declaration, event, event_date)
-    data_declaration.save()
+    _ = AccessFactory.create(dataset=dataset, grant_expires_on=event_date)
 
     assert Notification.objects.count() == 0
-    Dataset.make_notifications(today)
+    Access.make_notifications(today)
     assert len(Notification.objects.filter(recipient=dataset_lc)) == 1
     assert len(Notification.objects.filter(recipient=p1_lc)) == 1
     assert len(Notification.objects.filter(recipient=p2_lc)) == 1
