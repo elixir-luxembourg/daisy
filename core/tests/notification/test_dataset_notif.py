@@ -35,6 +35,25 @@ def test_dataset_notification_creation(event, offset):
 
 
 @pytest.mark.parametrize("event", ["embargo_date", "end_of_storage_duration"])
+def test_dataset_unmatching_dates(event):
+    today = datetime.date.today()
+    event_date = today + timedelta(days=20)
+
+    user = UserFactory.create(email="lc@uni.lu")
+    notif_setting = NotificationSetting(user=user, notification_offset=30)
+    notif_setting.save()
+
+    dataset = DatasetFactory.create(title="Test dataset", local_custodians=[user])
+    data_declaration = DataDeclarationFactory(dataset=dataset)
+    setattr(data_declaration, event, event_date)
+    data_declaration.save()
+
+    assert Notification.objects.count() == 0
+    Dataset.make_notifications(today)
+    assert Notification.objects.count() == 0
+
+
+@pytest.mark.parametrize("event", ["embargo_date", "end_of_storage_duration"])
 @pytest.mark.parametrize("offset", [1, 10, 30, 60, 90])
 def test_dataset_project_lc_notification(event, offset):
     today = datetime.date.today()
@@ -67,3 +86,9 @@ def test_dataset_project_lc_notification(event, offset):
     assert len(Notification.objects.filter(recipient=dataset_lc)) == 1
     assert len(Notification.objects.filter(recipient=p1_lc)) == 1
     assert len(Notification.objects.filter(recipient=p2_lc)) == 1
+
+
+def test_dataset_handles_no_recipients():
+    exec_date = datetime.date.today()
+    Dataset.make_notifications(exec_date)
+    assert Notification.objects.count() == 0

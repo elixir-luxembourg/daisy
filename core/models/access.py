@@ -276,11 +276,18 @@ class Access(CoreModel, NotifyMixin):
 
             # Considering users that are indirectly responsible for the dataset (through projects)
             possible_datasets = set(user.datasets.all())
-            for project in user.project_set.all():
-                possible_datasets.update(list(project.datasets.all()))
+            possible_datasets.update(
+                [
+                    dataset
+                    for project in user.project_set.all()
+                    for dataset in project.datasets.all()
+                ]
+            )
             # Fetch all necessary data at once before the loop
             dataset_ids = [dataset.id for dataset in possible_datasets]
-            accesses = Access.objects.filter(dataset_id__in=dataset_ids)
+            accesses = Access.objects.filter(
+                Q(dataset_id__in=dataset_ids) & Q(status=StatusChoices.active)
+            )
 
             for access in accesses:
                 # Check if the dataset has an access that is about to expire

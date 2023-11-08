@@ -5,6 +5,7 @@ import pytest
 
 from test.factories import DatasetFactory, UserFactory, ProjectFactory, AccessFactory
 from core.models import Access
+from core.models.access import StatusChoices
 from notification.models import Notification, NotificationSetting
 
 
@@ -19,11 +20,52 @@ def test_access_success_notification_creation(offset):
     notif_setting.save()
 
     dataset = DatasetFactory.create(title="Test dataset", local_custodians=[user])
-    _ = AccessFactory.create(dataset=dataset, grant_expires_on=event_date)
+    _ = AccessFactory.create(
+        dataset=dataset, grant_expires_on=event_date, status=StatusChoices.active
+    )
 
     assert Notification.objects.count() == 0
     Access.make_notifications(today)
     assert Notification.objects.count() == 1
+
+
+def test_accesss_unmatching_dates():
+    today = datetime.date.today()
+    event_date = today + timedelta(days=20)
+
+    user = UserFactory.create(email="lc@uni.lu")
+    notif_setting = NotificationSetting(user=user, notification_offset=30)
+    notif_setting.save()
+
+    dataset = DatasetFactory.create(title="Test dataset", local_custodians=[user])
+    _ = AccessFactory.create(
+        dataset=dataset, grant_expires_on=event_date, status=StatusChoices.active
+    )
+
+    assert Notification.objects.count() == 0
+    Access.make_notifications(today)
+    assert Notification.objects.count() == 0
+
+
+@pytest.mark.parametrize(
+    "state",
+    [StatusChoices.precreated, StatusChoices.suspended, StatusChoices.terminated],
+)
+@pytest.mark.parametrize("offset", [1, 10, 30, 60, 90])
+def test_access_no_notif_inactive_access(state, offset):
+    today = datetime.date.today()
+    event_date = today + timedelta(days=offset)
+
+    user = UserFactory.create(email="lc@uni.lu")
+    notif_setting = NotificationSetting(user=user, notification_offset=offset)
+    notif_setting.save()
+
+    dataset = DatasetFactory.create(title="Test dataset", local_custodians=[user])
+    _ = AccessFactory.create(dataset=dataset, grant_expires_on=event_date, status=state)
+
+    assert Notification.objects.count() == 0
+    Access.make_notifications(today)
+    assert Notification.objects.count() == 0
 
 
 @pytest.mark.parametrize("offset", [1, 10, 30, 60, 90])
@@ -49,10 +91,18 @@ def test_access_project_lc_notification(offset):
     dataset = DatasetFactory.create(
         title="Test dataset", project=project, local_custodians=[dataset_lc, p1_lc]
     )
-    _ = AccessFactory.create(dataset=dataset, grant_expires_on=event_date)
+    _ = AccessFactory.create(
+        dataset=dataset, grant_expires_on=event_date, status=StatusChoices.active
+    )
 
     assert Notification.objects.count() == 0
     Access.make_notifications(today)
     assert len(Notification.objects.filter(recipient=dataset_lc)) == 1
     assert len(Notification.objects.filter(recipient=p1_lc)) == 1
     assert len(Notification.objects.filter(recipient=p2_lc)) == 1
+
+
+def test_access_handles_no_recipients():
+    exec_date = datetime.date.today()
+    Access.make_notifications(exec_date)
+    assert Notification.objects.count() == 0
