@@ -5,11 +5,11 @@ from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, reverse, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib import messages
 from django import forms
 
 from notification.models import Notification, NotificationSetting
 from core.models import User
-from web.views.utils import is_data_steward
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,10 @@ class NotificationSettingEditView(UpdateView):
     fields = ("send_email", "send_in_app", "notification_offset")
 
     def get_success_url(self):
-        return reverse_lazy("notification_settings")
+        messages.add_message(
+            self.request, messages.SUCCESS, "Notification settings updated"
+        )
+        return reverse_lazy("notifications_settings")
 
     def get_object(self, queryset=None):
         """
