@@ -1,6 +1,6 @@
-from abc import ABC, abstractclassmethod, abstractstaticmethod
+from abc import ABC, abstractmethod
 import typing
-from typing import List
+from typing import List, Optional
 
 if typing.TYPE_CHECKING:
     from django.conf import settings
@@ -10,8 +10,9 @@ if typing.TYPE_CHECKING:
     User = settings.AUTH_USER_MODEL
 
 
-class NotifyMixin:
-    @abstractstaticmethod
+class NotifyMixin(ABC):
+    @staticmethod
+    @abstractmethod
     def get_notification_recipients() -> List["User"]:
         """
         Should Query the users based on their notification settings
@@ -22,7 +23,8 @@ class NotifyMixin:
         """
         pass
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def make_notifications(cls, exec_date: "date"):
         """
         Creates a notifications for the reciepients based on
@@ -36,7 +38,8 @@ class NotifyMixin:
         """
         pass
 
-    @abstractstaticmethod
+    @staticmethod
+    @abstractmethod
     def notify(user: "User", obj: object, verb: "NotificationVerb"):
         """
         Notify the user about the entity.
@@ -57,7 +60,7 @@ class NotifyMixin:
             setting.save()
         return setting
 
-    def get_absolute_url(self) -> str:
+    def get_absolute_url(self) -> Optional[str]:
         """
         Returns the absolute url of the entity.
         """
