@@ -73,6 +73,12 @@ def send_notifications_for_user_upcoming_events(
         only_one_day: If true send the notifications of the execution date only.
     """
 
+    if settings.NOTIFICATIONS_DISABLED:
+        logger.info(
+            "No notifications sent. Notifications sending is disabled in settings.py"
+        )
+        return
+
     logger.info("Sending notification for user upcoming events")
 
     if not execution_date:
