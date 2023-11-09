@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 import typing
 from typing import List, Optional
 
@@ -10,7 +10,7 @@ if typing.TYPE_CHECKING:
     User = settings.AUTH_USER_MODEL
 
 
-class NotifyMixin:
+class NotifyMixin(ABC):
     @staticmethod
     @abstractmethod
     def get_notification_recipients() -> List["User"]:

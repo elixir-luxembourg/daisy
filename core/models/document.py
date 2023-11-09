@@ -15,7 +15,7 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.core.files.storage import default_storage
 
-from .utils import CoreModel
+from .utils import CoreModel, CoreNotifyMeta
 from notification.models import Notification, NotificationVerb, NotificationSetting
 from notification import NotifyMixin
 
@@ -33,7 +33,7 @@ def get_file_name(instance, filename):
     )
 
 
-class Document(CoreModel, NotifyMixin):
+class Document(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
     """
     Represents a document
     """

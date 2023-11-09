@@ -17,7 +17,7 @@ from core.permissions.mapping import PERMISSION_MAPPING
 from notification import NotifyMixin
 from notification.models import NotificationVerb, Notification, NotificationSetting
 
-from .utils import CoreTrackedModel, COMPANY
+from .utils import CoreTrackedModel, COMPANY, CoreNotifyMeta
 from .partner import HomeOrganisation
 
 
@@ -25,7 +25,7 @@ if typing.TYPE_CHECKING:
     User = settings.AUTH_USER_MODEL
 
 
-class Project(CoreTrackedModel, NotifyMixin):
+class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
     class Meta:
         app_label = "core"
         get_latest_by = "added"

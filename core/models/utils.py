@@ -10,6 +10,8 @@ from django.db.models import TextField
 from django.utils.module_loading import import_string
 from django.contrib.auth.hashers import make_password
 
+from notification import NotifyMixin
+
 COMPANY = getattr(settings, "COMPANY", "Company")
 
 
@@ -44,6 +46,10 @@ class CoreModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class CoreNotifyMeta(type(CoreModel), type(NotifyMixin)):
+    pass
 
 
 class CoreTrackedModel(CoreModel):

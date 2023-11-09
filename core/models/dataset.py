@@ -17,14 +17,14 @@ from core.models import DataDeclaration
 from core.permissions.mapping import PERMISSION_MAPPING
 from notification import NotifyMixin
 from notification.models import Notification, NotificationVerb, NotificationSetting
-from .utils import CoreTrackedModel, TextFieldWithInputWidget
+from .utils import CoreTrackedModel, TextFieldWithInputWidget, CoreNotifyMeta
 from .partner import HomeOrganisation
 
 if typing.TYPE_CHECKING:
     User = settings.AUTH_USER_MODEL
 
 
-class Dataset(CoreTrackedModel, NotifyMixin):
+class Dataset(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
     class Meta:
         app_label = "core"
         get_latest_by = "added"
