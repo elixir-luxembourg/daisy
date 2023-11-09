@@ -87,7 +87,7 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(minute=0, hour=0),  # Execute task at midnight
     },
     "notifications-email-every-day": {
-        "task": "notification.tasks.send_all_notifications_for_user_upcoming_events",
+        "task": "notification.tasks.send_notifications_for_user_upcoming_events",
         "schedule": crontab(minute=0, hour=0),  # Execute task at midnight
     },
 }
