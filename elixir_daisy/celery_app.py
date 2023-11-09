@@ -2,6 +2,8 @@ import os
 
 from celery import Celery
 
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "elixir_daisy.settings")
+
 app = Celery("daisy")
 
 # Using a string here means the worker doesn't have to serialize
