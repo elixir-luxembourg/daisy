@@ -95,6 +95,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "web.views.context_processors.daisy_version",
                 "web.views.context_processors.instance_branding",
+                "web.views.context_processors.daisy_notifications_enabled",
             ],
         },
     },
@@ -309,7 +310,7 @@ FACET_FIELDS = {
 }
 
 # by default, notifications by email are disabled
-NOTIFICATIONS_DISABLED = True
+NOTIFICATIONS_DISABLED = False
 
 LOGIN_USERNAME_PLACEHOLDER = ""
 LOGIN_PASSWORD_PLACEHOLDER = ""

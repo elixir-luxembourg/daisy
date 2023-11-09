@@ -17,6 +17,11 @@ def daisy_version(request):
     return {"app_version": the_version}
 
 
+def daisy_notifications_enabled(request):
+    notifications_enabled = not getattr(settings, "NOTIFICATIONS_DISABLED", True)
+    return {"notifications_enabled": notifications_enabled}
+
+
 def instance_branding(request):
     instance_label = getattr(settings, "INSTANCE_LABEL", None)
     instance_primary_color = getattr(settings, "INSTANCE_PRIMARY_COLOR", None)

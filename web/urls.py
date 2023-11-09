@@ -8,7 +8,6 @@ from web.views import (
     datasets,
     documents,
     legalbasis,
-    notifications,
     permissions,
     profile,
     projects,
