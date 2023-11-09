@@ -15,11 +15,8 @@ class NotifyMixin(ABC):
     @abstractmethod
     def get_notification_recipients() -> List["User"]:
         """
-        Should Query the users based on their notification settings
+        Should query the users based on their notification settings
         and the entity.
-
-        Raises:
-            NotImplementedError: It should be implemented by the subclass
         """
         pass
 
@@ -27,14 +24,11 @@ class NotifyMixin(ABC):
     @abstractmethod
     def make_notifications(cls, exec_date: "date"):
         """
-        Creates a notifications for the reciepients based on
+        Creates notifications for the reciepients based on
         the business logic of the entity.
 
         Params:
-            exec_date: The date of execution
-
-        Raises:
-            NotImplementedError: It should be implemented by the subclass
+            exec_date: The date of execution of the task.
         """
         pass
 

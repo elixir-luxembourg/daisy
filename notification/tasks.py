@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 @shared_task
 def create_notifications_for_entities(execution_date: str = None):
     """
-    Loops Through all the entitie that implement the Notificaiton Mixin
-    and creates a notification for each one of them according to the logic.
+    Loops through all the entities that implement the Notificaiton Mixin
+    and creates notifications for each one of them according to the logic.
 
     Params:
         executation_date: The date of the execution of the task. FORMAT: YYYY-MM-DD (DEFAULT: Today)
