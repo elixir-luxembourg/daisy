@@ -45,7 +45,7 @@ def report_notifications_upcoming_events_errors_for_datasteward(user):
         try:
             send_the_email(
                 settings.EMAIL_DONOTREPLY,
-                settings.DATASTEWARD_MAILING_LIST,
+                settings.ADMIN_NOTIFICATIONS_EMAIL,
                 "Notifications",
                 "notification/email_datasteward_notifications_error",
                 context,
