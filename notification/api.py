@@ -32,7 +32,9 @@ def api_dismiss_notification(request, pk):
     notification.save()
 
     notification_list = Notification.objects.filter(
-        recipient=request.user, content_type=notification.content_type
+        recipient=request.user,
+        content_type=notification.content_type,
+        dispatch_in_app=True,
     )
     return jsonify(notification_list)
 
@@ -41,7 +43,9 @@ def api_dismiss_notification(request, pk):
 def api_dismiss_all_notifications(request, object_type):
     logger.debug(f"Dismissing notifications for object_type {object_type}")
     notification_list = Notification.objects.filter(
-        recipient=request.user, content_type__model=object_type
+        recipient=request.user,
+        content_type__model=object_type,
+        dispatch_in_app=True,
     )
     for notif in notification_list:
         notif.dismissed = True

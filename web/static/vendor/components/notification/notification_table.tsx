@@ -90,7 +90,7 @@ export const NotificationsTable = (props: NotificationsTableProps) => {
         // The message column displays the description of the notification
         columnHelper.accessor("message", {
             header: "Description",
-            cell: cell => {
+            cell: ({cell}) => {
                 const text = cell.getValue();
                 return (
                     <span>
@@ -134,6 +134,10 @@ export const NotificationsTable = (props: NotificationsTableProps) => {
         getCoreRowModel: getCoreRowModel(),
     });
 
+    const shouldDisplayTitle = (identifier: string) => {
+        return ["message", "objectName"].includes(identifier);
+    };
+
     return (
         <table className={"table table-striped"}>
             <thead>
@@ -157,7 +161,7 @@ export const NotificationsTable = (props: NotificationsTableProps) => {
                 {table.getRowModel().rows.map(row => (
                     <tr key={row.id}>
                         {row.getVisibleCells().map(cell => (
-                            <td key={cell.id}>
+                            <td key={cell.id} title={shouldDisplayTitle(cell.column.id) ? (cell.getValue() as string) : undefined}>
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </td>
                         ))}

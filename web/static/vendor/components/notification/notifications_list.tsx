@@ -80,7 +80,7 @@ export const NotificationList = ({showDismissed, showRecipientColumn, showDismis
                     setNotifications(newNotifications);
                 }
                 else {
-                    newNotifications[notification.objectType] = newNotifications[notification.objectType].filter((notif) => notif.id !== notification.id);
+                    newNotifications[notification.objectType] = newNotifications[notification.objectType].filter((notif) => !notif.dismissed);
                     setNotifications(newNotifications);
                 }
             })
@@ -118,6 +118,7 @@ export const NotificationList = ({showDismissed, showRecipientColumn, showDismis
                 console.error(`An error occurred while dismissing notifications for ${contentType}`, error);
             });
     };
+
 
     if (Object.keys(notifications).some(contentType => notifications[contentType].length > 0)){
         // Display the list of notifications if there are any

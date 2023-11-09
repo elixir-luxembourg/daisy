@@ -62,9 +62,15 @@ export const NotificationCard = ({title, type, newNotifNumber, children, showDis
             <div className={"card col px-0"}>
                 <NotificationHeader className={title} category={type} showDismissNumber={showDismissBtn} newNotifications={newNotifNumber} />
                 <div id={`accordion-body-${type}`} className={"collapse p-3"}>
-                    {showDismissBtn &&
+                    {showDismissBtn && newNotifNumber > 0 &&
                         <div className={"d-flex justify-content-end"}>
-                            <a className={"btn btn-link btn-outline float-right"} onClick={() => dismissAll(type)}>Dismiss all</a>
+                            <button
+                                className={"btn btn-link btn-outline float-right"}
+                                type={"button"}
+                                onClick={() => dismissAll(type)}
+                            >
+                                Dismiss all
+                            </button>
                         </div>
                     }
                     <div className={"card-body"}>
