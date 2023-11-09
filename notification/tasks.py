@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task
-def create_notifications_for_entities(executation_date: str = None):
+def create_notifications_for_entities(execution_date: str = None):
     """
     Loops Through all the entitie that implement the Notificaiton Mixin
     and creates a notification for each one of them according to the logic.
@@ -17,10 +17,10 @@ def create_notifications_for_entities(executation_date: str = None):
     Params:
         executation_date: The date of the execution of the task. FORMAT: YYYY-MM-DD (DEFAULT: Today)
     """
-    if not executation_date:
+    if not execution_date:
         exec_date = datetime.now().date()
     else:
-        exec_date = datetime.strptime(executation_date, "%Y-%m-%d").date()
+        exec_date = datetime.strptime(execution_date, "%Y-%m-%d").date()
 
     logger.info(f"Creating notifications for {exec_date}")
 
