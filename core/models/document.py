@@ -16,11 +16,15 @@ from django.dispatch import receiver
 from django.core.files.storage import default_storage
 
 from .utils import CoreModel, CoreNotifyMeta
-from notification.models import Notification, NotificationVerb, NotificationSetting
+from core.utils import DaisyLogger
+from notification.models import Notification, NotificationVerb
 from notification import NotifyMixin
 
 if typing.TYPE_CHECKING:
     User = settings.AUTH_USER_MODEL
+
+
+logger = DaisyLogger(__name__)
 
 
 def get_file_name(instance, filename):
@@ -127,6 +131,8 @@ class Document(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
 
         msg = f"The Document {obj.shortname} is expiring in {offset} days."
         on = obj.expiry_date
+
+        logger.info(f"Creating a notification for {user} : {msg}")
 
         Notification.objects.create(
             recipient=user,

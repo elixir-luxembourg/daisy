@@ -15,7 +15,8 @@ from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 from core import constants
 from core.permissions.mapping import PERMISSION_MAPPING
 from notification import NotifyMixin
-from notification.models import NotificationVerb, Notification, NotificationSetting
+from notification.models import NotificationVerb, Notification
+from core.utils import DaisyLogger
 
 from .utils import CoreTrackedModel, COMPANY, CoreNotifyMeta
 from .partner import HomeOrganisation
@@ -23,6 +24,9 @@ from .partner import HomeOrganisation
 
 if typing.TYPE_CHECKING:
     User = settings.AUTH_USER_MODEL
+
+
+logger = DaisyLogger(__name__)
 
 
 class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
@@ -353,6 +357,8 @@ class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
         else:
             msg = f"The project {obj.title} is ending in {offset} days."
             on = obj.end_date
+
+        logger.info(f"Creating a notification for {user} : {msg}")
 
         Notification.objects.create(
             recipient=user,

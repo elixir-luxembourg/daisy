@@ -25,4 +25,5 @@ def create_notifications_for_entities(execution_date: str = None):
     logger.info(f"Creating notifications for {exec_date}")
 
     for cls in NotifyMixin.__subclasses__():
+        logger.info(f"Creating notifications for the {cls} entity...")
         cls.make_notifications(exec_date)

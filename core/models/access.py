@@ -15,7 +15,8 @@ from enumchoicefield import EnumChoiceField, ChoiceEnum
 
 from .utils import CoreModel, CoreNotifyMeta
 from notification import NotifyMixin
-from notification.models import NotificationSetting, NotificationVerb, Notification
+from notification.models import NotificationVerb, Notification
+from core.utils import DaisyLogger
 
 from auditlog.registry import auditlog
 from auditlog.models import AuditlogHistoryField
@@ -24,7 +25,7 @@ if typing.TYPE_CHECKING:
     User = settings.AUTH_USER_MODEL
 
 
-logger = logging.getLogger(__name__)
+logger = DaisyLogger(__name__)
 
 
 class StatusChoices(ChoiceEnum):
@@ -299,6 +300,8 @@ class Access(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
 
         msg = f"Access for {obj.dataset.title} of the user {obj.user or obj.contact} is ending in {offset} days."
         on = obj.grant_expires_on
+
+        logger.info(f"Creating a notification for {user} : {msg}")
 
         Notification.objects.create(
             recipient=user,

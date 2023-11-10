@@ -13,15 +13,19 @@ from django.utils.module_loading import import_string
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from core import constants
+from core.utils import DaisyLogger
 from core.models import DataDeclaration
 from core.permissions.mapping import PERMISSION_MAPPING
 from notification import NotifyMixin
-from notification.models import Notification, NotificationVerb, NotificationSetting
+from notification.models import Notification, NotificationVerb
 from .utils import CoreTrackedModel, TextFieldWithInputWidget, CoreNotifyMeta
 from .partner import HomeOrganisation
 
 if typing.TYPE_CHECKING:
     User = settings.AUTH_USER_MODEL
+
+
+logger = DaisyLogger(__name__)
 
 
 class Dataset(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
@@ -290,6 +294,8 @@ class Dataset(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
                 f"Storage duration for {obj.dataset.title} is ending in {offset} days."
             )
             on = obj.end_of_storage_duration
+
+        logger.info(f"Creating a notification for {user} : {msg}")
 
         Notification.objects.create(
             recipient=user,
