@@ -251,36 +251,27 @@ class Dataset(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
         )
 
     @classmethod
-    def make_notifications(cls, exec_date: datetime.date):
-        recipients = cls.get_notification_recipients()
-        for user in recipients:
-            notification_setting: NotificationSetting = (
-                Dataset.get_notification_setting(user)
-            )
-            if not (
-                notification_setting.send_email or notification_setting.send_in_app
-            ):
-                continue
-            day_offset = timedelta(days=notification_setting.notification_offset)
-
-            # Considering users that are indirectly responsible for the dataset (through projects)
-            possible_datasets = set(user.datasets.all())
-            for project in user.project_set.all():
-                possible_datasets.update(list(project.datasets.all()))
-            for dataset in possible_datasets:
-                # Data Declaration (Embargo Date & End of Storage Duration)
-                for data_declaration in dataset.data_declarations.all():
-                    if (
-                        data_declaration.embargo_date
-                        and data_declaration.embargo_date - day_offset == exec_date
-                    ):
-                        cls.notify(user, data_declaration, NotificationVerb.embargo_end)
-                    if (
-                        data_declaration.end_of_storage_duration
-                        and data_declaration.end_of_storage_duration - day_offset
-                        == exec_date
-                    ):
-                        cls.notify(user, data_declaration, NotificationVerb.end)
+    def make_notifications_for_user(
+        cls, day_offset: timedelta, exec_date: datetime.date, user: "User"
+    ):
+        # Considering users that are indirectly responsible for the dataset (through projects)
+        possible_datasets = set(user.datasets.all())
+        for project in user.project_set.all():
+            possible_datasets.update(list(project.datasets.all()))
+        for dataset in possible_datasets:
+            # Data Declaration (Embargo Date & End of Storage Duration)
+            for data_declaration in dataset.data_declarations.all():
+                if (
+                    data_declaration.embargo_date
+                    and data_declaration.embargo_date - day_offset == exec_date
+                ):
+                    cls.notify(user, data_declaration, NotificationVerb.embargo_end)
+                if (
+                    data_declaration.end_of_storage_duration
+                    and data_declaration.end_of_storage_duration - day_offset
+                    == exec_date
+                ):
+                    cls.notify(user, data_declaration, NotificationVerb.end)
 
     @staticmethod
     def notify(user: "User", obj: "DataDeclaration", verb: "NotificationVerb"):

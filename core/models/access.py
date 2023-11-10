@@ -262,40 +262,31 @@ class Access(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
         )
 
     @classmethod
-    def make_notifications(cls, exec_date: date):
-        recipients = cls.get_notification_recipients()
-        for user in recipients:
-            notification_setting: NotificationSetting = Access.get_notification_setting(
-                user
-            )
-            if not (
-                notification_setting.send_email or notification_setting.send_in_app
+    def make_notifications_for_user(
+        cls, day_offset: timedelta, exec_date: date, user: "User"
+    ):
+        # Considering users that are indirectly responsible for the dataset (through projects)
+        possible_datasets = set(user.datasets.all())
+        possible_datasets.update(
+            [
+                dataset
+                for project in user.project_set.all()
+                for dataset in project.datasets.all()
+            ]
+        )
+        # Fetch all necessary data at once before the loop
+        dataset_ids = [dataset.id for dataset in possible_datasets]
+        accesses = Access.objects.filter(
+            Q(dataset_id__in=dataset_ids) & Q(status=StatusChoices.active)
+        )
+
+        for access in accesses:
+            # Check if the dataset has an access that is about to expire
+            if (
+                access.grant_expires_on
+                and access.grant_expires_on - day_offset == exec_date
             ):
-                continue
-            day_offset = timedelta(days=notification_setting.notification_offset)
-
-            # Considering users that are indirectly responsible for the dataset (through projects)
-            possible_datasets = set(user.datasets.all())
-            possible_datasets.update(
-                [
-                    dataset
-                    for project in user.project_set.all()
-                    for dataset in project.datasets.all()
-                ]
-            )
-            # Fetch all necessary data at once before the loop
-            dataset_ids = [dataset.id for dataset in possible_datasets]
-            accesses = Access.objects.filter(
-                Q(dataset_id__in=dataset_ids) & Q(status=StatusChoices.active)
-            )
-
-            for access in accesses:
-                # Check if the dataset has an access that is about to expire
-                if (
-                    access.grant_expires_on
-                    and access.grant_expires_on - day_offset == exec_date
-                ):
-                    cls.notify(user, access, NotificationVerb.expire)
+                cls.notify(user, access, NotificationVerb.expire)
 
     @staticmethod
     def notify(user: "User", obj: "Access", verb: "NotificationVerb"):

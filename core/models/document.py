@@ -102,28 +102,19 @@ class Document(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
         )
 
     @classmethod
-    def make_notifications(cls, exec_date: datetime.date):
-        recipients = cls.get_notification_recipients()
-        for user in recipients:
-            notification_setting: NotificationSetting = (
-                Document.get_notification_setting(user)
-            )
-            if not (
-                notification_setting.send_email or notification_setting.send_in_app
-            ):
-                continue
-            day_offset = timedelta(days=notification_setting.notification_offset)
+    def make_notifications_for_user(
+        cls, day_offset: timedelta, exec_date: datetime.date, user: "User"
+    ):
+        docs = set()
+        [docs.update(p.legal_documents.all()) for p in user.project_set.all()]
+        [docs.update(c.legal_documents.all()) for c in user.contracts.all()]
+        # Also add all the documents of all contracts of all projects to address the indirect LCs of parent projects
+        for p in user.project_set.all():
+            _ = [docs.update(c.legal_documents.all()) for c in p.contracts.all()]
 
-            docs = set()
-            _ = [docs.update(p.legal_documents.all()) for p in user.project_set.all()]
-            _ = [docs.update(c.legal_documents.all()) for c in user.contracts.all()]
-            # Also add all the documents of all contracts of all projects to address the indirect LCs of parent projects
-            for p in user.project_set.all():
-                _ = [docs.update(c.legal_documents.all()) for c in p.contracts.all()]
-
-            for doc in docs:
-                if doc.expiry_date and doc.expiry_date - day_offset == exec_date:
-                    cls.notify(user, doc, NotificationVerb.expire)
+        for doc in docs:
+            if doc.expiry_date and doc.expiry_date - day_offset == exec_date:
+                cls.notify(user, doc, NotificationVerb.expire)
 
     @staticmethod
     def notify(user: "User", obj: "Document", verb: "NotificationVerb"):

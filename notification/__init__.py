@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import typing
 from typing import List, Optional
+from datetime import timedelta
 
 if typing.TYPE_CHECKING:
     from django.conf import settings
@@ -21,7 +22,6 @@ class NotifyMixin(ABC):
         pass
 
     @classmethod
-    @abstractmethod
     def make_notifications(cls, exec_date: "date"):
         """
         Creates notifications for the reciepients based on
@@ -29,6 +29,29 @@ class NotifyMixin(ABC):
 
         Params:
             exec_date: The date of execution of the task.
+        """
+        recipients = cls.get_notification_recipients()
+        for user in recipients:
+            notification_setting = cls.get_notification_setting(user)
+            if not (
+                notification_setting.send_email or notification_setting.send_in_app
+            ):
+                continue
+            day_offset = timedelta(days=notification_setting.notification_offset)
+            cls.make_notifications_for_user(day_offset, exec_date, user)
+
+    @classmethod
+    @abstractmethod
+    def make_notifications_for_user(
+        cls, day_offset: "timedelta", exec_date: "date", user: "User"
+    ):
+        """
+        Creates notifications for the user based on the business logic of the entity.
+
+        Params:
+            day_offset: The offset of the notification.
+            exec_date: The date of execution of the task.
+            user: The user to create the notification for.
         """
         pass
 

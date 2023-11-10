@@ -327,25 +327,16 @@ class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
         return get_user_model().objects.filter(Q(project_set__isnull=False)).distinct()
 
     @classmethod
-    def make_notifications(cls, exec_date: datetime.date):
-        recipients = cls.get_notification_recipients()
-        for user in recipients:
-            notification_setting: NotificationSetting = (
-                Project.get_notification_setting(user)
-            )
-            if not (
-                notification_setting.send_email or notification_setting.send_in_app
-            ):
-                continue
-            day_offset = timedelta(days=notification_setting.notification_offset)
-
-            for project in user.project_set.all():
-                # Project start date
-                if project.start_date and project.start_date - day_offset == exec_date:
-                    cls.notify(user, project, NotificationVerb.start)
-                # Project end date
-                if project.end_date and project.end_date - day_offset == exec_date:
-                    cls.notify(user, project, NotificationVerb.end)
+    def make_notifications_for_user(
+        cls, day_offset: timedelta, exec_date: datetime.date, user: "User"
+    ):
+        for project in user.project_set.all():
+            # Project start date
+            if project.start_date and project.start_date - day_offset == exec_date:
+                cls.notify(user, project, NotificationVerb.start)
+            # Project end date
+            if project.end_date and project.end_date - day_offset == exec_date:
+                cls.notify(user, project, NotificationVerb.end)
 
     @staticmethod
     def notify(user: "User", obj: "Project", verb: "NotificationVerb"):
