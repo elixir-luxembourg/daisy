@@ -4,18 +4,20 @@
 {% block content %}
     <div class="row mt-4">
         <div class="jumbotron col">
-            <h1 class="display-4">User profile</h1>
+            <h1 class="display-4">Notification settings</h1>
         </div>
     </div>
 
-    <div class="card">
+    <div class="row card">
         <div class="card-body">
-            <h2 class="card-title">{% block card_title %}Change your notification settings{% endblock %}</h2>
+            <h2 class="card-title">Approaching events:</h2>
+            <h6 class="card-subtitle mb-4">
+                Receive notifications about approaching events (retention period, expiration of documents, ...)
+            </h6>
             <div id="form-container" class="card-text">
                 {% include '_includes/forms.html' %}
             </div>
         </div>
     </div>
-
 
 {% endblock content %}

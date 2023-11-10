@@ -22,6 +22,7 @@ from django.urls import include
 
 from core.forms.user import UserAuthForm
 from web.urls import web_urls
+from notification.urls import notif_urls
 
 urlpatterns = [
     url(
@@ -31,6 +32,7 @@ urlpatterns = [
     ),
     url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
     url(r"^admin/", admin.site.urls),
+    url(r"^notifications/", include(notif_urls)),
     url(r"", include(web_urls)),
 ]
 
