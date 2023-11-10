@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block head_end %}
+    {{ block.super }}
+    <link href="{% static 'notification/css/notification.css' %}" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    <div class="row mt-4">
+        <div class="jumbotron col">
+            <h1 class="display-4">Notifications</h1>
+            <hr />
+            <p>If you would like to change the way DAISY handles your notifications, please update your <a class="font-weight-bold" href="{% url 'notifications_settings' %}">notifications settings</a>.</p>
+            {% if not show_dismissed %}
+                <p>By default, dismissed notifications are not shown. You can display dismissed notifications by clicking <a class="font-weight-bold" href="{{ request.path }}?show_dismissed=true">here</a></p>
+            {%  else %}
+                <p>Dismissed notifications are currently shown. You can hide them by clicking <a class="font-weight-bold" href="{{ request.path }}">here</a></p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if form %}
+        <div class="row mt-4">
+            <div class="card col">
+                <div class="card-body">
+                    <h2 class="card-title">Filter by user</h2>
+                    {% include '_includes/forms.html' with method='get' %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+
+    <div id="react-notifications"
+         data-show-dismissed="{{ show_dismissed | lower }}"
+         data-show-dismiss-column="{% if not admin %}true{% endif %}"
+         {% if admin %}
+            data-recipient-filter="{{ recipient_filter }}"
+         {% endif %}
+         data-show-recipient-column="{{ admin | lower }}"
+    ></div>
+
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+    <script src="{% static 'js/notification.bundle.js' %}"></script>
+{% endblock %}

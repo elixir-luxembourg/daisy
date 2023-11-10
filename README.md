@@ -53,6 +53,9 @@ You are encouraged to try Daisy for yourself using our [DEMO deployment](https:/
 1. Compile and deploy static files
     
     ```bash
+    cd web/static/vendor
+    npm run build
+    cd ../../../
     docker-compose exec web python manage.py collectstatic
     ```
 1. Create initial data in the database
@@ -224,7 +227,7 @@ cd web/static/vendor/
 npm ci
 ```
 
-### Compile daisy.scss
+### Compile daisy.scss and React
 ```bash
 cd web/static/vendor
 npm run-script build

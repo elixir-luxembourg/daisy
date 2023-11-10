@@ -3,6 +3,8 @@ model classes based on http://activitystrea.ms/specs/json/1.0/
 
 Notification class does not have any target at the moment.
 """
+from datetime import datetime
+
 from django.db import models
 from django.urls import reverse
 from django.apps import apps
@@ -102,7 +104,8 @@ class Notification(models.Model):
             return reverse("contract", args=[str(self.object_id)])
         elif self.content_type.model_class() == apps.get_model("core.Project"):
             return reverse("project", args=[str(self.object_id)])
-        raise Exception("No url defined for this content type")
+        else:
+            return None
 
     def get_full_url(self):
         """
@@ -113,6 +116,32 @@ class Notification(models.Model):
             settings.SERVER_URL,
             self.get_absolute_url(),
         )
+
+    @property
+    def event_time(self):
+        return datetime.now()
+
+    def to_json(self):
+        user_json = (
+            self.recipient.to_json()
+            if hasattr(self.recipient, "to_json")
+            else {"id": self.recipient.id, "name": self.recipient.get_full_name()}
+        )
+        return {
+            "id": self.id,
+            "recipient": user_json,
+            "verb": self.verb.value,
+            "on": self.on,
+            "time": self.time,
+            "sentInApp": self.dispatch_in_app,
+            "sentByEmail": self.dispatch_by_email,
+            "dismissed": self.dismissed,
+            "message": self.message,
+            "objectType": self.content_type.model,
+            "objectDisplayName": self.content_type.name,
+            "objectName": self.content_object.__str__(),
+            "objectUrl": self.get_absolute_url() or "",
+        }
 
     def __str__(self):
         return f"N: {self.recipient} {self.verb} {self.object_id} {self.time}"
