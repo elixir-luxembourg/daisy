@@ -23,8 +23,8 @@ def send_the_email(sender_email, recipients, subject, template, context):
             settings.SERVER_URL,
         )
     if "notifications_settings_url" not in context:
-        context["notifications_settings_url"] = (
-            context["server_url"] + "/" + reverse("notifications_settings")
+        context["notifications_settings_url"] = context["server_url"] + reverse(
+            "notifications_settings"
         )
 
     # prepare email
