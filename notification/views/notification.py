@@ -1,43 +1,14 @@
-import logging
 import urllib
 
-from django.views.generic import UpdateView, ListView
-from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404, reverse, redirect
-from django.core.exceptions import ObjectDoesNotExist
+from django.views.generic.list import ListView
+from django.urls import reverse
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.contrib import messages
+
+
 from django import forms
-
-from notification.models import Notification, NotificationSetting
-from core.models import User
-
-logger = logging.getLogger(__name__)
-
-
-# Create your views here.
-class NotificationSettingEditView(UpdateView):
-    model = NotificationSetting
-    template_name = "notification/notification_setting_edit.html"
-    # form_class = ProfileForm
-    fields = ("send_email", "send_in_app", "notification_offset")
-
-    def get_success_url(self):
-        messages.add_message(
-            self.request, messages.SUCCESS, "Notification settings updated"
-        )
-        return reverse_lazy("notifications_settings")
-
-    def get_object(self, queryset=None):
-        """
-        Get notification setting for the user.
-        Create a new one if does not exists
-        """
-        try:
-            ns = self.request.user.notification_setting
-        except ObjectDoesNotExist:
-            ns = NotificationSetting.objects.create(user=self.request.user)
-        return ns
+from notification.models import Notification
 
 
 class NotificationsListView(ListView):
@@ -58,7 +29,7 @@ class NotificationsListView(ListView):
 class NotificationAdminView(UserPassesTestMixin, NotificationsListView):
     class UserSelection(forms.Form):
         user = forms.ModelChoiceField(
-            queryset=User.objects.all(), help_text="Select the user."
+            queryset=get_user_model().objects.all(), help_text="Select the user."
         )
 
     def test_func(self):
@@ -66,7 +37,7 @@ class NotificationAdminView(UserPassesTestMixin, NotificationsListView):
 
     def get_queryset(self):
         if "pk" in self.kwargs:
-            user = get_object_or_404(User, pk=self.kwargs["pk"])
+            user = get_object_or_404(get_user_model(), pk=self.kwargs["pk"])
             self.queryset = user.notifications.ordered()
         else:
             self.queryset = Notification.objects.all()
@@ -79,7 +50,7 @@ class NotificationAdminView(UserPassesTestMixin, NotificationsListView):
             "show_dismissed": self.request.GET.get("show_dismissed", "false"),
         }
         if "pk" in self.request.GET:
-            user = get_object_or_404(User, pk=self.request.GET["pk"])
+            user = get_object_or_404(get_user_model(), pk=self.request.GET["pk"])
             new_arguments["pk"] = str(user.pk)
             context["recipient_filter"] = user.pk
 

@@ -95,7 +95,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "web.views.context_processors.daisy_version",
                 "web.views.context_processors.instance_branding",
-                "web.views.context_processors.daisy_notifications_enabled",
+                "notification.views.context_processors.daisy_notifications_enabled",
             ],
         },
     },
