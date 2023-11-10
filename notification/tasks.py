@@ -12,20 +12,20 @@ from celery.utils.log import get_task_logger
 logger = get_task_logger(__name__)
 
 
-def report_notifications_upcoming_events_errors_for_datasteward(user):
+def report_notifications_upcoming_events_errors_for_admin(user):
     """
-    Send upcoming events notifications errors report for datasteward, if any.
+    Send upcoming events notifications errors report for admin, if any.
 
     Params:
-        user: The user whom the notifications sending failed
+        user: The user for which the notifications sending failed
     """
-    logger.info("Sending upcoming events notifications errors for datasteward")
+    logger.info("Sending upcoming events notifications errors for admin")
 
     notifications_not_processed = Notification.objects.filter(
         recipient=user.id, dispatch_by_email=True, processing_date=None
     )
 
-    # Send email to data steward in case of errors
+    # Send email to admin in case of errors
     if notifications_not_processed:
         logger.error("Some notification are not processed: ")
         logger.error(notifications_not_processed)
@@ -47,16 +47,16 @@ def report_notifications_upcoming_events_errors_for_datasteward(user):
                 settings.EMAIL_DONOTREPLY,
                 settings.ADMIN_NOTIFICATIONS_EMAIL,
                 "Notifications",
-                "notification/email_datasteward_notifications_error",
+                "notification/email_admin_notifications_error",
                 context,
             )
         except Exception as e:
             logger.error(
-                f"Failed: An error occurred while sending Email notification error report for data-stewards."
+                f"Failed: An error occurred while sending Email notification error report for admin."
                 f" Error: {e}"
             )
             print(
-                f"Failed: An error occurred while sending Email notification error report for data-stewards."
+                f"Failed: An error occurred while sending Email notification error report for admin."
                 f" Error: {e}"
             )
 
@@ -106,8 +106,8 @@ def send_notifications_for_user_upcoming_events(
 
         # send notification report to user, if any
         if not notifications_exec_date:
-            # Checks if there is missed notification for this user and report errors to data-stewards, if any
-            report_notifications_upcoming_events_errors_for_datasteward(user)
+            # Checks if there is missed notification for this user and report errors to admin, if any
+            report_notifications_upcoming_events_errors_for_admin(user)
             continue
 
         # group notifications per content type and set processed to today
@@ -137,6 +137,6 @@ def send_notifications_for_user_upcoming_events(
                 f" Error: {e}"
             )
         finally:
-            # report error to data-stewards
-            report_notifications_upcoming_events_errors_for_datasteward(user)
+            # report error to admin
+            report_notifications_upcoming_events_errors_for_admin(user)
             continue

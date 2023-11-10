@@ -81,7 +81,6 @@ IDSERVICE_ENDPOINT = "https://10.240.16.199:8080/v1/api/id"
 # KEYCLOAK_PASS = 'the password for the service user'
 
 # Email related setting
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = ""
 EMAIL_PORT = 25
 EMAIL_SENDER = ""
