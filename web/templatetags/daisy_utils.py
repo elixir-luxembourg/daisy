@@ -30,10 +30,23 @@ def form_add_class(field, css_class):
     return field.as_widget(attrs={"class": css_class})
 
 
+@register.filter(name="has_group")
+def has_group(user, group_name):
+    return user.is_part_of(group_name)
+
+
 @register.filter
 def can_see_protected(user, obj: Union[Project, Contract, Dataset]):
     has_perm = user.can_see_protected(obj)
     return has_perm
+
+
+@register.filter
+def is_part_of_group(user, group_name):
+    """
+    Returns true if the user is part of the group given as argument, False otherwise
+    """
+    return user.is_part_of(group_name)
 
 
 # @register.simple_tag

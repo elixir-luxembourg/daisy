@@ -23,6 +23,7 @@ if SECRET_KEY is None:
 COMPANY = "LCSB"  # Used for generating some models' verbose names
 
 HELPDESK_EMAIL = "lcsb-sysadmins@uni.lu"
+ADMIN_NOTIFICATIONS_EMAIL = ""  # used when there are notifications errors
 
 # Placeholders on login page
 # LOGIN_USERNAME_PLACEHOLDER = ''
@@ -79,14 +80,23 @@ IDSERVICE_ENDPOINT = "https://10.240.16.199:8080/v1/api/id"
 # KEYCLOAK_USER = 'your service user for daisy'
 # KEYCLOAK_PASS = 'the password for the service user'
 
+# Email related setting
+EMAIL_HOST = ""
+EMAIL_PORT = 25
+EMAIL_SENDER = ""
+
 # Celery beat setting to schedule tasks on docker creation
 CELERY_BEAT_SCHEDULE = {
     "clean-accesses-every-day": {
         "task": "core.tasks.check_accesses_expiration",
         "schedule": crontab(minute=0, hour=0),  # Execute task at midnight
     },
+    "notifications-email-every-day": {
+        "task": "notification.tasks.send_notifications_for_user_upcoming_events",
+        "schedule": crontab(minute=0, hour=0),  # Execute task at midnight
+    },
     "synchronizer-every-day": {
         "task": "core.tasks.run_synchronizer",
         "schedule": crontab(minute=0, hour=2),  # Execute task at 2am
-    },
+    }
 }

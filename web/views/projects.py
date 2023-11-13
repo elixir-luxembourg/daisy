@@ -1,12 +1,11 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import user_passes_test
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction, IntegrityError
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     ListView,
     CreateView,
@@ -20,14 +19,12 @@ from core.forms.contract import ContractForm
 from core.forms.dataset import DatasetForm
 from core.forms.project import ProjectForm, DatasetSelection
 from core.models import Project, Contract
+from core.models.utils import COMPANY
 from core.permissions import permission_required
 from core.permissions.checker import CheckerMixin
-from web.views.utils import is_data_steward
 from . import facet_view_utils
 
 FACET_FIELDS = settings.FACET_FIELDS["project"]
-from core.models.utils import COMPANY
-from django.urls import reverse
 
 
 class ProjectListView(ListView):
@@ -88,6 +85,8 @@ class ProjectCreateView(CreateView):
             ):
                 data.update({"local_custodians": str(self.request.user.pk)})
             kwargs.update({"data": data})
+        if self.request.user.can_edit_metadata():
+            kwargs.update({"keep_metadata_field": True})
         return kwargs
 
     def form_valid(self, form):
@@ -146,6 +145,12 @@ class ProjectEditView(CheckerMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.request.user.can_edit_metadata():
+            kwargs.update({"keep_metadata_field": True})
+        return kwargs
 
     def form_valid(self, form):
         response = super().form_valid(form)

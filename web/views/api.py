@@ -113,7 +113,7 @@ def cohorts(request):
     return JsonResponse(
         {
             "results": [
-                cohort.to_dict() for cohort in Cohort.objects.filter(is_published=True)
+                cohort.to_dict() for cohort in Cohort.objects.filter(_is_published=True)
             ]
         }
     )
@@ -126,7 +126,7 @@ def partners(request):
         {
             "results": [
                 partner.to_dict()
-                for partner in Partner.objects.filter(is_published=True)
+                for partner in Partner.objects.filter(_is_published=True)
             ]
         }
     )

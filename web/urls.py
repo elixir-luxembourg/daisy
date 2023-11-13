@@ -8,7 +8,6 @@ from web.views import (
     datasets,
     documents,
     legalbasis,
-    notifications,
     permissions,
     profile,
     projects,
@@ -65,6 +64,7 @@ from web.views.export import (
     partners_export,
     projects_export,
 )
+from web.views.importer import import_data
 from web.views.partner import (
     PartnerCreateView,
     PartnerDelete,
@@ -368,14 +368,6 @@ web_urls = [
         name="document_download",
     ),
     path("documents/<int:pk>/edit/", documents.document_edit, name="document_edit"),
-    # Notifications
-    path("notifications/", notifications.index, name="notifications"),
-    path("notifications/admin", notifications.admin, name="notifications_admin"),
-    path(
-        "notifications/admin/<int:pk>",
-        notifications.admin,
-        name="notifications_admin_for_user",
-    ),
     # Permissions
     path("permissions/", permissions.index, name="permissions"),
     path(
@@ -485,4 +477,5 @@ web_urls = [
     ),
     # Activity log
     path("history/", LogEntryListView.as_view(), name="history"),
+    path("import_data/<str:model_type>/", import_data, name="import_data"),
 ]

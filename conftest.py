@@ -142,6 +142,26 @@ def user_data_steward(django_user_model):
 
 
 @pytest.fixture
+def user_legal(django_user_model):
+    u = django_user_model.objects.create_user(
+        username="user.legal", password="password", email="legal@email.com"
+    )
+    g, _ = Group.objects.get_or_create(name=GroupConstants.LEGAL.value)
+    u.groups.add(g)
+    return u
+
+
+@pytest.fixture
+def user_auditor(django_user_model):
+    u = django_user_model.objects.create_user(
+        username="user.auditor", password="password", email="auditor@email.com"
+    )
+    g, _ = Group.objects.get_or_create(name=GroupConstants.AUDITOR.value)
+    u.groups.add(g)
+    return u
+
+
+@pytest.fixture
 def user_admin(django_user_model):
     u = django_user_model.objects.create_superuser(
         username="test.admin", email="test.admin@mail.com", password="password"

@@ -51,7 +51,10 @@ class ProjectForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         kwargs["label_suffix"] = ""
+        keep_metadata_field = kwargs.pop("keep_metadata_field", False)
         super().__init__(*args, **kwargs)
+        if not keep_metadata_field:
+            del self.fields["scientific_metadata"]
         instance = kwargs.get("instance", None)
 
         if "data" not in kwargs:

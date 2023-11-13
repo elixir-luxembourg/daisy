@@ -1,151 +1,138 @@
-import datetime
+import smtplib
 from collections import defaultdict
-from datetime import timedelta
+from datetime import datetime
 
 from celery import shared_task
 from django.conf import settings
-from django.utils import timezone
-from django.db.models import Q
-from core.models import Contract, DataDeclaration, Dataset, Document, Project, User
+from django.contrib.auth import get_user_model
 from notification.email_sender import send_the_email
-from notification.models import Notification, NotificationStyle, NotificationVerb
+from notification.models import Notification
+from celery.utils.log import get_task_logger
 
-# map each notification style to a delta
-# delta correspond to the interval + a small delta
-NOTIFICATION_MAPPING = {
-    NotificationStyle.once_per_day: timedelta(days=1, hours=8),
-    NotificationStyle.once_per_week: timedelta(days=7, hours=16),
-    NotificationStyle.once_per_month: timedelta(days=33),
-}
+logger = get_task_logger(__name__)
 
 
-@shared_task
-def send_notifications_for_user_by_time(user_id, time):
+def report_notifications_upcoming_events_errors_for_admin(user):
     """
-    Send a notification report for the current user from the date to the most recent.
+    Send upcoming events notifications errors report for admin, if any.
+
+    Params:
+        user: The user for which the notifications sending failed
     """
-    # get latest notifications for the user, grouped by verb
-    notifications = Notification.objects.filter(actor__pk=user_id, time__gte=time)
+    logger.info("Sending upcoming events notifications errors for admin")
 
-    if not notifications:
-        return
-
-    # group notifications per verb
-    notifications_by_verb = defaultdict(list)
-    for notif in notifications:
-        notifications_by_verb[notif.verb].append(notif)
-
-    user = User.objects.get(pk=user_id)
-    context = {"time": time, "user": user, "notifications": dict(notifications_by_verb)}
-    send_the_email(
-        settings.EMAIL_DONOTREPLY,
-        user.email,
-        "Notifications",
-        "notification/notification_report",
-        context,
+    notifications_not_processed = Notification.objects.filter(
+        recipient=user.id, dispatch_by_email=True, processing_date=None
     )
 
+    # Send email to admin in case of errors
+    if notifications_not_processed:
+        logger.error("Some notification are not processed: ")
+        logger.error(notifications_not_processed)
 
-@shared_task
-def send_dataset_notification_for_user(user_id, dataset_id, created):
-    """
-    Send the notification that a dataset have been updated.
-    """
-    dataset = Dataset.objects.get(pk=dataset_id)
-    user = User.objects.get(pk=user_id)
-    context = {"user": user, "dataset": dataset, "created": created}
-    send_the_email(
-        settings.EMAIL_DONOTREPLY,
-        user.email,
-        "Notifications",
-        "notification/dataset_notification",
-        context,
-    )
+        notifications_not_processed_by_content_type = defaultdict(list)
 
+        for notif in notifications_not_processed:
+            notifications_not_processed_by_content_type[notif.content_type].append(
+                notif
+            )
 
-@shared_task
-def send_notifications(period):
-    """
-    Send notifications for each user based on the period selected.
-    Period must be one of `NotificationStyle` but 'every_time'.
-    """
-    notification_style = NotificationStyle[period]
-    if notification_style is NotificationStyle.every_time:
-        raise KeyError("Key not permitted")
-    # get users with this setting
-    users = User.objects.filter(
-        notification_setting__style=notification_style
-    ).distinct()
-    # map the setting to a timeperiod
-    now = timezone.now()
-    time = now - NOTIFICATION_MAPPING[notification_style]
-
-    # get latest notifications
-    users = users.filter(notifications__time__gte=time)
-    for user in users:
-        send_notifications_for_user_by_time.delay(user.id, time)
-    return users
-
-
-@shared_task
-def data_storage_expiry_notifications():
-    now = timezone.now()
-
-    # the user will receive notifications on two consecutive days prior to storage end date
-    window_2_start = now + datetime.timedelta(days=1)
-    window_2_end = now + datetime.timedelta(days=2)
-
-    # the user will receive notifications on two consecutive days, two months prior to storage end date
-    window_60_start = now + datetime.timedelta(days=59)
-    window_60_end = now + datetime.timedelta(days=60)
-
-    data_declarations = DataDeclaration.objects.filter(
-        Q(
-            end_of_storage_duration__gte=window_60_start,
-            end_of_storage_duration__lte=window_60_end,
-        )
-        | Q(
-            end_of_storage_duration__gte=window_2_start,
-            end_of_storage_duration__lte=window_2_end,
-        )
-    ).order_by("end_of_storage_duration")
-
-    for ddec in data_declarations:
-        for custodian in ddec.dataset.local_custodians.all():
-            Notification.objects.create(
-                actor=custodian,
-                verb=NotificationVerb.data_storage_expiry,
-                content_object=ddec,
+        context = {
+            "notifications": dict(notifications_not_processed_by_content_type),
+            "error_message": "Please find below the notifications that failed to be sent to user: "
+            + user.full_name,
+        }
+        try:
+            send_the_email(
+                settings.EMAIL_DONOTREPLY,
+                settings.ADMIN_NOTIFICATIONS_EMAIL,
+                "Notifications",
+                "notification/email_admin_notifications_error",
+                context,
+            )
+        except Exception as e:
+            logger.error(
+                f"Failed: An error occurred while sending Email notification error report for admin."
+                f" Error: {e}"
             )
 
 
 @shared_task
-def document_expiry_notifications():
-    now = timezone.now()
+def send_notifications_for_user_upcoming_events(
+    execution_date: str = None, only_one_day: bool = False
+):
+    """
+    Send upcoming events notification report for all users, if any.
 
-    # the user will receive notifications on two consecutive days prior to storage end date
-    window_2_start = now + datetime.timedelta(days=1)
-    window_2_end = now + datetime.timedelta(days=2)
+    Params:
+        execution_date: The date of the execution of the task. FORMAT: YYYY-MM-DD (DEFAULT: Today)
+        only_one_day: If true send the notifications of the execution date only.
+    """
 
-    # the user will receive notifications on two consecutive days, two months prior to storage end date
-    window_60_start = now + datetime.timedelta(days=59)
-    window_60_end = now + datetime.timedelta(days=60)
+    if settings.NOTIFICATIONS_DISABLED:
+        logger.info(
+            "No notifications sent. Notifications sending is disabled in settings.py"
+        )
+        return
 
-    documents = Document.objects.filter(
-        Q(expiry_date__gte=window_60_start, expiry_date__lte=window_60_end)
-        | Q(expiry_date__gte=window_2_start, expiry_date__lte=window_2_end)
-    ).order_by("expiry_date")
+    logger.info("Sending notification for user upcoming events")
 
-    for document in documents:
-        print(document.content_type)
-        if str(document.content_type) == "project":
-            obj = Project.objects.get(pk=document.object_id)
-        if str(document.content_type) == "contract":
-            obj = Contract.objects.get(pk=document.object_id)
-        if obj:
-            for custodian in obj.local_custodians.all():
-                Notification.objects.create(
-                    actor=custodian,
-                    verb=NotificationVerb.document_expiry,
-                    content_object=obj,
-                )
+    if not execution_date:
+        exec_date = datetime.now().date()
+    else:
+        exec_date = datetime.strptime(execution_date, "%Y-%m-%d").date()
+
+    users = get_user_model().objects.all()
+
+    for user in users:
+        if only_one_day:
+            notifications_exec_date = Notification.objects.filter(
+                recipient=user.id,
+                dispatch_by_email=True,
+                processing_date=None,
+                time__date=exec_date,
+            )
+        else:
+            notifications_exec_date = Notification.objects.filter(
+                recipient=user.id,
+                dispatch_by_email=True,
+                processing_date=None,
+                time__date__lte=exec_date,
+            )
+
+        # send notification report to user, if any
+        if not notifications_exec_date:
+            # Checks if there is missed notification for this user and report errors to admin, if any
+            report_notifications_upcoming_events_errors_for_admin(user)
+            continue
+
+        # group notifications per content type and set processed to today
+        notifications_by_content_type = defaultdict(list)
+        for notif in notifications_exec_date:
+            notifications_by_content_type[notif.content_type].append(notif)
+
+        context = {
+            "user": user.full_name,
+            "notifications": dict(notifications_by_content_type),
+        }
+
+        try:
+            send_the_email(
+                settings.EMAIL_DONOTREPLY,
+                user.email,
+                "Notifications",
+                "notification/email_list_notifications",
+                context,
+            )
+            for notif in notifications_exec_date:
+                notif.processing_date = datetime.now().date()
+                notif.save()
+        except Exception as e:
+            logger.error(
+                f"Failed: An error occurred while sending upcoming events Email notification for user {user.full_name}."
+                f" Error: {e}"
+            )
+        finally:
+            # report error to admin
+            report_notifications_upcoming_events_errors_for_admin(user)
+            continue

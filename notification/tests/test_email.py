@@ -10,6 +10,6 @@ def test_send_email(celery_session_worker):
         settings.EMAIL_DONOTREPLY,
         [],
         "Title of the email",
-        "notification/notification_report",
+        "notification/email_list_notifications",
         {},
     )

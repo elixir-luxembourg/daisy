@@ -7,7 +7,7 @@ except ImportError:
     from distutils.core import setup
 
 requirements = [
-    "Django==3.2.20",
+    "Django==3.2.23",
     "django-auth-ldap==4.1.0",
     "celery==5.2.3",
     "celery-haystack-ng",
@@ -38,7 +38,7 @@ requirements = [
     "python-keycloak==2.6.0",
     "pytz==2022.1",
     "requests==2.31.0",
-    "urllib3==1.26.5",
+    "urllib3==1.26.18",
     "setuptools-scm==3.3.3",
     "jsonschema==3.2.0",
     "mockldap@git+https://github.com/elixir-luxembourg/mockldap2.git",

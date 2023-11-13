@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.urls import reverse
 from enumchoicefield import EnumChoiceField, ChoiceEnum
 
 from core import constants
@@ -216,6 +217,9 @@ class DataDeclaration(CoreModel):
         verbose_name="Unique identifier",
         help_text="This is the unique identifier used by DAISY for this dataset. This field annot be edited.",
     )
+
+    def get_absolute_url(self):
+        return reverse("data_declaration", args=[str(self.pk)])
 
     def copy(
         self, source_data_declaration, excluded_fields=None, ignore_many_to_many=False
