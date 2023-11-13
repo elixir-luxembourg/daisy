@@ -52,7 +52,7 @@ class AccountSynchronizationBackend(ABC):
         pass
 
 
-def update_user_or_contact(
+def find_and_update_user_or_contact(
     user_or_contact_model: Union[Type[User], Type[Contact]],
     info: Dict[str, str],
     oidc_id: Optional[str] = None,
@@ -88,38 +88,41 @@ def update_user_or_contact(
             entity = user_or_contact_model.objects.get(oidc_id=oidc_id)
         except user_or_contact_model.DoesNotExist:
             return None
-    update_and_save_entity(entity, info)
+    update_user_or_contact_from_dict(entity, info)
     entity.save()
     return entity
 
 
-def update_user(
+def find_and_update_user(
     user_info: Dict[str, str],
     oidc_id: Optional[str] = None,
     email: Optional[str] = None,
 ) -> Optional[User]:
     """
-    Update the user record based on the information provided
+    Find and update the user record based on the information provided
     Returns True if a user for this oidc_id or email was found and updated, False otherwise
     """
-    return update_user_or_contact(User, user_info, oidc_id, email)
+    return find_and_update_user_or_contact(User, user_info, oidc_id, email)
 
 
-def update_contact(
+def find_and_update_contact(
     contact_info: Dict[str, str],
     oidc_id: Optional[str] = None,
     email: Optional[str] = None,
 ) -> Optional[Contact]:
     """
-    Update the contact record based on the information provided
+    Find and update the contact record based on the information provided
     Returns True if a contact for this oidc_id was found and updated, False otherwise
     """
-    return update_user_or_contact(Contact, contact_info, oidc_id, email)
+    return find_and_update_user_or_contact(Contact, contact_info, oidc_id, email)
 
 
 def create_contact(contact_dict):
+    """
+    Create a new contact based on the information provided in contact_dict
+    """
     contact = Contact()
-    update_and_save_entity(contact, contact_dict)
+    update_user_or_contact_from_dict(contact, contact_dict)
     contact_type, _ = ContactType.objects.get_or_create(name="Other")
     partner, _ = Partner.objects.get_or_create(
         acronym="Imported from Keycloak", name="Imported from Keycloak"
@@ -131,7 +134,10 @@ def create_contact(contact_dict):
     return contact
 
 
-def update_and_save_entity(entity, info):
+def update_user_or_contact_from_dict(entity, info):
+    """
+    Update some basic fields of user or contact entity based on the information provided in info
+    """
     entity.last_name = info.get("last_name", entity.last_name)
     entity.first_name = info.get("first_name", entity.first_name)
     entity.email = info.get("email", entity.email)
@@ -139,6 +145,10 @@ def update_and_save_entity(entity, info):
 
 
 def check_inconsistent_state(oidc_id, email):
+    """
+    Check if there is an inconsistent state in the database,
+    i.e. multiple users or contacts with the same oidc_id or email
+    """
     users_by_oidc_count = User.objects.filter(oidc_id=oidc_id).count()
     contacts_by_oidc_count = Contact.objects.filter(oidc_id=oidc_id).count()
     if (users_by_oidc_count + contacts_by_oidc_count) > 1:
@@ -198,6 +208,10 @@ class AccountSynchronizer(ABC):
         email: Optional[str] = None,
         create_contact_if_not_found: bool = False,
     ) -> Optional[Union[User, Contact]]:
+        """
+        Retrieve the user or contact information from the external source and update the corresponding daisy user
+         or contact
+        """
         logger.info(
             f"Retrieve and update or create contact operation started for oidc_id {oidc_id}, email {email}"
         )
@@ -221,13 +235,23 @@ class AccountSynchronizer(ABC):
         email: Optional[str] = None,
         create_contact_if_not_found: bool = False,
     ):
+        """
+        Update the user or contact record based on the information provided.
+        Implements the logic and fallbacks for finding a matching user or contact, in that order:
+        1) Search user matching the oidc_id
+        2) If not found, search contact matching the oidc_id
+        3) If not found, search user matching the email
+        4) If not found, search contact matching the email
+        5) If not found, create a new contact (if create_contact_if_not_found is True)
+        Return the matching user or contact if found or created, None otherwise
+        """
         check_inconsistent_state(oidc_id, email)
         logger.info("No inconsistency found")
         user_dict = self.build_user_dict(external_user_information)
         logger.info(
             f"Trying to find and update corresponding daisy user based on oidc_id {oidc_id}"
         )
-        user = update_user(user_info=user_dict, oidc_id=oidc_id)
+        user = find_and_update_user(user_info=user_dict, oidc_id=oidc_id)
         if user:
             logger.info(f"Matching user found and updated for daisy user id: {user.id}")
             return user
@@ -236,7 +260,7 @@ class AccountSynchronizer(ABC):
             f"Trying to find and update corresponding daisy contact based on oidc_id {oidc_id}"
         )
         contact_dict = self.build_contact_dict(external_user_information)
-        contact = update_contact(contact_info=contact_dict, oidc_id=oidc_id)
+        contact = find_and_update_contact(contact_info=contact_dict, oidc_id=oidc_id)
         if contact:
             logger.info(
                 f"Matching contact found and updated for daisy contact id: {contact.id}",
@@ -247,7 +271,7 @@ class AccountSynchronizer(ABC):
             logger.info(
                 f"Trying to find and update corresponding daisy user based on email {email}"
             )
-            user = update_user(user_info=user_dict, email=email)
+            user = find_and_update_user(user_info=user_dict, email=email)
             if user:
                 logger.info(
                     f"Matching user found and updated for daisy user id: {user.id}"
@@ -257,7 +281,7 @@ class AccountSynchronizer(ABC):
             logger.info(
                 f"Trying to find and update corresponding daisy contact based on email {email}"
             )
-            contact = update_contact(contact_info=contact_dict, email=email)
+            contact = find_and_update_contact(contact_info=contact_dict, email=email)
             if contact:
                 logger.info(
                     f"Matching contact found and updated for daisy contact id: {contact.id}",
@@ -273,14 +297,6 @@ class AccountSynchronizer(ABC):
             raise NoUserOrContactFoundInDaisyException(
                 "no user or contact found for this oidc_id"
             )
-
-    def retrieve_and_update_user(self, external_id) -> Optional[User]:
-        user_info = self.get_user_info(external_id)
-        return update_user(user_info, external_id)
-
-    def retrieve_and_update_contact(self, external_id) -> Optional[Contact]:
-        contact_info = self.get_contact_info(external_id)
-        return update_contact(contact_info, external_id)
 
 
 class DummySynchronizationBackend(AccountSynchronizationBackend):
