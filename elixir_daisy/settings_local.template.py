@@ -93,7 +93,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     "create-notifications-every-day": {
         "task": "notification.tasks.create_notifications_for_entities",
-        "schedule": crontab(minute=15, hour=0)
+        "schedule": crontab(minute=15, hour=0),
     },
     "notifications-email-every-day": {
         "task": "notification.tasks.send_notifications_for_user_upcoming_events",

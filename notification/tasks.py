@@ -13,6 +13,7 @@ from notification.models import Notification
 
 logger = get_task_logger(__name__)
 
+
 @shared_task
 def create_notifications_for_entities(execution_date: str = None):
     """
@@ -26,7 +27,7 @@ def create_notifications_for_entities(execution_date: str = None):
         exec_date = datetime.now().date()
     else:
         exec_date = datetime.strptime(execution_date, "%Y-%m-%d").date()
-        
+
     logger.info(f"Creating notifications for {exec_date}")
 
     for cls in NotifyMixin.__subclasses__():
