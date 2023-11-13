@@ -84,5 +84,9 @@ CELERY_BEAT_SCHEDULE = {
     "clean-accesses-every-day": {
         "task": "core.tasks.check_accesses_expiration",
         "schedule": crontab(minute=0, hour=0),  # Execute task at midnight
-    }
+    },
+    "create-notifications-every-day": {
+        "task": "notification.tasks.create_notifications_for_entities",
+        "schedule": crontab(minute=15, hour=0),
+    },
 }
