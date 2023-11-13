@@ -74,7 +74,7 @@ def handle_rems_callback(request: HttpRequest) -> bool:
         request_post_data = json.loads(body_unicode)
     except:
         message = (
-            f"REMS :: Received data in wrong format, because deserializing request"
+            "REMS :: Received data in wrong format, because deserializing request"
             "s POST body failed!)!"
         )
         raise ValueError(message)
@@ -183,7 +183,7 @@ def create_rems_entitlement(
     notes = build_access_notes_rems(application)
     system_rems_user = get_or_create_rems_user()
 
-    if type(obj) == User:
+    if isinstance(obj, User):
         new_logbook_entry = Access(
             user=obj,
             dataset=dataset,
@@ -194,7 +194,7 @@ def create_rems_entitlement(
             status=StatusChoices.active,
             grant_expires_on=expiration_date,
         )
-    elif type(obj) == Contact:
+    elif isinstance(obj, Contact):
         new_logbook_entry = Access(
             contact=obj,
             dataset=dataset,

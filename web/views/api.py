@@ -1,5 +1,4 @@
 import json
-import os
 import sys
 
 from functools import wraps
@@ -36,8 +35,10 @@ logger = DaisyLogger(__name__)
 
 
 def create_error_response(
-    message: str, more: Optional[Dict] = {}, status: int = 500
+    message: str, more: Optional[Dict] = None, status: int = 500
 ) -> JsonResponse:
+    if more is None:
+        more = {}
     body = {"status": "Error", "description": message}
     return JsonResponse({**more, **body}, status=status)
 
@@ -46,7 +47,7 @@ def create_protect_with_api_key_decorator(global_api_key=None):
     def protect_with_api_key(view):
         """
         Checks if there is a GET or POST parameter that:
-        * contains either GLOABAL_API_KEY from settings
+        * contains either GLOBAL_API_KEY from settings
         * matches one of User's api_key attribute
         """
 
