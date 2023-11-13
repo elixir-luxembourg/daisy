@@ -22,7 +22,8 @@ def is_ajax_request(request: "HttpRequest") -> bool:
 
 
 def is_data_steward(user):
-    if user.is_part_of(Group.objects.get(name=Groups.DATA_STEWARD.value)):
+    ds_group, _ = Group.objects.get_or_create(name=Groups.DATA_STEWARD.value)
+    if user.is_part_of(ds_group):
         return True
     else:
         raise PermissionDenied

@@ -8,6 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Q
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.module_loading import import_string
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
@@ -218,6 +219,9 @@ class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
 
     def __str__(self):
         return self.acronym or self.title or "undefined"
+
+    def get_absolute_url(self):
+        return reverse("project", args=[str(self.pk)])
 
     @property
     def is_published(self):

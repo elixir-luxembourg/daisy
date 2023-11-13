@@ -20,7 +20,7 @@ services:
     # database
     db:
         image: postgres:10.1
-        restart: always
+        restart: on-failure
         environment:
             POSTGRES_PASSWORD: daisy
             POSTGRES_USER: daisy
@@ -32,7 +32,7 @@ services:
     # web werver frontend
     nginx:
         build: ./docker/nginx
-        restart: always
+        restart: on-failure
         volumes:
             - statics:/public/static:ro
         ports:
@@ -50,7 +50,7 @@ services:
      # rabbit mq
     mq:
         image: rabbitmq:3.9-management-alpine
-        restart: "always"
+        restart: on-failure
         ports:
             - "15672:15672"
             - "5672:5672"

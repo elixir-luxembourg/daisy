@@ -1,3 +1,6 @@
+
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -15,26 +18,29 @@
         body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
     </style>
   </head>
-  <body style="background-color: #fafafa; margin: 0 !important; padding: 60px 0 60px 0 !important;">
-    <table border="0" cellspacing="0" cellpadding="0" role="presentation" width="100%">
-      <tr>
-          <td bgcolor="#fafafa" style="font-size: 0;">&​nbsp;</td>
-          <td bgcolor="#fafafa" width="600" style="border-radius: 4px; color: grey; font-family: sans-serif; font-size: 18px; line-height: 28px; padding: 40px 40px;">
-            <article>
-              <h1 style="background-color: #009688; color: #fff; font-size: 32px; font-weight: bold; line-height: 36px; padding: 10px 30px 10px 30px">
-                DAISY - {% block title %}{% endblock %}
-              </h1>
-              <p style="margin: 30px 0 30px 0;">{% block content %}{% endblock %}</p>
-              <p style="background-color: #009688; color: #fff; font-weight: bold; line-height: 36px; padding: 10px 20px 10px 20px;">
-                {% block footer %}
-                This email has been generated from <a href="{{server_url}}">DAISY</a>.
-                You can change your notifications settings in your <a href="{{profile_url}}">profile</a>.
-                {% endblock %}
-              </p>
-            </article>
-          </td>
-          <td bgcolor="#fafafa" style="font-size: 0;">&​nbsp;</td>
-      </tr>
+  <body style="background-color: #fff; margin: 0 !important; padding:0 !important;">
+    <!-- Header -->
+    <table style="margin-bottom: 15px" role="presentation" border="0" cellspacing="0" cellpadding="0" width="100%">
+        <tr>
+            <td bgcolor="#fafafa" align="center">
+                <img src="{{server_url}}{% static '/images/banner.png' %}" alt="Daisy Banner" width="100%">
+            </td>
+        </tr>
+    </table>
+    <!-- Body -->
+    <table role="presentation" border="0" width="100%" cellspacing="0" style="color: #212529; font-family: sans-serif; font-size: 16px;">
+        {% block content %}{% endblock %}
+    </table>
+    <!-- footer -->
+    <table role="presentation" border="0" width="100%" cellspacing="0">
+        <tr>
+            <td style="color: #212529; font-size:13px; padding-left: 10px;" width="100%">
+                    {% block footer %}
+                    This email has been generated from <a href="{{server_url}}" style="color: #f47d20;">DAISY</a>.
+                    You can change your <a href="{{notifications_settings_url}}" style="color: #f47d20;">notifications settings </a> here.
+                    {% endblock %}
+            </td>
+        </tr>
     </table>
   </body>
 </html>
