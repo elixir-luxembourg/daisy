@@ -261,7 +261,7 @@ class Dataset(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
         # Considering users that are indirectly responsible for the dataset (through projects)
         possible_datasets = set(user.datasets.all())
         for project in user.project_set.all():
-            possible_datasets.update(list(project.datasets.all()))
+            possible_datasets.update(project.datasets.all())
         for dataset in possible_datasets:
             # Data Declaration (Embargo Date & End of Storage Duration)
             for data_declaration in dataset.data_declarations.all():
