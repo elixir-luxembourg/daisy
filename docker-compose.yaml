@@ -12,8 +12,6 @@ services:
             - statics:/static
             - solrdata:/solr
             - .:/code
-        ports:
-            - "5000:5000"
         depends_on:
             - db
             - solr

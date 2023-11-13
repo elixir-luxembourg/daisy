@@ -145,15 +145,16 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "Europe/Luxembourg"
 TZINFO = pytz.timezone(TIME_ZONE)
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
+
+# Celery configs
+
+CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//"
+CELERY_TIMEZONE = "Europe/Luxembourg"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/

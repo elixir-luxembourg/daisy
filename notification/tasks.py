@@ -1,15 +1,38 @@
-import smtplib
-from collections import defaultdict
 from datetime import datetime
+from collections import defaultdict
 
 from celery import shared_task
+from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.contrib.auth import get_user_model
+
+from notification import NotifyMixin
 from notification.email_sender import send_the_email
 from notification.models import Notification
-from celery.utils.log import get_task_logger
+
 
 logger = get_task_logger(__name__)
+
+
+@shared_task
+def create_notifications_for_entities(execution_date: str = None):
+    """
+    Loops through all the entities that implement the Notificaiton Mixin
+    and creates notifications for each one of them according to the logic.
+
+    Params:
+        executation_date: The date of the execution of the task. FORMAT: YYYY-MM-DD (DEFAULT: Today)
+    """
+    if not execution_date:
+        exec_date = datetime.now().date()
+    else:
+        exec_date = datetime.strptime(execution_date, "%Y-%m-%d").date()
+
+    logger.info(f"Creating notifications for {exec_date}")
+
+    for cls in NotifyMixin.__subclasses__():
+        logger.info(f"Creating notifications for the {cls} entity...")
+        cls.make_notifications(exec_date)
 
 
 def report_notifications_upcoming_events_errors_for_admin(user):
