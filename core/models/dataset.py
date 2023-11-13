@@ -1,19 +1,34 @@
 import uuid
+import datetime
+from datetime import timedelta
+import typing
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
 from django.utils.module_loading import import_string
-
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
-from core import constants
-from core.permissions.mapping import PERMISSION_MAPPING
 
-from .utils import CoreTrackedModel, TextFieldWithInputWidget
+from core import constants
+from core.utils import DaisyLogger
+from core.models import DataDeclaration
+from core.permissions.mapping import PERMISSION_MAPPING
+from notification import NotifyMixin
+from notification.models import Notification, NotificationVerb
+from .utils import CoreTrackedModel, TextFieldWithInputWidget, CoreNotifyMeta
 from .partner import HomeOrganisation
 
+if typing.TYPE_CHECKING:
+    User = settings.AUTH_USER_MODEL
 
-class Dataset(CoreTrackedModel):
+
+logger = DaisyLogger(__name__)
+
+
+class Dataset(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
     class Meta:
         app_label = "core"
         get_latest_by = "added"
@@ -226,6 +241,72 @@ class Dataset(CoreTrackedModel):
 
         for data_declaration in self.data_declarations.all():
             data_declaration.publish_subentities()
+
+    @staticmethod
+    def get_notification_recipients():
+        """
+        Get distinct users that are local custodian of a dataset or a project.
+        """
+
+        return (
+            get_user_model()
+            .objects.filter(Q(datasets__isnull=False) | Q(project_set__isnull=False))
+            .distinct()
+        )
+
+    @classmethod
+    def make_notifications_for_user(
+        cls, day_offset: timedelta, exec_date: datetime.date, user: "User"
+    ):
+        # Considering users that are indirectly responsible for the dataset (through projects)
+        possible_datasets = set(user.datasets.all())
+        for project in user.project_set.all():
+            possible_datasets.update(project.datasets.all())
+        for dataset in possible_datasets:
+            # Data Declaration (Embargo Date & End of Storage Duration)
+            for data_declaration in dataset.data_declarations.all():
+                if (
+                    data_declaration.embargo_date
+                    and data_declaration.embargo_date - day_offset == exec_date
+                ):
+                    cls.notify(user, data_declaration, NotificationVerb.embargo_end)
+                if (
+                    data_declaration.end_of_storage_duration
+                    and data_declaration.end_of_storage_duration - day_offset
+                    == exec_date
+                ):
+                    cls.notify(user, data_declaration, NotificationVerb.end)
+
+    @staticmethod
+    def notify(user: "User", obj: "DataDeclaration", verb: "NotificationVerb"):
+        """
+        Notifies concerning users about the entity.
+        """
+        offset = user.notification_setting.notification_offset
+        dispatch_by_email = user.notification_setting.send_email
+        dispatch_in_app = user.notification_setting.send_in_app
+
+        if verb == NotificationVerb.embargo_end:
+            msg = f"Embargo for {obj.dataset.title} is ending in {offset} days."
+            on = obj.embargo_date
+        else:
+            msg = (
+                f"Storage duration for {obj.dataset.title} is ending in {offset} days."
+            )
+            on = obj.end_of_storage_duration
+
+        logger.info(f"Creating a notification for {user} : {msg}")
+
+        Notification.objects.create(
+            recipient=user,
+            verb=verb,
+            message=msg,
+            on=on,
+            dispatch_by_email=dispatch_by_email,
+            dispatch_in_app=dispatch_in_app,
+            content_type=ContentType.objects.get_for_model(obj.dataset),
+            object_id=obj.dataset.id,
+        ).save()
 
 
 # faster lookup for permissions

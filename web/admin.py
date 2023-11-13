@@ -71,9 +71,14 @@ class ProjectAdmin(admin.ModelAdmin):
     )
 
 
+class AccessAdmin(admin.ModelAdmin):
+    search_fields = ["__str__", "status", "user", "contact", "dataset", "granted_on"]
+    list_display = ("__str__", "status", "user", "contact", "dataset", "granted_on")
+
+
 # DAISY core models
 admin.site.site_header = "DAISY administration"
-admin.site.register(Access)
+admin.site.register(Access, AccessAdmin)
 admin.site.register(Cohort)
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(ContactType)

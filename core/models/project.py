@@ -1,5 +1,13 @@
+import datetime
+import typing
+from datetime import timedelta
+
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.module_loading import import_string
@@ -7,14 +15,22 @@ from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from core import constants
 from core.permissions.mapping import PERMISSION_MAPPING
+from notification import NotifyMixin
+from notification.models import NotificationVerb, Notification
+from core.utils import DaisyLogger
 
-from .utils import CoreTrackedModel, COMPANY
+from .utils import CoreTrackedModel, COMPANY, CoreNotifyMeta
 from .partner import HomeOrganisation
 
-from django.conf import settings
+
+if typing.TYPE_CHECKING:
+    User = settings.AUTH_USER_MODEL
 
 
-class Project(CoreTrackedModel):
+logger = DaisyLogger(__name__)
+
+
+class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
     class Meta:
         app_label = "core"
         get_latest_by = "added"
@@ -196,7 +212,7 @@ class Project(CoreTrackedModel):
 
     local_custodians = models.ManyToManyField(
         "core.User",
-        related_name="+",
+        related_name="project_set",
         verbose_name="Local custodians",
         help_text="Custodians are the local responsibles for the project. This list must include a PI.",
     )
@@ -309,6 +325,55 @@ class Project(CoreTrackedModel):
             generate_id_function = import_string(generate_id_function_path)
             self.elu_accession = generate_id_function(self)
             self.save()
+
+    @staticmethod
+    def get_notification_recipients():
+        """
+        Get distinct users that are local custodian of a project.
+        """
+
+        return get_user_model().objects.filter(Q(project_set__isnull=False)).distinct()
+
+    @classmethod
+    def make_notifications_for_user(
+        cls, day_offset: timedelta, exec_date: datetime.date, user: "User"
+    ):
+        for project in user.project_set.all():
+            # Project start date
+            if project.start_date and project.start_date - day_offset == exec_date:
+                cls.notify(user, project, NotificationVerb.start)
+            # Project end date
+            if project.end_date and project.end_date - day_offset == exec_date:
+                cls.notify(user, project, NotificationVerb.end)
+
+    @staticmethod
+    def notify(user: "User", obj: "Project", verb: "NotificationVerb"):
+        """
+        Notifies concerning users about the entity.
+        """
+        offset = user.notification_setting.notification_offset
+        dispatch_by_email = user.notification_setting.send_email
+        dispatch_in_app = user.notification_setting.send_in_app
+
+        if verb == NotificationVerb.start:
+            msg = f"The project {obj.title} is starting in {offset} days."
+            on = obj.start_date
+        else:
+            msg = f"The project {obj.title} is ending in {offset} days."
+            on = obj.end_date
+
+        logger.info(f"Creating a notification for {user} : {msg}")
+
+        Notification.objects.create(
+            recipient=user,
+            verb=verb,
+            message=msg,
+            on=on,
+            dispatch_by_email=dispatch_by_email,
+            dispatch_in_app=dispatch_in_app,
+            content_type=ContentType.objects.get_for_model(obj),
+            object_id=obj.id,
+        ).save()
 
 
 # faster lookup for permissions

@@ -1,21 +1,31 @@
 import logging
+import typing
 
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from typing import List
 
+from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q, ObjectDoesNotExist, Count, signals
 
 from enumchoicefield import EnumChoiceField, ChoiceEnum
 
-from .utils import CoreModel
+from .utils import CoreModel, CoreNotifyMeta
+from notification import NotifyMixin
+from notification.models import NotificationVerb, Notification
+from core.utils import DaisyLogger
 
 from auditlog.registry import auditlog
 from auditlog.models import AuditlogHistoryField
 
+if typing.TYPE_CHECKING:
+    User = settings.AUTH_USER_MODEL
 
-logger = logging.getLogger(__name__)
+
+logger = DaisyLogger(__name__)
 
 
 class StatusChoices(ChoiceEnum):
@@ -25,7 +35,7 @@ class StatusChoices(ChoiceEnum):
     terminated = "Terminated"
 
 
-class Access(CoreModel):
+class Access(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
     """
     Represents the access given to an internal (LCSB) entity over data storage locations.
     """
@@ -161,7 +171,7 @@ class Access(CoreModel):
 
     user = models.ForeignKey(
         "core.User",
-        related_name="user",
+        related_name="accesses",
         verbose_name="User that has the access",
         on_delete=models.CASCADE,
         null=True,
@@ -239,6 +249,70 @@ class Access(CoreModel):
             return False
 
         return True
+
+    @staticmethod
+    def get_notification_recipients():
+        """
+        Get distinct users that are local custodian of a dataset or a project.
+        """
+
+        return (
+            get_user_model()
+            .objects.filter(Q(datasets__isnull=False) | Q(project_set__isnull=False))
+            .distinct()
+        )
+
+    @classmethod
+    def make_notifications_for_user(
+        cls, day_offset: timedelta, exec_date: date, user: "User"
+    ):
+        # Considering users that are indirectly responsible for the dataset (through projects)
+        possible_datasets = set(user.datasets.all())
+        possible_datasets.update(
+            [
+                dataset
+                for project in user.project_set.all()
+                for dataset in project.datasets.all()
+            ]
+        )
+        # Fetch all necessary data at once before the loop
+        dataset_ids = [dataset.id for dataset in possible_datasets]
+        accesses = Access.objects.filter(
+            Q(dataset_id__in=dataset_ids) & Q(status=StatusChoices.active)
+        )
+
+        for access in accesses:
+            # Check if the dataset has an access that is about to expire
+            if (
+                access.grant_expires_on
+                and access.grant_expires_on - day_offset == exec_date
+            ):
+                cls.notify(user, access, NotificationVerb.expire)
+
+    @staticmethod
+    def notify(user: "User", obj: "Access", verb: "NotificationVerb"):
+        """
+        Notifies concerning users about the entity.
+        """
+        offset = user.notification_setting.notification_offset
+        dispatch_by_email = user.notification_setting.send_email
+        dispatch_in_app = user.notification_setting.send_in_app
+
+        msg = f"Access for {obj.dataset.title} of the user {obj.user or obj.contact} is ending in {offset} days."
+        on = obj.grant_expires_on
+
+        logger.info(f"Creating a notification for {user} : {msg}")
+
+        Notification.objects.create(
+            recipient=user,
+            verb=verb,
+            message=msg,
+            on=on,
+            dispatch_by_email=dispatch_by_email,
+            dispatch_in_app=dispatch_in_app,
+            content_type=ContentType.objects.get_for_model(obj),
+            object_id=obj.id,
+        ).save()
 
 
 auditlog.register(Access)

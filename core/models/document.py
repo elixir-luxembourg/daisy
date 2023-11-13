@@ -1,14 +1,30 @@
 import os
+import typing
+import datetime
+from datetime import timedelta
+from model_utils import Choices
+
 from django.db import models
+from django.conf import settings
+from django.db.models import Q
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.core.files.storage import default_storage
-from model_utils import Choices
-from .utils import CoreModel
-from core import constants
+
+from .utils import CoreModel, CoreNotifyMeta
+from core.utils import DaisyLogger
+from notification.models import Notification, NotificationVerb
+from notification import NotifyMixin
+
+if typing.TYPE_CHECKING:
+    User = settings.AUTH_USER_MODEL
+
+
+logger = DaisyLogger(__name__)
 
 
 def get_file_name(instance, filename):
@@ -21,7 +37,7 @@ def get_file_name(instance, filename):
     )
 
 
-class Document(CoreModel):
+class Document(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
     """
     Represents a document
     """
@@ -76,6 +92,58 @@ class Document(CoreModel):
     @property
     def size(self):
         return self.content.size
+
+    @staticmethod
+    def get_notification_recipients():
+        """
+        Get distinct users that are local custodian of a project or a contract.
+        """
+
+        return (
+            get_user_model()
+            .objects.filter(Q(project_set__isnull=False) | Q(contracts__isnull=False))
+            .distinct()
+        )
+
+    @classmethod
+    def make_notifications_for_user(
+        cls, day_offset: timedelta, exec_date: datetime.date, user: "User"
+    ):
+        docs = set()
+        [docs.update(p.legal_documents.all()) for p in user.project_set.all()]
+        [docs.update(c.legal_documents.all()) for c in user.contracts.all()]
+        # Also add all the documents of all contracts of all projects to address the indirect LCs of parent projects
+        for p in user.project_set.all():
+            _ = [docs.update(c.legal_documents.all()) for c in p.contracts.all()]
+
+        for doc in docs:
+            if doc.expiry_date and doc.expiry_date - day_offset == exec_date:
+                cls.notify(user, doc, NotificationVerb.expire)
+
+    @staticmethod
+    def notify(user: "User", obj: "Document", verb: "NotificationVerb"):
+        """
+        Notifies concerning users about the entity.
+        """
+        offset = user.notification_setting.notification_offset
+        dispatch_by_email = user.notification_setting.send_email
+        dispatch_in_app = user.notification_setting.send_in_app
+
+        msg = f"The Document {obj.shortname} is expiring in {offset} days."
+        on = obj.expiry_date
+
+        logger.info(f"Creating a notification for {user} : {msg}")
+
+        Notification.objects.create(
+            recipient=user,
+            verb=verb,
+            message=msg,
+            on=on,
+            dispatch_by_email=dispatch_by_email,
+            dispatch_in_app=dispatch_in_app,
+            content_type=ContentType.objects.get_for_model(obj),
+            object_id=obj.id,
+        ).save()
 
 
 @receiver(post_delete, sender=Document, dispatch_uid="document_delete")
