@@ -81,7 +81,7 @@ def update_user_or_contact(
         # we only update users based on email if their oidc_id is not set
         if entity.oidc_id:
             raise InconsistentSynchronizerStateException(
-                f"OIDC don't match for {user_or_contact_model.__name__} with email {email} {oidc_id} expected while {entity.oidc_id} found in daisy"
+                f"OIDC don't match for {user_or_contact_model.__name__} with email {email}, {oidc_id} expected while {entity.oidc_id} found in daisy"
             )
     else:
         try:
