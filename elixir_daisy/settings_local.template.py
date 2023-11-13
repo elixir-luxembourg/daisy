@@ -98,5 +98,5 @@ CELERY_BEAT_SCHEDULE = {
     "synchronizer-every-day": {
         "task": "core.tasks.run_synchronizer",
         "schedule": crontab(minute=0, hour=2),  # Execute task at 2am
-    }
+    },
 }
