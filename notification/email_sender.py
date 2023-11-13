@@ -11,7 +11,7 @@ SUBJECT_PREFIX = "[DAISY]"
 
 def send_the_email(sender_email, recipients, subject, template, context):
     """
-    Send an email to the recipents using the templates,
+    Send an email to the recipients using the templates,
     """
     # recipients can be a list or single email
     if not isinstance(recipients, (list, tuple)):
@@ -22,8 +22,10 @@ def send_the_email(sender_email, recipients, subject, template, context):
             settings.SERVER_SCHEME,
             settings.SERVER_URL,
         )
-    if "profile_url" not in context:
-        context["profile_url"] = reverse("profile")
+    if "notifications_settings_url" not in context:
+        context["notifications_settings_url"] = context["server_url"] + reverse(
+            "notifications_settings"
+        )
 
     # prepare email
     subject = f"{SUBJECT_PREFIX} {subject}"
