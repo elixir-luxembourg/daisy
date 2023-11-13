@@ -13,16 +13,20 @@ from test.factories import UserFactory, DatasetFactory, ContactFactory
 log = DaisyLogger(__name__)
 
 
-def test_rems_handler_user_by_oidc_updated(client, user_vip, user_data_steward, mocker):
-    email = "john.doe@uni.lu"
-
+def patch_get_external_user_info(
+    mocker,
+    expected_oidc_id="12345",
+    first_name="John",
+    last_name="Doe",
+    email="john.doe@test.com",
+):
     def mock_get_external_user_info(self, oidc_id):
-        if oidc_id == "12345":
+        if oidc_id == expected_oidc_id:
             return {
-                "first_name": "Jane",
-                "last_name": "Davis",
-                "email": "jane.davis@test.com",
-                "id": "12345",
+                "first_name": first_name,
+                "last_name": last_name,
+                "email": email,
+                "id": expected_oidc_id,
             }
         else:
             raise ExternalUserNotFoundException()
@@ -30,6 +34,16 @@ def test_rems_handler_user_by_oidc_updated(client, user_vip, user_data_steward, 
     mocker.patch(
         "core.synchronizers.DummySynchronizationBackend.get_external_user_info",
         mock_get_external_user_info,
+    )
+
+
+def test_rems_handler_user_by_oidc_updated(client, user_vip, user_data_steward, mocker):
+    email = "john.doe@uni.lu"
+    patch_get_external_user_info(
+        mocker,
+        first_name="Jane",
+        last_name="Davis",
+        email="jane.davis@test.com",
     )
     resource_id = "TEST-2-5591E3-1"
     expiration_date = datetime.date.today() + datetime.timedelta(days=1)
@@ -63,23 +77,8 @@ def test_rems_handler_user_by_oidc_updated(client, user_vip, user_data_steward, 
 
 
 def test_rems_handler_duplicate(client, user_vip, user_data_steward, mocker):
-    email = "john.doe@uni.lu"
-
-    def mock_get_external_user_info(self, oidc_id):
-        if oidc_id == "12345":
-            return {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": email,
-                "id": "12345",
-            }
-        else:
-            raise ExternalUserNotFoundException()
-
-    mocker.patch(
-        "core.synchronizers.DummySynchronizationBackend.get_external_user_info",
-        mock_get_external_user_info,
-    )
+    email = "john.doe@test.com"
+    patch_get_external_user_info(mocker, email=email)
     resource_id = "TEST-2-5591E3-1"
     expiration_date = datetime.date.today() + datetime.timedelta(days=1)
     user = UserFactory(oidc_id="12345", email=email)
@@ -115,23 +114,8 @@ def test_rems_handler_duplicate(client, user_vip, user_data_steward, mocker):
 
 def test_rems_handler_no_expiration(client, user_vip, user_data_steward, mocker):
     resource_id = "TEST-2-5591E3-1"
-    email = "john.doe@uni.lu"
-
-    def mock_get_external_user_info(self, oidc_id):
-        if oidc_id == "12345":
-            return {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": email,
-                "id": "12345",
-            }
-        else:
-            raise ExternalUserNotFoundException()
-
-    mocker.patch(
-        "core.synchronizers.DummySynchronizationBackend.get_external_user_info",
-        mock_get_external_user_info,
-    )
+    email = "john.doe@test.com"
+    patch_get_external_user_info(mocker, email=email)
     user = UserFactory(oidc_id="12345", email=email)
     user.save()
     dataset = DatasetFactory(
@@ -167,23 +151,8 @@ def test_rems_handler_different_expiration(client, user_vip, user_data_steward, 
     resource_id = "TEST-2-5591E3-1"
     expiration_date_1 = datetime.date.today() + datetime.timedelta(days=1)
     expiration_date_2 = datetime.date.today() + datetime.timedelta(days=2)
-    email = "john.doe@uni.lu"
-
-    def mock_get_external_user_info(self, oidc_id):
-        if oidc_id == "12345":
-            return {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": email,
-                "id": "12345",
-            }
-        else:
-            raise ExternalUserNotFoundException()
-
-    mocker.patch(
-        "core.synchronizers.DummySynchronizationBackend.get_external_user_info",
-        mock_get_external_user_info,
-    )
+    email = "john.doe@test.com"
+    patch_get_external_user_info(mocker, email=email)
     user = UserFactory(oidc_id="12345", email=email)
     user.save()
     dataset = DatasetFactory(
@@ -217,15 +186,8 @@ def test_rems_handler_different_expiration(client, user_vip, user_data_steward, 
 
 
 def test_rems_handler_user_not_found(client, user_vip, user_data_steward, mocker):
-    email = "john.doe@uni.lu"
-
-    def mock_get_external_user_info(self, oidc_id):
-        raise ExternalUserNotFoundException("user not found")
-
-    mocker.patch(
-        "core.synchronizers.DummySynchronizationBackend.get_external_user_info",
-        mock_get_external_user_info,
-    )
+    email = "john.doe@test.com"
+    patch_get_external_user_info(mocker, expected_oidc_id="not_found")
     resource_id = "TEST-2-5591E3-1"
     expiration_date = datetime.date.today() + datetime.timedelta(days=1)
     user = UserFactory(oidc_id="12345", email=email)
@@ -257,22 +219,9 @@ def test_rems_handler_user_not_found(client, user_vip, user_data_steward, mocker
 def test_rems_handler_contact_by_oidc_updated(
     client, user_vip, user_data_steward, mocker
 ):
-    email = "john.doe@uni.lu"
-
-    def mock_get_external_user_info(self, oidc_id):
-        if oidc_id == "12345":
-            return {
-                "first_name": "Jane",
-                "last_name": "Davis",
-                "email": "jane.davis@test.com",
-                "id": "12345",
-            }
-        else:
-            raise ExternalUserNotFoundException()
-
-    mocker.patch(
-        "core.synchronizers.DummySynchronizationBackend.get_external_user_info",
-        mock_get_external_user_info,
+    email = "john.doe@test.com"
+    patch_get_external_user_info(
+        mocker, first_name="Jane", last_name="Davis", email="jane.davis@test.com"
     )
     resource_id = "TEST-2-5591E3-1"
     expiration_date = datetime.date.today() + datetime.timedelta(days=1)
@@ -306,22 +255,9 @@ def test_rems_handler_contact_by_oidc_updated(
 def test_rems_handler_user_by_email_updated(
     client, user_vip, user_data_steward, mocker
 ):
-    email = "john.doe@uni.lu"
-
-    def mock_get_external_user_info(self, oidc_id):
-        if oidc_id == "12345":
-            return {
-                "first_name": "Jane",
-                "last_name": "Davis",
-                "email": "john.doe@uni.lu",
-                "id": "12345",
-            }
-        else:
-            raise ExternalUserNotFoundException()
-
-    mocker.patch(
-        "core.synchronizers.DummySynchronizationBackend.get_external_user_info",
-        mock_get_external_user_info,
+    email = "john.doe@test.com"
+    patch_get_external_user_info(
+        mocker, first_name="Jane", last_name="Davis", email=email
     )
     resource_id = "TEST-2-5591E3-1"
     expiration_date = datetime.date.today() + datetime.timedelta(days=1)
@@ -357,22 +293,9 @@ def test_rems_handler_user_by_email_updated(
 def test_rems_handler_user_by_email_multiple(
     client, user_vip, user_data_steward, mocker
 ):
-    email = "john.doe@uni.lu"
-
-    def mock_get_external_user_info(self, oidc_id):
-        if oidc_id == "12345":
-            return {
-                "first_name": "Jane",
-                "last_name": "Davis",
-                "email": "john.doe@uni.lu",
-                "id": "12345",
-            }
-        else:
-            raise ExternalUserNotFoundException()
-
-    mocker.patch(
-        "core.synchronizers.DummySynchronizationBackend.get_external_user_info",
-        mock_get_external_user_info,
+    email = "john.doe@test.com"
+    patch_get_external_user_info(
+        mocker, first_name="Jane", last_name="Davis", email=email
     )
     resource_id = "TEST-2-5591E3-1"
     expiration_date = datetime.date.today() + datetime.timedelta(days=1)
@@ -413,22 +336,9 @@ def test_rems_handler_user_by_email_multiple(
 def test_rems_handler_contact_by_email_updated(
     client, user_vip, user_data_steward, mocker
 ):
-    email = "john.doe@uni.lu"
-
-    def mock_get_external_user_info(self, oidc_id):
-        if oidc_id == "12345":
-            return {
-                "first_name": "Jane",
-                "last_name": "Davis",
-                "email": "john.doe@uni.lu",
-                "id": "12345",
-            }
-        else:
-            raise ExternalUserNotFoundException()
-
-    mocker.patch(
-        "core.synchronizers.DummySynchronizationBackend.get_external_user_info",
-        mock_get_external_user_info,
+    email = "john.doe@test.com"
+    patch_get_external_user_info(
+        mocker, first_name="Jane", last_name="Davis", email=email
     )
     resource_id = "TEST-2-5591E3-1"
     expiration_date = datetime.date.today() + datetime.timedelta(days=1)
@@ -462,22 +372,9 @@ def test_rems_handler_contact_by_email_updated(
 def test_rems_handler_contact_by_email_multiple(
     client, user_vip, user_data_steward, mocker
 ):
-    email = "john.doe@uni.lu"
-
-    def mock_get_external_user_info(self, oidc_id):
-        if oidc_id == "12345":
-            return {
-                "first_name": "Jane",
-                "last_name": "Davis",
-                "email": "john.doe@uni.lu",
-                "id": "12345",
-            }
-        else:
-            raise ExternalUserNotFoundException()
-
-    mocker.patch(
-        "core.synchronizers.DummySynchronizationBackend.get_external_user_info",
-        mock_get_external_user_info,
+    email = "john.doe@test.com"
+    patch_get_external_user_info(
+        mocker, first_name="Jane", last_name="Davis", email=email
     )
     resource_id = "TEST-2-5591E3-1"
     expiration_date = datetime.date.today() + datetime.timedelta(days=1)
@@ -524,21 +421,8 @@ def test_rems_handler_contact_created(client, user_vip, user_data_steward, mocke
     email = faker.email()
     first_name = faker.first_name()
     last_name = faker.last_name()
-
-    def mock_get_external_user_info(self, oidc_id):
-        if oidc_id == "12345":
-            return {
-                "first_name": first_name,
-                "last_name": last_name,
-                "email": email,
-                "id": "12345",
-            }
-        else:
-            raise ExternalUserNotFoundException()
-
-    mocker.patch(
-        "core.synchronizers.DummySynchronizationBackend.get_external_user_info",
-        mock_get_external_user_info,
+    patch_get_external_user_info(
+        mocker, first_name=first_name, last_name=last_name, email=email
     )
     resource_id = "TEST-2-5591E3-1"
     expiration_date = datetime.date.today() + datetime.timedelta(days=1)
