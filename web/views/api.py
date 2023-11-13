@@ -1,5 +1,4 @@
 import json
-import os
 import sys
 
 from functools import wraps
@@ -23,11 +22,8 @@ from core.lcsb.rems import synchronizer
 from core.models import (
     User,
     Cohort,
-    Dataset,
     Partner,
-    Project,
     DiseaseTerm,
-    Contact,
     Endpoint,
 )
 from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneTerm
@@ -39,8 +35,10 @@ logger = DaisyLogger(__name__)
 
 
 def create_error_response(
-    message: str, more: Optional[Dict] = {}, status: int = 500
+    message: str, more: Optional[Dict] = None, status: int = 500
 ) -> JsonResponse:
+    if more is None:
+        more = {}
     body = {"status": "Error", "description": message}
     return JsonResponse({**more, **body}, status=status)
 
@@ -49,7 +47,7 @@ def create_protect_with_api_key_decorator(global_api_key=None):
     def protect_with_api_key(view):
         """
         Checks if there is a GET or POST parameter that:
-        * contains either GLOABAL_API_KEY from settings
+        * contains either GLOBAL_API_KEY from settings
         * matches one of User's api_key attribute
         """
 
@@ -310,7 +308,7 @@ def rems_endpoint(request):
 def force_keycloak_synchronization(request) -> JsonResponse:
     try:
         logger.debug("Forcing refreshing the account information from Keycloak...")
-        synchronizer.synchronize()
+        synchronizer.synchronize_all()
         logger.debug("...successfully refreshed the information from Keycloak!")
         return JsonResponse(
             f"OK ({synchronizer.__class__.__name__})", status=200, safe=False

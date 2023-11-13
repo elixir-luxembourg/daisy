@@ -75,8 +75,10 @@ REMS_VERIFY_SSL = True
 IDSERVICE_ENDPOINT = "https://10.240.16.199:8080/v1/api/id"
 
 # Keycloak integration, uncomment and fill the values below
+# KEYCLOAK_INTEGRATION = True
 # KEYCLOAK_URL = 'https://root-address-to-your-keycloak.com:443'
-# KEYCLOAK_REALM = 'master'
+# KEYCLOAK_REALM_LOGIN = 'master'
+# KEYCLOAK_REALM_ADMIN = 'master'
 # KEYCLOAK_USER = 'your service user for daisy'
 # KEYCLOAK_PASS = 'the password for the service user'
 
@@ -98,5 +100,9 @@ CELERY_BEAT_SCHEDULE = {
     "notifications-email-every-day": {
         "task": "notification.tasks.send_notifications_for_user_upcoming_events",
         "schedule": crontab(minute=0, hour=7),  # Execute task in the morning
+    },
+    "synchronizer-every-day": {
+        "task": "core.tasks.run_synchronizer",
+        "schedule": crontab(minute=0, hour=2),  # Execute task at 2am
     },
 }

@@ -1,12 +1,9 @@
 import datetime
+from typing import Dict, List
 
 import pytest
 
-from typing import Dict, List
-
-from core.models import User
-from core.models.access import StatusChoices
-from core.lcsb.oidc import KeycloakAccountSynchronizer, KeycloakSynchronizationMethod
+from core.lcsb.oidc import KeycloakSynchronizationBackend
 from core.lcsb.rems import (
     create_rems_entitlement,
     extract_rems_data,
@@ -14,7 +11,7 @@ from core.lcsb.rems import (
     check_existence_automatic,
 )
 from core.models.access import Access
-from core.models.contact import Contact
+from core.models.access import StatusChoices
 from test.factories import (
     ContactFactory,
     DatasetFactory,
@@ -84,7 +81,7 @@ class KeycloakAdminConnectionMock:
         ]
 
 
-class KeycloakSynchronizationMethodMock(KeycloakSynchronizationMethod):
+class KeycloakSynchronizationMethodMock(KeycloakSynchronizationBackend):
     def test_connection(self) -> bool:
         return True
 
@@ -105,10 +102,10 @@ class KeycloakSynchronizationMethodMock(KeycloakSynchronizationMethod):
 
 def test_keycloak_synchronization_config_validation():
     with pytest.raises(KeyError):
-        kc = KeycloakSynchronizationMethod({})
+        kc = KeycloakSynchronizationBackend({})
 
     with pytest.raises(KeyError):
-        kc = KeycloakSynchronizationMethod({}, False)
+        kc = KeycloakSynchronizationBackend({}, False)
         kc._create_connection({})
 
 
@@ -165,9 +162,7 @@ def test_check_existence_automatic_positive():
         title="Test", local_custodians=[user], elu_accession=resource_id
     )
     dataset.save()
-    create_rems_entitlement(
-        user, "Test Application", resource_id, user.oidc_id, user.email, expiration_date
-    )
+    create_rems_entitlement(user, "Test Application", resource_id, expiration_date)
     application_id = 4056
     email = "john.doe@uni.lu"
     data = {
@@ -189,9 +184,7 @@ def test_check_existence_automatic_negative_mismatch():
         title="Test", local_custodians=[user], elu_accession=resource_id
     )
     dataset.save()
-    create_rems_entitlement(
-        user, "Test Application", resource_id, user.oidc_id, user.email, expiration_date
-    )
+    create_rems_entitlement(user, "Test Application", resource_id, expiration_date)
     application_id = 4056
     email = "john.doe@uni.lu"
     # resource id is different
@@ -261,14 +254,7 @@ def test_add_rems_entitlements():
     )
     dataset.save()
 
-    create_rems_entitlement(
-        user,
-        "Test Application",
-        elu_accession,
-        user.oidc_id,
-        user.email,
-        expiration_date,
-    )
+    create_rems_entitlement(user, "Test Application", elu_accession, expiration_date)
     user.delete()
 
 
