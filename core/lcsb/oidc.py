@@ -1,19 +1,10 @@
-import json
-
-from multiprocessing import Lock
 from typing import Dict, List, Optional, Tuple
 
 from django.conf import settings
-from django.db import transaction
 from keycloak import KeycloakAdmin
 from keycloak.exceptions import KeycloakGetError
 
-from core.models.contact_type import ContactType
-from core.models.contact import Contact
-from core.models.partner import Partner
-from core.models.user import User
 from core.synchronizers import (
-    AccountSynchronizationException,
     AccountSynchronizationBackend,
     AccountSynchronizer,
     ExternalUserNotFoundException,
