@@ -55,10 +55,6 @@ def report_notifications_upcoming_events_errors_for_admin(user):
                 f"Failed: An error occurred while sending Email notification error report for admin."
                 f" Error: {e}"
             )
-            print(
-                f"Failed: An error occurred while sending Email notification error report for admin."
-                f" Error: {e}"
-            )
 
 
 @shared_task
