@@ -6,8 +6,8 @@
     {% for content_type, notifs in notifications.items %}
         - {{content_type.name|title}}
         {% for notif in notifs %}
-            * {{notif.message}}:
-            - ID: {{notif.content_object.id}} | Name: {{notif.content_object}} | Notification Date:{{ notif.on}}.
+            * Description: {{notif.message}}:
+            - Notification ID: {{notif.id}} | Object ID: {{notif.object_id}} | Notification Date:{{ notif.on }}.
         {% endfor %}
     {% endfor %}
 {% endblock %}
