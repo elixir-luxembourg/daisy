@@ -35,7 +35,9 @@ def create_notifications_for_entities(execution_date: str = None):
         cls.make_notifications(exec_date)
 
 
-def report_notifications_upcoming_events_errors_for_admin(user, execution_date: datetime):
+def report_notifications_upcoming_events_errors_for_admin(
+    user, execution_date: datetime
+):
     """
     Send upcoming events notifications errors report for admin, if any.
 
@@ -46,7 +48,10 @@ def report_notifications_upcoming_events_errors_for_admin(user, execution_date: 
     logger.info("Sending upcoming events notifications errors for admin")
 
     notifications_not_processed = Notification.objects.filter(
-        recipient=user.id, dispatch_by_email=True, processing_date=None, time__date__lte=execution_date,
+        recipient=user.id,
+        dispatch_by_email=True,
+        processing_date=None,
+        time__date__lte=execution_date,
     )
 
     # Send email to admin in case of errors
