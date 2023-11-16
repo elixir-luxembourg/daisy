@@ -46,7 +46,7 @@ function setupNotificationsIcon(){
     const bellIcon = $("#notifications-bell");
     if (bellIcon.length){
         $.get(bellIcon.data().ajaxUrl, function(data){
-            if (data.data > 0 && !bellIcon.parent().hasClass("active")){
+            if (data.data > 0){
                 bellIcon.find("i").addClass("text-light");
                 bellIcon.find("#notifications-badge").text(data.data);
             }
