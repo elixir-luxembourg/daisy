@@ -1,5 +1,22 @@
 .card-badge {
     position: absolute;
-    right: 25px;
+    right: -25px;
     bottom: 35%;
+}
+
+#react-notifications {
+  .table {
+    & td {
+      vertical-align: middle;
+    }
+  }
+}
+
+.accordion-toggle {
+    position: absolute;
+    right: 15px;
+
+    & i.material-icons {
+        font-size: 36px;
+    }
 }
