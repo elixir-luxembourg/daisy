@@ -13,11 +13,10 @@
             <h1 class="display-4">Notifications</h1>
             <hr />
             <p>If you would like to change the way DAISY handles your notifications, please update your <a class="font-weight-bold" href="{% url 'notifications_settings' %}">notifications settings</a>.</p>
-            {% if not show_dismissed %}
-                <p>By default, dismissed notifications are not shown. You can display dismissed notifications by clicking <a class="font-weight-bold" href="{{ request.path }}?show_dismissed=true">here</a></p>
-            {%  else %}
-                <p>Dismissed notifications are currently shown. You can hide them by clicking <a class="font-weight-bold" href="{{ request.path }}">here</a></p>
-            {% endif %}
+            <div class="daisy-switch custom-control custom-switch">
+                <input class="custom-control-input" type="checkbox" id="showDismissedNotifications" {% if show_dismissed %}checked{% endif %}>
+                <label class="custom-control-label" for="showDismissedNotifications">Show dismissed notifications</label>
+            </div>
         </div>
     </div>
 
