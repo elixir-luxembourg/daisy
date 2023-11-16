@@ -17,7 +17,7 @@ type DismissButtonProps = {
  * @return - The button to dismiss the notification
  */
 const DismissButton = ({notification, onClick}: DismissButtonProps) => {
-    return <span className={"btn btn-link p-0 m-0"} onClick={() => onClick(notification)}>Dismiss</span>;
+    return <span className={"btn btn-link btn-outline m-0"} onClick={() => onClick(notification)}>Dismiss</span>;
 };
 
 const columnHelper = createColumnHelper<Notification>();
@@ -109,7 +109,7 @@ export const NotificationsTable = (props: NotificationsTableProps) => {
         }),
         // The time column displays the date when the notification was sent
         columnHelper.accessor("time", {
-            header: "Sent on",
+            header: "Created on",
             cell: cell => dateFormatter.format(new Date(cell.getValue())),
         }),
         // The dismissAction column displays a button to dismiss the notification if it is not already dismissed
