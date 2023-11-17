@@ -125,11 +125,10 @@ class Document(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
         """
         Notifies concerning users about the entity.
         """
-        offset = user.notification_setting.notification_offset
         dispatch_by_email = user.notification_setting.send_email
         dispatch_in_app = user.notification_setting.send_in_app
 
-        msg = f"The Document {obj.shortname} is expiring in {offset} days."
+        msg = f"The Document {obj.shortname} is expiring."
         on = obj.expiry_date
 
         logger.info(f"Creating a notification for {user} : {msg}")

@@ -351,15 +351,14 @@ class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
         """
         Notifies concerning users about the entity.
         """
-        offset = user.notification_setting.notification_offset
         dispatch_by_email = user.notification_setting.send_email
         dispatch_in_app = user.notification_setting.send_in_app
 
         if verb == NotificationVerb.start:
-            msg = f"The project {obj.title} is starting in {offset} days."
+            msg = f"The project {obj.title} is starting."
             on = obj.start_date
         else:
-            msg = f"The project {obj.title} is ending in {offset} days."
+            msg = f"The project {obj.title} is ending."
             on = obj.end_date
 
         logger.info(f"Creating a notification for {user} : {msg}")

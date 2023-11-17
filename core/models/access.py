@@ -294,11 +294,10 @@ class Access(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
         """
         Notifies concerning users about the entity.
         """
-        offset = user.notification_setting.notification_offset
         dispatch_by_email = user.notification_setting.send_email
         dispatch_in_app = user.notification_setting.send_in_app
 
-        msg = f"Access for {obj.dataset.title} of the user {obj.user or obj.contact} is ending in {offset} days."
+        msg = f"Access for {obj.dataset.title} of the user {obj.user or obj.contact} is expiring."
         on = obj.grant_expires_on
 
         logger.info(f"Creating a notification for {user} : {msg}")

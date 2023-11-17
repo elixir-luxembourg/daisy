@@ -82,3 +82,9 @@ class NotifyMixin(ABC):
         Returns the absolute url of the entity.
         """
         return None
+
+    def display_name(self) -> str:
+        """
+        Returns the display name of the entity.
+        """
+        return self.get_absolute_url()
