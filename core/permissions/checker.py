@@ -305,9 +305,6 @@ def permission_required(perm, target, lookup_variables):
             obj = get_object_or_404(model, **lookup_dict)
 
             # check permission
-            has_perm = AutoChecker(request.user).check(
-                f"core.{perm.value}_{target}", obj
-            )
             if not AutoChecker(request.user).check(f"core.{perm.value}_{target}", obj):
                 raise PermissionDenied
             return view_func(request, *args, **kwargs)
@@ -379,7 +376,7 @@ class CheckerMixin(PermissionRequiredMixin):
         obj = self.get_permission_object()
 
         if self.permission_target is None:
-            logger.warning(f"No permission target defined, using the object class name")
+            logger.warning("No permission target defined, using the object class name")
             self.permission_target = obj.__class__.__name__.lower()
 
         perm = f"core.{self.permission_required.value}_{self.permission_target}"

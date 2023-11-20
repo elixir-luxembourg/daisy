@@ -1,7 +1,6 @@
 from django.db import models
 
 from core.models.access import Access
-from core.models.contact_type import ContactType
 from core.models.utils import CoreModel, TextFieldWithInputWidget
 
 
@@ -21,7 +20,10 @@ class Contact(CoreModel):
         ordering = ["added"]
 
     class AppMeta:
-        help_text = "Contacts are people affiliated with Partner institutions. Collaborator PIs, Project Officers at the EU are examples of contacts."
+        help_text = (
+            "Contacts are people affiliated with Partner institutions. Collaborator PIs, Project Officers at "
+            "the EU are examples of contacts."
+        )
 
     address = TextFieldWithInputWidget(blank=True, null=True, verbose_name="Address")
 
@@ -84,8 +86,6 @@ class Contact(CoreModel):
         return base_dict
 
     def serialize_to_export(self):
-        import functools
-
         d = self.to_dict()
 
         if len(d["partners"]):

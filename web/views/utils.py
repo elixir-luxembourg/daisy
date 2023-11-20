@@ -78,13 +78,13 @@ def get_user_or_contact_by_oidc_id(
     try:
         user = User.objects.get(oidc_id=user_oidc_id)
         user_found = True
-    except User.DoesNotExist as e:
+    except User.DoesNotExist:
         user_found = False
 
     try:
         contact = Contact.objects.get(oidc_id=user_oidc_id)
         contact_found = True
-    except Contact.DoesNotExist as e:
+    except Contact.DoesNotExist:
         contact_found = False
 
     return user_found, contact_found, user, contact

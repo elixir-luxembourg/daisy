@@ -66,13 +66,12 @@ def handle_rems_callback(request: HttpRequest) -> bool:
 
     :returns: True if everything was processed, False if not
     """
-
     logger.debug("REMS :: Unpacking the data received from REMS...")
     body_unicode = request.body.decode("utf-8")
 
     try:
         request_post_data = json.loads(body_unicode)
-    except:
+    except json.JSONDecodeError:
         message = (
             "REMS :: Received data in wrong format, because deserializing request"
             "s POST body failed!)!"

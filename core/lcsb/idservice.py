@@ -1,16 +1,12 @@
 import json
 
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 from urllib.request import urlopen, Request
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-from core.models.cohort import Cohort
-from core.models.dataset import Dataset
-from core.models.partner import Partner
-from core.models.project import Project
-from core.models import User
+from core.models import Cohort, Dataset, Partner, Project
 from core.models.utils import CoreTrackedModel
 
 
@@ -54,10 +50,7 @@ def generate_identifier(obj: CoreTrackedModel, save=True):
     elif hasattr(obj, "name"):
         title = obj.name
     else:
-        msg = (
-            f"Cannot find the object"
-            "s name! (The object of class {klass} does not have title nor name attribute!"
-        )
+        msg = f"Cannot find the object's name! (The object of class {klass} does not have title nor name attribute!"
         raise KeyError(msg)
 
     the_id = _call_idservice(klass.lower(), title)

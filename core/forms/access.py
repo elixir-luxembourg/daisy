@@ -16,7 +16,10 @@ class AccessForm(SkipFieldValidationMixin, ModelForm):
             "access_notes": Textarea(attrs={"rows": 2, "cols": 40}),
         }
         heading = "Record Access"
-        heading_help = "Specify who can access the data and for how long. You can define access of each person or describe group of users with access in remarks below."
+        heading_help = (
+            "Specify who can access the data and for how long. You can define access of each person or "
+            "describe group of users with access in remarks below."
+        )
 
     def __init__(self, *args, **kwargs):
         dataset = kwargs.pop("dataset", None)

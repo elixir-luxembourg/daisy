@@ -3,21 +3,19 @@ import pytest
 
 @pytest.fixture
 def client_user_normal(client, user_normal):
-    client.login(username=user_normal.username, password=user_normal.password)
+    client.login(username=user_normal.username, password="password")
     return client
 
 
 @pytest.fixture
 def client_user_vip(client, user_vip):
-    client.login(username=user_vip.username, password=user_vip.password)
+    client.login(username=user_vip.username, password="password")
     return client
 
 
 @pytest.fixture
 def client_user_data_steward(client, user_data_steward):
-    client.login(
-        username=user_data_steward.username, password=user_data_steward.password
-    )
+    client.login(username=user_data_steward.username, password="password")
     return client
 
 

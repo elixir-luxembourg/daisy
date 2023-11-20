@@ -21,8 +21,10 @@ from django.contrib.auth import views as auth_views
 from django.urls import include
 
 from core.forms.user import UserAuthForm
-from web.urls import web_urls
 from notification.urls import notif_urls
+from web.urls import web_urls
+from web.views.error_views import custom_400, custom_403, custom_404, custom_500
+
 
 urlpatterns = [
     url(
@@ -38,8 +40,6 @@ urlpatterns = [
 
 # Custom error views, see e.g.
 # https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-CSRF_FAILURE_VIEW
-from web.views.error_views import custom_400, custom_403, custom_404, custom_500
-
 handler400 = custom_400
 handler403 = custom_403
 handler404 = custom_404

@@ -32,8 +32,8 @@ def test_import_projects(celery_session_worker, contact_types, partners):
         custodian.full_name for custodian in project1.local_custodians.all()
     ]
     assert 1 == project1.company_personnel.count()
-    assert False == project1.has_cner
-    assert True == project1.has_erp
+    assert project1.has_cner is False
+    assert project1.has_erp is True
     assert ["Embury Bask"] == [
         employee.full_name for employee in project1.company_personnel.all()
     ]

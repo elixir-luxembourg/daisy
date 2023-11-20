@@ -25,7 +25,7 @@ def validate_json(value):
             "{" not in value
         ):  # Very inaccurate, but should do the trick when the user tries to save e.g. '123'
             raise ValidationError(
-                f"`scientific_metadata` field must be a valid JSON containing a dictionary!"
+                "`scientific_metadata` field must be a valid JSON containing a dictionary!"
             )
         return value
     except JSONDecodeError as ex:

@@ -1,8 +1,7 @@
 import json
 import jsonschema
 import os
-import sys
-import urllib.request
+import urllib
 
 from django.conf import settings
 
@@ -74,7 +73,7 @@ class BaseJSONSchemaValidator:
 
         try:
             return self._load_schema_from_url(schema_name)
-        except:
+        except (urllib.error.URLError, json.JSONDecodeError) as e:
             logger.error(
                 "Error (2/2) loading schema from URI for JSON validation...: " + str(e)
             )

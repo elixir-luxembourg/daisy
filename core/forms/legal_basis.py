@@ -10,7 +10,10 @@ class LegalBasisForm(SkipFieldValidationMixin, ModelForm):
         fields = "__all__"
         exclude = []
         heading = "Add Legal Basis"
-        heading_help = "Capture the legal grounds for processing of this dataset under GDPR (personal data only). This can require support from your data stewards and data protection officer (DPO)."
+        heading_help = (
+            "Capture the legal grounds for processing of this dataset under GDPR (personal data only). "
+            "This can require support from your data stewards and data protection officer (DPO)."
+        )
 
     def __init__(self, *args, **kwargs):
         dataset = kwargs.pop("dataset", None)

@@ -20,7 +20,7 @@ def test_excel_export(permissions, client_user_data_steward, url_name, factory):
     """
 
     number_of_objects = 4
-    objects = factory.create_batch(number_of_objects)
+    factory.create_batch(number_of_objects)
     url = reverse(url_name)
     response = client_user_data_steward.get(url)
 

@@ -1,6 +1,9 @@
-import ldap
+# These settings are used for testing in both Docker and Gitlab environments
+# (see settings_compose.py and settings_compose_ci.py)
 from django_auth_ldap.config import LDAPSearch
-from .settings import *
+from .settings import *  # noqa: F401,F403
+
+import ldap
 
 DATABASES = {
     "default": {
@@ -57,13 +60,13 @@ SASS_PROCESSOR_ROOT = "/static"
 # Celery config
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html
 
-## Broker settings.
+# Broker settings.
 CELERY_BROKER_URL = "amqp://guest:guest@mq:5672//"
 
-## Result backend
+# Result backend
 CELERY_RESULT_BACKEND = "django-db"
 
-## Email backend
+# Email backend
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Speed-up setting new accounts

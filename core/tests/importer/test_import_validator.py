@@ -2,8 +2,6 @@ import os
 
 import pytest
 
-from core.models import Dataset, Project, DataDeclaration
-from test import factories
 from django.conf import settings
 from json import loads
 from importlib import import_module

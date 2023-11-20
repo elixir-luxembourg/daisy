@@ -1,6 +1,6 @@
 import logging
-from django.conf import settings
-from django.db.models.signals import post_save, m2m_changed
+
+from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
 
 from core.models import Dataset, Project, User, Contract

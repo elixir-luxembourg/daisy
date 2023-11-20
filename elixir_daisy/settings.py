@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-
 import pytz
 
 COMPANY = "LCSB"  # Used for generating some models' verbose names
@@ -344,11 +343,6 @@ DSW_ORIGIN = "localhost"
 # Should the superuser be able to change the passwords in django-admin
 ENABLE_PASSWORD_CHANGE_IN_ADMIN = False
 
-# Import local settings to override those values based on the deployment environment
-try:
-    from .settings_local import *
-except ImportError as e:
-    pass
 
 if DEBUG:
     # Removing staticfiles panel from Django Debug Toolbar
@@ -366,3 +360,9 @@ if DEBUG:
         "debug_toolbar.panels.redirects.RedirectsPanel",
         "debug_toolbar.panels.profiling.ProfilingPanel",
     ]
+
+# Import local settings to override those values based on the deployment environment
+try:
+    from .settings_local import *  # noqa: F401,F403
+except ImportError:
+    pass

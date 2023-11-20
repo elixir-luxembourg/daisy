@@ -59,7 +59,6 @@ def test_import_datasets(
     ]
     assert 1 == d1.data_locations.all().count()
     shares = d1.shares.all()
-    share1 = shares[0]
     assert 1 == shares.count()
 
     d2 = Dataset.objects.filter(title="Hypertension data").first()

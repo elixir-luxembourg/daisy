@@ -329,5 +329,5 @@ class User(AbstractUser):
         if cls.objects.filter(email=email).count() == 1:
             return cls.objects.get(email=email)
         else:
-            message = f"There are either zero, or 2 and more users with such `email` and `oidc_id`!"
+            message = "There are either zero, or 2 and more users with such `email` and `oidc_id`!"
             raise cls.DoesNotExist(message)
