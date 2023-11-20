@@ -1,15 +1,20 @@
-.card-badge {
-    position: absolute;
-    right: -25px;
-    bottom: 35%;
-}
-
 #react-notifications {
   .table {
     & td {
       vertical-align: middle;
     }
   }
+
+  .card-title {
+      margin-bottom: 0px;
+  }
+
+  .card-badge {
+      position: absolute;
+      right: -25px;
+      bottom: 35%;
+  }
+
 }
 
 .accordion-toggle {

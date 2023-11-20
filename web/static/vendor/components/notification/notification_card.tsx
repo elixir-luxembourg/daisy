@@ -36,7 +36,7 @@ const NotificationHeader = ({className, category, newNotifications, showDismissN
             <div className={"position-relative"}>
                 <h2 className={"card-title"}>{title}</h2>
                 {showDismissNumber && newNotifications > 0 &&
-                    <h5 className={"badge badge-danger card-badge"}>{newNotifications}</h5>
+                    <span className={"badge badge-danger card-badge"}>{newNotifications}</span>
                 }
             </div>
             <div className={"accordion-toggle"}>
