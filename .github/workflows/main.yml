@@ -30,6 +30,9 @@ jobs:
     - name: Check code formatting with Black
       run: docker-compose exec -T web black --check .
 
+    - name: Lint code with Flake8
+      run: docker-compose exec -T web flake8
+
     - name: Execute the tests
       run: docker-compose exec -T web python setup.py pytest
 
