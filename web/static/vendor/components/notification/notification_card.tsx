@@ -40,12 +40,10 @@ const NotificationHeader = ({className, category, newNotifications, showDismissN
                 }
             </div>
             <div className={"accordion-toggle"}>
-                <h1>
-                    {isCollapsed ?
-                        <i className={"material-icons"}>expand_less</i> :
-                        <i className={"material-icons"}>expand_more</i>
-                    }
-                </h1>
+                {isCollapsed ?
+                    <i className={"material-icons"}>expand_less</i> :
+                    <i className={"material-icons"}>expand_more</i>
+                }
             </div>
         </div>
     );

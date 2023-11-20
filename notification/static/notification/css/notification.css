@@ -20,6 +20,7 @@
 .accordion-toggle {
     position: absolute;
     right: 15px;
+    bottom: 0.5rem;
 
     & i.material-icons {
         font-size: 36px;
