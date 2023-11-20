@@ -31,7 +31,10 @@ class NotificationAdminView(UserPassesTestMixin, NotificationsListView):
         )
 
     def test_func(self):
-        return self.request.user.is_staff
+        if hasattr(get_user_model(), "is_notifications_admin"):
+            return self.request.user.is_notifications_admin
+        else:
+            return self.request.user.is_staff
 
     def get_queryset(self):
         if "pk" in self.kwargs:
