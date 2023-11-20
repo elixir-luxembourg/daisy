@@ -2,6 +2,7 @@ import os
 import typing
 import datetime
 from datetime import timedelta
+from typing import Optional
 from model_utils import Choices
 
 from django.db import models
@@ -14,6 +15,7 @@ from django.utils import timezone
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.core.files.storage import default_storage
+from django.urls import reverse
 
 from .utils import CoreModel, CoreNotifyMeta
 from core.utils import DaisyLogger
@@ -77,6 +79,13 @@ class Document(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
         help_text="If the document has a validity period, please specify the expiry date here.",
         null=True,
     )
+
+    def get_absolute_url(self) -> str:
+        model = self.content_type.model
+        return reverse(model, args=[str(self.object_id)])
+
+    def display_name(self) -> str:
+        return self.content.name.split("/")[1]
 
     def __str__(self):
         return f"{self.content.name} ({self.content_object})"

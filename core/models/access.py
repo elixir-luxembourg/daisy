@@ -250,6 +250,12 @@ class Access(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
 
         return True
 
+    def display_name(self) -> str:
+        return f"{self.status}|{self.dataset}|{self.user or self.contact}"
+
+    def get_absolute_url(self) -> str:
+        return self.dataset.get_absolute_url()
+
     @staticmethod
     def get_notification_recipients():
         """

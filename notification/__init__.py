@@ -87,4 +87,4 @@ class NotifyMixin(ABC):
         """
         Returns the display name of the entity.
         """
-        return self.get_absolute_url()
+        return self.__str__()
