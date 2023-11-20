@@ -69,6 +69,6 @@ class NotificationAdminView(UserPassesTestMixin, NotificationsListView):
         new_url = reverse("notifications_admin")
         if form.is_valid():
             user = form.cleaned_data.get("user")
-            new_url += f"?pk={user.pk}"
+            new_url += f"?pk={user.pk}&show_dismissed={request.GET.get('show_dismissed', 'true')}"
 
         return redirect(new_url)

@@ -25,7 +25,7 @@
             <div class="card col">
                 <div class="card-body">
                     <h2 class="card-title">Filter by user</h2>
-                    {% include '_includes/forms.html' with method='get' %}
+                    {% include '_includes/forms.html' with form_id='admin-notifications-filter' %}
                 </div>
             </div>
         </div>
@@ -45,5 +45,6 @@
 
 {% block js %}
     {{ block.super }}
+    <script src="{% static 'notification/js/notifications.js' %}"></script>
     <script src="{% static 'js/notification.bundle.js' %}"></script>
 {% endblock %}
