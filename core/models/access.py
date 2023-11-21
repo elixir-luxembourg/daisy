@@ -251,7 +251,7 @@ class Access(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
         return True
 
     def display_name(self) -> str:
-        return f"{self.dataset}|{self.user or self.contact}"
+        return f"{self.dataset} | {self.user or self.contact}"
 
     def get_absolute_url(self) -> str:
         return self.dataset.get_absolute_url()
