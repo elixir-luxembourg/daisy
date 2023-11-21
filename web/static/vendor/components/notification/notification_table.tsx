@@ -68,7 +68,7 @@ export const NotificationsTable = (props: NotificationsTableProps) => {
             enableHiding: true,
         }),
         // The objectName column displays the name of the object that triggered the notification
-        columnHelper.accessor("objectName", {
+        columnHelper.accessor("objectDisplayName", {
             header: () => {
                 const title = notifications[0].objectType;
                 return title.charAt(0).toUpperCase() + title.substring(1);

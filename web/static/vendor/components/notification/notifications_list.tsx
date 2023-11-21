@@ -130,7 +130,7 @@ export const NotificationList = ({showDismissed, showRecipientColumn, showDismis
                         <NotificationCard
                             key={`${contentType}-notifications`}
                             type={contentType}
-                            title={notifications[contentType][0].objectDisplayName}
+                            title={notifications[contentType][0].objectClass}
                             newNotifNumber={newNotifNumber}
                             showDismissBtn={showDismissColumn}
                             dismissAll={dismissAllNotifications}

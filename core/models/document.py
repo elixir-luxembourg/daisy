@@ -2,6 +2,7 @@ import os
 import typing
 import datetime
 from datetime import timedelta
+from typing import Optional
 from model_utils import Choices
 
 from django.db import models
@@ -14,6 +15,7 @@ from django.utils import timezone
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.core.files.storage import default_storage
+from django.urls import reverse
 
 from .utils import CoreModel, CoreNotifyMeta
 from core.utils import DaisyLogger
@@ -78,6 +80,13 @@ class Document(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
         null=True,
     )
 
+    def get_absolute_url(self) -> str:
+        model = self.content_type.model
+        return reverse(model, args=[str(self.object_id)])
+
+    def display_name(self) -> str:
+        return f"{self.content_object} | {self.shortname}"
+
     def __str__(self):
         return f"{self.content.name} ({self.content_object})"
 
@@ -125,11 +134,10 @@ class Document(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
         """
         Notifies concerning users about the entity.
         """
-        offset = user.notification_setting.notification_offset
         dispatch_by_email = user.notification_setting.send_email
         dispatch_in_app = user.notification_setting.send_in_app
 
-        msg = f"The Document {obj.shortname} is expiring in {offset} days."
+        msg = f"The Document {obj.shortname} is expiring."
         on = obj.expiry_date
 
         logger.info(f"Creating a notification for {user} : {msg}")
