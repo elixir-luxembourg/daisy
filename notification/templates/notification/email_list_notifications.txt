@@ -10,7 +10,7 @@
         - {{content_type.name|title}}
         {% for notif in notifs %}
             * {{notif.message}}:
-            - {{notif.content_object}}: {% if notif.get_absolute_url  %}{{notif.get_full_url}}{% endif %} on {{ notif.on}}.
+            - {{notif.to_json.objectDisplayName}}: {% if notif.get_absolute_url  %}{{notif.get_full_url}}{% endif %} on {{ notif.on}}.
         {% endfor %}
     {% endfor %}
 {% endblock %}
