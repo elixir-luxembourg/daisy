@@ -74,7 +74,7 @@
                             {#                            <a class="dropdown-item" href="#">my datasets</a>#}
                             {% if notifications_enabled %}
                                 <a class="dropdown-item" href="{% url 'notifications_settings' %}">notifications settings</a>
-                                {% if request.user.is_staff %}
+                                {% if request.user.is_notifications_admin %}
                                     <a class="dropdown-item" href="{% url 'notifications_admin' %}">admin notifications</a>
                                 {% endif %}
                             {% endif %}

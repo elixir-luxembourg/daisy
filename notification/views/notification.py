@@ -1,5 +1,3 @@
-import urllib
-
 from django.views.generic.list import ListView
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect
@@ -33,7 +31,10 @@ class NotificationAdminView(UserPassesTestMixin, NotificationsListView):
         )
 
     def test_func(self):
-        return self.request.user.is_staff
+        if hasattr(get_user_model(), "is_notifications_admin"):
+            return self.request.user.is_notifications_admin
+        else:
+            return self.request.user.is_staff
 
     def get_queryset(self):
         if "pk" in self.kwargs:
@@ -45,38 +46,30 @@ class NotificationAdminView(UserPassesTestMixin, NotificationsListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
-        context["form"] = self.UserSelection(initial={})
-        new_arguments = {
-            "show_dismissed": self.request.GET.get("show_dismissed", "false"),
-        }
+        submit_url = reverse("notifications_admin")
+        context["show_dismissed"] = (
+            self.request.GET["show_dismissed"] == "true"
+            if "show_dismissed" in self.request.GET
+            else True
+        )
         if "pk" in self.request.GET:
             user = get_object_or_404(get_user_model(), pk=self.request.GET["pk"])
-            new_arguments["pk"] = str(user.pk)
+            submit_url += f"?pk={user.pk}"
             context["recipient_filter"] = user.pk
 
-        submit_url = reverse("notifications_admin")
-        url_arguments = "?" + "&".join(
-            [
-                f"{urllib.parse.quote(key)}={urllib.parse.quote(value)}"
-                for key, value in new_arguments.items()
-            ]
+        context["form"] = self.UserSelection(
+            initial={"user": self.request.GET.get("pk", "")}
         )
-        context["submit_url"] = submit_url + url_arguments
+
+        context["submit_url"] = submit_url
         context["admin"] = True
         return context
 
     def post(self, request, **kwargs):
         form = self.UserSelection(request.POST)
-        new_arguments = {"show_dismissed": request.GET.get("show_dismissed", "false")}
+        new_url = reverse("notifications_admin")
         if form.is_valid():
             user = form.cleaned_data.get("user")
-            new_arguments["pk"] = str(user.pk)
+            new_url += f"?pk={user.pk}&show_dismissed={request.GET.get('show_dismissed', 'true')}"
 
-        new_url = reverse("notifications_admin")
-        url_arguments = "?" + "&".join(
-            [
-                f"{urllib.parse.quote(key)}={urllib.parse.quote(value)}"
-                for key, value in new_arguments.items()
-            ]
-        )
-        return redirect(new_url + url_arguments)
+        return redirect(new_url)
