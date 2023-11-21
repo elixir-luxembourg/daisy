@@ -85,7 +85,7 @@ class Document(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
         return reverse(model, args=[str(self.object_id)])
 
     def display_name(self) -> str:
-        return self.content.name.split("/")[1]
+        return f"{self.content_object} | {self.shortname}"
 
     def __str__(self):
         return f"{self.content.name} ({self.content_object})"
