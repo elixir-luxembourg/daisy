@@ -166,12 +166,13 @@ class User(AbstractUser):
     # Permission management
     # ======================================================================
 
-    def is_datasteward(self):
+    @property
+    def is_data_steward(self):
         return self.is_part_of(constants.Groups.DATA_STEWARD.value)
 
     @property
     def is_notifications_admin(self):
-        return self.is_datasteward()
+        return self.is_data_steward
 
     @staticmethod
     def _assign_perm(permission, user_object, permission_object):
