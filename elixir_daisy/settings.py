@@ -311,7 +311,7 @@ FACET_FIELDS = {
 }
 
 # by default, notifications by email are disabled
-NOTIFICATIONS_DISABLED = True
+NOTIFICATIONS_DISABLED = False
 
 LOGIN_USERNAME_PLACEHOLDER = ""
 LOGIN_PASSWORD_PLACEHOLDER = ""
