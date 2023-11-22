@@ -280,17 +280,14 @@ class Dataset(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
         """
         Notifies concerning users about the entity.
         """
-        offset = user.notification_setting.notification_offset
         dispatch_by_email = user.notification_setting.send_email
         dispatch_in_app = user.notification_setting.send_in_app
 
         if verb == NotificationVerb.embargo_end:
-            msg = f"Embargo for {obj.dataset.title} is ending in {offset} days."
+            msg = f"Embargo for {obj.dataset.title} is ending."
             on = obj.embargo_date
         else:
-            msg = (
-                f"Storage duration for {obj.dataset.title} is ending in {offset} days."
-            )
+            msg = f"Storage duration for {obj.dataset.title} is ending."
             on = obj.end_of_storage_duration
 
         logger.info(f"Creating a notification for {user} : {msg}")

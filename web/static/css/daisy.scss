@@ -429,3 +429,10 @@ a.no-underline:hover {
     overflow-y: auto;
     white-space: pre-line;
 }
+
+.daisy-switch {
+    .custom-control-input:checked ~ .custom-control-label::after {
+      background-color: #eee;
+    }
+    @extend .custom-switch;
+}

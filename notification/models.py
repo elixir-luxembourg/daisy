@@ -131,8 +131,10 @@ class Notification(models.Model):
             "dismissed": self.dismissed,
             "message": self.message,
             "objectType": self.content_type.model,
-            "objectDisplayName": self.content_type.name,
-            "objectName": self.content_object.__str__(),
+            "objectClass": self.content_type.name,
+            "objectDisplayName": self.content_object.display_name()
+            if hasattr(self.content_object, "display_name")
+            else self.content_object.__str__(),
             "objectUrl": self.get_absolute_url() or "",
         }
 
