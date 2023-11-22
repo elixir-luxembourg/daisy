@@ -35,17 +35,23 @@ def create_notifications_for_entities(execution_date: str = None):
         cls.make_notifications(exec_date)
 
 
-def report_notifications_upcoming_events_errors_for_admin(user):
+def report_notifications_upcoming_events_errors_for_admin(
+    user, execution_date: datetime
+):
     """
     Send upcoming events notifications errors report for admin, if any.
 
     Params:
         user: The user for which the notifications sending failed
+        execution_date: The date of the execution of the task. FORMAT: YYYY-MM-DD
     """
     logger.info("Sending upcoming events notifications errors for admin")
 
     notifications_not_processed = Notification.objects.filter(
-        recipient=user.id, dispatch_by_email=True, processing_date=None
+        recipient=user.id,
+        dispatch_by_email=True,
+        processing_date=None,
+        time__date__lte=execution_date,
     )
 
     # Send email to admin in case of errors
@@ -126,7 +132,7 @@ def send_notifications_for_user_upcoming_events(
         # send notification report to user, if any
         if not notifications_exec_date:
             # Checks if there is missed notification for this user and report errors to admin, if any
-            report_notifications_upcoming_events_errors_for_admin(user)
+            report_notifications_upcoming_events_errors_for_admin(user, exec_date)
             continue
 
         # group notifications per content type and set processed to today
@@ -157,5 +163,5 @@ def send_notifications_for_user_upcoming_events(
             )
         finally:
             # report error to admin
-            report_notifications_upcoming_events_errors_for_admin(user)
+            report_notifications_upcoming_events_errors_for_admin(user, exec_date)
             continue

@@ -32,7 +32,7 @@
                                     {% if object_url %}
                                         <a style="text-decoration: none; color:#2B6777"
                                            title="{{ notif.get_full_url }}"
-                                           href="{{ notif.get_full_url }}">{{ notif.content_object }}</a>
+                                           href="{{ notif.get_full_url }}">{{ notif.to_json.objectDisplayName }}</a>
                                     {% else %}
                                         {{ notif.content_object }}
                                     {% endif %}
