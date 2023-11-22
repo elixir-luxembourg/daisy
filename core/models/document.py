@@ -2,7 +2,6 @@ import os
 import typing
 import datetime
 from datetime import timedelta
-from typing import Optional
 from model_utils import Choices
 
 from django.db import models
