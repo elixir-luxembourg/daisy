@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
         apply_code_map(use_class_objects, field="code", reverse=True)
 
     dependencies = [
-        ("core", "0034_auto_20230515_1353"),
+        ("core", "0035_auto_20231108_1041"),
     ]
 
     operations = [
