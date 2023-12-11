@@ -326,7 +326,7 @@ EXPLORER_DEFAULT_CONNECTION = "default"
 
 # JSON schemas used for validation on import
 IMPORT_JSON_SCHEMAS_URI = (
-    "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.5/schemas/"
+    "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.6/schemas/"
 )
 IMPORT_JSON_SCHEMAS_DIR = os.path.join(BASE_DIR, "core", "fixtures", "json_schemas")
 

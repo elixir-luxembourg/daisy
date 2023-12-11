@@ -28,7 +28,7 @@ jobs:
       run: docker-compose up -d --build
 
     - name: Check code formatting with Black
-      run: docker-compose exec -T web black --check .
+      run: docker-compose exec -T web black --check --verbose .
 
     - name: Execute the tests
       run: docker-compose exec -T web python setup.py pytest

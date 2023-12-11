@@ -5,17 +5,17 @@
     "description": "No restrictions on data use."
   },
   {
-    "code": "GRU(CC)",
+    "code": "GRU",
     "name": "General Research use and Clinical Care",
     "description": "For health/medical/biomedical purposes and other biological research, including the study of population origins or ancestry."
   },
   {
-    "code": "HMB(CC)",
+    "code": "HMB",
     "name": "Health/medical/biomedical Research and Clinical Care",
     "description": "Use of the data is limited to health/medical/biomedical purposes, does not include the study of population origins or ancestry."
   },
   {
-    "code": "DS-[XX](CC)",
+    "code": "DS",
     "name": "Disease-specific Research and Clinical Care.",
     "description": "Use of the data must be related to [disease]."
   },
@@ -25,7 +25,7 @@
     "description": "Use of the data is limited to the study of population origins or ancestry."
   },
   {
-    "code": "RS-[XX]",
+    "code": "RS",
     "name": "Other Research-specific restrictions",
     "description": "Use of the data is limited to studies of [research type] (e.g., pediatric research)."
   },
@@ -55,7 +55,7 @@
     "description": "Requestor agrees to make results of studies using the data available to the larger scientific community."
   },
   {
-    "code": "COL-[XX]",
+    "code": "COL",
     "name": "Collaboration Required",
     "description": "Requestor must agree to collaboration with the primary study investigator(s)."
   },
@@ -70,17 +70,17 @@
     "description": "Requestor must provide documentation of local IRB/REC approval."
   },
   {
-    "code": "GS-[XX]",
+    "code": "GS",
     "name": "Geographical Restrictions",
     "description": "Use of the data is limited to within [geographic region]."
   },
   {
-    "code": "MOR-[XX]",
+    "code": "MOR",
     "name": "Publication Moratorium/Embargo",
     "description": "Requestor agrees not to publish results of studies until [date]."
   },
   {
-    "code": "TS-[XX]",
+    "code": "TS",
     "name": "Time Limits on use",
     "description": "Use of data is approved for [x months]."
   },
