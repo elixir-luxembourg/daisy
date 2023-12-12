@@ -682,7 +682,7 @@ systemctl start celery_beat
 
 ## Daisy 1.7.12 to 1.8.0
 
-The migration introduced breaking change and update of `settings.py` file is required. The new scheduled tasks as defined in settings_template.py must be included to fully support new features.
+The migration introduced breaking change and update of `settings.py` file is required. The new scheduled tasks as defined in [settings_template.py](https://github.com/elixir-luxembourg/daisy/blob/de64e17355700dc029133f48a295be82341486ed/elixir_daisy/settings_local.template.py#L91) must be included to fully support new features.
 
 For enabling the new notification feature, see section [above](#setting-up-reminders) on how to set up reminders.
 
