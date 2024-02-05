@@ -12,7 +12,7 @@ def upload_test_file(client, model_type, user, file_name=None):
     Optionally, it logs in the given user before uploading.
     """
     client.logout()
-    login_test_user(client, user, "password")
+    login_test_user(client, user)
 
     url = reverse("import_data", args=[model_type])
 

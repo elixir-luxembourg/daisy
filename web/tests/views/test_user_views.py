@@ -2,6 +2,7 @@ import pytest
 from django.shortcuts import reverse
 from django.test.client import Client
 
+
 from test.factories import (
     VIPGroup,
     DataStewardGroup,
@@ -10,14 +11,12 @@ from test.factories import (
     UserFactory,
 )
 from core.models.user import User
+from web.tests.views.utils import login_test_user
 
 
 def check_user_views_permissions(url: str, user: User):
     client = Client()
-    assert client.login(
-        username=user.username,
-        password="test-user" if not user.is_superuser else "password",
-    ), "Login failed"
+    login_test_user(client, user)
 
     response = client.get(url)
     if user.is_superuser:

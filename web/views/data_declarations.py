@@ -1,7 +1,4 @@
 import json
-import operator
-
-from functools import reduce
 
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -11,7 +8,6 @@ from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
 from django.views.generic import DetailView, UpdateView
-from django.urls import reverse_lazy
 
 from haystack.query import SearchQuerySet
 

@@ -55,7 +55,7 @@ class DataDeclarationIndex(CelerySearchIndex, indexes.Indexable):
             obj.title,
             str(obj.dataset),
             " ".join([str(c for c in obj.cohorts.all())]),
-            " ".join([str(l) for l in obj.dataset.local_custodians.all()]),
+            " ".join([str(lc) for lc in obj.dataset.local_custodians.all()]),
         ]
         if obj.dataset.project:
             text_parts.append(str(obj.dataset.project))

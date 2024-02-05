@@ -236,7 +236,7 @@ def partner_role_delete(request, pk):
 #     contract.save()
 #     return HttpResponse("Metadata removed")
 
-## DATASET METHODS ##
+# DATASET METHODS #
 #
 # @permission_required(Permissions.EDIT, (Collaboration, 'pk', 'pk'))
 # def collaboration_dataset_add(request, pk):

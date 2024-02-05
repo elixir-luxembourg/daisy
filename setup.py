@@ -44,6 +44,7 @@ requirements = [
     "mockldap@git+https://github.com/elixir-luxembourg/mockldap2.git",
     "django-auditlog==2.1.1",
     "black==23.7.0",
+    "flake8==6.1.0",
 ]
 
 test_requirements = [

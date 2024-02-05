@@ -1,7 +1,6 @@
 from django.core.exceptions import ValidationError
 from pytest import raises
 
-from core.models import Project
 from core.models.utils import validate_json
 from test.factories import ProjectFactory
 

@@ -200,8 +200,6 @@ class Dataset(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
         return base_dict
 
     def serialize_to_export(self):
-        import functools
-
         d = self.to_dict()
 
         contacts = map(

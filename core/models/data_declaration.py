@@ -4,7 +4,6 @@ from django.db import models
 from django.urls import reverse
 from enumchoicefield import EnumChoiceField, ChoiceEnum
 
-from core import constants
 from core.models import DataType
 from .utils import CoreModel, TextFieldWithInputWidget
 
@@ -79,7 +78,9 @@ class DataDeclaration(CoreModel):
         default=ConsentStatus.unknown,
         blank=False,
         null=False,
-        help_text="Is the consent given by data subjects heterogeneous or homogeneous. Homogeneous consent  means that all subjects' data have the same restrictions. Heterogeneous means that there are differences among consents given by subjects, therefore  there are differing use restrictions on data.",
+        help_text="Is the consent given by data subjects heterogeneous or homogeneous. Homogeneous consent means that "
+        "all subjects' data have the same restrictions. Heterogeneous means that there are differences among "
+        "consents given by subjects, therefore  there are differing use restrictions on data.",
     )
 
     dataset = models.ForeignKey(
@@ -94,7 +95,8 @@ class DataDeclaration(CoreModel):
         "core.DataDeclaration",
         verbose_name="Derived/re-used from:",
         blank=True,
-        help_text="If this data declaration is based on or derived from an earlier data declaration, then select ancestor data declaration.",
+        help_text="If this data declaration is based on or derived from an earlier data declaration, then select "
+        "ancestor data declaration.",
         related_name="data_declarations_derivated",
     )
 
@@ -134,7 +136,8 @@ class DataDeclaration(CoreModel):
         verbose_name="Embargo date",
         blank=True,
         null=True,
-        help_text="If there is an embargo date associated with data, please specify it. Data cannot be published before the embargo date.",
+        help_text="If there is an embargo date associated with data, please specify it. Data cannot be published "
+        "before the embargo date.",
     )
 
     end_of_storage_duration = models.DateField(
@@ -156,14 +159,17 @@ class DataDeclaration(CoreModel):
         blank=True,
         default=None,
         verbose_name="Has special subjects?",
-        help_text='"Special subjects" refers to minors or those unable to give consent themselves e.g. advanced-stage dementia patients. If the data is collected from such subjects, please tick this box and provide an description.',
+        help_text='"Special subjects" refers to minors or those unable to give consent themselves e.g. advanced-stage '
+        "dementia patients. If the data is collected from such subjects, please tick this box and provide a "
+        "description.",
     )
 
     other_external_id = TextFieldWithInputWidget(
         blank=True,
         null=True,
         verbose_name="Other Identifiers",
-        help_text="If the dataset has another external identifier such as accession number(s) or DOI(s), then please state them here.",
+        help_text="If the dataset has another external identifier such as accession number(s) or DOI(s), then please "
+        "state them here.",
     )
 
     partner = models.ForeignKey(
@@ -198,7 +204,8 @@ class DataDeclaration(CoreModel):
     submission_id = TextFieldWithInputWidget(
         verbose_name="Submission ID",
         null=True,
-        help_text="This is the reference number in the submission portal. This field is only applicable for data submitted via the Submission Portal.",
+        help_text="This is the reference number in the submission portal. This field is only applicable for data "
+        "submitted via the Submission Portal.",
         blank=True,
     )
 
@@ -206,7 +213,8 @@ class DataDeclaration(CoreModel):
         blank=False,
         max_length=255,
         verbose_name="Title",
-        help_text="Title is a brief description for the  data declaration. Think of how you - in the lab - refer to  data from a particular source; use that as the title.",
+        help_text="Title is a brief description for the  data declaration. Think of how you - in the lab - refer to  "
+        "data from a particular source; use that as the title.",
     )
 
     unique_id = models.UUIDField(

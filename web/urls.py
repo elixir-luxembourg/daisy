@@ -96,7 +96,6 @@ from web.views.user import (
     UserDelete,
     UserEditView,
     UsersListView,
-    UserPasswordChange,
 )
 from web.views.users import add_personnel_to_project, remove_personnel_from_project
 from web.views.log_entry import LogEntryListView

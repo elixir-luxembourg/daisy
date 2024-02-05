@@ -2,7 +2,7 @@ from django.test.client import Client
 from django.db.models import Model
 from django.contrib.auth.models import Group
 
-from core.models import User, Contract
+from core.models import User
 from core.constants import Groups
 
 from typing import List, Optional
@@ -89,6 +89,6 @@ def check_response_context_data(url, user, perm, obj, context_key):
 
 
 def login_test_user(
-    test_client: Client, user: User, password: Optional[str] = "test-user"
+    test_client: Client, user: User, password: Optional[str] = "password"
 ):
     assert test_client.login(username=user.username, password=password), "Login failed"

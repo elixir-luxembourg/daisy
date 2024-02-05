@@ -2,7 +2,11 @@ from typing import Dict, List, Optional, Tuple
 
 from django.conf import settings
 from keycloak import KeycloakAdmin
-from keycloak.exceptions import KeycloakGetError
+from keycloak.exceptions import (
+    KeycloakGetError,
+    KeycloakAuthenticationError,
+    KeycloakOperationError,
+)
 
 from core.synchronizers import (
     AccountSynchronizationBackend,
@@ -75,7 +79,7 @@ class KeycloakSynchronizationBackend(AccountSynchronizationBackend):
         try:
             _ = self.get_keycloak_admin_connection().users_count()
             return True
-        except:
+        except (KeyError, KeycloakAuthenticationError, KeycloakOperationError):
             return False
 
     def get_list_of_users(self) -> List[Dict]:

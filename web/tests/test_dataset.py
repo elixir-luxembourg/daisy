@@ -11,7 +11,6 @@ from test.factories import (
     UserFactory,
     VIPGroup,
     StorageResourceFactory,
-    LegalBasisFactory,
 )
 from django.urls import reverse
 from django.test import Client

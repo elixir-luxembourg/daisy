@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.forms import CharField, ModelForm, Select
 
 from core.models import UseRestriction, RestrictionClass
@@ -46,7 +45,6 @@ class UseRestrictionForm(ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         restriction_class = cleaned_data.get("restriction_class")
-        notes = cleaned_data.get("notes")
         if not restriction_class:
             self.add_error(
                 "restriction_class", "Please select a valid restriction class"

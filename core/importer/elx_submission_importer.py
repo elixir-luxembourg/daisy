@@ -3,8 +3,7 @@ import sys
 
 from core.exceptions import DatasetImportError
 from core.importer.base_importer import BaseImporter
-from core.importer.projects_importer import ProjectsImporter
-from core.models import Contact, Dataset, Project, ContactType
+from core.models import Dataset, Project
 from core.utils import DaisyLogger
 
 
@@ -34,7 +33,7 @@ class DishSubmissionImporter(BaseImporter):
                     acronym=self.elixir_project_name
                 ).first()
 
-            dataset = self.process_submission_as_dataset(submission_dict, project)
+            self.process_submission_as_dataset(submission_dict, project)
             # contract = self.process_submission_as_contract(submission_dict, project)
 
             # for study_dict in submission_dict.get('studies', []):
@@ -169,7 +168,13 @@ class DishSubmissionImporter(BaseImporter):
             "Elixir" if submission_dict["scope"] == "e" else "LCSB Collaboration"
         )
         local_project_str = submission_dict.get("local_project", "")
-        dataset.comments = f"ELU Accession: {elu_accession}\nTitle: {title}\nCreated On: {created_on_str}\nScope: {scope_str}\nSubmitted to Project: {local_project_str}"
+        dataset.comments = (
+            f"ELU Accession: {elu_accession}\n"
+            f"Title: {title}\n"
+            f"Created On: {created_on_str}\n"
+            f"Scope: {scope_str}\n"
+            f"Submitted to Project: {local_project_str}"
+        )
 
         local_custodians, local_personnel, external_contacts = self.process_contacts(
             submission_dict

@@ -3,16 +3,7 @@ from django.urls import reverse
 
 from core import constants
 from core.models import Project
-from test import factories
-
-
-def login(client, user):
-    """
-    Shotcut to log an user to a client.
-    """
-    assert client.login(
-        username=user.username, password=user.password
-    ), f"Login of user {user.username} failed"
+from .views.utils import login_test_user
 
 
 @pytest.mark.parametrize("is_vip", [True, False])
@@ -21,7 +12,7 @@ def test_project_create_get(client, is_vip, user_vip, user_normal):
     GET url for project creation.
     """
     url = reverse("project_add")
-    is_vip and login(client, user_vip) or login(client, user_normal)
+    is_vip and login_test_user(client, user_vip) or login_test_user(client, user_normal)
     response = client.get(url)
     assert response.status_code == 200
     assert "projects/project_form.html" in response.template_name
@@ -45,7 +36,7 @@ def test_project_create_post_valid(permissions, client, user_vip, user_normal, i
         "legal_documents": [],
         "publications": [],
     }
-    is_vip and login(client, user_vip) or login(client, user_normal)
+    is_vip and login_test_user(client, user_vip) or login_test_user(client, user_normal)
     response = client.post(url, data)
 
     # check redirect and project is created
@@ -79,7 +70,7 @@ def test_project_create_post_valid(permissions, client, user_vip, user_normal, i
 def test_project_create_post_blank(client, user_normal, user_vip, is_vip):
     url = reverse("project_add")
     data = {}
-    is_vip and login(client, user_vip) or login(client, user_normal)
+    is_vip and login_test_user(client, user_vip) or login_test_user(client, user_normal)
     response = client.post(url, data)
 
     assert response.status_code == 200
@@ -99,7 +90,7 @@ def test_project_create_post_invalid(client, user_normal, user_vip, is_vip):
         "legal_documents": [],
         "publications": [],
     }
-    is_vip and login(client, user_vip) or login(client, user_normal)
+    is_vip and login_test_user(client, user_vip) or login_test_user(client, user_normal)
     response = client.post(url, data)
 
     assert response.status_code == 200

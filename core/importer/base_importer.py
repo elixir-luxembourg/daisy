@@ -69,8 +69,11 @@ class BaseImporter:
         try:
             object = json.loads(json_string)
             return self.can_process_object(object)
-        except:
-            message = f'Couldn\'t check if the imported object has same "$schema" as the importer ({self.__class__.__name__}: {self.json_schema_uri}) - something went wrong while parsing the file'
+        except json.JSONDecodeError:
+            message = (
+                f'Couldn\'t check if the imported object has same "$schema" as the importer '
+                f"({self.__class__.__name__}: {self.json_schema_uri}) - something went wrong while parsing the file"
+            )
             self.logger.warning(message)
             return False
 
@@ -82,11 +85,17 @@ class BaseImporter:
             self.logger.debug('The imported object has no "$schema" attribute')
             return False
         if self.json_schema_uri == json_object.get("$schema"):
-            message = f'The imported object has the same "$schema" ({self.json_schema_uri}) as the importer ({self.__class__.__name__})'
+            message = (
+                f'The imported object has the same "$schema" ({self.json_schema_uri}) as the importer '
+                f"({self.__class__.__name__})"
+            )
             self.logger.debug(message)
             return True
         schema_name = json_object.get("$schema")
-        message = f'The imported object has different "$schema" ({schema_name}) than the importer ({self.__class__.__name__}: {self.json_schema_uri})'
+        message = (
+            f'The imported object has different "$schema" ({schema_name}) than the importer '
+            f"({self.__class__.__name__}: {self.json_schema_uri})"
+        )
         self.logger.debug(message)
         return False
 
@@ -128,7 +137,7 @@ class BaseImporter:
             self.json_schema_validator.validate_items(json_list, self.logger)
             self.logger.debug("...JSON schema is OK!")
         else:
-            self.logger.debug(f"Proceeding without using the validation")
+            self.logger.debug("Proceeding without using the validation")
         count = len(json_list)
         verb = "are" if count > 1 else "is"
         self.logger.debug(
@@ -170,7 +179,7 @@ class BaseImporter:
         try:
             object.publish(save=True)
             result = True
-        except AttributeError as e:
+        except AttributeError:
             self.logger.warning(
                 f"Publishing this type of entity ({object._meta.object_name}) is not implemented - item is not published."
             )
@@ -245,7 +254,7 @@ class BaseImporter:
 
     def validate_contact_type(self, contact_type):
         try:
-            contact_type_obj = ContactType.objects.get(name=contact_type)
+            ContactType.objects.get(name=contact_type)
         except ContactType.DoesNotExist:
             self.logger.warning(
                 f'Unknown contact type: {contact_type}. Setting to "Other".'
@@ -328,7 +337,8 @@ class BaseImporter:
                     contact.partners.add(partner[0])
                 else:
                     self.logger.warning(
-                        f"Cannot link contact '{first_name} {last_name}' to partner. No partner found for the affiliation: {affiliation}"
+                        f"Cannot link contact '{first_name} {last_name}' to partner. No partner found for the "
+                        f"affiliation: {affiliation}"
                     )
             contact.save()
         return contact

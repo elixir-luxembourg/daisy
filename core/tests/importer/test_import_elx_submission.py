@@ -4,7 +4,7 @@ import pytest
 from django.conf import settings
 
 from core.importer.elx_submission_importer import DishSubmissionImporter
-from core.models import Dataset, Project
+from core.models import Dataset
 from test import factories
 
 TEST_DATA_PATH = os.path.join(settings.BASE_DIR, "core", "tests", "data")

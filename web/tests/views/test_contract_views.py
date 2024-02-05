@@ -16,11 +16,11 @@ from test.factories import (
 from core.constants import Permissions
 from core.models.user import User
 from core.models.contract import Contract
-
 from .utils import (
     check_response_status,
     check_datasteward_restricted_url,
     check_response_context_data,
+    login_test_user,
 )
 
 
@@ -87,7 +87,7 @@ def test_contract_view_protected_documents(permissions, group):
     user = UserFactory(groups=[group()])
 
     client = Client()
-    assert client.login(username=user.username, password="test-user"), "Login failed"
+    login_test_user(client, user)
 
     url = reverse("contract", kwargs={"pk": contract.pk})
     response = client.get(url, follow=True)
@@ -125,8 +125,7 @@ def test_contract_edit_protected_documents(permissions, group):
     user = UserFactory(groups=[group()])
 
     client = Client()
-    assert client.login(username=user.username, password="test-user"), "Login failed"
-
+    login_test_user(client, user)
     url = reverse("contract", kwargs={"pk": contract.pk})
     response = client.get(url, follow=True)
 

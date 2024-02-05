@@ -1,6 +1,6 @@
 from core.importer.base_importer import BaseImporter
 from core.importer.JSONSchemaValidator import ProjectJSONSchemaValidator
-from core.models import Partner, Project, Publication
+from core.models import Project, Publication
 from core.exceptions import ProjectImportError
 
 
@@ -178,12 +178,7 @@ class ProjectsImporter(BaseImporter):
                 )
         except self.DateImportException:
             date_str = project_dict.get(attribute_name)
-            message = (
-                f"\tCouldn"
-                't import the "{attribute_name}". Does it follow the '
-                "%Y-%m-%d"
-                " format?\n\t"
-            )
+            message = f'\tCouldn\'t import the "{attribute_name}". Does it follow the %Y-%m-%d format?\n\t'
             message = message + f'Was: "{date_str}". '
             message = message + "Continuing with empty value."
             self.logger.warning(message)

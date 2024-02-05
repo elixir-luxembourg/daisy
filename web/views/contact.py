@@ -9,13 +9,14 @@ from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 
 from core.forms import ContactForm, PickContactForm
 from core.models import Contact, Project
+from core.models.utils import COMPANY
 from core.permissions import permission_required, CheckerMixin
+
 from web.views.utils import AjaxViewMixin
 from core.constants import Permissions
 from . import facet_view_utils
 
 FACET_FIELDS = settings.FACET_FIELDS["contact"]
-from core.models.utils import COMPANY
 
 
 @require_http_methods(["DELETE"])

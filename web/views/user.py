@@ -20,7 +20,6 @@ from core.models import User
 from core.models.project import ProjectUserObjectPermission
 from core.models.dataset import DatasetUserObjectPermission
 from core.models.user import UserSource
-from core.permissions.checker import CheckerMixin
 from web.views.utils import AjaxViewMixin
 
 

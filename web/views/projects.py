@@ -164,7 +164,7 @@ class ProjectEditView(CheckerMixin, UpdateView):
         return response
 
 
-## DATASET METHODS ##
+# DATASET METHODS #
 
 
 @permission_required(Permissions.EDIT, "project", (Project, "pk", "pk"))
@@ -188,7 +188,7 @@ def project_dataset_create(request, pk, flag):
         if form.is_valid():
             with transaction.atomic():
                 try:
-                    dataset = form.save()
+                    form.save()
                 except IntegrityError as e:
                     messages.add_message(request, messages.ERROR, e)
                     return redirect("project", pk=project.pk)
@@ -222,7 +222,7 @@ def project_dataset_add(request, pk):
         form = DatasetSelection(request.POST)
         if form.is_valid():
             try:
-                dataset = form.cleaned_data["dataset"]
+                form.cleaned_data["dataset"]
             except IntegrityError as e:
                 messages.add_message(request, messages.ERROR, e)
                 return redirect("project", pk=project.pk)

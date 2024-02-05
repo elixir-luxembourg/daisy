@@ -1,5 +1,5 @@
 from core.importer.base_importer import BaseImporter
-from core.models.partner import Partner, SECTOR_CATEGORY
+from core.models.partner import Partner
 from core.importer.JSONSchemaValidator import InstitutionJSONSchemaValidator
 from core.exceptions import PartnerImportError
 

@@ -39,13 +39,14 @@ class BootstrapChecker:
         pass
 
     def _check_idservice(self):
-        idservice_endpoint = getattr(settings, "IDSERVICE_ENDPOINT", None)
         # TODO: check ID service endpoint connectivity
         # i.e.: make http GET request
 
+        # idservice_endpoint = getattr(settings, "IDSERVICE_ENDPOINT", None)
+
         # Checks if the function can be importable
         idservice_function = getattr(settings, "IDSERVICE_FUNCTION", None)
-        generate_id_function = import_string(idservice_function)
+        import_string(idservice_function)
 
     def run(self):
         self._check_idservice()

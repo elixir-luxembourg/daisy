@@ -48,7 +48,8 @@ class Cohort(CoreTrackedDBModel):
     owners = models.ManyToManyField(
         "core.Contact",
         verbose_name="Cohort owner(s)",
-        help_text="Cohort owners are typically clinicians that supervise the recruitment of subjects. They have access to subjects' identities and deal with subject's requests.",
+        help_text="Cohort owners are typically clinicians that supervise the recruitment of subjects. They have "
+        "access to subjects' identities and deal with subject's requests.",
         blank=False,
     )
 
@@ -92,8 +93,6 @@ class Cohort(CoreTrackedDBModel):
         return base_dict
 
     def serialize_to_export(self):
-        import functools
-
         d = self.to_dict()
 
         owners = map(

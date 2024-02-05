@@ -2,7 +2,6 @@ import pytest
 
 from typing import Optional
 from django.shortcuts import reverse
-from django.test.client import Client
 
 from test.factories import (
     VIPGroup,

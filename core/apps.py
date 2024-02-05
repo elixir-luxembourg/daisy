@@ -9,7 +9,7 @@ class CoreConfig(AppConfig):
     name = "core"
 
     def ready(self):
-        import core.models.signals
+        import core.models.signals  # noqa: F401
 
         # Prevent use of conflicting versions of import JSON schemas
         json_schema_uri = getattr(settings, "IMPORT_JSON_SCHEMAS_URI")

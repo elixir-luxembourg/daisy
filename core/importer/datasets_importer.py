@@ -7,7 +7,6 @@ from core.models import (
     DataDeclaration,
     Dataset,
     DataType,
-    Partner,
     Project,
     StorageResource,
     Share,
@@ -583,7 +582,7 @@ class DatasetsImporter(BaseImporter):
                 self.logger.info(
                     f"Cohort '{safe_name}' linked successfully to data declaration '{safe_title}'"
                 )
-            except:
+            except KeyError:
                 self.logger.warning(
                     f"The data declaration for the study '{safe_name}' not found. "
                 )

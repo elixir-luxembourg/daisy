@@ -11,7 +11,7 @@ def daisy_version(request):
             the_version = "develop"
         else:
             the_version = daisy_packages[0].version
-    except:
+    except pkg_resources.DistributionNotFound:
         the_version = "develop"
 
     return {"app_version": the_version}

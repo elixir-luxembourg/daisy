@@ -204,7 +204,11 @@ class DataDeclarationForm(SkipFieldValidationMixin, forms.ModelForm):
         model = DataDeclaration
         fields = ["title"]
         heading = "Add new Data Declaration"
-        heading_help = "Dataset can have one or many subsets, called data declarations. These can capture data from a particular partner, cohort or data of a particular type. Define first declaration below. More declarations can be added later."
+        heading_help = (
+            "Dataset can have one or many subsets, called data declarations. These can capture data from "
+            "a particular partner, cohort or data of a particular type. Define first declaration below. "
+            "More declarations can be added later."
+        )
 
     def __init__(self, *args, **kwargs):
         self.dataset = kwargs.pop("dataset")

@@ -1,21 +1,18 @@
 import os
 
 import pytest
-from django.apps import apps
 from django.conf import settings
-from django.contrib.auth.models import Group, Permission
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Group
 from django.db.backends.postgresql.features import DatabaseFeatures
-from guardian.shortcuts import assign_perm
 
 from core.constants import Groups as GroupConstants
 from core.management.commands.load_initial_data import Command as CommandLoadInitialData
-from core.permissions import GROUP_PERMISSIONS
 
 
 FIXTURE_DIR = os.path.join(settings.BASE_DIR, "core", "fixtures")
 
-## FAKE LDAP DIRECTORY
+
+# FAKE LDAP DIRECTORY
 LCSB = ("OU=LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux", {"ou": ["LCSB"]})
 disabled_lcsb = (
     "OU=LCSB,OU=Faculties,OU=UNI-DisabledUsers,DC=uni,DC=lux",
@@ -33,7 +30,10 @@ def make_fake_ldap_user(
     """
     Create a fake LDAP user
     """
-    enc = lambda x: x.encode("utf-8")
+
+    def enc(x):
+        return x.encode("utf-8")
+
     dn = "LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux"
     if is_external:
         dn = "Administration,OU=FSTC,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux"
@@ -120,14 +120,18 @@ def celery_session_worker(celery_session_worker):
 # thoses users must correspond to those created in the LDAP tree
 @pytest.fixture
 def user_normal(django_user_model):
-    u = django_user_model.objects.create(username="normal.user", password="password")
+    u = django_user_model.objects.create_user(
+        username="normal.user", password="password", email="normal.user@email.com"
+    )
     u.save()
     return u
 
 
 @pytest.fixture
 def user_vip(django_user_model):
-    u = django_user_model.objects.create(username="pi.number1", password="password")
+    u = django_user_model.objects.create_user(
+        username="pi.number1", password="password", email="Pi@email.com"
+    )
     g, _ = Group.objects.get_or_create(name=GroupConstants.VIP.value)
     u.groups.add(g)
     return u
@@ -135,7 +139,9 @@ def user_vip(django_user_model):
 
 @pytest.fixture
 def user_data_steward(django_user_model):
-    u = django_user_model.objects.create(username="data.steward", password="password")
+    u = django_user_model.objects.create_user(
+        username="data.steward", password="password", email="data.steward@email.com"
+    )
     g, _ = Group.objects.get_or_create(name=GroupConstants.DATA_STEWARD.value)
     u.groups.add(g)
     return u
@@ -176,12 +182,16 @@ def users(django_user_model, user_normal, user_vip, user_data_steward):
     """
     password = "password"
 
-    u = django_user_model.objects.create(username="pi.number2", password=password)
+    u = django_user_model.objects.create_user(
+        username="pi.number2", password=password, email="Pi2@email.com"
+    )
     g, _ = Group.objects.get_or_create(name=GroupConstants.VIP.value)
     u.groups.add(g)
     u.save()
 
-    u = django_user_model.objects.create(username="external.user", password=password)
+    u = django_user_model.objects.create_user(
+        username="external.user", password=password, email="external.user@email.com"
+    )
     u.save()
 
 

@@ -2,6 +2,8 @@ import datetime
 import json
 
 from django.shortcuts import reverse
+from django.test import override_settings
+
 from faker import Faker
 
 from core.models import Access
@@ -37,6 +39,8 @@ def patch_get_external_user_info(
     )
 
 
+@override_settings(REMS_INTEGRATION_ENABLED=True)
+@override_settings(REMS_SKIP_IP_CHECK=True)
 def test_rems_handler_user_by_oidc_updated(client, user_vip, user_data_steward, mocker):
     email = "john.doe@uni.lu"
     patch_get_external_user_info(
@@ -76,6 +80,8 @@ def test_rems_handler_user_by_oidc_updated(client, user_vip, user_data_steward, 
     assert user.email == "jane.davis@test.com"
 
 
+@override_settings(REMS_INTEGRATION_ENABLED=True)
+@override_settings(REMS_SKIP_IP_CHECK=True)
 def test_rems_handler_duplicate(client, user_vip, user_data_steward, mocker):
     email = "john.doe@test.com"
     patch_get_external_user_info(mocker, email=email)
@@ -112,6 +118,8 @@ def test_rems_handler_duplicate(client, user_vip, user_data_steward, mocker):
     assert len(accesses) == 1
 
 
+@override_settings(REMS_INTEGRATION_ENABLED=True)
+@override_settings(REMS_SKIP_IP_CHECK=True)
 def test_rems_handler_no_expiration(client, user_vip, user_data_steward, mocker):
     resource_id = "TEST-2-5591E3-1"
     email = "john.doe@test.com"
@@ -147,6 +155,8 @@ def test_rems_handler_no_expiration(client, user_vip, user_data_steward, mocker)
     assert len(accesses) == 1
 
 
+@override_settings(REMS_INTEGRATION_ENABLED=True)
+@override_settings(REMS_SKIP_IP_CHECK=True)
 def test_rems_handler_different_expiration(client, user_vip, user_data_steward, mocker):
     resource_id = "TEST-2-5591E3-1"
     expiration_date_1 = datetime.date.today() + datetime.timedelta(days=1)
@@ -185,6 +195,8 @@ def test_rems_handler_different_expiration(client, user_vip, user_data_steward, 
     assert len(accesses) == 2
 
 
+@override_settings(REMS_INTEGRATION_ENABLED=True)
+@override_settings(REMS_SKIP_IP_CHECK=True)
 def test_rems_handler_user_not_found(client, user_vip, user_data_steward, mocker):
     email = "john.doe@test.com"
     patch_get_external_user_info(mocker, expected_oidc_id="not_found")
@@ -216,6 +228,8 @@ def test_rems_handler_user_not_found(client, user_vip, user_data_steward, mocker
     assert len(accesses) == 0
 
 
+@override_settings(REMS_INTEGRATION_ENABLED=True)
+@override_settings(REMS_SKIP_IP_CHECK=True)
 def test_rems_handler_contact_by_oidc_updated(
     client, user_vip, user_data_steward, mocker
 ):
@@ -252,6 +266,8 @@ def test_rems_handler_contact_by_oidc_updated(
     assert contact.email == "jane.davis@test.com"
 
 
+@override_settings(REMS_INTEGRATION_ENABLED=True)
+@override_settings(REMS_SKIP_IP_CHECK=True)
 def test_rems_handler_user_by_email_updated(
     client, user_vip, user_data_steward, mocker
 ):
@@ -290,6 +306,8 @@ def test_rems_handler_user_by_email_updated(
     assert user.email == email
 
 
+@override_settings(REMS_INTEGRATION_ENABLED=True)
+@override_settings(REMS_SKIP_IP_CHECK=True)
 def test_rems_handler_user_by_email_multiple(
     client, user_vip, user_data_steward, mocker
 ):
@@ -333,6 +351,8 @@ def test_rems_handler_user_by_email_multiple(
     assert user.email == email
 
 
+@override_settings(REMS_INTEGRATION_ENABLED=True)
+@override_settings(REMS_SKIP_IP_CHECK=True)
 def test_rems_handler_contact_by_email_updated(
     client, user_vip, user_data_steward, mocker
 ):
@@ -369,6 +389,8 @@ def test_rems_handler_contact_by_email_updated(
     assert contact.email == email
 
 
+@override_settings(REMS_INTEGRATION_ENABLED=True)
+@override_settings(REMS_SKIP_IP_CHECK=True)
 def test_rems_handler_contact_by_email_multiple(
     client, user_vip, user_data_steward, mocker
 ):
@@ -416,6 +438,8 @@ def test_rems_handler_contact_by_email_multiple(
     assert contact.email == email
 
 
+@override_settings(REMS_INTEGRATION_ENABLED=True)
+@override_settings(REMS_SKIP_IP_CHECK=True)
 def test_rems_handler_contact_created(client, user_vip, user_data_steward, mocker):
     faker = Faker()
     email = faker.email()
