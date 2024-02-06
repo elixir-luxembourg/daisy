@@ -25,6 +25,8 @@ WORKDIR /code
 
 # Copy the list of Python dependencies
 COPY ./setup.py /code/.
+# Downgrade setuptools before installing dependencies
+RUN pip install setuptools==59.6.0
 # Try to install as many Python dependencies as possible...
 RUN pip install --no-cache-dir -e . 2>/dev/null || true
 # ... so that next time the project changes, the previous steps will be cached...

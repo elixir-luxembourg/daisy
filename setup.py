@@ -11,7 +11,7 @@ requirements = [
     "django-auth-ldap==4.1.0",
     "redis==3.4.1",
     "celery==5.2.3",
-    "setuptools<59.7.0,>=59.1.1",
+    "setuptools==59.6.0",
     "celery-haystack-ng",
     "django-celery-beat==2.3.0",
     "django-celery-results==2.4.0",
