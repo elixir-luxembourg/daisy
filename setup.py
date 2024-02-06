@@ -80,6 +80,6 @@ setup(
     test_suite="tests",
     tests_require=test_requirements,
     package_data={"elixir-daisy": ["elixir_daisy/resources/*"]},
-    extras_require={"dev": dev_requirements},
+    extras_require={"dev": dev_requirements, "test": test_requirements},
     scripts=["manage.py"],
 )
