@@ -47,13 +47,13 @@ requirements = [
 ]
 
 test_requirements = [
-    "coverage",
-    "factory_boy",
-    "pytest",
-    "pytest-django",
+    "coverage<5",
+    "factory_boy==3.2.1",
+    "pytest==7.1.2",
+    "pytest-django==4.5.2",
     "pytest-solr==1.0a1",
     "pytest-celery",
-    "pytest-mock",
+    "pytest-mock==3.12.0",
 ]
 
 dev_requirements = ["pre-commit==3.3.3"]
