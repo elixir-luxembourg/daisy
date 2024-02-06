@@ -48,7 +48,7 @@ requirements = [
 
 test_requirements = [
     "coverage==6.4.1",
-    "factory_boy",
+    "factory_boy==3.2.1",
     "pytest==7.1.2",
     "pytest-django==4.5.2",
     "pytest-solr==1.0a1",
