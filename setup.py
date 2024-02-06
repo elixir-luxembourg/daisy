@@ -9,7 +9,7 @@ except ImportError:
 requirements = [
     "Django==3.2.23",
     "django-auth-ldap==4.1.0",
-    "celery==5.2.3",
+    "celery==5.3.6",
     "celery-haystack-ng",
     "django-celery-beat==2.3.0",
     "django-celery-results==2.4.0",
