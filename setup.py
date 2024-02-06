@@ -9,9 +9,7 @@ except ImportError:
 requirements = [
     "Django==3.2.23",
     "django-auth-ldap==4.1.0",
-    "redis==3.4.1",
     "celery==5.2.3",
-    "setuptools==59.6.0",
     "celery-haystack-ng",
     "django-celery-beat==2.3.0",
     "django-celery-results==2.4.0",
@@ -49,7 +47,7 @@ requirements = [
 ]
 
 test_requirements = [
-    "coverage==6.4.1",
+    "coverage==5.5.0",
     "factory_boy==3.2.1",
     "pytest==7.1.2",
     "pytest-django==4.5.2",
