@@ -23,6 +23,7 @@ RUN cd /static/vendor \
 
 WORKDIR /code
 
+RUN pip install --upgrade pip
 # Copy the list of Python dependencies
 COPY ./setup.py /code/.
 # Try to install as many Python dependencies as possible...
