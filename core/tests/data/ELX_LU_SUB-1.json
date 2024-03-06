@@ -100,7 +100,7 @@
       "subject_categories": "pseudonymized",
       "use_restrictions": [
         {
-          "ga4gh_code": "TS-[XX]",
+          "ga4gh_code": "TS",
           "note": "Annual renewal of collaboration agreement is necessary"
         }
       ]

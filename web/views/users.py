@@ -10,13 +10,13 @@ from core.constants import Permissions
 from core.permissions import permission_required
 
 
-@permission_required(Permissions.EDIT, 'project', (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, "project", (Project, "pk", "pk"))
 def add_personnel_to_project(request, pk):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = PickUserForm(request.POST)
         if form.is_valid():
             project = get_object_or_404(Project, pk=pk)
-            user_id = form.cleaned_data['personnel']
+            user_id = form.cleaned_data["personnel"]
             personnel = get_object_or_404(User, pk=user_id)
             project.company_personnel.add(personnel)
             project.save()
@@ -27,15 +27,20 @@ def add_personnel_to_project(request, pk):
                 error_message = f"{field}: {error[0]}"
                 error_messages.append(error_message)
             add_message(request, messages.ERROR, "\n".join(error_messages))
-        return redirect(to='project', pk=pk)
+        return redirect(to="project", pk=pk)
 
     else:
         form = PickUserForm()
 
-    return render(request, 'modal_form.html', {'form': form, 'submit_url': request.get_full_path()})
+    return render(
+        request,
+        "modal_form.html",
+        {"form": form, "submit_url": request.get_full_path()},
+    )
+
 
 @require_http_methods(["DELETE"])
-@permission_required(Permissions.EDIT, 'project', (Project, 'pk', 'pk'))
+@permission_required(Permissions.EDIT, "project", (Project, "pk", "pk"))
 def remove_personnel_from_project(request, pk, user_id):
     project = get_object_or_404(Project, pk=pk)
     project.company_personnel.remove(user_id)

@@ -4,50 +4,55 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0004_auto_20190719_1104'),
+        ("core", "0004_auto_20190719_1104"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='cohort',
-            name='is_published',
-            field=models.BooleanField(default=False, verbose_name='Is published?'),
+            model_name="cohort",
+            name="is_published",
+            field=models.BooleanField(default=False, verbose_name="Is published?"),
         ),
         migrations.AddField(
-            model_name='dataset',
-            name='elu_accession',
-            field=models.CharField(default='-', max_length=20),
+            model_name="dataset",
+            name="elu_accession",
+            field=models.CharField(default="-", max_length=20),
         ),
         migrations.AddField(
-            model_name='project',
-            name='elu_accession',
-            field=models.CharField(default='-', max_length=20),
+            model_name="project",
+            name="elu_accession",
+            field=models.CharField(default="-", max_length=20),
         ),
         migrations.AddField(
-            model_name='project',
-            name='is_published',
-            field=models.BooleanField(default=False, verbose_name='Is published?'),
+            model_name="project",
+            name="is_published",
+            field=models.BooleanField(default=False, verbose_name="Is published?"),
         ),
         migrations.AlterField(
-            model_name='cohort',
-            name='elu_accession',
-            field=models.CharField(default='-', max_length=20),
+            model_name="cohort",
+            name="elu_accession",
+            field=models.CharField(default="-", max_length=20),
         ),
         migrations.AlterField(
-            model_name='dataset',
-            name='is_published',
-            field=models.BooleanField(default=False, verbose_name='Is published?'),
+            model_name="dataset",
+            name="is_published",
+            field=models.BooleanField(default=False, verbose_name="Is published?"),
         ),
         migrations.AlterField(
-            model_name='partner',
-            name='is_published',
-            field=models.BooleanField(default=False, verbose_name='Is published?'),
+            model_name="partner",
+            name="is_published",
+            field=models.BooleanField(default=False, verbose_name="Is published?"),
         ),
         migrations.AlterField(
-            model_name='share',
-            name='data_declarations',
-            field=models.ManyToManyField(blank=True, help_text='The scope of this transfer. Leave empty if the all data declarations were transferred.', related_name='share_records', to='core.DataDeclaration', verbose_name='Scope of transfer'),
+            model_name="share",
+            name="data_declarations",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="The scope of this transfer. Leave empty if the all data declarations were transferred.",
+                related_name="share_records",
+                to="core.DataDeclaration",
+                verbose_name="Scope of transfer",
+            ),
         ),
     ]

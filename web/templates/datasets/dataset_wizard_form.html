@@ -1,0 +1,67 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block head_end %}
+    {{ wizard.form.media }}
+    <link rel="stylesheet" href="{% static 'css/dataset_wizard.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="mt-3 py-0 pt-3 w-100">
+            <ul class="step-wizard-list shadow-sm">
+                {% for step, step_verbose_name, skipped in steps_verbose_data %}
+                    <li class="step-wizard-item {% if wizard.steps.current == step %}current-item{% endif %}">
+                        <span class="progress-count {% if skipped %}skipped{% endif %}">{{ forloop.counter }}</span>
+                        <span class="progress-label">{{ step_verbose_name }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="col-md-12 card">
+            <form action="" method="post" class="form col-md-12 nice-selects" id="wizard-form">
+                {% csrf_token %}
+                <table>
+                    {{ wizard.management_form }}
+                    {% if wizard.form.forms %}
+                        <!-- If wizard.form.forms is not empty or evaluates to True -->
+                        {{ wizard.form.management_form }}
+                        {% for form in wizard.form.forms %}
+                            <!-- Display form information -->
+                            <div class="jumbotron mt-2 p-4">
+                                <h1 class="display-4">{{ form.Meta.heading }}</h1>
+                                <p class="text-muted">{{ form.Meta.heading_help }}</p>
+                            </div>
+                            {% include '_includes/forms.html' with form=form %}
+                        {% endfor %}
+                    {% else %}
+                        <!-- If wizard.form.forms is empty or evaluates to False -->
+                        <!-- Display form information -->
+                        <div class="mt-2 p-0">
+                            <div class="d-flex justify-content-between mt-3">
+                                <h1 class="display-4">{{ form.Meta.heading }}</h1>
+                                {% if wizard.steps.step0 != 0 %}
+                                    <a type="button" id="skipButton" class="btn btn-secondary float-left text-secondary">
+                                        Skip <i class="material-icons" style="vertical-align: bottom;">skip_next</i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                            <p class="text-muted">{{ form.Meta.heading_help }}</p>
+                        </div>
+                        {% include '_includes/forms.html' with form=wizard.form %}
+                    {% endif %}
+                </table>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        const dataDeclarationsAddSubFormUrl = "{% url 'data_declarations_add_sub_form' %}";
+        const dataset_id = '{{ dataset_id|safe }}';
+        const stepName = '{{ step_name|safe }}';
+        const skipInputID = 'id_' + '{{ step_name|safe }}' + '-skip_wizard';
+    </script>
+    <script src="{% static 'js/data_declaration.js' %}"></script>
+{% endblock %}

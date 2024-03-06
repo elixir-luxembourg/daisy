@@ -3,35 +3,39 @@ from .settings import *
 
 # Haystack connections
 HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
-        'URL': 'http://solr:8983/solr/daisy',
-        'ADMIN_URL': 'http://solr:8983/solr/admin/cores',
+    "default": {
+        "ENGINE": "haystack.backends.solr_backend.SolrEngine",
+        "URL": "http://solr:8983/solr/daisy",
+        "ADMIN_URL": "http://solr:8983/solr/admin/cores",
     },
-    'test': {
-        'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
-        'URL': 'http://solr:8983/solr/daisy_test',
-        'ADMIN_URL': 'http://solr:8983/solr/admin/cores',
+    "test": {
+        "ENGINE": "haystack.backends.solr_backend.SolrEngine",
+        "URL": "http://solr:8983/solr/daisy_test",
+        "ADMIN_URL": "http://solr:8983/solr/admin/cores",
     },
 }
 
 # http://celery-haystack.readthedocs.io/en/latest/#usage
-HAYSTACK_SIGNAL_PROCESSOR = 'celery_haystack.signals.CelerySignalProcessor'
+HAYSTACK_SIGNAL_PROCESSOR = "celery_haystack.signals.CelerySignalProcessor"
 
-STATIC_ROOT = '/static'
-SASS_PROCESSOR_ROOT = '/static'
+STATIC_ROOT = "/static"
+SASS_PROCESSOR_ROOT = "/static"
 
 # Celery config
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html
 
 ## Broker settings.
-CELERY_BROKER_URL = 'amqp://guest:guest@mq:5672//'
+CELERY_BROKER_URL = "amqp://guest:guest@mq:5672//"
 
 ## Result backend
-CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_BACKEND = "django-db"
 
-TESTING = os.environ.get('TEST', False)
-GLOBAL_API_KEY = os.environ.get('GLOBAL_API_KEY', 'default_global_api_key_in_settings_compose_ci.py')
+TESTING = True
+GLOBAL_API_KEY = os.environ.get(
+    "GLOBAL_API_KEY", "default_global_api_key_in_settings_compose_ci.py"
+)
+REMS_INTEGRATION_ENABLED = True
+REMS_ALLOWED_IP_ADDRESSES = ["*"]
 
 try:
     from .settings_ci import *
@@ -39,12 +43,12 @@ except ImportError as e:
     pass
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'daisy',
-        'USER': 'daisy',
-        'PASSWORD': 'daisy',
-        'HOST': 'db',
-        'PORT': 5432,
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "daisy",
+        "USER": "daisy",
+        "PASSWORD": "daisy",
+        "HOST": "db",
+        "PORT": 5432,
     }
 }

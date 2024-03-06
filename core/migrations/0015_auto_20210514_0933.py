@@ -4,39 +4,70 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0014_cohort_url_ethics_notes'),
+        ("core", "0014_cohort_url_ethics_notes"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='contract',
-            name='company_roles',
+            model_name="contract",
+            name="company_roles",
         ),
         migrations.AddField(
-            model_name='partnerrole',
-            name='comments',
-            field=models.TextField(blank=True, help_text='Provide remarks on this partner involvement.', null=True, verbose_name='Comments'),
+            model_name="partnerrole",
+            name="comments",
+            field=models.TextField(
+                blank=True,
+                help_text="Provide remarks on this partner involvement.",
+                null=True,
+                verbose_name="Comments",
+            ),
         ),
         migrations.AlterField(
-            model_name='userestriction',
-            name='notes',
-            field=models.TextField(blank=True, help_text='Provide a free text description of the restriction.', max_length=255, null=True, verbose_name='Use Restriction note'),
+            model_name="userestriction",
+            name="notes",
+            field=models.TextField(
+                blank=True,
+                help_text="Provide a free text description of the restriction.",
+                max_length=255,
+                null=True,
+                verbose_name="Use Restriction note",
+            ),
         ),
         migrations.AlterField(
-            model_name='userestriction',
-            name='restriction_class',
-            field=models.CharField(blank=True, help_text="Select the GA4GH code for the restriction.  Refer to 'GA4GH Consent Codes' for a detailed explanation of each.", max_length=20, null=True, verbose_name='Use Category'),
+            model_name="userestriction",
+            name="restriction_class",
+            field=models.CharField(
+                blank=True,
+                help_text="Select the GA4GH code for the restriction.  Refer to 'GA4GH Consent Codes' for a detailed explanation of each.",
+                max_length=20,
+                null=True,
+                verbose_name="Use Category",
+            ),
         ),
         migrations.AlterField(
-            model_name='userestriction',
-            name='use_class_note',
-            field=models.TextField(blank=True, help_text='A question asked when collecting the restriction class', max_length=255, null=True, verbose_name='Use Category note'),
+            model_name="userestriction",
+            name="use_class_note",
+            field=models.TextField(
+                blank=True,
+                help_text="A question asked when collecting the restriction class",
+                max_length=255,
+                null=True,
+                verbose_name="Use Category note",
+            ),
         ),
         migrations.AlterField(
-            model_name='userestriction',
-            name='use_restriction_rule',
-            field=models.TextField(choices=[('CONSTRAINTS', 'CONSTRAINTS'), ('NO_CONSTRAINTS', 'NO_CONSTRAINTS'), ('FORBIDDEN', 'FORBIDDEN')], default='NO_CONSTRAINTS', max_length=64, verbose_name='Use Restriction Rule'),
+            model_name="userestriction",
+            name="use_restriction_rule",
+            field=models.TextField(
+                choices=[
+                    ("CONSTRAINTS", "CONSTRAINTS"),
+                    ("NO_CONSTRAINTS", "NO_CONSTRAINTS"),
+                    ("FORBIDDEN", "FORBIDDEN"),
+                ],
+                default="NO_CONSTRAINTS",
+                max_length=64,
+                verbose_name="Use Restriction Rule",
+            ),
         ),
     ]

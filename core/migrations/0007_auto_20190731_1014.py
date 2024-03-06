@@ -8,40 +8,74 @@ import enumchoicefield.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0006_auto_20190724_1144'),
+        ("core", "0006_auto_20190724_1144"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='datalocation',
-            name='backend',
-            field=models.ForeignKey(help_text='Select the storage or application platform that holds data.', on_delete=django.db.models.deletion.CASCADE, to='core.StorageResource', verbose_name='Storage back-end'),
+            model_name="datalocation",
+            name="backend",
+            field=models.ForeignKey(
+                help_text="Select the storage or application platform that holds data.",
+                on_delete=django.db.models.deletion.CASCADE,
+                to="core.StorageResource",
+                verbose_name="Storage back-end",
+            ),
         ),
         migrations.AlterField(
-            model_name='datalocation',
-            name='category',
-            field=enumchoicefield.fields.EnumChoiceField(default=core.models.storage_location.StorageLocationCategory(1), enum_class=core.models.storage_location.StorageLocationCategory, help_text='Is this the master copy, a working copy or a backup?.', max_length=6, verbose_name='Nature of data copy.'),
+            model_name="datalocation",
+            name="category",
+            field=enumchoicefield.fields.EnumChoiceField(
+                default=core.models.storage_location.StorageLocationCategory(1),
+                enum_class=core.models.storage_location.StorageLocationCategory,
+                help_text="Is this the master copy, a working copy or a backup?.",
+                max_length=6,
+                verbose_name="Nature of data copy.",
+            ),
         ),
         migrations.AlterField(
-            model_name='datalocation',
-            name='datatypes',
-            field=models.ManyToManyField(blank=True, help_text='The scope of this storage. Leave empty if all data types are stored in a single location.', related_name='storage_locations', to='core.DataType', verbose_name='Stored datatypes'),
+            model_name="datalocation",
+            name="datatypes",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="The scope of this storage. Leave empty if all data types are stored in a single location.",
+                related_name="storage_locations",
+                to="core.DataType",
+                verbose_name="Stored datatypes",
+            ),
         ),
         migrations.AlterField(
-            model_name='datalocation',
-            name='location_description',
-            field=core.models.utils.TextFieldWithInputWidget(blank=True, help_text='E.g. Laptop 1, server folder path or application URL endpoint.', null=True, verbose_name='Location of the data'),
+            model_name="datalocation",
+            name="location_description",
+            field=core.models.utils.TextFieldWithInputWidget(
+                blank=True,
+                help_text="E.g. Laptop 1, server folder path or application URL endpoint.",
+                null=True,
+                verbose_name="Location of the data",
+            ),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='gene_terms',
-            field=models.ManyToManyField(blank=True, help_text="Select one or more terms that would characterize the genes that fall in project's scope.", to='core.GeneTerm', verbose_name='List of gene terms'),
+            model_name="project",
+            name="gene_terms",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="Select one or more terms that would characterize the genes that fall in project's scope.",
+                to="core.GeneTerm",
+                verbose_name="List of gene terms",
+            ),
         ),
         migrations.AlterField(
-            model_name='share',
-            name='contract',
-            field=models.ForeignKey(blank=True, help_text='The contract that provides the legal basis for this data share.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='shares', to='core.Contract', verbose_name='Contract'),
+            model_name="share",
+            name="contract",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="The contract that provides the legal basis for this data share.",
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="shares",
+                to="core.Contract",
+                verbose_name="Contract",
+            ),
         ),
     ]

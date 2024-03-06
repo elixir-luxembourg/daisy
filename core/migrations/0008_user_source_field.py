@@ -6,20 +6,23 @@ import enumchoicefield.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0007_auto_20190731_1014'),
+        ("core", "0007_auto_20190731_1014"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='source',
-            field=enumchoicefield.fields.EnumChoiceField(default=core.models.user.UserSource(2), enum_class=core.models.user.UserSource, max_length=16),
+            model_name="user",
+            name="source",
+            field=enumchoicefield.fields.EnumChoiceField(
+                default=core.models.user.UserSource(2),
+                enum_class=core.models.user.UserSource,
+                max_length=16,
+            ),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='email',
+            model_name="user",
+            name="email",
             field=models.EmailField(max_length=254),
         ),
     ]

@@ -1,71 +1,227 @@
+from datetime import datetime, timedelta
+
 import pytest
-from django.utils import timezone
-from faker import Faker
 
 from notification import tasks
-from notification.models import NotificationStyle, NotificationSetting
+from notification.models import NotificationSetting, Notification
 from test.factories import *
+from django.test import override_settings
 
-fake = Faker()
-TZ = settings.TZINFO
-
-notifications_periods = [
-    ('-90d', '-60d'),    # 2/3 months ago
-    ('-90d', '-60d'),
-    ('-20d', '-10d'),   # 20/2 days ago
-    ('-7d', '-6d'),
-    ('-7h', '-2h'),   # 7/2 hours ago
-    ('-10s', '-1s'),   # 10s/1s ago ...
-    ('-10s', '-1s'),
-]
-
-
-notifications_periods_with_notification_style = [
-    ('once_per_day', notifications_periods, 3),
-    ('once_per_week', notifications_periods, 4),
-    ('once_per_month', notifications_periods, 5),
-]
-
-
-@pytest.mark.parametrize("period,start_ends,expected", notifications_periods_with_notification_style)
-def test_no_notification_style(celery_session_worker, user_normal, period, start_ends, expected):
-    """
-    No notification report should hit as no notification style is set
-    """
-    dataset = DatasetFactory()
-    now = timezone.now()
-    notifications = [
-        DatasetNotificationFactory(actor=user_normal) for start, end in start_ends
-    ]
-    # set use to the notif style
-    user_normal.save()
-    users = tasks.send_notifications(period)
-    assert len(users) == 0
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("period,start_ends,expected", notifications_periods_with_notification_style)
-def test_send_notifications(celery_session_worker, user_normal, period, start_ends, expected):
+@override_settings(NOTIFICATIONS_DISABLED=False)
+def test_send_notifications_for_user_upcoming_events_today(user_normal):
     """
-    Test notification report
+    Test notification report processing for today's notifications
     """
-    # create notification style
-    ns = NotificationSetting(
-        user=user_normal,
-        style=NotificationStyle[period]
-    )
+    # Enable user notification setting send_email
+    ns = NotificationSetting(user=user_normal, send_email=True)
     ns.save()
-    # create test data
-    DatasetFactory()
-    for start, end in start_ends:
-        n = DatasetNotificationFactory(actor=user_normal)
-        n.time = fake.date_time_between(start_date=start, end_date=end, tzinfo=TZ)
-        n.save()
+    n = Notification(
+        recipient=user_normal,
+        content_object=DatasetFactory(),
+        dispatch_by_email=True,
+        verb=NotificationVerb.expire,
+    )
+    n.save()
 
-    # set times as we do in tasks module
-    now = timezone.now()
-    time = now - tasks.NOTIFICATION_MAPPING[NotificationStyle[period]]
-    users = tasks.send_notifications(period)
+    notifications_not_processed = Notification.objects.filter(
+        recipient=user_normal.id, dispatch_by_email=True, processing_date=None
+    )
+    assert len(notifications_not_processed) == 1
 
-    assert len(users) == 1
-    assert len(users[0].notifications.all()) == len(notifications_periods)
-    assert len(users[0].notifications.filter(time__gte=time)) == expected
+    # send notifications
+    tasks.send_notifications_for_user_upcoming_events(only_one_day=True)
+
+    notifications_after_sending = Notification.objects.filter(
+        recipient=user_normal.id, dispatch_by_email=True, processing_date=None
+    )
+    assert len(notifications_after_sending) == 0
+
+
+@pytest.mark.django_db
+@override_settings(NOTIFICATIONS_DISABLED=False)
+def test_send_notifications_for_user_upcoming_events_execution_date(user_normal):
+    """
+    Test notification report processing for execution date notifications and previous days
+    """
+    # Enable user notification setting send_email
+    ns = NotificationSetting(user=user_normal, send_email=True)
+    ns.save()
+
+    n = Notification(
+        recipient=user_normal,
+        content_object=DatasetFactory(),
+        dispatch_by_email=True,
+        verb=NotificationVerb.expire,
+    )
+    n.save()
+
+    yesterday = datetime.now() - timedelta(days=1)
+
+    n2 = Notification(
+        recipient=user_normal,
+        content_object=DatasetFactory(),
+        dispatch_by_email=True,
+        verb=NotificationVerb.expire,
+    )
+    n2.save()
+    # Force change of n2 time
+    Notification.objects.filter(pk=n2.pk).update(time=yesterday)
+
+    earlier_date = datetime.now() - timedelta(days=3)
+
+    n3 = Notification(
+        recipient=user_normal,
+        content_object=DatasetFactory(),
+        dispatch_by_email=True,
+        verb=NotificationVerb.expire,
+    )
+    n3.save()
+    # Force change of n3 time
+    Notification.objects.filter(pk=n3.pk).update(time=earlier_date)
+
+    notifications_not_processed = Notification.objects.filter(
+        recipient=user_normal.id, dispatch_by_email=True, processing_date=None
+    )
+    assert len(notifications_not_processed) == 3
+
+    # send notifications
+    tasks.send_notifications_for_user_upcoming_events(
+        yesterday.date().strftime("%Y-%m-%d")
+    )
+
+    notifications_after_sending = Notification.objects.filter(
+        recipient=user_normal.id, dispatch_by_email=True, processing_date=None
+    )
+    assert len(notifications_after_sending) == 1
+
+
+@pytest.mark.django_db
+@override_settings(NOTIFICATIONS_DISABLED=False)
+def test_send_notifications_for_user_upcoming_events_only_one_day(user_normal):
+    """
+    Test notification report processing for execution date notifications only
+    """
+    # Enable user notification setting send_email
+    ns = NotificationSetting(user=user_normal, send_email=True)
+    ns.save()
+
+    n = Notification(
+        recipient=user_normal,
+        content_object=DatasetFactory(),
+        dispatch_by_email=True,
+        verb=NotificationVerb.expire,
+    )
+    n.save()
+
+    yesterday = datetime.now() - timedelta(days=1)
+
+    n2 = Notification(
+        recipient=user_normal,
+        content_object=DatasetFactory(),
+        dispatch_by_email=True,
+        verb=NotificationVerb.expire,
+    )
+    n2.save()
+    # Force change of n2 time
+    Notification.objects.filter(pk=n2.pk).update(time=yesterday)
+
+    earlier_date = datetime.now() - timedelta(days=3)
+
+    n3 = Notification(
+        recipient=user_normal,
+        content_object=DatasetFactory(),
+        dispatch_by_email=True,
+        verb=NotificationVerb.expire,
+    )
+    n3.save()
+    # Force change of n3 time
+    Notification.objects.filter(pk=n3.pk).update(time=earlier_date)
+
+    notifications_not_processed = Notification.objects.filter(
+        recipient=user_normal.id, dispatch_by_email=True, processing_date=None
+    )
+    assert len(notifications_not_processed) == 3
+
+    # send notifications
+    tasks.send_notifications_for_user_upcoming_events(
+        yesterday.date().strftime("%Y-%m-%d"), only_one_day=True
+    )
+
+    notifications_after_sending = Notification.objects.filter(
+        recipient=user_normal.id, dispatch_by_email=True, processing_date=None
+    )
+    assert len(notifications_after_sending) == 2
+
+
+@pytest.mark.django_db
+@override_settings(NOTIFICATIONS_DISABLED=False)
+def test_send_all_notifications_for_user_upcoming_events(user_normal):
+    """
+    Test notification report processing for all missed notifications
+    """
+    # Enable user notification setting send_email
+    ns = NotificationSetting(user=user_normal, send_email=True)
+    ns.save()
+    n = Notification(
+        recipient=user_normal,
+        content_object=DatasetFactory(),
+        dispatch_by_email=True,
+        verb=NotificationVerb.expire,
+    )
+    n.save()
+    n2 = Notification(
+        recipient=user_normal,
+        content_object=DatasetFactory(),
+        dispatch_by_email=True,
+        verb=NotificationVerb.expire,
+    )
+    n2.save()
+    Notification.objects.filter(pk=n2.pk).update(
+        time=datetime.now() - timedelta(days=1)
+    )
+
+    notifications_not_processed = Notification.objects.filter(
+        recipient=user_normal.id, dispatch_by_email=True, processing_date=None
+    )
+    assert len(notifications_not_processed) == 2
+
+    # send notifications
+    tasks.send_notifications_for_user_upcoming_events()
+
+    notifications_after_sending = Notification.objects.filter(
+        recipient=user_normal.id, dispatch_by_email=True, processing_date=None
+    )
+    assert len(notifications_after_sending) == 0
+
+
+@pytest.mark.django_db
+@override_settings(NOTIFICATIONS_DISABLED=True)
+def test_send_no_notifications(user_normal):
+    """
+    Test notification report sending disabled
+    """
+    # Enable user notification setting send_email
+    ns = NotificationSetting(user=user_normal, send_email=True)
+    ns.save()
+    n = Notification(
+        recipient=user_normal,
+        content_object=DatasetFactory(),
+        dispatch_by_email=True,
+        verb=NotificationVerb.expire,
+    )
+    n.save()
+
+    notifications_not_processed = Notification.objects.filter(
+        recipient=user_normal.id, dispatch_by_email=True, processing_date=None
+    )
+    assert len(notifications_not_processed) == 1
+
+    # send notifications
+    tasks.send_notifications_for_user_upcoming_events()
+
+    notifications_after_sending = Notification.objects.filter(
+        recipient=user_normal.id, dispatch_by_email=True, processing_date=None
+    )
+    assert len(notifications_after_sending) == 1

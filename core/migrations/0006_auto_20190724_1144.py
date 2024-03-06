@@ -5,86 +5,93 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0005_auto_20190722_1212'),
+        ("core", "0005_auto_20190722_1212"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='cloudshare',
-            name='datalocation_ptr',
+            model_name="cloudshare",
+            name="datalocation_ptr",
         ),
         migrations.RemoveField(
-            model_name='externaldevice',
-            name='datalocation_ptr',
+            model_name="externaldevice",
+            name="datalocation_ptr",
         ),
         migrations.RemoveField(
-            model_name='filepath',
-            name='datalocation_ptr',
+            model_name="filepath",
+            name="datalocation_ptr",
         ),
         migrations.RemoveField(
-            model_name='locationholder',
-            name='datalocation_ptr',
+            model_name="locationholder",
+            name="datalocation_ptr",
         ),
         migrations.RemoveField(
-            model_name='other',
-            name='datalocation_ptr',
+            model_name="other",
+            name="datalocation_ptr",
         ),
         migrations.RemoveField(
-            model_name='station',
-            name='datalocation_ptr',
+            model_name="station",
+            name="datalocation_ptr",
         ),
         migrations.RemoveField(
-            model_name='storageresource',
-            name='location_definition',
+            model_name="storageresource",
+            name="location_definition",
         ),
         migrations.AddField(
-            model_name='datalocation',
-            name='data_declarations',
-            field=models.ManyToManyField(blank=True, help_text='The scope of this storage. Leave empty if all data declarations are stored in a single location.', related_name='data_locations', to='core.DataDeclaration', verbose_name='Stored data declarations'),
+            model_name="datalocation",
+            name="data_declarations",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text="The scope of this storage. Leave empty if all data declarations are stored in a single location.",
+                related_name="data_locations",
+                to="core.DataDeclaration",
+                verbose_name="Stored data declarations",
+            ),
         ),
         migrations.AddField(
-            model_name='datalocation',
-            name='location_description',
-            field=core.models.utils.TextFieldWithInputWidget(blank=True, null=True, verbose_name='Location of the data'),
+            model_name="datalocation",
+            name="location_description",
+            field=core.models.utils.TextFieldWithInputWidget(
+                blank=True, null=True, verbose_name="Location of the data"
+            ),
         ),
         migrations.AlterField(
-            model_name='cohort',
-            name='elu_accession',
-            field=models.CharField(blank=True, default='-', max_length=20),
+            model_name="cohort",
+            name="elu_accession",
+            field=models.CharField(blank=True, default="-", max_length=20),
         ),
         migrations.AlterField(
-            model_name='dataset',
-            name='elu_accession',
-            field=models.CharField(blank=True, default='-', max_length=20),
+            model_name="dataset",
+            name="elu_accession",
+            field=models.CharField(blank=True, default="-", max_length=20),
         ),
         migrations.AlterField(
-            model_name='partner',
-            name='elu_accession',
-            field=models.CharField(blank=True, default='-', max_length=20),
+            model_name="partner",
+            name="elu_accession",
+            field=models.CharField(blank=True, default="-", max_length=20),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='elu_accession',
-            field=models.CharField(blank=True, default='-', max_length=20),
+            model_name="project",
+            name="elu_accession",
+            field=models.CharField(blank=True, default="-", max_length=20),
         ),
         migrations.DeleteModel(
-            name='CloudShare',
+            name="CloudShare",
         ),
         migrations.DeleteModel(
-            name='ExternalDevice',
+            name="ExternalDevice",
         ),
         migrations.DeleteModel(
-            name='FilePath',
+            name="FilePath",
         ),
         migrations.DeleteModel(
-            name='LocationHolder',
+            name="LocationHolder",
         ),
         migrations.DeleteModel(
-            name='Other',
+            name="Other",
         ),
         migrations.DeleteModel(
-            name='Station',
+            name="Station",
         ),
     ]

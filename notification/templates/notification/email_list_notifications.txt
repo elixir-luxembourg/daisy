@@ -1,0 +1,16 @@
+{% extends 'notification/email.txt' %}
+
+{% block content %}
+    {% if error_message %}
+        Hello, {{ error_message }}
+    {% else %}
+        Dear {{ user }}, please find below list of approaching events that were detected{% endif %} in DAISY: {{ server_url }}
+
+    {% for content_type, notifs in notifications.items %}
+        - {{content_type.name|title}}
+        {% for notif in notifs %}
+            * {{notif.message}}:
+            - {{notif.to_json.objectDisplayName}}: {% if notif.get_absolute_url  %}{{notif.get_full_url}}{% endif %} on {{ notif.on}}.
+        {% endfor %}
+    {% endfor %}
+{% endblock %}

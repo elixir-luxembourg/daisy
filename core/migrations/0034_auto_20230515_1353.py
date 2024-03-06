@@ -5,28 +5,27 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0033_auto_20230515_1147'),
+        ("core", "0033_auto_20230515_1147"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='cohort',
-            old_name='is_published',
-            new_name='_is_published',
+            model_name="cohort",
+            old_name="is_published",
+            new_name="_is_published",
         ),
         migrations.RenameField(
-            model_name='partner',
-            old_name='is_published',
-            new_name='_is_published',
+            model_name="partner",
+            old_name="is_published",
+            new_name="_is_published",
         ),
         migrations.RemoveField(
-            model_name='dataset',
-            name='is_published',
+            model_name="dataset",
+            name="is_published",
         ),
         migrations.RemoveField(
-            model_name='project',
-            name='is_published',
+            model_name="project",
+            name="is_published",
         ),
     ]

@@ -1,0 +1,19 @@
+{% extends 'notification/email.txt' %}
+
+{% block content %}
+    Hello, {{ error_message }}
+
+    {% for content_type, notifs in notifications.items %}
+        - {{content_type.name|title}}
+        {% for notif in notifs %}
+            * Description: {{notif.message}}:
+            - Notification ID: {{notif.id}} | Object ID: {{notif.object_id}} | Notification Date:{{ notif.on }}.
+        {% endfor %}
+    {% endfor %}
+{% endblock %}
+
+{% block footer %}
+**********************************************************************************
+This email has been generated from DAISY: {{server_url}}.
+**********************************************************************************
+ {% endblock %}

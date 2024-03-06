@@ -30,6 +30,8 @@
                                        data-post-mode="true"
                                        {% if project %}
                                            data-ajax-redirect-uri="{% url 'project' pk=project.id %}"
+                                       {% elif contract %}
+                                           data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"
                                        {% endif %}
                                        data-ajax-url="{% url "document_edit" pk=file.id %}"
                                        title="Update document">

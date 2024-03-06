@@ -1,13 +1,6 @@
 version: '3'
 
 services:
-    # dummy node image @install time to compile assets
-    node:
-        build:
-            context: ./
-            dockerfile: ./docker/node/Dockerfile
-        volumes:
-            - statics:/static
     # web app
     web:
         build: .
@@ -19,18 +12,15 @@ services:
             - statics:/static
             - solrdata:/solr
             - .:/code
-        ports:
-            - "5000:5000"
         depends_on:
             - db
-            - node
             - solr
             - mq
         command: gunicorn --reload -w 2 -b :5000 --pid /run/gunicorn.pid elixir_daisy.wsgi
     # database
     db:
         image: postgres:10.1
-        restart: always
+        restart: on-failure
         environment:
             POSTGRES_PASSWORD: daisy
             POSTGRES_USER: daisy
@@ -42,7 +32,7 @@ services:
     # web werver frontend
     nginx:
         build: ./docker/nginx
-        restart: always
+        restart: on-failure
         volumes:
             - statics:/public/static:ro
         ports:
@@ -50,7 +40,6 @@ services:
             - '443:443'
         depends_on:
             - web
-            - node
     # FTS db
     solr:
         build: ./docker/solr
@@ -61,7 +50,7 @@ services:
      # rabbit mq
     mq:
         image: rabbitmq:3.9-management-alpine
-        restart: "always"
+        restart: on-failure
         ports:
             - "15672:15672"
             - "5672:5672"
@@ -95,7 +84,7 @@ services:
         depends_on:
             - db
             - mq
-        command: " celery -A elixir_daisy beat --loglevel=DEBUG --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+        command: "celery -A elixir_daisy beat --loglevel=DEBUG --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler"
 
 
 volumes:

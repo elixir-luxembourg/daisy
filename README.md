@@ -53,6 +53,9 @@ You are encouraged to try Daisy for yourself using our [DEMO deployment](https:/
 1. Compile and deploy static files
     
     ```bash
+    cd web/static/vendor
+    npm run build
+    cd ../../../
     docker-compose exec web python manage.py collectstatic
     ```
 1. Create initial data in the database
@@ -69,7 +72,7 @@ You are encouraged to try Daisy for yourself using our [DEMO deployment](https:/
     ```bash
     docker-compose exec web python manage.py load_demo_data
     ```
-    This will create mock datasets, projects and create an demo admin account.
+    This will create mock datasets, projects and create a demo admin account.
 
 1. Optional - import users from an active directory instance
 
@@ -90,6 +93,14 @@ You are encouraged to try Daisy for yourself using our [DEMO deployment](https:/
         username: admin
         password: demo
     ```
+
+### Linting
+
+pip install black==23.7.0
+pre-commit install
+black --check .
+black .
+
 
 ### Operation manual
 
@@ -170,7 +181,7 @@ where ${JSON_FILE} is the path to a json file that will be produced.  In additio
     
     ```bash
     docker-compose exec web python manage.py rebuild_index -u default
-    ```	
+    ```
 1. Reimport the users (optional).
 	    
     If LDAP was used during initial setup to import users, they have to be imported again:
@@ -216,7 +227,7 @@ cd web/static/vendor/
 npm ci
 ```
 
-### Compile daisy.scss
+### Compile daisy.scss and React
 ```bash
 cd web/static/vendor
 npm run-script build
@@ -234,6 +245,10 @@ The following command will install the test dependencies and execute the tests:
 
 ```bash
 python setup.py pytest
+```
+run test for a specific file:
+```bash
+python setup.py pytest --addopts web/tests/test_dataset.py
 ```
 
 If tests dependencies are already installed, one can also run the tests just by executing:

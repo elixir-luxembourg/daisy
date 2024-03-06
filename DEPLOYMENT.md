@@ -1,5 +1,7 @@
 # Installation
+
 Following instructions are for CentOS Linux 7 (Core).
+
 ## Base
 
 ```bash
@@ -15,8 +17,6 @@ make altinstall
 
 sudo yum install openldap-devel nginx
 ```
-
-
 
 # User and Application Source Code
 
@@ -36,12 +36,14 @@ sudo /usr/local/bin/pip3.9 install gunicorn
 ## NPM and Node.js
 
 ```bash
-curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
-sudo yum install nodejs
+apt-get update && apt-get install -y ca-certificates curl gnupg
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+apt-get update && apt-get install -y nodejs
 ```
 
 Then you need to compile the static files.
-
 
 ```bash
 sudo su - daisy
@@ -49,7 +51,6 @@ cd /home/daisy/daisy/web/static/vendor/
 npm ci
 exit
 ```
-
 
 ## Solr
 
@@ -65,10 +66,12 @@ cd /var/solr/data/daisy/conf
 /opt/solr-7.7.1/bin/solr stop  
 exit
 ```
+
 It is possible that by this time solr-7.7.1 is not anymore proposed for download on solr mirrors.
 In this case check for last solr version available and adapt the instructions above accordingly.
 You need configure the solr core 'daisy'. To do so you need to create 'schema.xml' and 'solrconfig.xml' files under 
-'/var/solr/data/daisy/conf'. 
+'/var/solr/data/daisy/conf'.
+
 ```bash
 sudo cp /home/daisy/daisy/docker/solr/schema.xml /var/solr/data/daisy/conf/
 sudo cp /home/daisy/daisy/docker/solr/solrconfig.xml /var/solr/data/daisy/conf/
@@ -77,6 +80,7 @@ sudo cp /home/daisy/daisy/docker/solr/elevate.xml /var/solr/data/daisy/conf/
 ```
 
 Grant ownership and change privileges of `/var/solr` folder
+
 ```
 sudo chown -R solr:users /var/solr
 sudo chmod -R 775 /var/solr
@@ -86,7 +90,6 @@ sudo chmod -R 775 /var/solr
 
 <p style="color:red;">By default, the Solr instance listens on port 8983 on all interfaces.
 Solr has no authentication system. It is crucial to secure it by either blocking external accesses to the Solr port or by changing it's configuration to listen only on localhost (see https://stackoverflow.com/a/1955591)</p>
-
 
 You can restart solr and check that it is working with the following commands
 
@@ -98,7 +101,6 @@ sudo systemctl restart solr
 ## Gunicorn
 
 1) Create the file ```/etc/systemd/system/gunicorn.service``` as the _root_ user or with _sudo_ and with the following content:
-
 
 ```
 [Unit]
@@ -275,11 +277,11 @@ In case the installation fails, follow steps in the [official documentation](htt
 
 ### Create database and roles
 
-
 ```bash
 sudo su - postgres
 vi ./10/data/pg_hba.conf
 ```
+
 Change METHOD ident of IPv4 and IPv6 to md5 and add rule for daisy and postgres users.
 We recommend to only allow local connection from the daisy user to the daisy database.  
 Example:  
@@ -296,6 +298,7 @@ host    all             all             ::1/128                 md5
 ```
 
 Create daisy user and database:
+
 ```
 createuser daisy
 createdb daisy
@@ -305,6 +308,7 @@ postgres=# grant all privileges on database daisy to daisy ;
 postgres=# \q
 exit
 ```
+
 <span style="color:red;">You can replace password `daisy` by a password of your choice.</span>
 
 Restart PostgreSQL:
@@ -383,6 +387,7 @@ Exit the daisy user.
 ```bash
 exit
 ```
+
 # Web server
 
 1) Install nginx
@@ -393,9 +398,9 @@ exit
     sudo systemctl enable nginx
     sudo systemctl start nginx
     ```
-    
+
 2) As _root_ or with _sudo_ create the file ```/etc/nginx/conf.d/ssl.conf``` with the following content:
-	   
+
     ```bash
     proxy_connect_timeout       600;
     proxy_send_timeout          600;
@@ -423,8 +428,7 @@ exit
         ssl_certificate /etc/ssl/certs/daisy.com.crt;
         ssl_certificate_key /etc/ssl/private/daisy.com.key;
     }
-	```    
-    
+	```
 	Changing daisy.com to your particular case.  
     
 3) To have a redirect from http to https, as _root_ or with _sudo_ create the file ```/etc/nginx/conf.d/daisy.conf``` with the following content:
@@ -469,7 +473,7 @@ exit
 
 # Initialization
 
-Once everything is set up, the definitions and lookup values need to be inserted into the database.   
+Once everything is set up, the definitions and lookup values need to be inserted into the database.
 To do this run the following.
 
 ```bash
@@ -519,7 +523,7 @@ sudo systemctl restart celery_worker
 sudo systemctl restart celery_beat
 ```
 
-# Setting up reminders 
+# Setting up reminders
 
 DAISY can generate reminders on approaching deadlines (e.g. data storage end date or document expiry). To enable this feature, do the following:
 
@@ -537,7 +541,7 @@ DAISY can generate reminders on approaching deadlines (e.g. data storage end dat
     4.5) Click 'SAVE'.
     
  5) You may repeat the steps in (4) to create a daily periodic task also for `notification.tasks.data_storage_expiry_notifications`,
- 
+
 # Updating DAISY
 
 
@@ -571,6 +575,7 @@ git pull
 cd /home/daisy/daisy/web/static/vendor/
 npm ci
 ```
+
 As root user:
 
 ```bash
@@ -586,13 +591,12 @@ cd /home/daisy/daisy
 python3.9 manage.py migrate && python3.9 manage.py build_solr_schema -c /var/solr/data/daisy/conf/ -r daisy && yes | python3.9 manage.py clear_index && yes "yes" | python3.9 manage.py collectstatic;
 ```
 
-
-4) Reload initial data (optional). 
+4) Reload initial data (optional).
 
 
 **IMPORTANT NOTE:** The initial data package provides some default values for various lookup lists e.g. data sensitivity classes, document or data types.  If, while using DAISY, you have customized these default lists, please keep in mind that running the ``load_initial_data`` command
 during update will re-introduce those default values. If this is not desired, then please skip the reloading of initial data step during your update. You manage lookup lists through the application interface.<br/><br/>
-        
+
 As daisy user:
 ```bash
 cd /home/daisy/daisy/core/fixtures/
@@ -600,9 +604,9 @@ wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_too
 
 cd /home/daisy/daisy
 python3.9 manage.py load_initial_data
-```     
+```
   
-**IMPORTANT NOTE:** This step can take several minutes to complete. 
+**IMPORTANT NOTE:** This step can take several minutes to complete.
 
 
 5) Reimport the users (optional).
@@ -675,6 +679,19 @@ systemctl start celery_beat
 ```
 
 # Migration
+
+## Daisy 1.7.12 to 1.8.0
+
+The migration introduced breaking change and update of `settings.py` file is required. The new scheduled tasks as defined in [settings_template.py](https://github.com/elixir-luxembourg/daisy/blob/de64e17355700dc029133f48a295be82341486ed/elixir_daisy/settings_local.template.py#L91) must be included to fully support new features.
+
+For enabling the new notification feature, see section [above](#setting-up-reminders) on how to set up reminders.
+
+Update of nodejs is required:
+
+```bash
+curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
+sudo yum install nodejs
+```
 
 ## Daisy 1.7.0 to 1.7.1
 The migration introduced breaking change by updating python-keycloak to version `2.6.0`. If you are using Keycloak integration, update your `elixir_daisy/settings_local.py` file to contain **all** Keyclock related variables defined in README Keycloak [section](https://github.com/elixir-luxembourg/daisy/blob/master/README.md#keycloak).

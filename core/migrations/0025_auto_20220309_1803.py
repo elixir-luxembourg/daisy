@@ -6,15 +6,19 @@ import enumchoicefield.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0024_auto_20211004_1610'),
+        ("core", "0024_auto_20211004_1610"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='access',
-            name='status',
-            field=enumchoicefield.fields.EnumChoiceField(default=core.models.access.StatusChoices(1), enum_class=core.models.access.StatusChoices, help_text='The status of the Access', max_length=10),
+            model_name="access",
+            name="status",
+            field=enumchoicefield.fields.EnumChoiceField(
+                default=core.models.access.StatusChoices(1),
+                enum_class=core.models.access.StatusChoices,
+                help_text="The status of the Access",
+                max_length=10,
+            ),
         ),
     ]

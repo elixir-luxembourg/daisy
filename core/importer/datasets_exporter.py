@@ -7,17 +7,13 @@ from django.conf import settings
 from io import StringIO
 from urllib.parse import urljoin
 
-JSONSCHEMA_BASE_REMOTE_URL = getattr(settings, 'IMPORT_JSON_SCHEMAS_URI')
+JSONSCHEMA_BASE_REMOTE_URL = getattr(settings, "IMPORT_JSON_SCHEMAS_URI")
 
 logger = DaisyLogger(__name__)
 
 
 class DatasetsExporter:
-    def __init__(
-            self, 
-            objects=None,
-            endpoint_id=-1,
-            include_unpublished=False):
+    def __init__(self, objects=None, endpoint_id=-1, include_unpublished=False):
         self.include_unpublished = include_unpublished
         """
         objects would be Django object manager containing datasets to export,
@@ -40,10 +36,10 @@ class DatasetsExporter:
             buffer = self.export_to_buffer(StringIO())
             print(buffer.getvalue(), file=file_handle)
         except Exception as e:
-            logger.error('Dataset export failed')
+            logger.error("Dataset export failed")
             logger.error(str(e))
             result = False
-        logger.info(f'Dataset export complete see file: {file_handle}')
+        logger.info(f"Dataset export complete see file: {file_handle}")
         return result
 
     def export_to_buffer(self, buffer, stop_on_error=False, verbose=False):
@@ -61,22 +57,29 @@ class DatasetsExporter:
                 pd = dataset.to_dict()
                 pd["source"] = settings.SERVER_URL
                 if not self.include_unpublished:
-                    rems_form_id = Exposure.objects.get(dataset=dataset, endpoint_id=self.endpoint_id).form_id
+                    rems_form_id = Exposure.objects.get(
+                        dataset=dataset, endpoint_id=self.endpoint_id
+                    ).form_id
                     pd["form_id"] = rems_form_id
                 dataset_dicts.append(pd)
             except Exception as e:
-                logger.error(f'Export failed for dataset {dataset.title}')
+                logger.error(f"Export failed for dataset {dataset.title}")
                 logger.error(str(e))
                 if verbose:
                     import traceback
+
                     ex = traceback.format_exception(*sys.exc_info())
-                    logger.error('\n'.join([e for e in ex]))
+                    logger.error("\n".join([e for e in ex]))
                 if stop_on_error:
                     raise e
             logger.debug("   ... complete!")
 
-        json.dump({
-            "$schema": urljoin(JSONSCHEMA_BASE_REMOTE_URL, 'elu-dataset.json'),
-            "items": dataset_dicts}, buffer, indent=4)
+        json.dump(
+            {
+                "$schema": urljoin(JSONSCHEMA_BASE_REMOTE_URL, "elu-dataset.json"),
+                "items": dataset_dicts,
+            },
+            buffer,
+            indent=4,
+        )
         return buffer
-

@@ -1,25 +1,29 @@
-#SECURITY WARNING: change the key used in production and keep it secret !
+from celery.schedules import crontab
+
+# SECURITY WARNING: change the key used in production and keep it secret !
 GLOBAL_API_KEY = None  # Generate a global api key by e.g. django.core.management.utils.get_random_secret_key()
-if GLOBAL_API_KEY is None: raise NotImplementedError('You must specify GLOBAL_API_KEY in settings_local.py')
+if GLOBAL_API_KEY is None:
+    raise NotImplementedError("You must specify GLOBAL_API_KEY in settings_local.py")
 
 # Authentication backend
 # https://django-guardian.readthedocs.io/en/stable/configuration.html
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'guardian.backends.ObjectPermissionBackend',
+    "django.contrib.auth.backends.ModelBackend",
+    "guardian.backends.ObjectPermissionBackend",
 ]
 
 
-#SECURITY WARNING: change the secret key used in production and keep it secret !
+# SECURITY WARNING: change the secret key used in production and keep it secret !
 SECRET_KEY = None  # Generate a secret key by e.g. django.core.management.utils.get_random_secret_key()
-if SECRET_KEY is None: raise NotImplementedError('You must specify SECRET_KEY in settings_local.py')
+if SECRET_KEY is None:
+    raise NotImplementedError("You must specify SECRET_KEY in settings_local.py")
 
 
+COMPANY = "LCSB"  # Used for generating some models' verbose names
 
-COMPANY = 'LCSB'  # Used for generating some models' verbose names
-
-HELPDESK_EMAIL = 'lcsb-sysadmins@uni.lu'
+HELPDESK_EMAIL = "lcsb-sysadmins@uni.lu"
+ADMIN_NOTIFICATIONS_EMAIL = ""  # used when there are notifications errors
 
 # Placeholders on login page
 # LOGIN_USERNAME_PLACEHOLDER = ''
@@ -68,10 +72,37 @@ REMS_API_USER = ""
 REMS_VERIFY_SSL = True
 
 # IDSERVICE_FUNCTION = 'core.lcsb.idservice.generate_identifier'
-IDSERVICE_ENDPOINT = 'https://10.240.16.199:8080/v1/api/id'
+IDSERVICE_ENDPOINT = "https://10.240.16.199:8080/v1/api/id"
 
 # Keycloak integration, uncomment and fill the values below
+# KEYCLOAK_INTEGRATION = True
 # KEYCLOAK_URL = 'https://root-address-to-your-keycloak.com:443'
-# KEYCLOAK_REALM = 'master'
+# KEYCLOAK_REALM_LOGIN = 'master'
+# KEYCLOAK_REALM_ADMIN = 'master'
 # KEYCLOAK_USER = 'your service user for daisy'
-# KEYCLOAK_PASS = 'the password for the service user' 
+# KEYCLOAK_PASS = 'the password for the service user'
+
+# Email related setting
+EMAIL_HOST = ""
+EMAIL_PORT = 25
+EMAIL_SENDER = ""
+
+# Celery beat setting to schedule tasks on docker creation
+CELERY_BEAT_SCHEDULE = {
+    "clean-accesses-every-day": {
+        "task": "core.tasks.check_accesses_expiration",
+        "schedule": crontab(minute=0, hour=0),  # Execute task at midnight
+    },
+    "create-notifications-every-day": {
+        "task": "notification.tasks.create_notifications_for_entities",
+        "schedule": crontab(minute=15, hour=0),
+    },
+    "notifications-email-every-day": {
+        "task": "notification.tasks.send_notifications_for_user_upcoming_events",
+        "schedule": crontab(minute=0, hour=7),  # Execute task in the morning
+    },
+    "synchronizer-every-day": {
+        "task": "core.tasks.run_synchronizer",
+        "schedule": crontab(minute=0, hour=2),  # Execute task at 2am
+    },
+}

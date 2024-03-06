@@ -8,18 +8,14 @@ from django.conf import settings
 from core.models import Project
 from core.utils import DaisyLogger
 
-JSONSCHEMA_BASE_REMOTE_URL = getattr(settings, 'IMPORT_JSON_SCHEMAS_URI')
+JSONSCHEMA_BASE_REMOTE_URL = getattr(settings, "IMPORT_JSON_SCHEMAS_URI")
 
 logger = DaisyLogger(__name__)
 
 
 class ProjectsExporter:
-    def __init__(
-            self, 
-            objects=None,
-            endpoint_id=-1,
-            include_unpublished=False):
-        self.include_unpublished = include_unpublished   
+    def __init__(self, objects=None, endpoint_id=-1, include_unpublished=False):
+        self.include_unpublished = include_unpublished
         """
         objects would be Django obejct manager containing projects to export,
         i.e.:
@@ -41,12 +37,11 @@ class ProjectsExporter:
             buffer = self.export_to_buffer(StringIO())
             print(buffer.getvalue(), file=file_handle)
         except Exception as e:
-            logger.error('Project export failed')
+            logger.error("Project export failed")
             logger.error(str(e))
             result = False
-        logger.info(f'Project export complete see file: {file_handle}')
+        logger.info(f"Project export complete see file: {file_handle}")
         return result
-
 
     def export_to_buffer(self, buffer, stop_on_error=False, verbose=False):
         project_dicts = []
@@ -67,16 +62,22 @@ class ProjectsExporter:
                 project_dicts.append(pd)
             except Exception as e:
                 project_repr = str(project)
-                logger.error(f'Export failed for project f{project_repr}')
+                logger.error(f"Export failed for project f{project_repr}")
                 logger.error(str(e))
                 if verbose:
                     import traceback
+
                     ex = traceback.format_exception(*sys.exc_info())
-                    logger.error('\n'.join([e for e in ex]))
+                    logger.error("\n".join([e for e in ex]))
                 if stop_on_error:
                     raise e
             logger.debug("   ... complete!")
-        json.dump({
-            "$schema": urljoin(JSONSCHEMA_BASE_REMOTE_URL, 'project.json'),
-            "items": project_dicts}, buffer , indent=4)
+        json.dump(
+            {
+                "$schema": urljoin(JSONSCHEMA_BASE_REMOTE_URL, "project.json"),
+                "items": project_dicts,
+            },
+            buffer,
+            indent=4,
+        )
         return buffer

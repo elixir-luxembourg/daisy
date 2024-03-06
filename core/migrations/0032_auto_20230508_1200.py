@@ -5,20 +5,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0031_endpoint_exposure'),
+        ("core", "0031_endpoint_exposure"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='endpoint',
-            name='api_key',
-            field=core.models.utils.HashedField(help_text="\n        * Please specify the API key to the endpoint, \n        head <a href='https://generate-random.org/api-key-generator?count=1&length=64&type=mixed-numbers&prefix=' target='_blank'> here </a>\n        to generate a random key and keep it somewhere, we only store a hash.\n        ", max_length=128, unique=True, verbose_name='API Key'),
+            model_name="endpoint",
+            name="api_key",
+            field=core.models.utils.HashedField(
+                help_text="\n        * Please specify the API key to the endpoint, \n        head <a href='https://generate-random.org/api-key-generator?count=1&length=64&type=mixed-numbers&prefix=' target='_blank'> here </a>\n        to generate a random key and keep it somewhere, we only store a hash.\n        ",
+                max_length=128,
+                unique=True,
+                verbose_name="API Key",
+            ),
         ),
         migrations.AlterField(
-            model_name='endpoint',
-            name='url_pattern',
-            field=models.CharField(blank=True, help_text='\n        Please specify the url pattern to the entity page and incorporate entity_id like the example:\n        <h3>https://datacatalog.elixir-luxembourg.org/e/dataset/${entity_id}</h3>', max_length=256, verbose_name='URL Pattern'),
+            model_name="endpoint",
+            name="url_pattern",
+            field=models.CharField(
+                blank=True,
+                help_text="\n        Please specify the url pattern to the entity page and incorporate entity_id like the example:\n        <h3>https://datacatalog.elixir-luxembourg.org/e/dataset/${entity_id}</h3>",
+                max_length=256,
+                verbose_name="URL Pattern",
+            ),
         ),
     ]

@@ -96,14 +96,14 @@ class UserDetailView(DetailView):
         project_perms = {}
         dataset_perms = {}
         for dsp in dataset_set:
-            if 'view' in dsp.permission.codename:
+            if "view" in dsp.permission.codename:
                 continue
             if dsp.content_object in dataset_perms:
                 dataset_perms[dsp.content_object].append(dsp.permission.codename)
             else:
                 dataset_perms[dsp.content_object] = [dsp.permission.codename]
         for psp in project_set:
-            if 'view' in psp.permission.codename:
+            if "view" in psp.permission.codename:
                 continue
             if psp.content_object in project_perms:
                 project_perms[psp.content_object].append(psp.permission.codename)
@@ -111,8 +111,12 @@ class UserDetailView(DetailView):
                 project_perms[psp.content_object] = [psp.permission.codename]
         context["project_perms"] = project_perms
         context["dataset_perms"] = dataset_perms
-        context["ds_perms_const"] = list(map(lambda x: f"{x}_dataset", [p.value for p in Permissions]))
-        context["pj_perms_const"] = list(map(lambda x: f"{x}_project", [p.value for p in Permissions]))
+        context["ds_perms_const"] = list(
+            map(lambda x: f"{x}_dataset", [p.value for p in Permissions])
+        )
+        context["pj_perms_const"] = list(
+            map(lambda x: f"{x}_project", [p.value for p in Permissions])
+        )
         context["perms_const"] = list(Permissions)
         return context
 

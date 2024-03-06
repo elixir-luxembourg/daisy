@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.http import HttpResponse
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
 
 from excel_response import ExcelResponse
 
@@ -12,21 +12,22 @@ from . import facet_view_utils
 log = DaisyLogger(__name__)
 
 
+@login_required
 @user_passes_test(is_data_steward)
 def generic_export(request, object_model_class, object_name):
     def _get_objects(request, object_model_class, object_name):
-        query = request.GET.get('query', '')
-        order_by = request.GET.get('order_by', '')
+        query = request.GET.get("query", "")
+        order_by = request.GET.get("order_by", "")
         objects = facet_view_utils.search_objects(
             request,
-            filters=request.GET.getlist('filters'),
+            filters=request.GET.getlist("filters"),
             query=query,
             object_model=object_model_class,
             facets=settings.FACET_FIELDS[object_name],
-            order_by=order_by
+            order_by=order_by,
         )
 
-        objects_ids = [obj.__dict__['pk'] for obj in objects]
+        objects_ids = [obj.__dict__["pk"] for obj in objects]
         objects = object_model_class.objects.filter(id__in=objects_ids)
         values = [obj.serialize_to_export() for obj in objects]
         return values
@@ -39,29 +40,38 @@ def generic_export(request, object_model_class, object_name):
     try:
         values = _get_objects(request, object_model_class, object_name)
     except Exception as e:
-        return HttpResponse(f'There was a problem with serialization during export: \r\n{str(e)}')
+        return HttpResponse(
+            f"There was a problem with serialization during export: \r\n{str(e)}"
+        )
 
     try:
         response = _do_export(values)
         return response
     except Exception as e:
-            return HttpResponse(f'There was a problem during export to Excel file: \r\n{str(e)}')  
+        return HttpResponse(
+            f"There was a problem during export to Excel file: \r\n{str(e)}"
+        )
 
 
 def cohorts_export(request):
-    return generic_export(request, Cohort, 'cohort')
+    return generic_export(request, Cohort, "cohort")
+
 
 def contacts_export(request):
-    return generic_export(request, Contact, 'contact')
+    return generic_export(request, Contact, "contact")
+
 
 def contracts_export(request):
-    return generic_export(request, Contract, 'contract')
-    
+    return generic_export(request, Contract, "contract")
+
+
 def datasets_export(request):
-    return generic_export(request, Dataset, 'dataset')
+    return generic_export(request, Dataset, "dataset")
+
 
 def partners_export(request):
-    return generic_export(request, Partner, 'partner')
+    return generic_export(request, Partner, "partner")
+
 
 def projects_export(request):
-    return generic_export(request, Project, 'project')
+    return generic_export(request, Project, "project")

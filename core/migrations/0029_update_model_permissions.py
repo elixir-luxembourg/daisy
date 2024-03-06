@@ -4,50 +4,102 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0028_auto_20220726_1343'),
+        ("core", "0028_auto_20220726_1343"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='contract',
-            options={'get_latest_by': 'added', 'ordering': ['added'], 'permissions': [('protected_contract', 'Can edit PROTECTED elements of Contract instances'), ('admin_contract', 'Can edit permissions on Contract instances')]},
+            name="contract",
+            options={
+                "get_latest_by": "added",
+                "ordering": ["added"],
+                "permissions": [
+                    (
+                        "protected_contract",
+                        "Can edit PROTECTED elements of Contract instances",
+                    ),
+                    ("admin_contract", "Can edit permissions on Contract instances"),
+                ],
+            },
         ),
         migrations.AlterModelOptions(
-            name='datadeclaration',
-            options={'get_latest_by': 'added', 'ordering': ['added']},
+            name="datadeclaration",
+            options={"get_latest_by": "added", "ordering": ["added"]},
         ),
         migrations.AlterModelOptions(
-            name='dataset',
-            options={'get_latest_by': 'added', 'ordering': ['added'], 'permissions': [('protected_dataset', 'Can edit PROTECTED elements of Dataset instances'), ('admin_dataset', 'Can edit permissions on Dataset instances')]},
+            name="dataset",
+            options={
+                "get_latest_by": "added",
+                "ordering": ["added"],
+                "permissions": [
+                    (
+                        "protected_dataset",
+                        "Can edit PROTECTED elements of Dataset instances",
+                    ),
+                    ("admin_dataset", "Can edit permissions on Dataset instances"),
+                ],
+            },
         ),
         migrations.AlterModelOptions(
-            name='document',
-            options={'get_latest_by': 'added', 'ordering': ['added']},
+            name="document",
+            options={"get_latest_by": "added", "ordering": ["added"]},
         ),
         migrations.AlterModelOptions(
-            name='project',
-            options={'get_latest_by': 'added', 'ordering': ['added'], 'permissions': [('protected_project', 'Can edit PROTECTED elements of Project instances'), ('admin_project', 'Can edit permissions on Dataset instances')]},
+            name="project",
+            options={
+                "get_latest_by": "added",
+                "ordering": ["added"],
+                "permissions": [
+                    (
+                        "protected_project",
+                        "Can edit PROTECTED elements of Project instances",
+                    ),
+                    ("admin_project", "Can edit permissions on Dataset instances"),
+                ],
+            },
         ),
         migrations.AlterField(
-            model_name='project',
-            name='disease_terms',
-            field=models.ManyToManyField(blank=True, help_text='Provide keywords/terms that would characterize the disease that fall in project\'s scope. Please use terms from <a href="https://www.ebi.ac.uk/ols/ontologies/doid">HDO</a> ontology.', related_name='projects_w_term', to='core.DiseaseTerm', verbose_name='Disease terms'),
+            model_name="project",
+            name="disease_terms",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text='Provide keywords/terms that would characterize the disease that fall in project\'s scope. Please use terms from <a href="https://www.ebi.ac.uk/ols/ontologies/doid">HDO</a> ontology.',
+                related_name="projects_w_term",
+                to="core.DiseaseTerm",
+                verbose_name="Disease terms",
+            ),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='gene_terms',
-            field=models.ManyToManyField(blank=True, help_text='Select one or more terms that would characterize the genes that fall in project\'s scope. Please use terms from <a href="https://www.genenames.org">HGNO ontology</a>.', to='core.GeneTerm', verbose_name='List of gene terms'),
+            model_name="project",
+            name="gene_terms",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text='Select one or more terms that would characterize the genes that fall in project\'s scope. Please use terms from <a href="https://www.genenames.org">HGNO ontology</a>.',
+                to="core.GeneTerm",
+                verbose_name="List of gene terms",
+            ),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='phenotype_terms',
-            field=models.ManyToManyField(blank=True, help_text='Select one or more terms that would characterize the phenotypes that fall in project\'s scope. Please use terms from <a href="https://hpo.jax.org/">HPO ontology</a>.', related_name='projects_w_term', to='core.PhenotypeTerm', verbose_name='Phenotype terms'),
+            model_name="project",
+            name="phenotype_terms",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text='Select one or more terms that would characterize the phenotypes that fall in project\'s scope. Please use terms from <a href="https://hpo.jax.org/">HPO ontology</a>.',
+                related_name="projects_w_term",
+                to="core.PhenotypeTerm",
+                verbose_name="Phenotype terms",
+            ),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='study_terms',
-            field=models.ManyToManyField(blank=True, help_text='Select one or more features that would characterize the project. Please use terms from <a href="https://bioportal.bioontology.org/ontologies/EDDA">EDDA Study Designs Taxonomy</a>', related_name='projects_w_type', to='core.StudyTerm', verbose_name='Study features'),
+            model_name="project",
+            name="study_terms",
+            field=models.ManyToManyField(
+                blank=True,
+                help_text='Select one or more features that would characterize the project. Please use terms from <a href="https://bioportal.bioontology.org/ontologies/EDDA">EDDA Study Designs Taxonomy</a>',
+                related_name="projects_w_type",
+                to="core.StudyTerm",
+                verbose_name="Study features",
+            ),
         ),
     ]

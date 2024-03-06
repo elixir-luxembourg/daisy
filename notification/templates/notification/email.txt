@@ -1,10 +1,8 @@
-DAISY - {% block title %}{% endblock %}
-
 {% block content %}{% endblock %}
 
 {% block footer %}
 **********************************************************************************
 This email has been generated from DAISY: {{server_url}}.
-You can change your notifications settings in your>profile {{profile_url}}.
+You can change your notifications settings here {{notifications_settings_url}}.
 **********************************************************************************
  {% endblock %}
