@@ -43,7 +43,7 @@ requirements = [
     "jsonschema==3.2.0",
     "mockldap@git+https://github.com/elixir-luxembourg/mockldap2.git",
     "django-auditlog==2.1.1",
-    "black==23.7.0",
+    "black==24.3.0",
 ]
 
 test_requirements = [
