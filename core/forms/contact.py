@@ -1,4 +1,4 @@
-from django.forms import ModelForm, ChoiceField, Form
+from django.forms import ModelForm, ChoiceField, Form, ValidationError
 
 from core.models import Contact
 
@@ -7,7 +7,7 @@ class ContactForm(ModelForm):
     class Meta:
         model = Contact
         fields = "__all__"
-        exclude = []
+        exclude = ["oidc_id"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -21,6 +21,11 @@ class ContactForm(ModelForm):
         "address",
         "phone",
     ]
+
+    def clean_oidc_id(self):
+        # if the user is trying to change the oidc_id, raise an error
+        if self.cleaned_data["oidc_id"]:
+            raise ValidationError("You cannot set the OIDC ID of a contact.")
 
 
 class PickContactForm(Form):
