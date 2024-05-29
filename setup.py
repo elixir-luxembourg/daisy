@@ -28,7 +28,7 @@ requirements = [
     "django-reversion==3.0.3",
     "django-guardian==2.4.0",
     "django-stronghold==0.3.0",
-    "gunicorn==19.9.0",
+    "gunicorn==22.0.0",
     "ipython==8.10.0",
     "ontobio==2.8.8",
     "yamldown>=0.1.8",
