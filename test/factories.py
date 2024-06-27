@@ -7,7 +7,12 @@ from django.contrib.contenttypes.models import ContentType
 
 from core.constants import Groups as GroupConstants
 from core.models import User, Dataset, DataLogType, StorageResource
-from core.models.data_declaration import DeidentificationMethod, SubjectCategory, ShareCategory, ConsentStatus
+from core.models.data_declaration import (
+    DeidentificationMethod,
+    SubjectCategory,
+    ShareCategory,
+    ConsentStatus,
+)
 from core.models.partner import GEO_CATEGORY
 from notification.models import NotificationVerb
 
@@ -15,7 +20,7 @@ from notification.models import NotificationVerb
 class GroupFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Group
-        django_get_or_create = ('name',)
+        django_get_or_create = ("name",)
 
     name = factory.Iterator([g.value for g in GroupConstants])
 
@@ -42,14 +47,16 @@ class UserFactory(factory.django.DjangoModelFactory):
     """
 
     class Meta:
-        model = 'core.User'
-        django_get_or_create = ('username',)
+        model = "core.User"
+        django_get_or_create = ("username",)
 
-    first_name = factory.Faker('first_name')
-    last_name = factory.Faker('last_name')
-    email = factory.Faker('email')
-    full_name = factory.LazyAttribute(lambda x: f'{x.first_name}.{x.last_name}'.lower())
-    username = factory.LazyAttribute(lambda x: f'{x.first_name}.{x.last_name}@uni.lux'.lower())
+    first_name = factory.Faker("first_name")
+    last_name = factory.Faker("last_name")
+    email = factory.Faker("email")
+    full_name = factory.LazyAttribute(lambda x: f"{x.first_name}.{x.last_name}".lower())
+    username = factory.LazyAttribute(
+        lambda x: f"{x.first_name}.{x.last_name}@uni.lux".lower()
+    )
 
     @factory.post_generation
     def groups(self, create, extracted, **kwargs):
@@ -66,15 +73,15 @@ class UserFactory(factory.django.DjangoModelFactory):
         if extracted:
             self.set_password(extracted)
         else:
-            self.set_password('test-user')
+            self.set_password("test-user")
 
 
 class PublicationFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "core.Publication"
-        django_get_or_create = ('doi', )
+        django_get_or_create = ("doi",)
 
-    doi = factory.Faker('ssn')
+    doi = factory.Faker("ssn")
 
     @factory.post_generation
     def citation(self, create, extracted, **kwargs):
@@ -83,11 +90,11 @@ class PublicationFactory(factory.django.DjangoModelFactory):
         if extracted:
             return extracted
         else:
-            authors = factory.Faker('name')
-            title = factory.Faker('sentence')
-            journal = factory.Faker('word')
+            authors = factory.Faker("name")
+            title = factory.Faker("sentence")
+            journal = factory.Faker("word")
             year = factory.Faker
-            return f'{authors} {title}. {journal} ({year})'
+            return f"{authors} {title}. {journal} ({year})"
 
 
 class ProjectFactory(factory.django.DjangoModelFactory):
@@ -97,12 +104,12 @@ class ProjectFactory(factory.django.DjangoModelFactory):
     """
 
     class Meta:
-        model = 'core.Project'
-        django_get_or_create = ('acronym',)
+        model = "core.Project"
+        django_get_or_create = ("acronym",)
 
-    acronym = factory.Faker('company')
-    title = factory.Faker('company')
-    description = factory.Faker('catch_phrase')
+    acronym = factory.Faker("company")
+    title = factory.Faker("company")
+    description = factory.Faker("catch_phrase")
     has_cner = factory.Iterator([True, False])
     has_erp = factory.Iterator([True, False])
     cner_notes = factory.Iterator([True, False])
@@ -121,27 +128,27 @@ class ProjectFactory(factory.django.DjangoModelFactory):
 
 class DataDeclarationFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'core.DataDeclaration'
-        django_get_or_create = ('title',)
+        model = "core.DataDeclaration"
+        django_get_or_create = ("title",)
 
-    title = factory.Faker('bs')
+    title = factory.Faker("bs")
     has_special_subjects = factory.Iterator([True, False])
-    submission_id = factory.Faker('ean13')
+    submission_id = factory.Faker("ean13")
     deidentification_method = factory.Iterator(DeidentificationMethod)
     subjects_category = factory.Iterator(SubjectCategory)
-    special_subjects_description = factory.Faker('text')
+    special_subjects_description = factory.Faker("text")
     share_category = factory.Iterator(ShareCategory)
     consent_status = factory.Iterator(ConsentStatus)
 
 
 class CohortFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'core.Cohort'
-        django_get_or_create = ('title',)
+        model = "core.Cohort"
+        django_get_or_create = ("title",)
 
     title = factory.Faker("bs")
-    comments = factory.Faker('text')
-    
+    comments = factory.Faker("text")
+
     @factory.post_generation
     def owners(self, create, extracted, **kwargs):
         if not create:
@@ -160,13 +167,13 @@ class DatasetFactory(factory.django.DjangoModelFactory):
     """
 
     class Meta:
-        model = 'core.Dataset'
-        django_get_or_create = ('title',)
+        model = "core.Dataset"
+        django_get_or_create = ("title",)
 
-    title = factory.Faker('bs')
+    title = factory.Faker("bs")
     project = factory.SubFactory(ProjectFactory)
-    other_external_id = factory.Faker('ean8')
-    unique_id = factory.Faker('uuid4')
+    other_external_id = factory.Faker("ean8")
+    unique_id = factory.Faker("uuid4")
 
     @factory.post_generation
     def local_custodians(self, create, extracted, **kwargs):
@@ -186,10 +193,10 @@ class AccessFactory(factory.django.DjangoModelFactory):
     """
 
     class Meta:
-        model = 'core.Access'
-        django_get_or_create = ('user', )
+        model = "core.Access"
+        django_get_or_create = ("user",)
 
-    access_notes = factory.Faker('sentence')
+    access_notes = factory.Faker("sentence")
     dataset = factory.SubFactory(DatasetFactory)
     user = factory.SubFactory(UserFactory)
 
@@ -198,19 +205,21 @@ class StorageResourceFactory(factory.django.DjangoModelFactory):
     """
     StorageResource Factory
     """
-    class Meta:
-        model = 'core.StorageResource'
-        django_get_or_create = ('name',)
 
-    name = factory.Faker('hostname')
+    class Meta:
+        model = "core.StorageResource"
+        django_get_or_create = ("name",)
+
+    name = factory.Faker("hostname")
 
 
 class DataLocationFactory(factory.django.DjangoModelFactory):
     """
     Data Location Factory
     """
+
     class Meta:
-        model = 'core.DataLocation'
+        model = "core.DataLocation"
 
     dataset = factory.SubFactory(DatasetFactory)
     backend = factory.SubFactory(StorageResourceFactory)
@@ -220,8 +229,9 @@ class ShareFactory(factory.django.DjangoModelFactory):
     """
     Dataset Share Factory
     """
+
     class Meta:
-        model = 'core.Share'
+        model = "core.Share"
 
     dataset = factory.SubFactory(DatasetFactory)
     data_log_type = factory.Iterator(DataLogType.objects.all())
@@ -231,11 +241,11 @@ class LegalBasisFactory(factory.django.DjangoModelFactory):
     """
     Legal Basis Factory
     """
+
     class Meta:
-        model = 'core.LegalBasis'
+        model = "core.LegalBasis"
 
     dataset = factory.SubFactory(DatasetFactory)
-
 
 
 class ContactTypeFactory(factory.django.DjangoModelFactory):
@@ -244,10 +254,10 @@ class ContactTypeFactory(factory.django.DjangoModelFactory):
     """
 
     class Meta:
-        model = 'core.ContactType'
-        django_get_or_create = ('name',)
+        model = "core.ContactType"
+        django_get_or_create = ("name",)
 
-    name = factory.Faker('job')
+    name = factory.Faker("job")
 
 
 class ContactFactory(factory.django.DjangoModelFactory):
@@ -256,14 +266,14 @@ class ContactFactory(factory.django.DjangoModelFactory):
     """
 
     class Meta:
-        model = 'core.Contact'
-        django_get_or_create = ('email',)
+        model = "core.Contact"
+        django_get_or_create = ("email",)
 
-    address = factory.Faker('address')
-    email = factory.Faker('email')
-    first_name = factory.Faker('first_name')
-    last_name = factory.Faker('last_name')
-    phone = factory.Sequence(lambda n: '123-555-%04d' % n)
+    address = factory.Faker("address")
+    email = factory.Faker("email")
+    first_name = factory.Faker("first_name")
+    last_name = factory.Faker("last_name")
+    phone = factory.Sequence(lambda n: "123-555-%04d" % n)
     type = factory.SubFactory(ContactTypeFactory)
 
 
@@ -273,19 +283,19 @@ class PartnerFactory(factory.django.DjangoModelFactory):
     """
 
     class Meta:
-        model = 'core.Partner'
-        django_get_or_create = ('elu_accession',)
+        model = "core.Partner"
+        django_get_or_create = ("elu_accession",)
 
-    acronym = factory.Faker('company_suffix')
-    address = factory.Faker('address')
-    elu_accession = factory.Faker('company_suffix')
+    acronym = factory.Faker("company_suffix")
+    address = factory.Faker("address")
+    elu_accession = factory.Faker("company_suffix")
     geo_category = factory.Iterator([GEO_CATEGORY.EU, GEO_CATEGORY.Non_EU])
-    name = factory.Faker('company')
+    name = factory.Faker("company")
 
 
 class GDPRRoleFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'core.GDPRRole'
+        model = "core.GDPRRole"
 
     display_name = factory.Iterator(["Joint Controller", "Controller", "Processor"])
     name = factory.Iterator(["joint_controller", "controller", "processor"])
@@ -293,7 +303,7 @@ class GDPRRoleFactory(factory.django.DjangoModelFactory):
 
 class PartnerRoleFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'core.PartnerRole'
+        model = "core.PartnerRole"
 
     partner = factory.SubFactory(PartnerFactory)
 
@@ -304,7 +314,7 @@ class ContractFactory(factory.django.DjangoModelFactory):
     """
 
     class Meta:
-        model = 'core.Contract'
+        model = "core.Contract"
 
     # company_roles = factory.SubFactory(GDPRRoleFactory)
     project = factory.SubFactory(ProjectFactory)
@@ -341,7 +351,8 @@ class ContractFactory(factory.django.DjangoModelFactory):
     #     if extracted:
     #         for company_role in extracted:
     #             self.company_roles.add(company_role)
-                
+
+
 ## NOTIFICATIONS
 class AbstractNotificationFactory(factory.django.DjangoModelFactory):
     """
@@ -349,16 +360,18 @@ class AbstractNotificationFactory(factory.django.DjangoModelFactory):
     """
 
     class Meta:
-        exclude = ['content_object']
+        exclude = ["content_object"]
         abstract = True
 
-    actor = factory.Iterator(User.objects.all())
+    recipient = factory.Iterator(User.objects.all())
     verb = factory.Iterator(NotificationVerb)
 
-    object_id = factory.SelfAttribute('content_object.id')
-    content_type = factory.LazyAttribute(lambda o: ContentType.objects.get_for_model(o.content_object))
+    object_id = factory.SelfAttribute("content_object.id")
+    content_type = factory.LazyAttribute(
+        lambda o: ContentType.objects.get_for_model(o.content_object)
+    )
 
-    time = factory.Faker('date_time_this_month', tzinfo=settings.TZINFO)
+    time = factory.Faker("date_time_this_month", tzinfo=settings.TZINFO)
 
 
 class DatasetNotificationFactory(AbstractNotificationFactory):
@@ -367,8 +380,12 @@ class DatasetNotificationFactory(AbstractNotificationFactory):
     """
 
     class Meta:
-        model = 'notification.Notification'
-        django_get_or_create = ('actor', 'verb', 'time',)
+        model = "notification.Notification"
+        django_get_or_create = (
+            "recipient",
+            "verb",
+            "time",
+        )
 
     # content_object = factory.SubFactory(DatasetFactory)
     content_object = factory.Iterator(Dataset.objects.all())
@@ -385,18 +402,24 @@ class AbstractDocumentFactory(factory.django.DjangoModelFactory):
     This file is not deleted automatically and must be removed manually. For example with `os.remove(object.content.name)`
     where `object` is the document created by this factory.
     """
+
     class Meta:
-        exclude = ['content_object']
+        exclude = ["content_object"]
         abstract = True
 
     content = "Some content"
-    object_id = factory.SelfAttribute('content_object.id')
-    content_type = factory.LazyAttribute(lambda o: ContentType.objects.get_for_model(o.content_object))
+    object_id = factory.SelfAttribute("content_object.id")
+    content_type = factory.LazyAttribute(
+        lambda o: ContentType.objects.get_for_model(o.content_object)
+    )
 
     class Params:
         with_file = factory.Trait(
-            content=factory.LazyAttribute(lambda o: NamedTemporaryFile(mode='r+b', dir='.', delete=False).name),
+            content=factory.LazyAttribute(
+                lambda o: NamedTemporaryFile(mode="r+b", dir=".", delete=False).name
+            ),
         )
+
 
 class DatasetDocumentFactory(AbstractDocumentFactory):
     """
@@ -404,18 +427,21 @@ class DatasetDocumentFactory(AbstractDocumentFactory):
     """
 
     class Meta:
-        model = 'core.Document'
+        model = "core.Document"
 
     content_object = factory.SubFactory(DatasetFactory)
+
 
 class ProjectDocumentFactory(AbstractDocumentFactory):
     """
     Add a document for Project
     """
+
     class Meta:
-        model = 'core.Document'
+        model = "core.Document"
 
     content_object = factory.SubFactory(ProjectFactory)
+
 
 class ContractDocumentFactory(AbstractDocumentFactory):
     """
@@ -423,9 +449,10 @@ class ContractDocumentFactory(AbstractDocumentFactory):
     """
 
     class Meta:
-        model = 'core.Document'
+        model = "core.Document"
 
     content_object = factory.SubFactory(ContractFactory)
+
 
 class EndpointFactory(factory.django.DjangoModelFactory):
     """
@@ -433,11 +460,12 @@ class EndpointFactory(factory.django.DjangoModelFactory):
     """
 
     class Meta:
-        model = 'core.Endpoint'
+        model = "core.Endpoint"
 
-    name = factory.Faker('company')
+    name = factory.Faker("company")
     url_pattern = "https://datacatalog.elixir-luxembourg.org/e/dataset/${entity_id}"
-    api_key = 64 * 'x'
+    api_key = 64 * "x"
+
 
 class ExposureFactory(factory.django.DjangoModelFactory):
     """
@@ -445,8 +473,8 @@ class ExposureFactory(factory.django.DjangoModelFactory):
     """
 
     class Meta:
-        model = 'core.Exposure'
-    
+        model = "core.Exposure"
+
     endpoint = factory.SubFactory(EndpointFactory)
     dataset = factory.SubFactory(DatasetFactory)
     form_id = 1

@@ -12,8 +12,8 @@ from core.utils import DaisyLogger
 
 logger = DaisyLogger(__name__)
 
-JSONSCHEMA_BASE_LOCAL_PATH = getattr(settings, 'IMPORT_JSON_SCHEMAS_DIR')
-JSONSCHEMA_BASE_REMOTE_URL = getattr(settings, 'IMPORT_JSON_SCHEMAS_URI')
+JSONSCHEMA_BASE_LOCAL_PATH = getattr(settings, "IMPORT_JSON_SCHEMAS_DIR")
+JSONSCHEMA_BASE_REMOTE_URL = getattr(settings, "IMPORT_JSON_SCHEMAS_URI")
 
 
 class BaseJSONSchemaValidator:
@@ -25,7 +25,6 @@ class BaseJSONSchemaValidator:
     def validator(self):
         return self._cached_validator
 
-
     def validate_items(self, item_list, logger=None):
         for item in item_list:
             try:
@@ -33,12 +32,11 @@ class BaseJSONSchemaValidator:
             except jsonschema.ValidationError as e:
                 raise JSONSchemaValidationError(str(e))
         return True
-    
+
     def __init__(self):
         self.base_url = JSONSCHEMA_BASE_REMOTE_URL
         self.base_path = JSONSCHEMA_BASE_LOCAL_PATH
         self._make_validator()
-
 
     def _make_validator(self):
         schema = self._load_schema(self.schema_name)
@@ -53,41 +51,47 @@ class BaseJSONSchemaValidator:
         resolver = jsonschema.RefResolver(
             self.base_path,
             schema,
-            handlers={"https":get_referenced_schema,
-                      "http":get_referenced_schema,
-                      }
-            )
+            handlers={
+                "https": get_referenced_schema,
+                "http": get_referenced_schema,
+            },
+        )
         self._cached_validator = jsonschema.Draft4Validator(schema, resolver=resolver)
         return
-
 
     def _load_schema(self, schema_name):
         try:
             return self._load_schema_from_disk(schema_name)
         except Exception as e:
             import os
-            logger.warn("Error (1/2) loading schema from disk for JSON validation...: " + str(e))
-            logger.warn("Working directory = " + os.getcwd())
-            logger.warn("File path = " + os.path.join(self.base_path, schema_name))
-            logger.warn("Will try to load the schema from URL...")
+
+            logger.warning(
+                "Error (1/2) loading schema from disk for JSON validation...: " + str(e)
+            )
+            logger.warning("Working directory = " + os.getcwd())
+            logger.warning("File path = " + os.path.join(self.base_path, schema_name))
+            logger.warning("Will try to load the schema from URL...")
 
         try:
             return self._load_schema_from_url(schema_name)
         except:
-            logger.error("Error (2/2) loading schema from URI for JSON validation...: " + str(e))
+            logger.error(
+                "Error (2/2) loading schema from URI for JSON validation...: " + str(e)
+            )
             logger.error("URL = " + os.path.join(self.base_url, schema_name))
 
-        raise Exception('Cannot load schema for JSON validation')
+        raise Exception("Cannot load schema for JSON validation")
 
     def _load_schema_from_disk(self, schema_name):
         file_path = os.path.join(self.base_path, schema_name)
-        with open(file_path, 'r') as opened_file:
+        with open(file_path, "r") as opened_file:
             return json.load(opened_file)
 
     def _load_schema_from_url(self, schema_name):
         file_path = os.path.join(self.base_url, schema_name)
         with urllib.request.urlopen(file_path) as url:
             return json.loads(url.read().decode())
+
 
 class DatasetJSONSchemaValidator(BaseJSONSchemaValidator):
     schema_name = "elu-dataset.json"

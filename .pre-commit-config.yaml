@@ -1,0 +1,16 @@
+repos:
+  - repo: https://github.com/ambv/black
+    rev: 23.7.0
+    hooks:
+      - id: black
+        language_version: python3
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.15.0
+    hooks:
+      - id: eslint
+        files: web/static/vendor/(components|tests)/.*\.[jt]sx?$
+        types: [file]
+        additional_dependencies:
+          - eslint@8.15.0
+          - eslint-plugin-react@7.29.4
+          - eslint-plugin-react-hooks@4.6.0

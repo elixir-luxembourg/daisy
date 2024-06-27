@@ -13,16 +13,14 @@ def daisy_version(request):
             the_version = daisy_packages[0].version
     except:
         the_version = "develop"
-    
-    return {
-        "app_version": the_version
-    }
+
+    return {"app_version": the_version}
 
 
 def instance_branding(request):
-    instance_label = getattr(settings, 'INSTANCE_LABEL', None)
-    instance_primary_color = getattr(settings, 'INSTANCE_PRIMARY_COLOR', None)
+    instance_label = getattr(settings, "INSTANCE_LABEL", None)
+    instance_primary_color = getattr(settings, "INSTANCE_PRIMARY_COLOR", None)
     return {
         "instance_label": instance_label,
-        "instance_primary_color": instance_primary_color
+        "instance_primary_color": instance_primary_color,
     }

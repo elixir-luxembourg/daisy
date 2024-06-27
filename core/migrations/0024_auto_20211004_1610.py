@@ -5,30 +5,53 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0023_remove_datadec_title_unq_constraint'),
+        ("core", "0023_remove_datadec_title_unq_constraint"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='cohort',
-            name='scientific_metadata',
-            field=models.TextField(blank=True, default='{}', null=True, validators=[core.models.utils.validate_json], verbose_name='Additional scientific metadata (in JSON format)'),
+            model_name="cohort",
+            name="scientific_metadata",
+            field=models.TextField(
+                blank=True,
+                default="{}",
+                null=True,
+                validators=[core.models.utils.validate_json],
+                verbose_name="Additional scientific metadata (in JSON format)",
+            ),
         ),
         migrations.AddField(
-            model_name='dataset',
-            name='scientific_metadata',
-            field=models.TextField(blank=True, default='{}', null=True, validators=[core.models.utils.validate_json], verbose_name='Additional scientific metadata (in JSON format)'),
+            model_name="dataset",
+            name="scientific_metadata",
+            field=models.TextField(
+                blank=True,
+                default="{}",
+                null=True,
+                validators=[core.models.utils.validate_json],
+                verbose_name="Additional scientific metadata (in JSON format)",
+            ),
         ),
         migrations.AddField(
-            model_name='partner',
-            name='scientific_metadata',
-            field=models.TextField(blank=True, default='{}', null=True, validators=[core.models.utils.validate_json], verbose_name='Additional scientific metadata (in JSON format)'),
+            model_name="partner",
+            name="scientific_metadata",
+            field=models.TextField(
+                blank=True,
+                default="{}",
+                null=True,
+                validators=[core.models.utils.validate_json],
+                verbose_name="Additional scientific metadata (in JSON format)",
+            ),
         ),
         migrations.AddField(
-            model_name='project',
-            name='scientific_metadata',
-            field=models.TextField(blank=True, default='{}', null=True, validators=[core.models.utils.validate_json], verbose_name='Additional scientific metadata (in JSON format)'),
+            model_name="project",
+            name="scientific_metadata",
+            field=models.TextField(
+                blank=True,
+                default="{}",
+                null=True,
+                validators=[core.models.utils.validate_json],
+                verbose_name="Additional scientific metadata (in JSON format)",
+            ),
         ),
     ]

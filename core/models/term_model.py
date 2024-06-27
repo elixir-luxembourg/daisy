@@ -4,10 +4,10 @@ from django.db import models
 
 
 class TermCategory(Enum):
-    disease = 'disease'
-    study = 'study'
-    phenotype = 'phenotype'
-    gene = 'gene'
+    disease = "disease"
+    study = "study"
+    phenotype = "phenotype"
+    gene = "gene"
 
 
 class TermModel(CoreModel):
@@ -23,27 +23,27 @@ class TermModel(CoreModel):
 
 class StudyTerm(TermModel):
     class Meta:
-        app_label = 'core'
+        app_label = "core"
         get_latest_by = "added"
-        ordering = ['added']
+        ordering = ["added"]
 
 
 class GeneTerm(TermModel):
     class Meta:
-        app_label = 'core'
+        app_label = "core"
         get_latest_by = "added"
-        ordering = ['added']
+        ordering = ["added"]
 
 
 class PhenotypeTerm(TermModel):
     class Meta:
-        app_label = 'core'
+        app_label = "core"
         get_latest_by = "added"
-        ordering = ['added']
+        ordering = ["added"]
 
 
 class DiseaseTerm(TermModel):
     class Meta:
-        app_label = 'core'
+        app_label = "core"
         get_latest_by = "added"
-        ordering = ['added']
+        ordering = ["added"]

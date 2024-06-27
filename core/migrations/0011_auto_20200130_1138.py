@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0010_document_expiry_date'),
+        ("core", "0010_document_expiry_date"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='document',
-            name='content_notes',
-            field=models.TextField(blank=True, null=True, verbose_name='Document Notes'),
+            model_name="document",
+            name="content_notes",
+            field=models.TextField(
+                blank=True, null=True, verbose_name="Document Notes"
+            ),
         ),
     ]

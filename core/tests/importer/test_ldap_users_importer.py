@@ -13,11 +13,13 @@ def test_import_users():
     assert class_filter
     assert username_attribute
     assert search_dn
-    ldap_users_importer = LDAPUsersImporter(class_filter, username_attribute, search_dn, False)
+    ldap_users_importer = LDAPUsersImporter(
+        class_filter, username_attribute, search_dn, False
+    )
     ldap_users_importer.import_all_users()
     assert 5 == User.objects.count()
-    normal_user = User.objects.filter(username='normal.user').first()
+    normal_user = User.objects.filter(username="normal.user").first()
     assert normal_user is not None
-    assert 'normal.user@uni.lu' == normal_user.email
-    assert 'Normal' == normal_user.first_name
-    assert 'User' == normal_user.last_name
+    assert "normal.user@uni.lu" == normal_user.email
+    assert "Normal" == normal_user.first_name
+    assert "User" == normal_user.last_name

@@ -11,7 +11,6 @@ log = DaisyLogger(__name__)
 
 @pytest.mark.parametrize("is_steward", [True, False])
 def test_access_history(client, is_steward, user_vip, user_data_steward):
-
     new_dataset = Dataset(title="First test dataset")
     new_dataset.save()
     new_dataset.local_custodians.set([user_vip])
@@ -30,20 +29,26 @@ def test_access_history(client, is_steward, user_vip, user_data_steward):
     another_access.save()
 
     if is_steward:
-        client.login(username=user_data_steward.username, password=user_data_steward.password)
-        res = client.get(reverse('history'), follow=True)
+        client.login(
+            username=user_data_steward.username, password=user_data_steward.password
+        )
+        res = client.get(reverse("history"), follow=True)
         assert res.status_code == 200
-        assert len(res.context['object_list']) == 3
+        assert len(res.context["object_list"]) == 3
 
-        res = client.get(reverse('history'), {"entity_name": "access", "entity_attr": "id"})
+        res = client.get(
+            reverse("history"), {"entity_name": "access", "entity_attr": "id"}
+        )
         assert res.status_code == 200
-        assert len(res.context['object_list']) == 2
+        assert len(res.context["object_list"]) == 2
 
     else:
         client.login(username=user_vip.username, password=user_vip.password)
-        res = client.get(reverse('history'), follow=True)
+        res = client.get(reverse("history"), follow=True)
         assert res.status_code == 403
 
-        res = client.get(reverse('history'), {"entity_name": "access", "entity_id": new_access.pk})
+        res = client.get(
+            reverse("history"), {"entity_name": "access", "entity_id": new_access.pk}
+        )
         assert res.status_code == 200
-        assert len(res.context['object_list']) == 2
+        assert len(res.context["object_list"]) == 2

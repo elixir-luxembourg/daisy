@@ -4,15 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0012_auto_20210119_1628'),
+        ("core", "0012_auto_20210119_1628"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userestriction',
-            name='use_class_note',
-            field=models.TextField(blank=True, help_text='A question asked when collecting the restriction class', max_length=255, null=True, verbose_name='Use restriction class note'),
+            model_name="userestriction",
+            name="use_class_note",
+            field=models.TextField(
+                blank=True,
+                help_text="A question asked when collecting the restriction class",
+                max_length=255,
+                null=True,
+                verbose_name="Use restriction class note",
+            ),
         ),
     ]

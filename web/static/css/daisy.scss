@@ -424,3 +424,15 @@ a.no-underline:hover {
     text-align: left !important;
   }
 }
+.log-container {
+    max-height: 500px;
+    overflow-y: auto;
+    white-space: pre-line;
+}
+
+.daisy-switch {
+    .custom-control-input:checked ~ .custom-control-label::after {
+      background-color: #eee;
+    }
+    @extend .custom-switch;
+}

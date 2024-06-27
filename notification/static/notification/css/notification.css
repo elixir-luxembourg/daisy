@@ -1,0 +1,28 @@
+#react-notifications {
+  .table {
+    & td {
+      vertical-align: middle;
+    }
+  }
+
+  .card-title {
+      margin-bottom: 0px;
+  }
+
+  .card-badge {
+      position: absolute;
+      right: -25px;
+      bottom: 35%;
+  }
+
+}
+
+.accordion-toggle {
+    position: absolute;
+    right: 15px;
+    bottom: 0.5rem;
+
+    & i.material-icons {
+        font-size: 36px;
+    }
+}

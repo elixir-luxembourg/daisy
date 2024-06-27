@@ -7,12 +7,12 @@ from notification.models import NotificationSetting
 
 class ProfileEditView(UpdateView):
     model = NotificationSetting
-    template_name = 'profile.html'
+    template_name = "profile.html"
     # form_class = ProfileForm
-    fields = ('style',)
+    fields = ("send_email", "send_in_app", "notification_offset")
 
     def get_success_url(self):
-        return reverse_lazy('profile')
+        return reverse_lazy("profile")
 
     def get_object(self, queryset=None):
         """
@@ -22,7 +22,5 @@ class ProfileEditView(UpdateView):
         try:
             ns = self.request.user.notification_setting
         except ObjectDoesNotExist:
-            ns = NotificationSetting.objects.create(
-                user=self.request.user
-            )
+            ns = NotificationSetting.objects.create(user=self.request.user)
         return ns

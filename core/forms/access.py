@@ -1,9 +1,9 @@
 from django.forms import ModelForm, DateInput, Textarea
+from core.forms import SkipFieldValidationMixin
+from core.models import Access, Contact
 
-from core.models import Access
 
-
-class AccessForm(ModelForm):
+class AccessForm(SkipFieldValidationMixin, ModelForm):
     class Meta:
         model = Access
         fields = "__all__"
@@ -15,6 +15,8 @@ class AccessForm(ModelForm):
             # Textareas
             "access_notes": Textarea(attrs={"rows": 2, "cols": 40}),
         }
+        heading = "Record Access"
+        heading_help = "Specify who can access the data and for how long. You can define access of each person or describe group of users with access in remarks below."
 
     def __init__(self, *args, **kwargs):
         dataset = kwargs.pop("dataset", None)
@@ -24,6 +26,9 @@ class AccessForm(ModelForm):
         self.fields["defined_on_locations"].choices = [
             (d.id, d) for d in dataset.data_locations.all()
         ]
+        # to improve form performance we directly select related contact types
+        contact_queryset = Contact.objects.all().select_related("type")
+        self.fields["contact"].queryset = contact_queryset
 
     field_order = [
         "contact",
@@ -39,8 +44,8 @@ class AccessForm(ModelForm):
 class AccessEditForm(ModelForm):
     class Meta:
         model = Access
-        fields = '__all__'
-        exclude = ['created_by', 'history']
+        fields = "__all__"
+        exclude = ["created_by", "history"]
         widgets = {
             # Date pickers
             "granted_on": DateInput(attrs={"class": "datepicker"}),

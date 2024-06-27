@@ -5,6 +5,7 @@ from core.models.dataset import Dataset
 
 from auditlog.models import LogEntry
 
+
 def test_access_logentries():
     new_dataset = Dataset()
     new_dataset.save()
@@ -18,5 +19,3 @@ def test_access_logentries():
 
     new_access.delete()
     assert LogEntry.objects.count() == 3
-
-
