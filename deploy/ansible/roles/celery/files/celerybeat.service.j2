@@ -1,0 +1,16 @@
+[Unit]
+Description=Celery Beat Service
+After=network.target
+
+[Service]
+User={{ daisy_user }}
+Group={{ daisy_user }}
+EnvironmentFile=/home/{{ daisy_user }}/config/celery_beat.conf
+WorkingDirectory=/home/{{ daisy_user }}/daisy
+ExecStart=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP} beat \
+  --pidfile=${CELERYBEAT_PID_FILE} --logfile=${CELERYBEAT_LOG_FILE} \
+  ${CELERYBEAT_OPTS} --loglevel=${CELERYBEAT_LOG_LEVEL}'
+ExecStop=/bin/kill -s TERM $MAINPID
+
+[Install]
+WantedBy=multi-user.target 

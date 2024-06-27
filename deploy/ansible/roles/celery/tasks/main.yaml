@@ -1,0 +1,58 @@
+---
+- name: Create celery_worker directory
+  ansible.builtin.file:
+    path: /var/run/celery_worker
+    state: directory
+    owner: '{{ daisy_user }}'
+
+- name: Create celery_worker log directory
+  ansible.builtin.file:
+    path: /home/{{ daisy_user }}/log/celery_worker
+    state: directory
+    owner: '{{ daisy_user }}'
+
+- name: Create conf for worker
+  ansible.builtin.template:
+    src: celery_worker.conf.j2
+    dest: /home/{{ daisy_user }}/config/celery_worker.conf
+
+- name: Create systemd service file for celery worker
+  ansible.builtin.template:
+    src: celery_worker.service.j2
+    dest: /etc/systemd/system/celery_worker.service
+
+- name: Start celery worker service
+  systemd:
+    name: celery_worker
+    state: started
+    enabled: yes
+
+- name: Create celery_beat directory
+  ansible.builtin.file:
+    path: /var/run/celery_beat
+    state: directory
+    owner: '{{ daisy_user }}'
+
+- name: Create celery_beat log directory
+  ansible.builtin.file:
+    path: /home/{{ daisy_user }}/log/celery_beat
+    state: directory
+    owner: '{{ daisy_user }}'
+
+- name: Create celery.conf for beat
+  ansible.builtin.template:
+    src: celery_beat.conf.j2
+    dest: /home/{{ daisy_user }}/config/celery_beat.conf
+    owner: '{{ daisy_user }}' 
+
+- name: Create systemd service file for celery beat
+  ansible.builtin.template:
+    src: celery_beat.service.j2
+    dest: /etc/systemd/system/celery_beat.service
+    owner: '{{ daisy_user }}'
+
+- name: Start celery beat service
+  systemd:
+    name: celery_beat
+    state: started
+    enabled: yes

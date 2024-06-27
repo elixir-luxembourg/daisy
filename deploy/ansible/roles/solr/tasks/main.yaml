@@ -1,0 +1,72 @@
+- name: Create 'solr' user
+      user:
+        name: solr
+        state: present
+
+- name: Download Solr archive
+  get_url:
+    url: https://archive.apache.org/dist/lucene/solr/7.7.1/solr-7.7.1.tgz
+    dest: /tmp/solr-7.7.1.tgz
+
+- name: Extract install_solr_service.sh
+  shell: tar -xf /tmp/solr-7.7.1.tgz solr-7.7.1/bin/install_solr_service.sh
+  args:
+    executable: /bin/bash
+    creates: /tmp/solr-7.7.1/bin/install_solr_service.sh
+
+- name: Install required packages
+  yum:
+    name:
+      - lsof
+      - java-1.8.0-openjdk
+    state: present
+  
+- name: Run install_solr_service.sh
+  shell: /tmp/solr-7.7.1/bin/install_solr_service.sh /tmp/solr-7.7.1.tgz
+  args:
+    executable: /bin/bash
+    creates: /etc/init.d/solr
+
+- name: Switch to 'solr' user
+  become_user: solr
+  shell: /bin/bash
+
+- name: Create Solr core 'daisy'
+  shell: /opt/solr-7.7.1/bin/solr create_core -c daisy
+  args:
+    executable: /bin/bash
+
+- name: Stop Solr
+  shell: /opt/solr-7.7.1/bin/solr stop
+  args:
+    executable: /bin/bash
+  ignore_errors: yes
+
+- name: Copy schema.xml
+  copy:
+    src: /home/{{ daisy_user }}daisy/docker/solr/schema.xml
+    dest: /var/solr/data/daisy/conf/
+
+- name: Copy solrconfig.xml
+  copy:
+    src: /home/{{ daisy_user }}daisy/docker/solr/solrconfig.xml
+    dest: /var/solr/data/daisy/conf/
+
+- name: Copy currency.xml
+  copy:
+    src: /home/{{ daisy_user }}daisy/docker/solr/currency.xml
+    dest: /var/solr/data/daisy/conf/
+
+- name: Copy elevate.xml
+  copy:
+    src: /home/{{ daisy_user }}daisy/docker/solr/elevate.xml
+    dest: /var/solr/data/daisy/conf/
+
+- name: Change ownership to solr:users
+  command:
+    cmd: chown -R solr:users /var/solr
+
+- name: Set permissions to 775
+  command:
+    cmd: chmod -R 775 /var/solr
+

@@ -1,0 +1,5 @@
+ server {
+      listen 80;
+      server_name {{ daisy_domain }};
+      return 301 https://{{ daisy_domain }}$request_uri;
+}

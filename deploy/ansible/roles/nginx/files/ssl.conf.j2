@@ -1,0 +1,26 @@
+proxy_connect_timeout       600;
+proxy_send_timeout          600;
+proxy_read_timeout          600;
+send_timeout                600;
+
+server {
+    server_name {{ daisy_domain }};
+
+    location /static {
+        alias /home/{{ daisy_user }}/static;
+        autoindex on;
+    }
+    
+    location / {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_pass http://unix:/home/{{ daisy_user }}/daisy/daisy.sock;
+    }
+    listen 443 http2 ssl;
+    listen [::]:443 http2 ssl;
+    ssl on;
+    ssl_certificate /etc/ssl/certs/{{ daisy_domain }}.crt;
+    ssl_certificate_key /etc/ssl/private/{{ daisy_domain }}.key;
+}

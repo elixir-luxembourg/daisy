@@ -1,0 +1,73 @@
+- name: Install epel-release
+  yum:
+    name: epel-release
+    state: present
+
+- name: Install nginx
+  yum:
+    name: nginx
+    state: present
+
+- name: Enable and start nginx service
+  systemd:
+    name: nginx
+    enabled: yes
+    state: started
+
+- name: Create private key (RSA, 4096 bits)
+    community.crypto.openssl_privatekey:
+      path: "/etc/nginx/conf.d/{{ daisy_domain }}.key"
+
+  - name: Create simple self-signed certificate
+    community.crypto.x509_certificate:
+      path: /etc/nginx/conf.d/{{ daisy_domain }}.crt
+      privatekey_path: "/etc/nginx/conf.d/{{ daisy_domain }}.key"
+      provider: selfsigned
+
+  - name: Copy certificate to /etc/ssl/certs/
+    ansible.builtin.copy:
+      src: /etc/nginx/conf.d/{{ daisy_domain }}.crt
+      dest: /etc/ssl/certs/{{ daisy_domain }}.crt
+
+  - name: Create /etc/ssl/private/ directory
+    ansible.builtin.file:
+      path: /etc/ssl/private/
+      state: directory
+
+  - name: Copy private key to /etc/ssl/private/
+    ansible.builtin.copy:
+      src: /etc/nginx/conf.d/{{ daisy_domain }}.key
+      dest: /etc/ssl/private/{{ daisy_domain }}.key
+
+- name: Copy the SSL config file
+  ansible.builtin.template:
+    src: ssl.conf.j2
+    dest: /etc/nginx/conf.d/ssl.conf
+
+- name: Comment out server block in nginx.conf
+  ansible.builtin.lineinfile:
+    path: /etc/nginx/nginx.conf
+    regexp: '^(\s*)server\s*{'
+    line: '# \1server {'
+
+
+- name: Change Nginx user to daisy
+  ansible.builtin.lineinfile:
+    path: /etc/nginx/nginx.conf
+    regexp: '^(\s*)user\s+nginx;'
+    line: '\1user {{ daisy_user }};'
+
+
+- name: Change ownership of the nginx directory
+  ansible.builtin.file:
+    state: directory
+    recurse: yes
+    path: "/var/lib/nginx"
+    owner: '{{ daisy_user }}'
+    group: '{{ daisy_user }}'
+
+
+  - name: Reload Nginx
+    ansible.builtin.service:
+      name: nginx
+      state: reloaded

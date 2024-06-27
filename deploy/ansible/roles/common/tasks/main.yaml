@@ -4,6 +4,43 @@
         state: latest
         update_cache: true
 
+- name: Install Development Tools
+  yum:
+    name: "Development Tools"
+    state: present
+
+- name: Install necessary packages
+  yum:
+    name:
+      - wget
+      - make
+      - gcc
+      - bzip2-devel
+      - openssl-devel
+      - zlib-devel
+      - libffi-devel
+      - openssl
+      - cvs
+      - sqlite-devel
+      - openldap-devel
+      - nginx
+      - ca-certificates
+      - curl
+      - gnupg
+    state: present
+
+
+
+
+
+
+
+
+
+
+
+
+
 - name: pexpect
   become: yes
   ansible.builtin.pip:

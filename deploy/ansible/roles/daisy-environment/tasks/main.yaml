@@ -1,0 +1,29 @@
+- name: Add user
+  user:
+    name: '{{ daisy_user }}'
+    state: present
+
+- name: Add user to the 'users' group
+  user:
+    name: '{{ daisy_user }}'
+    groups: users
+    append: yes
+
+- name: Create directories 'config' and 'log'
+  file:
+    path: /home/{{ daisy_user }}/{{ item }}
+    state: directory
+  with_items:
+    - config
+    - log
+
+- name: Clone Daisy repository
+  git:
+    repo: https://github.com/elixir-luxembourg/daisy.git
+    dest: /home/{{ daisy_user }}/daisy
+
+- name: Install Daisy using pip
+      pip:
+        name: /usr/local/bin/pip3
+        requirements: /home/{{ daisy_user }}/daisy/requirements.txt
+        state: present

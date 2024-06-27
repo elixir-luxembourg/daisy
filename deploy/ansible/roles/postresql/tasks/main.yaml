@@ -1,0 +1,51 @@
+- name: Install PostgreSQL repository RPM
+  yum:
+    name: https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm
+    state: present
+
+- name: Install PostgreSQL 10
+  yum:
+    name: postgresql10
+    state: present
+
+- name: Install PostgreSQL 10 server
+  yum:
+    name: postgresql10-server
+    state: present
+
+- name: Initialize PostgreSQL database
+  command: /usr/pgsql-10/bin/postgresql-10-setup initdb
+  changed_when: false
+
+- name: Start PostgreSQL service
+  systemd:
+    name: postgresql-10
+    enabled: yes
+    state: started
+
+- name: Create celery.conf for beat
+  ansible.builtin.copy:
+    src: pg_hba.conf
+    dest: /var/lib/pgsql/10/data/pg_hba.conf
+    owner: postgres
+    force: true
+
+- name: Create PostgreSQL user
+  postgresql_user:
+    db: postgres
+    name: "{{ daisy_user }}"
+    password: "{{ daisy_db_password }}"
+    state: present
+
+- name: Create PostgreSQL database
+  postgresql_db:
+    name: "{{ daisy_user }}"
+    owner: "{{ daisy_user }}"
+    state: present
+
+- name: Grant privileges
+  postgresql_privs:
+    db: "{{ daisy_user }}"
+    role: "{{ daisy_user }}"
+    priv: ALL
+    state: present

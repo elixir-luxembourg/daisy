@@ -1,0 +1,18 @@
+# Absolute or relative path to the 'celery' command:
+CELERY_BIN="/usr/local/bin/celery"
+
+# App instance to use
+# comment out this line if you don't use an app
+CELERY_APP="elixir_daisy.celery_app"
+# or fully qualified:
+#CELERY_APP="proj.tasks:app"
+
+# Extra command-line arguments to the worker
+CELERYBEAT_OPTS="--scheduler django_celery_beat.schedulers:DatabaseScheduler"
+
+# - %n will be replaced with the first part of the nodename.
+# - %I will be replaced with the current child process index
+#   and is important when using the prefork pool to avoid race conditions.
+CELERYBEAT_PID_FILE="/var/run/celery_beat/%n.pid"
+CELERYBEAT_LOG_FILE="/home/{{ daisy_user }}/log/celery_beat/%n%I.log"
+CELERYBEAT_LOG_LEVEL="INFO"

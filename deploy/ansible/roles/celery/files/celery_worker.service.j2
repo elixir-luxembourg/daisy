@@ -1,0 +1,24 @@
+[Unit]
+Description=Celery Worker
+After=network.target
+
+[Service]
+Type=forking
+User={{ daisy_user }}
+Group={{ daisy_user }}
+EnvironmentFile=/home/{{ daisy_user }}/config/celery_worker.conf
+WorkingDirectory=/home/{{ daisy_user }}/daisy
+ExecStart=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP} \
+  multi start ${CELERYD_NODES} --loglevel=${CELERYD_LOG_LEVEL} \
+  --pidfile=${CELERYD_PID_FILE} \
+  --logfile=${CELERYD_LOG_FILE} ${CELERYD_OPTS}'
+ExecStop=/bin/sh -c '${CELERY_BIN} \
+  multi stopwait ${CELERYD_NODES} \
+  --pidfile=${CELERYD_PID_FILE}'
+ExecReload=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP} \
+  multi restart ${CELERYD_NODES} --loglevel=${CELERYD_LOG_LEVEL} 
+  --pidfile=${CELERYD_PID_FILE} \
+  --logfile=${CELERYD_LOG_FILE} ${CELERYD_OPTS}'
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+- name: Install RabbitMQ
+  yum:
+    name: rabbitmq-server
+    state: present
+
+- name: Start RabbitMQ service
+  systemd:
+    name: rabbitmq-server
+    state: started
+    enabled: yes

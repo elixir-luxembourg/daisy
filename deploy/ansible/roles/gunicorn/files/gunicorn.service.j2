@@ -1,0 +1,15 @@
+[Unit]
+Description=gunicorn daemon
+After=network.target
+
+[Service]
+PIDFile=/run/gunicorn/pid
+User={{ daisy_user }}
+Group={{ daisy_user }}
+WorkingDirectory=/home/{{ daisy_user }}/daisy
+ExecStart=/usr/local/bin/gunicorn --limit-request-line 0 --access-logfile /home/{{ daisy_user }}/log/gunicorn_access.log --error-logfile /home/{{ daisy_user }}/log/gunicorn_error.log --log-level debug --workers 2 --bind unix:/home/{{ daisy_user }}/daisy/daisy.sock elixir_daisy.wsgi
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM  $MAINPID
+
+[Install]
+WantedBy=multi-user.target
