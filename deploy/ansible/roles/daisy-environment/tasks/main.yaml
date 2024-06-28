@@ -23,7 +23,9 @@
     dest: /home/{{ daisy_user }}/daisy
 
 - name: Install Daisy using pip
-      pip:
-        name: /usr/local/bin/pip3
-        requirements: /home/{{ daisy_user }}/daisy/requirements.txt
-        state: present
+  pip:
+    name: /home/{{ daisy_user }}/daisy/
+    executable: /usr/local/bin/pip3 #TODO:
+    extra_args: "--root-user-action ignore"
+    editable: true
+    state: present

@@ -4,12 +4,14 @@
     path: /var/run/celery_worker
     state: directory
     owner: '{{ daisy_user }}'
+    group: '{{ daisy_user }}'
 
 - name: Create celery_worker log directory
   ansible.builtin.file:
     path: /home/{{ daisy_user }}/log/celery_worker
     state: directory
     owner: '{{ daisy_user }}'
+    group: '{{ daisy_user }}'
 
 - name: Create conf for worker
   ansible.builtin.template:

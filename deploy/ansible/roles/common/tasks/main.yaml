@@ -1,17 +1,20 @@
-- name: Yum update
-  ansible.builtin.yum:
+#TODO: installation of python should be present - pip3, python39, etc, ..
+
+- name: dnf update
+  ansible.builtin.dnf:
         name: "*"
         state: latest
         update_cache: true
 
 - name: Install Development Tools
-  yum:
-    name: "Development Tools"
+  ansible.builtin.dnf:
+    name: '@Development Tools'
     state: present
 
 - name: Install necessary packages
-  yum:
+  ansible.builtin.dnf:
     name:
+      - python3-devel.x86_64
       - wget
       - make
       - gcc
@@ -28,21 +31,3 @@
       - curl
       - gnupg
     state: present
-
-
-
-
-
-
-
-
-
-
-
-
-
-- name: pexpect
-  become: yes
-  ansible.builtin.pip:
-    executable: /usr/local/bin/pip3.9
-    name: pexpect

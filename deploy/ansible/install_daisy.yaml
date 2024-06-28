@@ -1,14 +1,15 @@
 - name: Install Daisy on all VMs
   hosts: all
-  gather_facts: False
+  gather_facts: true
+  become: yes
   roles: 
-    - common
-    - daisy-environment
-    - npm
-    - solr
-    - rabbitmq
-    - gunicorn
-    - celery
+    #- common
+    #- daisy-environment
+    #- npm
+    #- solr
+    #- rabbitmq
+    #- gunicorn
+    #- celery
     - postresql
     - nginx
 

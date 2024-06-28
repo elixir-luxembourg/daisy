@@ -12,7 +12,7 @@
   changed_when: is_installed.rc == 0
 
 - name: install required packages
-  yum:
+  dnf:
     name:
       - sqlite-devel
       - openssl-devel
@@ -27,7 +27,7 @@
   become: yes
 
 - name: install extra system packages
-  yum:
+  dnf:
     name: "{{ pyfsrc_extra_sys_pkgs }}"
     state: present
   become: yes

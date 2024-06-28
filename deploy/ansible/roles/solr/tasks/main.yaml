@@ -1,7 +1,7 @@
 - name: Create 'solr' user
-      user:
-        name: solr
-        state: present
+  user:
+    name: solr
+    state: present
 
 - name: Download Solr archive
   get_url:
@@ -9,57 +9,59 @@
     dest: /tmp/solr-7.7.1.tgz
 
 - name: Extract install_solr_service.sh
-  shell: tar -xf /tmp/solr-7.7.1.tgz solr-7.7.1/bin/install_solr_service.sh
+  shell: tar -xf /tmp/solr-7.7.1.tgz /tmp/solr-7.7.1/bin/install_solr_service.sh
   args:
     executable: /bin/bash
     creates: /tmp/solr-7.7.1/bin/install_solr_service.sh
 
 - name: Install required packages
-  yum:
+  dnf:
     name:
       - lsof
       - java-1.8.0-openjdk
     state: present
   
 - name: Run install_solr_service.sh
-  shell: /tmp/solr-7.7.1/bin/install_solr_service.sh /tmp/solr-7.7.1.tgz
+  shell: /tmp/solr-7.7.1/bin/install_solr_service.sh /tmp/solr-7.7.1.tgz -f -n
   args:
     executable: /bin/bash
     creates: /etc/init.d/solr
 
-- name: Switch to 'solr' user
-  become_user: solr
-  shell: /bin/bash
 
-- name: Create Solr core 'daisy'
+- name: Check the Daisy core does not exist
+  command: "curl -sI http://localhost:8983/api/cores/daisy"
+  register: solr_core_exists
+
+- name: Create Solr core 'daisy' if it does not exist
+  when: "'HTTP/1.1 200 OK' not in solr_core_exists.stdout"
   shell: /opt/solr-7.7.1/bin/solr create_core -c daisy
   args:
     executable: /bin/bash
-
-- name: Stop Solr
-  shell: /opt/solr-7.7.1/bin/solr stop
-  args:
-    executable: /bin/bash
-  ignore_errors: yes
+  become_method: community.general.sudosu
+  become_user: solr
 
 - name: Copy schema.xml
   copy:
-    src: /home/{{ daisy_user }}daisy/docker/solr/schema.xml
+    src: /home/{{ daisy_user }}/daisy/docker/solr/schema.xml
+    remote_src: true
     dest: /var/solr/data/daisy/conf/
 
 - name: Copy solrconfig.xml
   copy:
-    src: /home/{{ daisy_user }}daisy/docker/solr/solrconfig.xml
+    src: /home/{{ daisy_user }}/daisy/docker/solr/solrconfig.xml
+    remote_src: true
     dest: /var/solr/data/daisy/conf/
 
 - name: Copy currency.xml
   copy:
-    src: /home/{{ daisy_user }}daisy/docker/solr/currency.xml
+    src: /home/{{ daisy_user }}/daisy/docker/solr/currency.xml
+    remote_src: true
     dest: /var/solr/data/daisy/conf/
 
 - name: Copy elevate.xml
   copy:
-    src: /home/{{ daisy_user }}daisy/docker/solr/elevate.xml
+    src: /home/{{ daisy_user }}/daisy/docker/solr/elevate.xml
+    remote_src: true
     dest: /var/solr/data/daisy/conf/
 
 - name: Change ownership to solr:users

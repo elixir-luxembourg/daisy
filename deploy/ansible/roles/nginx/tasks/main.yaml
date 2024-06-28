@@ -1,10 +1,10 @@
 - name: Install epel-release
-  yum:
+  dnf:
     name: epel-release
     state: present
 
 - name: Install nginx
-  yum:
+  dnf:
     name: nginx
     state: present
 
@@ -15,29 +15,29 @@
     state: started
 
 - name: Create private key (RSA, 4096 bits)
-    community.crypto.openssl_privatekey:
-      path: "/etc/nginx/conf.d/{{ daisy_domain }}.key"
+  community.crypto.openssl_privatekey:
+    path: "/etc/nginx/conf.d/{{ daisy_domain }}.key"
 
-  - name: Create simple self-signed certificate
-    community.crypto.x509_certificate:
-      path: /etc/nginx/conf.d/{{ daisy_domain }}.crt
-      privatekey_path: "/etc/nginx/conf.d/{{ daisy_domain }}.key"
-      provider: selfsigned
+- name: Create simple self-signed certificate
+  community.crypto.x509_certificate:
+    path: /etc/nginx/conf.d/{{ daisy_domain }}.crt
+    privatekey_path: "/etc/nginx/conf.d/{{ daisy_domain }}.key"
+    provider: selfsigned
 
-  - name: Copy certificate to /etc/ssl/certs/
-    ansible.builtin.copy:
-      src: /etc/nginx/conf.d/{{ daisy_domain }}.crt
-      dest: /etc/ssl/certs/{{ daisy_domain }}.crt
+- name: Copy certificate to /etc/ssl/certs/
+  ansible.builtin.copy:
+    src: /etc/nginx/conf.d/{{ daisy_domain }}.crt
+    dest: /etc/ssl/certs/{{ daisy_domain }}.crt
 
-  - name: Create /etc/ssl/private/ directory
-    ansible.builtin.file:
-      path: /etc/ssl/private/
-      state: directory
+- name: Create /etc/ssl/private/ directory
+  ansible.builtin.file:
+    path: /etc/ssl/private/
+    state: directory
 
-  - name: Copy private key to /etc/ssl/private/
-    ansible.builtin.copy:
-      src: /etc/nginx/conf.d/{{ daisy_domain }}.key
-      dest: /etc/ssl/private/{{ daisy_domain }}.key
+- name: Copy private key to /etc/ssl/private/
+  ansible.builtin.copy:
+    src: /etc/nginx/conf.d/{{ daisy_domain }}.key
+    dest: /etc/ssl/private/{{ daisy_domain }}.key
 
 - name: Copy the SSL config file
   ansible.builtin.template:
@@ -57,7 +57,6 @@
     regexp: '^(\s*)user\s+nginx;'
     line: '\1user {{ daisy_user }};'
 
-
 - name: Change ownership of the nginx directory
   ansible.builtin.file:
     state: directory
@@ -66,8 +65,7 @@
     owner: '{{ daisy_user }}'
     group: '{{ daisy_user }}'
 
-
-  - name: Reload Nginx
-    ansible.builtin.service:
-      name: nginx
-      state: reloaded
+- name: Reload Nginx
+  ansible.builtin.service:
+    name: nginx
+    state: reloaded
