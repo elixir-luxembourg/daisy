@@ -26,17 +26,20 @@
 
 - name: Copy certificate to /etc/ssl/certs/
   ansible.builtin.copy:
-    src: /etc/nginx/conf.d/{{ daisy_domain }}.crt
+    remote_src: true
+    src:  /etc/nginx/conf.d/{{ daisy_domain }}.crt
     dest: /etc/ssl/certs/{{ daisy_domain }}.crt
 
 - name: Create /etc/ssl/private/ directory
   ansible.builtin.file:
     path: /etc/ssl/private/
     state: directory
+    recurse: true
 
 - name: Copy private key to /etc/ssl/private/
   ansible.builtin.copy:
-    src: /etc/nginx/conf.d/{{ daisy_domain }}.key
+    remote_src: true
+    src:  /etc/nginx/conf.d/{{ daisy_domain }}.key
     dest: /etc/ssl/private/{{ daisy_domain }}.key
 
 - name: Copy the SSL config file

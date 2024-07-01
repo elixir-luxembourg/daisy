@@ -1,5 +1,6 @@
 python_version: 3.9.13
 python_executable: /usr/local/bin/python3.9
+ansible_python_interpreter: /usr/bin/python3
 django_dir: /home/daisy/daisy
 daisy_user: 'daisy'
 daisy_domain: 'daisy.lcsb.uni.lu'

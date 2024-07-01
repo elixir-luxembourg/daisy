@@ -13,6 +13,8 @@
   file:
     path: /home/{{ daisy_user }}/{{ item }}
     state: directory
+    owner: '{{ daisy_user }}'
+    recurse: true
   with_items:
     - config
     - log

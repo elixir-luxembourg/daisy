@@ -4,14 +4,14 @@
     path: /var/run/celery_worker
     state: directory
     owner: '{{ daisy_user }}'
-    group: '{{ daisy_user }}'
+    recurse: true
 
 - name: Create celery_worker log directory
   ansible.builtin.file:
     path: /home/{{ daisy_user }}/log/celery_worker
     state: directory
     owner: '{{ daisy_user }}'
-    group: '{{ daisy_user }}'
+    recurse: true
 
 - name: Create conf for worker
   ansible.builtin.template:
@@ -34,12 +34,14 @@
     path: /var/run/celery_beat
     state: directory
     owner: '{{ daisy_user }}'
+    recurse: true
 
 - name: Create celery_beat log directory
   ansible.builtin.file:
     path: /home/{{ daisy_user }}/log/celery_beat
     state: directory
     owner: '{{ daisy_user }}'
+    recurse: true
 
 - name: Create celery.conf for beat
   ansible.builtin.template:

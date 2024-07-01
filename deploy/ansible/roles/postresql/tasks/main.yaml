@@ -9,41 +9,52 @@
       - postgresql12-server
     state: present
 
-
+- name: Remove cluster data if exists
+  ansible.builtin.file:
+    path: /var/lib/pgsql/12
+    state: absent
 
 - name: Initialize PostgreSQL database
   command: /usr/pgsql-12/bin/postgresql-12-setup initdb 
   changed_when: false
 
-- name: Start PostgreSQL service
-  systemd:
-    name: postgresql-12
-    enabled: yes
-    state: started
-
-- name: Create celery.conf for beat
+- name: Copy pg_hba.conf
   ansible.builtin.copy:
     src: pg_hba.conf
     dest: /var/lib/pgsql/12/data/pg_hba.conf
     owner: postgres
     force: true
 
+- name: Start PostgreSQL service
+  systemd_service:
+    name: postgresql-12
+    enabled: yes
+    state: started
+
 - name: Create PostgreSQL user
+  become_user: postgres
+  become_method: community.general.sudosu
   postgresql_user:
-    db: postgres
     name: "{{ daisy_user }}"
     password: "{{ daisy_db_password }}"
     state: present
+  retries: 2
+  delay: 5
 
 - name: Create PostgreSQL database
+  become_user: postgres
+  become_method: community.general.sudosu
   postgresql_db:
     name: "{{ daisy_user }}"
     owner: "{{ daisy_user }}"
     state: present
 
 - name: Grant privileges
+  become_user: postgres
+  become_method: community.general.sudosu
   postgresql_privs:
     db: "{{ daisy_user }}"
     role: "{{ daisy_user }}"
     priv: ALL
+    type: database
     state: present
