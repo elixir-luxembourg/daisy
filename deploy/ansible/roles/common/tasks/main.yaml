@@ -1,5 +1,3 @@
-#TODO: installation of python should be present - pip3, python39, etc, ..
-
 - name: dnf update
   ansible.builtin.dnf:
         name: "*"
@@ -11,10 +9,26 @@
     name: '@Development Tools'
     state: present
 
+- name: Install python
+  ansible.builtin.dnf:
+    name: python{{ python_version }}
+    state: present
+
+- name: Set global default ansible python interpreter
+  set_fact:
+    ansible_python_interpreter: "/usr/bin/python{{ python_version }}"
+
+- name: Make python version default
+  community.general.alternatives:
+    name: python3
+    path: /usr/bin/python{{ python_version }}
+    link: /usr/bin/python3
+    state: selected
+
 - name: Install necessary packages
   ansible.builtin.dnf:
     name:
-      - python3-devel.x86_64
+      - python39-devel.x86_64
       - wget
       - make
       - gcc

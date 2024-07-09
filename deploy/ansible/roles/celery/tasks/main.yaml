@@ -4,6 +4,7 @@
     path: /var/run/celery_worker
     state: directory
     owner: '{{ daisy_user }}'
+    group: '{{ daisy_user }}'
     recurse: true
 
 - name: Create celery_worker log directory
@@ -11,6 +12,7 @@
     path: /home/{{ daisy_user }}/log/celery_worker
     state: directory
     owner: '{{ daisy_user }}'
+    group: '{{ daisy_user }}'
     recurse: true
 
 - name: Create conf for worker
@@ -34,6 +36,7 @@
     path: /var/run/celery_beat
     state: directory
     owner: '{{ daisy_user }}'
+    group: '{{ daisy_user }}'
     recurse: true
 
 - name: Create celery_beat log directory
@@ -41,19 +44,22 @@
     path: /home/{{ daisy_user }}/log/celery_beat
     state: directory
     owner: '{{ daisy_user }}'
+    group: '{{ daisy_user }}'
     recurse: true
 
 - name: Create celery.conf for beat
   ansible.builtin.template:
     src: celery_beat.conf.j2
     dest: /home/{{ daisy_user }}/config/celery_beat.conf
-    owner: '{{ daisy_user }}' 
+    owner: '{{ daisy_user }}'
+    group: '{{ daisy_user }}'
 
 - name: Create systemd service file for celery beat
   ansible.builtin.template:
     src: celery_beat.service.j2
     dest: /etc/systemd/system/celery_beat.service
     owner: '{{ daisy_user }}'
+    group: '{{ daisy_user }}'
 
 - name: Start celery beat service
   systemd:

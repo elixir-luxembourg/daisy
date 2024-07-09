@@ -14,6 +14,7 @@
     path: /home/{{ daisy_user }}/{{ item }}
     state: directory
     owner: '{{ daisy_user }}'
+    group: '{{ daisy_user }}'
     recurse: true
   with_items:
     - config
@@ -24,10 +25,14 @@
     repo: https://github.com/elixir-luxembourg/daisy.git
     dest: /home/{{ daisy_user }}/daisy
 
+- name: update pip
+  pip:
+    name: pip
+    state: latest
+
 - name: Install Daisy using pip
   pip:
     name: /home/{{ daisy_user }}/daisy/
-    executable: /usr/local/bin/pip3 #TODO:
     extra_args: "--root-user-action ignore"
     editable: true
     state: present

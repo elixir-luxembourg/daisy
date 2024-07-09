@@ -3,38 +3,37 @@
     name: 
       - socat
       - logrotate
-      - erlang
     state: present
 
-- name: Get latest erlang installation script
-  get_url:
-    url: https://packagecloud.io/install/repositories/rabbitmq/erlang/script.rpm.sh
-    dest: /tmp/erlang_script.rpm.sh
+- name: Import Erlang/RabbitMQ keys
+  rpm_key: 
+    state: present
+    key: https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
 
-- name: Install erlang
-  shell: source /tmp/erlang_script.rpm.sh
-  args:
-    executable: /bin/bash
-
-- name: Install RabbitMQ server package
+- name: Remove existing erlang installation
   dnf:
     name: erlang
+    state: absent
+
+- name: Get erlang package
+  get_url:
+    url: https://github.com/rabbitmq/erlang-rpm/releases/download/v26.2.5/erlang-26.2.5-1.el8.x86_64.rpm
+    dest: /tmp/erlang-26.2.5-1.el8.x86_64.rpm
+
+- name: Install erlang
+  dnf:
+    name: /tmp/erlang-26.2.5-1.el8.x86_64.rpm
     state: present
 
-- name: Get rabbitmq-server key
-  shell: rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc
-  args:
-    executable: /bin/bash
-
 - name: Get RabbitMQ server package
-  get_url:
-    url: https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.13.3/rabbitmq-server-3.13.3-1.el8.noarch.rpm
-    dest: /tmp/rabbitmq-server-3.13.3-1.el8.noarch.rpm
+  dnf:
+    name: https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.13.3/rabbitmq-server-3.13.3-1.el8.noarch.rpm
+    state: present
 
-- name: Install RabbitMQ server package
-  shell: dnf install /tmp/rabbitmq-server-3.13.3-1.el8.noarch.rpm -y
-  args:
-    executable: /bin/bash
+# - name: Install RabbitMQ server package
+#   shell: dnf install /tmp/rabbitmq-server-3.13.3-1.el8.noarch.rpm -y
+#   args:
+#     executable: /bin/bash
 
 - name: Start RabbitMQ service
   systemd:

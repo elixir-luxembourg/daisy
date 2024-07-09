@@ -1,7 +1,16 @@
+
+- name: Import keys
+  rpm_key:
+      state: present
+      key: https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-RHEL
+
 - name: Install repository
   dnf:
     name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
     state: present
+
+- name: Disable postgresql repo
+  command: 'dnf -y module disable postgresql'
 
 - name: Install PostgreSQL 12
   dnf:
@@ -18,12 +27,17 @@
   command: /usr/pgsql-12/bin/postgresql-12-setup initdb 
   changed_when: false
 
-- name: Copy pg_hba.conf
-  ansible.builtin.copy:
-    src: pg_hba.conf
-    dest: /var/lib/pgsql/12/data/pg_hba.conf
-    owner: postgres
-    force: true
+- name: "Allow ident connection for the db user"
+  postgresql_pg_hba:
+    dest: "{{ daisy_pgdata }}/pg_hba.conf"
+    contype: local
+    databases: all
+    method: ident
+    users: "{{ daisy_db_user }}"
+    create: true
+  become_user: postgres
+  become_method: community.general.sudosu
+  notify: restart postgres
 
 - name: Start PostgreSQL service
   systemd_service:
@@ -35,7 +49,7 @@
   become_user: postgres
   become_method: community.general.sudosu
   postgresql_user:
-    name: "{{ daisy_user }}"
+    name: "{{ daisy_db_user }}"
     password: "{{ daisy_db_password }}"
     state: present
   retries: 2
@@ -45,16 +59,16 @@
   become_user: postgres
   become_method: community.general.sudosu
   postgresql_db:
-    name: "{{ daisy_user }}"
-    owner: "{{ daisy_user }}"
+    name: "{{ daisy_db_name }}"
+    owner: "{{ daisy_db_user }}"
     state: present
 
 - name: Grant privileges
   become_user: postgres
   become_method: community.general.sudosu
   postgresql_privs:
-    db: "{{ daisy_user }}"
-    role: "{{ daisy_user }}"
+    db: "{{ daisy_db_name }}"
+    role: "{{ daisy_db_user }}"
     priv: ALL
     type: database
     state: present

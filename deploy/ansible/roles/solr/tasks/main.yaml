@@ -9,10 +9,10 @@
     dest: /tmp/solr-7.7.1.tgz
 
 - name: Extract install_solr_service.sh
-  shell: tar -xf /tmp/solr-7.7.1.tgz /tmp/solr-7.7.1/bin/install_solr_service.sh
-  args:
-    executable: /bin/bash
-    creates: /tmp/solr-7.7.1/bin/install_solr_service.sh
+  ansible.builtin.unarchive:
+    src: /tmp/solr-7.7.1.tgz
+    dest: /tmp/
+    remote_src: yes
 
 - name: Install required packages
   dnf:
@@ -27,6 +27,10 @@
     executable: /bin/bash
     creates: /etc/init.d/solr
 
+- name: Ensure solr is running
+  ansible.builtin.service:
+    name: solr
+    state: started
 
 - name: Check the Daisy core does not exist
   command: "curl -sI http://localhost:8983/api/cores/daisy"
@@ -65,10 +69,11 @@
     dest: /var/solr/data/daisy/conf/
 
 - name: Change ownership to solr:users
-  command:
-    cmd: chown -R solr:users /var/solr
-
-- name: Set permissions to 775
-  command:
-    cmd: chmod -R 775 /var/solr
+  ansible.builtin.file:
+    path: /var/solr
+    state: directory
+    recurse: yes
+    owner: solr
+    group: users
+    mode: '775'
 

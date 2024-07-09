@@ -2,7 +2,6 @@
 - name: Install gunicorn
   pip:
     name: gunicorn
-    executable: /usr/local/bin/pip3
     state: present
 
 - name: Create gunicorn.service file
