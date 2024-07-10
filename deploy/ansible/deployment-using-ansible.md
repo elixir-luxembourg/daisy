@@ -1,18 +1,26 @@
 # Ansible scripts for Daisy deployment and management
 
-1. Rename `inventory_template.yaml` to `inventory.yaml` and populate it with the connection information
-2. Ensure python3.9 is installed on the guest machines. Run following commands
+Supported distributions: **Rocky Linux 8**
+
+## Provisioning
+
+1. Rename `inventory_template.yaml` to `inventory.yaml` and populate it with your guest machine information
+2. Run following:
+
     ```bash
-    sudo su -
-    dnf install python3.9
-    ```
-3. Run following:
-    ```bash
-     ansible-playbook -i inventory.yaml update_daisy.yaml
+     ansible-playbook -i inventory.yaml install_daisy.yaml
     ```
 
-4. Create/update your settings in `settings_local.py` - Haystack and postgresql connections
-5. Restart `gunicorn`:
+3. Create/update your settings in `settings_local.py` - Haystack and postgresql connections
+4. Restart `gunicorn`:
+
    ```bash
    systemctl restart gunicorn
    ```
+
+## Updating DAISY
+Following playbook does not contain backup generation so be sure the environment is properly backed up.
+
+    ```bash
+     ansible-playbook -i inventory.yaml update_daisy.yaml
+    ```

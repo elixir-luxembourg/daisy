@@ -1,10 +1,10 @@
-# Deployment using Docker
+# Demo deployment using Docker
 
-### Requirements
+## Requirements
 
 * docker: https://docs.docker.com/install/
 
-### Installation
+## Installation
 
 1. Get the source code
     
@@ -78,10 +78,10 @@
         password: demo
     ```
 
-### Operation manual
+## Operation manual
 
 
-#### Importing 
+### Importing 
 
 In addition to loading of initial data, DAISY database can be populated by importing Project, Dataset and Partners records from JSON files using commands `import_projects`, `import_datasets` and `import_partners` respectively.
  The commands for import are accepting one JSON file (flag `-f`): </br>
@@ -97,7 +97,7 @@ Alternatively, you can specify directory containing multiple JSON files to be im
 docker-compose exec web python manage.py <COMMAND> -d ${PATH_TO_DIR}
 ```
 
-#### Exporting  
+### Exporting  
 
 Information in the DAISY database can be exported to JSON files. The command for export are given below:</br>
 

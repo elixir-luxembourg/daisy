@@ -9,103 +9,21 @@ For more information, please refer to the official [Daisy documentation](https:/
 DAISY was published as an article [DAISY: A Data Information System for accountability under the General Data Protection Regulation](https://doi.org/10.1093/gigascience/giz140) in GigaScience journal.
 
 ## Demo
-You are encouraged to try Daisy for yourself using our [DEMO deployment](https://daisy-demo.elixir-luxembourg.org/).
+
+You are encouraged to try DAISY for yourself using our public [DEMO deployment](https://daisy-demo.elixir-luxembourg.org/).
 
 ## Deployment
 
-### Requirements
+- [Demo and development deployment using Docker](deploy/docker/deployment-using-docker.md)
+- [Production deployment using Ansible (Rocky 8)](deploy/ansible/deployment-using-ansible.md)
 
-* docker: https://docs.docker.com/install/
-
-### Installation
-
-1. Get the source code
-    
-    ```bash
-    git clone git@github.com:elixir-luxembourg/daisy.git
-    cd daisy
-    ```
-1. Create your settings file
-    
-	```bash
-	cp elixir_daisy/settings_local.template.py elixir_daisy/settings_local.py
-	```
-    Optional: edit the file elixir_daisy/settings_local.py to adapt to your environment.
-
-1. Build daisy docker image  
-    ```bash
-    docker-compose up --build
-    ```
-    Wait for the build to finish and keep the process running
-1. Open a new shell and go to daisy folder
-
-1. Build the database
-    
-    ```bash
-    docker-compose exec web python manage.py migrate
-    ```
-1. Build the solr schema
-
-    ```bash
-    docker-compose exec web python manage.py build_solr_schema -c /solr/daisy/conf -r daisy -u default
-    ```
-
-1. Compile and deploy static files
-    
-    ```bash
-    cd web/static/vendor
-    npm run build
-    cd ../../../
-    docker-compose exec web python manage.py collectstatic
-    ```
-1. Create initial data in the database
-    
-    ```bash
-    docker-compose exec web bash -c "cd core/fixtures/ && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json"
-    docker-compose exec web python manage.py load_initial_data
-    ```
-   Initial data includes, for instance, controlled vocabularies terms and initial list of institutions and cohorts.  
-   **This step can take several minutes to complete**
-    
-1. Load demo data
-    
-    ```bash
-    docker-compose exec web python manage.py load_demo_data
-    ```
-    This will create mock datasets, projects and create a demo admin account.
-
-1. Optional - import users from an active directory instance
-
-    ```bash
-    docker-compose exec web python manage.py import_users
-    ```
-    
-1.  Build the search index
-
-    ```bash
-    docker-compose exec web python manage.py rebuild_index -u default
-    ```    
-
-1. Browse to https://localhost  
-    a demo admin account is available:
-    
-    ```
-        username: admin
-        password: demo
-    ```
-
-### Linting
-
-pip install black==23.7.0
-pre-commit install
-black --check .
-black .
-
+More information on deployment can be found [here](deploy/DEPLOYMENT.md)
 
 ### Operation manual
 
+Following commands are only for docker deployment. In case you used Ansible, the commands have to be run directly in `shell`.
 
-#### Importing 
+#### Importing records
 
 In addition to loading of initial data, DAISY database can be populated by importing Project, Dataset and Partners records from JSON files using commands `import_projects`, `import_datasets` and `import_partners` respectively.
  The commands for import are accepting one JSON file (flag `-f`): </br>
@@ -121,7 +39,7 @@ Alternatively, you can specify directory containing multiple JSON files to be im
 docker-compose exec web python manage.py <COMMAND> -d ${PATH_TO_DIR}
 ```
 
-#### Exporting  
+#### Exporting records
 
 Information in the DAISY database can be exported to JSON files. The command for export are given below:</br>
 
@@ -129,79 +47,6 @@ Information in the DAISY database can be exported to JSON files. The command for
 docker-compose exec web python manage.py export_partners -f ${JSON_FILE}
 ```
 where ${JSON_FILE} is the path to a json file that will be produced.  In addition to ````export_partners````, you can run ````export_projects```` and ````export_datasets```` in the same way.
-
-### Upgrade to last Daisy version
-
-1. Create a database backup.
-
-	```bash
-	docker-compose exec db pg_dump daisy --port=5432 --username=daisy --no-password --clean > backup_`date +%y-%m-%d`.sql
-	```
-	
-1. Make sure docker containers are stopped.
-
-	```bash
-	docker-compose stop
-	```
-
-3. Get last Daisy release.
-
-	```bash
-	git checkout master
-	git pull
-	```
-
-1. Rebuild and start the docker containers.
-
-	```bash
-	docker-compose up --build
-	```
-	Open a new terminal window to execute the following commands.
-
-1. Update the database schema.
-
-	```bash
-	docker-compose exec web python manage.py migrate
-	```
-
-1. Update the solr schema.
-
-	```bash
-	docker-compose exec web python manage.py build_solr_schema -c /solr/daisy/conf -r daisy -u default
-	```
-
-1. Collect static files.
- 
-	```bash
-	docker-compose exec web python manage.py collectstatic
-	```
-
-	
-1. Rebuild the search index.
-    
-    ```bash
-    docker-compose exec web python manage.py rebuild_index -u default
-    ```
-1. Reimport the users (optional).
-	    
-    If LDAP was used during initial setup to import users, they have to be imported again:
-    
-    ```bash
-    docker-compose exec web python manage.py import_users
-    ```
-    
-## Deployment without Docker - CentOS
-
-
-See [DEPLOYMENT](DEPLOYMENT.md).
-
-- [Deployment steps on CentOS](deploy/DEPLOYMENT.md)
-- [Deployment using Docker](deploy/docker/deployment-using-docker.md)
-- [Deployment using Ansible](deploy/ansible/deployment-using-ansible.md)
-
-## Development
-
-To be completed.
 
 ### Import users from active directory
 ```bash
@@ -222,6 +67,17 @@ Batch mode:
 Available commands: `import_projects`, `import_datasets`, `import_partners`.
 
 In case of problems, add `--verbose` flag to the command, and take a look inside `./log/daisy.log`. 
+
+## Development
+
+To be completed.
+
+### Linting
+
+pip install black==23.7.0
+pre-commit install
+black --check .
+black .
 
 ### Install js and css dependencies
 
@@ -265,7 +121,6 @@ pytest
 To get access to the admin page, you must log in with a superuser account.  
 On the `Users` section, you can give any user a `staff` status and he will be able to access any project/datasets.
 
-
 ## `settings.py` and `local_settings.py` reference
 
 ### Display
@@ -279,13 +134,20 @@ On the `Users` section, you can give any user a `staff` status and he will be ab
 | `LOGIN_PASSWORD_PLACEHOLDER` | A helpful placeholder in login form for passwords | str | `'Hint: use your AD password'` | 
 
 ### Integration with other tools
+
 #### ID Service
+
+External record ID generator can be added. DAISY will use its internal method to generate ID otherwise.
+
 | Key | Description | Expected values | Example value |
 |---|---|---|---|
 | `IDSERVICE_FUNCTION` | Path to a function (`lambda: str`) that generates IDs for entities which are published | str | `'web.views.utils.generate_elu_accession'` |
 | `IDSERVICE_ENDPOINT` | In case LCSB's idservice function is being used, the setting contains the IDservice's URI | str | `'https://192.168.1.101/v1/api/` |
 
 #### REMS
+
+Integrating REMS allows the access objects to be created in DAISY automatically after approval is given.
+
 | Key | Description | Expected values | Example value |
 |---|---|---|---|
 | `REMS_INTEGRATION_ENABLED` | A feature flag for REMS integration. In practice, there's a dedicated endpoint which processes the information from REMS about dataset entitlements | str | `True` |
