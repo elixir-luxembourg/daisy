@@ -10,3 +10,9 @@
     ```bash
      ansible-playbook -i inventory.yaml update_daisy.yaml
     ```
+
+4. Create/update your settings in `settings_local.py` - Haystack and postgresql connections
+5. Restart `gunicorn`:
+   ```bash
+   systemctl restart gunicorn
+   ```

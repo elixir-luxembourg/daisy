@@ -19,6 +19,8 @@
   ansible.builtin.template:
     src: celery_worker.conf.j2
     dest: /home/{{ daisy_user }}/config/celery_worker.conf
+    owner: '{{ daisy_user }}'
+    group: '{{ daisy_user }}'
 
 - name: Create systemd service file for celery worker
   ansible.builtin.template:
@@ -58,8 +60,6 @@
   ansible.builtin.template:
     src: celery_beat.service.j2
     dest: /etc/systemd/system/celery_beat.service
-    owner: '{{ daisy_user }}'
-    group: '{{ daisy_user }}'
 
 - name: Start celery beat service
   systemd:

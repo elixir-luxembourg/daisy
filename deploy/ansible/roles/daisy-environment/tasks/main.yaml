@@ -36,3 +36,11 @@
     extra_args: "--root-user-action ignore"
     editable: true
     state: present
+
+- name: Change ownership to daisy user
+  ansible.builtin.file:
+    path: /home/daisy
+    state: directory
+    recurse: yes
+    owner: daisy
+    group: daisy
