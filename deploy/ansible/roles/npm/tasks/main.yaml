@@ -1,5 +1,2 @@
-- name: Install Node.js
-  dnf:
-    name: nodejs
-    state: present
-  
+- name: Install nodejs using dnf module
+  command: 'dnf -y module install nodejs:16'
