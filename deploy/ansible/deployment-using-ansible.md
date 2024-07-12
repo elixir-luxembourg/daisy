@@ -19,8 +19,9 @@ Supported distributions: **Rocky Linux 8**
    ```
 
 ## Updating DAISY
+
 Following playbook does not contain backup generation so be sure the environment is properly backed up.
 
-    ```bash
-     ansible-playbook -i inventory.yaml update_daisy.yaml
-    ```
+```bash
+    ansible-playbook -i inventory.yaml update_daisy.yaml
+```
