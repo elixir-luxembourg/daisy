@@ -1,13 +1,13 @@
 # Deployement
 
-In order to install the tool, you can use Ansible or Docker deployement.
+In order to install the tool, you can use Ansible or Docker deployment.
 
-- Docker deployment for demos or development
-- Ansible deployment for production
+- [Docker deployment](./docker/deployment-using-docker.md) for demos or development
+- [Ansible deployment](./ansible/deployment-using-ansible.md) for production
 
 ## Initialization
 
-Additional manual setup is required to customize the deployment to your infrastructure.
+Additional manual setup is required to customize the deployment to your infrastructure after installation.
 
 ### Local configuration file
 
@@ -134,11 +134,14 @@ sudo systemctl restart gunicorn
 sudo systemctl restart celery_worker
 sudo systemctl restart celery_beat
 ```
+
 ## Updating DAISY
 
-If you want to move to the newest release of DAISY, do the following.  
+In case of minor updates which do not require manual intervention, you can use the [update_daisy.yaml](./ansible/update_daisy.yaml) Ansible playbook. For major updates follow the steps below:
 
-1) Stop services, create a database and application backup.
+### Create backup
+
+Stop services, create a database and application backup.
 
 As root user:
 
@@ -152,7 +155,7 @@ tar -cvf /tmp/daisy.tar /home/daisy
 
 Once you have have created the tar ball of the application directory and the postgres dump, then you may proceed to update.
 
-2) Get the latest Daisy release.
+### Get the latest Daisy release
 
 As daisy user:
 
@@ -161,7 +164,6 @@ cd /home/daisy/daisy
 git checkout -- web/static/vendor/package-lock.json
 git checkout master
 git pull
-
 
 cd /home/daisy/daisy/web/static/vendor/
 npm ci
@@ -173,7 +175,7 @@ As root user:
 /usr/local/bin/pip3.9 install -e /home/daisy/daisy --upgrade
 ```
 
-3) Update the database and solr schemas, collect static files.
+### Update the database and solr schemas, collect static files
 
 As daisy user:
 
@@ -182,7 +184,7 @@ cd /home/daisy/daisy
 python3.9 manage.py migrate && python3.9 manage.py build_solr_schema -c /var/solr/data/daisy/conf/ -r daisy && yes | python3.9 manage.py clear_index && yes "yes" | python3.9 manage.py collectstatic;
 ```
 
-4) Reload initial data (optional).
+### Reload initial data (optional)
 
 
 **IMPORTANT NOTE:** The initial data package provides some default values for various lookup lists e.g. data sensitivity classes, document or data types.  If, while using DAISY, you have customized these default lists, please keep in mind that running the ``load_initial_data`` command
@@ -200,7 +202,7 @@ python3.9 manage.py load_initial_data
   
 **IMPORTANT NOTE:** This step can take several minutes to complete.
 
-5) Reimport the users (optional).
+### Reimport the users (optional)
 
 If LDAP was used to import users, they have to be imported again.
 As daisy user:
@@ -208,7 +210,7 @@ As daisy user:
 python3.9 manage.py import_users
 ```
 
-6) Rebuild Solr search index.
+### Rebuild Solr search index
 
 As daisy user:
  ```bash
@@ -216,7 +218,7 @@ As daisy user:
  python3.9 manage.py rebuild_index
 ```
 
-7) Restart services.
+### Restart services
 
 As root user:
 
