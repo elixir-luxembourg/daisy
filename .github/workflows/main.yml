@@ -33,6 +33,9 @@ jobs:
     - name: Install test dependencies
       run: docker-compose exec -T web pip install ".[test]"
 
+    - name: Lint code with Flake8
+      run: docker-compose exec -T web flake8
+
     - name: Execute the tests
       run: docker-compose exec -T web pytest
 

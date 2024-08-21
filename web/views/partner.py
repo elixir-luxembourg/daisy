@@ -1,8 +1,7 @@
 from django.conf import settings
 from django.http import HttpResponseForbidden, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
-from django.utils.module_loading import import_string
 from django.views.generic import (
     CreateView,
     ListView,
@@ -64,8 +63,9 @@ class PartnerEditView(UpdateView):
     form_class = PartnerFormEdit
 
     def dispatch(self, request, *args, **kwargs):
-        the_partner = Partner.objects.get(id=kwargs.get("pk"))
-        the_user = request.user
+        # TODO: Check that user can edit the requested partner
+        # the_partner = Partner.objects.get(id=kwargs.get("pk"))
+        # the_user = request.user
         can_edit = True
         if can_edit:
             return super().dispatch(request, *args, **kwargs)

@@ -16,13 +16,16 @@ class ImportBaseCommand(BaseCommand):
         parser.add_argument(
             "--publish-entities",
             action="store_true",
-            help="Entities are published on import. The identifiers are taken from JSON file or generated automatically if missing.",
+            help="Entities are published on import. The identifiers are taken from JSON file or generated "
+            "automatically if missing.",
             dest="publish_on_import",
         )
         parser.add_argument(
             "--skip-on-exist",
             action="store_true",
-            help="When a matching entity already exists in database it is updated by default (all attributes present in JSON are updated). Use this flag to skip entity import on match (update of sub-entities is also skipped)",
+            help="When a matching entity already exists in database it is updated by default (all attributes present "
+            "in JSON are updated). Use this flag to skip entity import on match (update of sub-entities is "
+            "also skipped)",
             dest="skip_on_exist",
         )
         parser.add_argument(
@@ -75,7 +78,10 @@ class ImportBaseCommand(BaseCommand):
             self.stdout.write(self.style.SUCCESS("Import was successful!"))
 
         except Exception as e:
-            msg = f"Something went wrong during the import ({__file__}:class {self.__class__.__name__})! Is the path valid? Is the file valid? Details:"
+            msg = (
+                f"Something went wrong during the import ({__file__}:class {self.__class__.__name__})! "
+                f"Is the path valid? Is the file valid? Details:"
+            )
             self.stderr.write(self.style.ERROR(msg))
             self.stderr.write(self.style.ERROR(str(e)))
 

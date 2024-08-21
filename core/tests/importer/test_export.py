@@ -36,16 +36,17 @@ def test_export_projects(
     )
     embury = factories.UserFactory.create(first_name="Embury", last_name="Bask")
 
-    a_project = factories.ProjectFactory.create(
+    factories.ProjectFactory.create(
         acronym="Test_PRJ",
         title="Title of test project.",
         local_custodians=[rebecca, embury],
-    )
-    another_project = factories.ProjectFactory.create(
+    )  # one project
+
+    factories.ProjectFactory.create(
         acronym="Another PRJ",
         title="Title of another test project.",
         local_custodians=[rebecca, embury],
-    )
+    )  # another project
 
     exp = ProjectsExporter(include_unpublished=False)
     project_dicts = export_entities(exp)
@@ -73,7 +74,7 @@ def test_export_partners(
     storage_resources,
     can_defer_constraint_checks,
 ):
-    a_partner = factories.PartnerFactory.create()
+    factories.PartnerFactory.create()
 
     exp = PartnersExporter(include_unpublished=False)
     partner_dicts = export_entities(exp)
@@ -109,7 +110,7 @@ def test_export_datasets(
         title="Title of test project.",
         local_custodians=[rebecca, embury],
     )
-    a_dataset = factories.DatasetFactory.create(
+    factories.DatasetFactory.create(
         title="A test dataset", project=a_project, local_custodians=[rebecca, embury]
     )
 

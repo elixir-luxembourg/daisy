@@ -1,6 +1,9 @@
-import ldap
+# These settings are used in local Docker environment (see docker-compose.yaml)
 from django_auth_ldap.config import LDAPSearch
-from .settings import *
+from .settings import *  # noqa: F401,F403
+
+import ldap
+import os
 
 DATABASES = {
     "default": {
@@ -62,21 +65,19 @@ SASS_PROCESSOR_ROOT = "/static"
 # Celery config
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html
 
-## Broker settings.
+# Broker settings.
 CELERY_BROKER_URL = "amqp://guest:guest@mq:5672//"
 
-## Result backend
+# Result backend
 CELERY_RESULT_BACKEND = "django-db"
 
 TESTING = os.environ.get("TEST", False)
 
 # import also local settings
 try:
-    from .settings_local import *
-except ImportError as e:
-    pass
-try:
+    from .settings_local import *  # noqa: F401,F403
+
     if TESTING:
-        from .settings_ci import *
-except ImportError as e:
+        from .settings_ci import *  # noqa: F401,F403
+except ImportError:
     pass

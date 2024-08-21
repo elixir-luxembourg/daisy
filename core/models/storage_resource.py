@@ -1,7 +1,6 @@
 from django.db import models
 
 from .utils import CoreModel, TextFieldWithInputWidget
-from core.models.storage_location import DataLocation
 
 
 class StorageResource(CoreModel):

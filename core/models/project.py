@@ -66,7 +66,8 @@ class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
         "core.Contact",
         related_name="projects",
         verbose_name="Contact persons",
-        help_text="Contacts are project related people other than local personnel e.g. Project Officer at the European Commission can be recorded as a Contact.",
+        help_text="Contacts are project related people other than local personnel e.g. Project Officer at the European "
+        "Commission can be recorded as a Contact.",
         blank=True,
     )
 
@@ -89,7 +90,8 @@ class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
         verbose_name="Lay summary",
         blank=True,
         null=True,
-        help_text="Lay summary should provide a brief overview of project goals and approach. Lay summary may be displayed publicly if the project's data gets published in the data catalog",
+        help_text="Lay summary should provide a brief overview of project goals and approach. Lay summary may be "
+        "displayed publicly if the project's data gets published in the data catalog",
     )
 
     disease_terms = models.ManyToManyField(
@@ -98,7 +100,8 @@ class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
         verbose_name="Disease terms",
         blank=True,
         help_text=mark_safe(
-            'Provide keywords/terms that would characterize the disease that fall in project\'s scope. Please use terms from <a href="https://www.ebi.ac.uk/ols/ontologies/doid">HDO</a> ontology.'
+            "Provide keywords/terms that would characterize the disease that fall in project's scope. Please use "
+            'terms from <a href="https://www.ebi.ac.uk/ols/ontologies/doid">HDO</a> ontology.'
         ),
     )
 
@@ -112,7 +115,8 @@ class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
     erp_notes = models.TextField(
         verbose_name="Institutional ethics approval notes.",
         default="",
-        help_text="Provide notes on institutional ethics approval. If it does not exist, please state justifications here.",
+        help_text="Provide notes on institutional ethics approval. If it does not exist, please state "
+        "justifications here.",
         blank=True,
         null=True,
     )
@@ -122,7 +126,8 @@ class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
         blank=True,
         related_name="projects_funded",
         verbose_name="Funding sources",
-        help_text="Funding sources are national, international bodies or initiatives that have funded the research project.",
+        help_text="Funding sources are national, international bodies or initiatives that "
+        "have funded the research project.",
     )
 
     gene_terms = models.ManyToManyField(
@@ -130,27 +135,31 @@ class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
         verbose_name="List of gene terms",
         blank=True,
         help_text=mark_safe(
-            'Select one or more terms that would characterize the genes that fall in project\'s scope. Please use terms from <a href="https://www.genenames.org">HGNO ontology</a>.'
+            "Select one or more terms that would characterize the genes that fall in project's scope. "
+            'Please use terms from <a href="https://www.genenames.org">HGNO ontology</a>.'
         ),
     )
 
     has_cner = models.BooleanField(
         default=False,
         verbose_name="Has National Ethics Approval?",
-        help_text="Does the project have an ethics approval from a national body. E.g. In Luxembourg this would be Comité National d'Ethique de Recherche (CNER)",
+        help_text="Does the project have an ethics approval from a national body. E.g. In Luxembourg this would be "
+        "Comité National d'Ethique de Recherche (CNER)",
     )
 
     has_erp = models.BooleanField(
         default=False,
         verbose_name="Has Institutional Ethics Approval?",
-        help_text="Does the project have an ethics approval from an institutional body. E.g. At the LCSB this wuld be the Uni-Luxembourg Ethics Review Panel (ERP)",
+        help_text="Does the project have an ethics approval from an institutional body. E.g. At the LCSB this would be "
+        "the Uni-Luxembourg Ethics Review Panel (ERP)",
     )
 
     includes_automated_profiling = models.BooleanField(
         default=False,
         blank=False,
         null=False,
-        help_text="An example of profiling in biomedical research is the calculation of disease ratings or scores from clinical attributes.",
+        help_text="An example of profiling in biomedical research is the calculation of disease ratings or scores "
+        "from clinical attributes.",
     )
 
     legal_documents = GenericRelation("core.Document", related_query_name="projects")
@@ -171,7 +180,8 @@ class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
         verbose_name="Phenotype terms",
         blank=True,
         help_text=mark_safe(
-            'Select one or more terms that would characterize the phenotypes that fall in project\'s scope. Please use terms from <a href="https://hpo.jax.org/">HPO ontology</a>.'
+            "Select one or more terms that would characterize the phenotypes that fall in project's scope. "
+            'Please use terms from <a href="https://hpo.jax.org/">HPO ontology</a>.'
         ),
     )
 
@@ -198,7 +208,8 @@ class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
         related_name="projects_w_type",
         verbose_name="Study features",
         help_text=mark_safe(
-            'Select one or more features that would characterize the project. Please use terms from <a href="https://bioportal.bioontology.org/ontologies/EDDA">EDDA Study Designs Taxonomy</a>'
+            "Select one or more features that would characterize the project. Please use terms from "
+            '<a href="https://bioportal.bioontology.org/ontologies/EDDA">EDDA Study Designs Taxonomy</a>'
         ),
     )
 
@@ -301,8 +312,6 @@ class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
         return base_dict
 
     def serialize_to_export(self):
-        import functools
-
         d = self.to_dict()
         contacts = map(
             lambda v: f"[{v['first_name']} {v['last_name']}, {v['email']}]",

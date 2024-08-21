@@ -9,12 +9,13 @@ from core.forms import CohortForm, CohortFormEdit
 from core.models import Cohort
 from core.permissions.checker import CheckerMixin
 from core.constants import Permissions
+from core.models.utils import COMPANY
+
 from web.views.utils import is_data_steward
 from . import facet_view_utils
 
 
 FACET_FIELDS = settings.FACET_FIELDS["cohort"]
-from core.models.utils import COMPANY
 
 
 class CohortCreateView(CreateView):
@@ -50,8 +51,9 @@ class CohortEditView(UpdateView):
     form_class = CohortFormEdit
 
     def dispatch(self, request, *args, **kwargs):
-        the_cohort = Cohort.objects.get(id=kwargs.get("pk"))
-        the_user = request.user
+        # TODO: Check that user has permission to edit the cohort
+        # the_cohort = Cohort.objects.get(id=kwargs.get("pk"))
+        # the_user = request.user
         can_edit = True
         if can_edit:
             return super().dispatch(request, *args, **kwargs)

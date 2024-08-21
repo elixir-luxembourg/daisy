@@ -3,8 +3,8 @@ from datetime import datetime, timedelta
 import pytest
 
 from notification import tasks
-from notification.models import NotificationSetting, Notification
-from test.factories import *
+from notification.models import NotificationSetting, Notification, NotificationVerb
+from test.factories import DatasetFactory
 from django.test import override_settings
 
 

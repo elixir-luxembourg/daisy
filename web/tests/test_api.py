@@ -1,9 +1,6 @@
 from json import loads
 
-from importlib import reload
-
-from django.conf import settings
-from django.http import JsonResponse, HttpRequest, HttpResponse
+from django.http import JsonResponse
 from django.urls import reverse
 from django.test import RequestFactory
 

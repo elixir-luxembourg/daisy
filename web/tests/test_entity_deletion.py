@@ -2,7 +2,6 @@ import pytest
 from django.urls import reverse
 
 from django.apps import apps
-from core import constants
 from test import factories
 
 

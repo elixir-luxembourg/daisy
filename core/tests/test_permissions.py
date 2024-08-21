@@ -1,8 +1,26 @@
 import pytest
 
+from django.contrib.auth.models import Group
+
 from core import constants
 from core.permissions import GROUP_PERMISSIONS
-from test.factories import *
+from test.factories import (
+    ContractFactory,
+    DatasetFactory,
+    ProjectFactory,
+    UserFactory,
+    AccessFactory,
+    DataLocationFactory,
+    LegalBasisFactory,
+    ShareFactory,
+    DatasetDocumentFactory,
+    ProjectDocumentFactory,
+    ContractDocumentFactory,
+    VIPGroup,
+    DataStewardGroup,
+    LegalGroup,
+    AuditorGroup,
+)
 
 
 # test checker
@@ -43,7 +61,6 @@ def test_entity_default_permissions(permissions, factory, group):
             f"core.{constants.Permissions.DELETE.value}_{entity.__class__.__name__.lower()}",
             entity,
         )
-
         entity.local_custodians.set([user])
         entity.save()
         # assert user.has_permission_on_object(constants.Permissions.VIEW, entity)

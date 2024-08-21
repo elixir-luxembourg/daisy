@@ -1,6 +1,8 @@
+# These settings are used when running pytest (see pytest.ini)
+
 import ldap
 from django_auth_ldap.config import LDAPSearch
-from .settings import *
+from .settings import *  # noqa: F403,F401
 
 
 DATABASES = {
@@ -58,10 +60,10 @@ SASS_PROCESSOR_ROOT = "/static"
 # Celery config
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html
 
-## Broker settings.
+# Broker settings.
 CELERY_BROKER_URL = "amqp://guest:guest@mq:5672//"
 
-## Result backend
+# Result backend
 CELERY_RESULT_BACKEND = "django-db"
 
 REMS_INTEGRATION_ENABLED = True

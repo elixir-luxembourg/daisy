@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 
 from core.constants import Groups as GroupConstants
-from core.models import User, Dataset, DataLogType, StorageResource
+from core.models import User, Dataset, DataLogType
 from core.models.data_declaration import (
     DeidentificationMethod,
     SubjectCategory,
@@ -73,7 +73,7 @@ class UserFactory(factory.django.DjangoModelFactory):
         if extracted:
             self.set_password(extracted)
         else:
-            self.set_password("test-user")
+            self.set_password("password")
 
 
 class PublicationFactory(factory.django.DjangoModelFactory):
@@ -353,7 +353,7 @@ class ContractFactory(factory.django.DjangoModelFactory):
     #             self.company_roles.add(company_role)
 
 
-## NOTIFICATIONS
+# NOTIFICATIONS
 class AbstractNotificationFactory(factory.django.DjangoModelFactory):
     """
     Abstract class for notification factories
@@ -391,7 +391,7 @@ class DatasetNotificationFactory(AbstractNotificationFactory):
     content_object = factory.Iterator(Dataset.objects.all())
 
 
-## Documents
+# Documents
 
 
 class AbstractDocumentFactory(factory.django.DjangoModelFactory):

@@ -1,5 +1,7 @@
-from .settings import *
+# These settings are used in github test environment (see .github/workflows/main.yml)
+from .settings import *  # noqa: F401,F403
 
+import os
 
 # Haystack connections
 HAYSTACK_CONNECTIONS = {
@@ -24,10 +26,10 @@ SASS_PROCESSOR_ROOT = "/static"
 # Celery config
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html
 
-## Broker settings.
+# Broker settings.
 CELERY_BROKER_URL = "amqp://guest:guest@mq:5672//"
 
-## Result backend
+# Result backend
 CELERY_RESULT_BACKEND = "django-db"
 
 TESTING = True
@@ -38,8 +40,8 @@ REMS_INTEGRATION_ENABLED = True
 REMS_ALLOWED_IP_ADDRESSES = ["*"]
 
 try:
-    from .settings_ci import *
-except ImportError as e:
+    from .settings_ci import *  # noqa: F401,F403
+except ImportError:
     pass
 
 DATABASES = {

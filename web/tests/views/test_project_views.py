@@ -133,7 +133,7 @@ def test_project_view_protected_documents(permissions, group):
     user = UserFactory(groups=[group()])
 
     client = Client()
-    assert client.login(username=user.username, password="test-user"), "Login failed"
+    login_test_user(client, user)
 
     url = reverse("project", kwargs={"pk": project.pk})
     response = client.get(url, follow=True)
@@ -170,7 +170,7 @@ def test_project_edit_protected_documents(permissions, group):
     user = UserFactory(groups=[group()])
 
     client = Client()
-    assert client.login(username=user.username, password="test-user"), "Login failed"
+    login_test_user(client, user)
 
     url = reverse("project", kwargs={"pk": project.pk})
     response = client.get(url, follow=True)

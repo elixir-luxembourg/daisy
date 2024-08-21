@@ -1,4 +1,3 @@
-import logging
 import typing
 
 from datetime import datetime, date, timedelta
@@ -70,7 +69,8 @@ class Access(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
         )
         for access in accesses_to_expire:
             logger.debug(
-                f"Expiring access {access.pk} because expiration date ({access.grant_expires_on}) is lower than {upper_date.strftime('%Y-%m-%d')}"
+                f"Expiring access {access.pk} because expiration date ({access.grant_expires_on}) is lower "
+                f"than {upper_date.strftime('%Y-%m-%d')}"
             )
             access.status = StatusChoices.terminated
             access.access_notes = "Automatically terminated"
@@ -89,7 +89,8 @@ class Access(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
     def clean(self):
         if self.user and self.contact:
             raise ValidationError(
-                "The Access is granted either to a User, or to a Contact. If you need both, please create two separate entries."
+                "The Access is granted either to a User, or to a Contact. If you need both, please create two "
+                "separate entries."
             )
 
     history = AuditlogHistoryField()
@@ -188,11 +189,20 @@ class Access(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
     def __str__(self):
         try:
             if self.contact:
-                return f"Access ({self.status}) to dataset {self.dataset.title} given to a contact: {self.contact}/{self.access_notes}"
+                return (
+                    f"Access ({self.status}) to dataset {self.dataset.title} given to a contact: "
+                    f"{self.contact}/{self.access_notes}"
+                )
             else:
-                return f"Access ({self.status}) to dataset {self.dataset.title} given to a user: {self.user}/{self.access_notes}"
-        except ObjectDoesNotExist as e:
-            return f"Access ({self.status}) to dataset {self.dataset.title} given to a deleted contact or user: {self.access_notes}"
+                return (
+                    f"Access ({self.status}) to dataset {self.dataset.title} given to a user: "
+                    f"{self.user}/{self.access_notes}"
+                )
+        except ObjectDoesNotExist:
+            return (
+                f"Access ({self.status}) to dataset {self.dataset.title} given to a deleted contact or user: "
+                f"{self.access_notes}"
+            )
 
     def delete(self, force: bool = False):
         self.status = StatusChoices.terminated

@@ -105,7 +105,8 @@ class Contract(CoreModel):
         "core.Document",
         related_query_name="contracts",
         verbose_name="Document(s)",
-        help_text="A contract would be associated with one or more documents. You can either upload documents or provide links to them, if they are in an external document management system.",
+        help_text="A contract would be associated with one or more documents. You can either upload documents or "
+        "provide links to them, if they are in an external document management system.",
     )
 
     project = models.ForeignKey(
@@ -194,8 +195,6 @@ class Contract(CoreModel):
         return base_dict
 
     def serialize_to_export(self):
-        import functools
-
         d = self.to_dict()
 
         local_custodians = map(

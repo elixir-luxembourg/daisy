@@ -7,7 +7,7 @@ from core.models import Project, Contract
 from test.factories import ProjectFactory, ContractFactory
 
 
-## TEST UPLOAD DOCUMENT
+# TEST UPLOAD DOCUMENT
 @pytest.mark.skip(reason="TBD")
 @pytest.mark.parametrize(
     "model,attribute", [(Project, "project"), (Contract, "contract")]
@@ -40,7 +40,7 @@ def test_upload_document_blank_data(user_vip, client_user_vip):
     Test view for uploading doc.
     """
     project = ProjectFactory.create(local_custodians=[user_vip])
-    contract = ContractFactory(project=project)
+    ContractFactory(project=project)
     # membership = MembershipFactory(project=project, contract=contract)
     # assign_perm(Permissions.EDIT.value, user_vip, project)
     url = reverse("document_add")
@@ -96,7 +96,7 @@ def test_upload_document_nopermission(user_vip, client_user_normal, model, attri
     assert response.status_code == 403
 
 
-## TEST DOWNLOAD DOCUMENT
+# TEST DOWNLOAD DOCUMENT
 @pytest.mark.skip(reason="TBD")
 @pytest.mark.parametrize(
     "model,attribute", [(Project, "project"), (Contract, "contract")]
@@ -159,7 +159,7 @@ def test_download_document_forbidden(
     assert client_user_vip.get(url).status_code == 403
 
 
-## TEST DELETE DOCUMENT
+# TEST DELETE DOCUMENT
 @pytest.mark.skip(reason="TBD")
 @pytest.mark.parametrize(
     "model,attribute", [(Project, "project"), (Contract, "contract")]
