@@ -27,12 +27,12 @@
   command: /usr/pgsql-12/bin/postgresql-12-setup initdb 
   changed_when: false
 
-- name: "Allow ident connection for the db user"
+- name: "Allow md5 connection for the db user"
   postgresql_pg_hba:
     dest: "{{ daisy_pgdata }}/pg_hba.conf"
     contype: local
     databases: all
-    method: ident
+    method: md5
     users: "{{ daisy_db_user }}"
     create: true
   become_user: postgres
