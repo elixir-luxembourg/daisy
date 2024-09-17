@@ -1,5 +1,3 @@
-version: '3'
-
 services:
     # web app
     web:
@@ -22,14 +20,12 @@ services:
         image: postgres:10.1
         restart: on-failure
         environment:
-            POSTGRES_PASSWORD: daisy
-            POSTGRES_USER: daisy
-            POSTGRES_DB: daisy
-        ports:
-            - "5433:5432"
+            POSTGRES_PASSWORD: ${DB_PASSWORD:-daisy}
+            POSTGRES_USER: ${DB_USER:-daisy}
+            POSTGRES_DB: ${DB_NAME:-daisy}
         volumes:
             - pgdata:/var/lib/postgresql/data
-    # web werver frontend
+    # web server frontend
     nginx:
         build: ./docker/nginx
         restart: on-failure
@@ -47,14 +43,13 @@ services:
             - "8983:8983"
         volumes:
             - solrdata:/opt/solr/server/solr
-     # rabbit mq
+    # rabbit mq
     mq:
         image: rabbitmq:3.9-management-alpine
         restart: on-failure
         ports:
             - "15672:15672"
             - "5672:5672"
-
     # task monitoring
     flower:
         image: mher/flower:0.9.7
@@ -85,9 +80,28 @@ services:
             - db
             - mq
         command: "celery -A elixir_daisy beat --loglevel=DEBUG --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler"
-
+    # Backup service
+    backup:
+        image: alpine:3.20.3
+        environment:
+            - DB_HOST=db
+            - DB_PORT=5432
+            - DB_NAME=${DB_NAME:-daisy}
+            - DB_USER=${DB_USER:-daisy}
+            - DB_PASSWORD=${DB_PASSWORD:-daisy}
+            - BACKUP_DIR=/backups
+            - MEDIA_DIR=/code/documents
+            - ENABLE_BACKUPS=${ENABLE_BACKUPS:-true}
+            - BACKUP_SCHEDULE=${BACKUP_SCHEDULE:-"0 0 * * *"}
+        volumes:
+            - ${BACKUP_VOLUME:-../backups}:/backups
+            - .:/code
+        depends_on:
+            - db
+        entrypoint: /code/setup_cron.sh
 
 volumes:
     pgdata:
     statics:
     solrdata:
+    backups:
