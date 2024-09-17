@@ -91,14 +91,15 @@ services:
             - DB_PASSWORD=${DB_PASSWORD:-daisy}
             - BACKUP_DIR=/backups
             - MEDIA_DIR=/code/documents
-            - ENABLE_BACKUPS=${ENABLE_BACKUPS:-true}
+            - ENABLE_BACKUPS=${ENABLE_BACKUPS:-false}
             - BACKUP_SCHEDULE=${BACKUP_SCHEDULE:-"0 0 * * *"}
         volumes:
             - ${BACKUP_VOLUME:-../backups}:/backups
             - .:/code
         depends_on:
             - db
-        entrypoint: /code/setup_cron.sh
+        entrypoint: >
+            sh -c "chmod +x /code/setup_cron.sh && exec /code/setup_cron.sh"
 
 volumes:
     pgdata:
