@@ -10,6 +10,8 @@ services:
             - statics:/static
             - solrdata:/solr
             - .:/code
+        networks:
+            - daisy_network
         depends_on:
             - db
             - solr
@@ -18,35 +20,44 @@ services:
     # database
     db:
         image: postgres:10.1
-        restart: on-failure
+        restart: unless-stopped
         environment:
             POSTGRES_PASSWORD: ${DB_PASSWORD:-daisy}
             POSTGRES_USER: ${DB_USER:-daisy}
             POSTGRES_DB: ${DB_NAME:-daisy}
+        networks:
+            - daisy_network
         volumes:
             - pgdata:/var/lib/postgresql/data
     # web server frontend
     nginx:
         build: ./docker/nginx
-        restart: on-failure
+        restart: unless-stopped
         volumes:
             - statics:/public/static:ro
         ports:
             - '80:80'
             - '443:443'
+        networks:
+            - daisy_network
         depends_on:
             - web
     # FTS db
     solr:
         build: ./docker/solr
+        restart: unless-stopped
         ports:
             - "8983:8983"
+        networks:
+            - daisy_network
         volumes:
             - solrdata:/opt/solr/server/solr
     # rabbit mq
     mq:
         image: rabbitmq:3.9-management-alpine
-        restart: on-failure
+        restart: unless-stopped
+        networks:
+            - daisy_network
         ports:
             - "15672:15672"
             - "5672:5672"
@@ -56,6 +67,9 @@ services:
         command: --broker=amqp://guest:guest@mq:5672// --broker_api=http://guest:guest@mq:15672/api/
         ports:
             - "5555:5555"
+        restart: unless-stopped
+        networks:
+            - daisy_network
         depends_on:
             - mq
     # task runner
@@ -68,6 +82,9 @@ services:
         depends_on:
             - db
             - mq
+        restart: unless-stopped
+        networks:
+            - daisy_network
         command: "celery -A elixir_daisy.celery_app worker --loglevel=DEBUG"
     # celery beat
     beat:
@@ -79,6 +96,8 @@ services:
         depends_on:
             - db
             - mq
+        networks:
+            - daisy_network
         command: "celery -A elixir_daisy beat --loglevel=DEBUG --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler"
     # Backup service
     backup:
@@ -93,16 +112,27 @@ services:
             - MEDIA_DIR=/code/documents
             - ENABLE_BACKUPS=${ENABLE_BACKUPS:-false}
             - BACKUP_SCHEDULE=${BACKUP_SCHEDULE:-"0 0 * * *"}
+            - SOLR_PORT=8983
+            - COMPOSE_PROJECT_NAME=daisy
+            - RABBITMQ_MANAGEMENT_PORT=${RABBITMQ_MANAGEMENT_PORT:-15672}
         volumes:
             - ${BACKUP_VOLUME:-../backups}:/backups
             - .:/code
+            - /var/run/docker.sock:/var/run/docker.sock
+        working_dir: /code
         depends_on:
             - db
+        networks:
+            - daisy_network
         entrypoint: >
-            sh -c "chmod +x /code/setup_cron.sh && exec /code/setup_cron.sh"
+            sh -c "apk add --no-cache docker-cli docker-compose postgresql-client lsof && chmod +x /code/setup_cron.sh && chmod +x /code/db.sh && exec /code/setup_cron.sh"
 
 volumes:
     pgdata:
     statics:
     solrdata:
     backups:
+
+networks:
+  daisy_network:
+    driver: bridge

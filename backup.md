@@ -61,14 +61,14 @@ docker compose exec backup crontab -l
 #### Manual Backup
 Create a manual backup:
 ```bash
-docker compose exec backup /code/db.sh backup
+docker compose exec backup sh /code/db.sh backup
 ```
 - **Output**: `backup_<timestamp>.tar.gz` in the `BACKUP_DIR` (`../backups` by default).
 
 #### Restore Backup
 Restore from a specific backup file:
 ```bash
-docker compose exec backup /code/db.sh restore ../backups/backup_<timestamp>.tar.gz
+docker compose exec backup sh /code/db.sh restore ../backups/backup_<timestamp>.tar.gz
 docker compose run web python manage.py rebuild_index --noinput
 ```
 - Replace `../backups/backup_<timestamp>.tar.gz` with the actual file path.
@@ -95,7 +95,7 @@ Execute the `legacy_restore.sh` script inside the running container
 docker cp ../daisy.tar.gz $(docker compose ps -q backup):/code/daisy.tar.gz
 
 # Execute the legacy_restore.sh script inside the running container
-docker compose exec backup /bin/sh -c "/code/legacy_restore.sh /code/daisy.tar.gz && rm /code/daisy.tar.gz"
+docker compose exec backup /bin/sh -c "sh /code/legacy_restore.sh /code/daisy.tar.gz && rm /code/daisy.tar.gz"
 docker compose run web python manage.py rebuild_index --noinput
 ```
 Replace `../daisy.tar.gz` with the actual path to legacy backup file.

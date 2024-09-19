@@ -15,6 +15,21 @@ if [ "${BACKUP_DIR}" == "../backups" ] && [ ! -d "${BACKUP_DIR}" ]; then
     mkdir -p "${BACKUP_DIR}"
 fi
 
+stop_services() {
+    echo "Stopping: nginx, flower, worker, beat, web, mq, solr"
+    docker compose stop nginx flower worker beat web mq solr
+    echo "Services stopped."
+}
+
+start_services() {
+    echo "Starting: solr, mq, web, worker, beat, flower, nginx"
+    docker compose up -d solr mq web worker beat flower nginx || {
+        echo "ERROR: Service startup failed. Check Docker logs." >&2
+        exit 1
+    }
+    echo "Services started."
+}
+
 # Function to perform backup
 backup() {
     local timestamp
@@ -134,11 +149,15 @@ restore() {
 # Main script logic
 case "$1" in
     backup)
+        stop_services
         backup
+        start_services
         ;;
     restore)
         shift
+        stop_services
         restore "$@"
+        start_services
         ;;
     *)
         echo "Usage: $0 {backup|restore <backup_file.tar.gz>}" >&2
