@@ -9,6 +9,7 @@ DB_NAME="${DB_NAME:-daisy}"
 DB_USER="${DB_USER:-daisy}"
 DB_PASSWORD="${DB_PASSWORD:-daisy}"
 MEDIA_DIR="${MEDIA_DIR:-/code/documents}"
+SHOW_DB_LOGS="${SHOW_DB_LOGS:-true}"
 
 if [ $# -ne 1 ]; then
     echo "Usage: $0 path_to_daisy_backup_tar.gz" >&2
@@ -18,52 +19,77 @@ fi
 TAR_FILE=$1
 TEMP_DIR=$(mktemp -d)
 
-echo "Starting restoration..."
+echo "Step 1: Starting restoration process..."
 
-# Extract the backup archive
-echo "Extracting files..."
-if ! tar -xzvf "$TAR_FILE" -C "$TEMP_DIR" \
-    --strip-components=2 \
-    home/daisy/daisy_dump.sql \
-    home/daisy/daisy/documents; then
+echo "Step 2: Extracting backup archive..."
+if ! tar -xzf "$TAR_FILE" -C "$TEMP_DIR" > /dev/null 2>&1; then
     echo "ERROR: Failed to extract backup archive" >&2
     rm -rf "$TEMP_DIR"
     exit 1
 fi
 
-echo "Extraction successful."
-echo "SQL dump: $TEMP_DIR/daisy_dump.sql"
-echo "Documents: $TEMP_DIR/daisy/documents"
+echo "Step 3: Locating SQL dump and documents directory..."
+SQL_DUMP=$(find "$TEMP_DIR" -name "daisy_dump.sql")
+DOCUMENTS_DIR=$(find "$TEMP_DIR" -type d -name "documents" ! -path "*/templates/*" | head -n 1)
 
-# Drop the existing database
-echo "Dropping existing database..."
-if ! PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d postgres -c "DROP DATABASE IF EXISTS ${DB_NAME};"; then
+echo "Step 4: Verifying extracted contents..."
+echo "  - SQL dump found: $([ -n "$SQL_DUMP" ] && echo "Yes" || echo "No")"
+echo "  - Documents directory found: $([ -n "$DOCUMENTS_DIR" ] && echo "Yes" || echo "No")"
+
+if [ -z "$SQL_DUMP" ]; then
+    echo "ERROR: Could not find daisy_dump.sql in the archive" >&2
+    rm -rf "$TEMP_DIR"
+    exit 1
+fi
+
+echo "Step 5: Extraction successful."
+echo "  - SQL dump location: $SQL_DUMP"
+echo "  - Documents location: $DOCUMENTS_DIR"
+
+echo "Step 6: Dropping existing database..."
+if [ "$SHOW_DB_LOGS" = "true" ]; then
+    PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d postgres -c "DROP DATABASE IF EXISTS ${DB_NAME};"
+else
+    PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d postgres -c "DROP DATABASE IF EXISTS ${DB_NAME};" > /dev/null 2>&1
+fi
+
+if [ $? -ne 0 ]; then
     echo "ERROR: Failed to drop existing database" >&2
     rm -rf "$TEMP_DIR"
     exit 1
 fi
 
-# Create a new database
-echo "Creating new database..."
-if ! PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d postgres -c "CREATE DATABASE ${DB_NAME};"; then
+echo "Step 7: Creating new database..."
+if [ "$SHOW_DB_LOGS" = "true" ]; then
+    PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d postgres -c "CREATE DATABASE ${DB_NAME};"
+else
+    PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d postgres -c "CREATE DATABASE ${DB_NAME};" > /dev/null 2>&1
+fi
+
+if [ $? -ne 0 ]; then
     echo "ERROR: Failed to create new database" >&2
     rm -rf "$TEMP_DIR"
     exit 1
 fi
 
-# Restore PostgreSQL database from SQL dump
-echo "Restoring PostgreSQL database..."
-if ! PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d "${DB_NAME}" -f "${TEMP_DIR}/daisy_dump.sql"; then
+echo "Step 8: Restoring PostgreSQL database from SQL dump..."
+if [ "$SHOW_DB_LOGS" = "true" ]; then
+    PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d "${DB_NAME}" -f "${SQL_DUMP}"
+else
+    PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d "${DB_NAME}" -f "${SQL_DUMP}" > /dev/null 2>&1
+fi
+
+if [ $? -ne 0 ]; then
     echo "ERROR: Database restoration failed" >&2
     rm -rf "$TEMP_DIR"
     exit 1
 fi
 
-# Restore media files
-echo "Restoring Django media files..."
-if [ -d "${TEMP_DIR}/daisy/documents" ]; then
+echo "Step 9: Restoring Django media files..."
+if [ -n "$DOCUMENTS_DIR" ] && [ -d "$DOCUMENTS_DIR" ]; then
+    echo "  - Copying files from $DOCUMENTS_DIR to $MEDIA_DIR"
     rm -rf "${MEDIA_DIR:?}/"*
-    if ! cp -R "${TEMP_DIR}/daisy/documents/"* "${MEDIA_DIR}/"; then
+    if ! cp -R "${DOCUMENTS_DIR}/." "${MEDIA_DIR}/"; then
         echo "ERROR: Media files restoration failed" >&2
         rm -rf "$TEMP_DIR"
         exit 1
@@ -72,7 +98,7 @@ else
     echo "WARNING: No media backup found in the archive. Skipping media restoration."
 fi
 
-# Remove temporary directory
+echo "Step 10: Cleaning up temporary files..."
 rm -rf "$TEMP_DIR"
 
-echo "Restoration completed successfully."
+echo "Step 11: Restoration completed successfully."
