@@ -110,10 +110,7 @@ services:
             - DB_PASSWORD=${DB_PASSWORD:-daisy}
             - BACKUP_DIR=/backups
             - MEDIA_DIR=/code/documents
-            - ENABLE_BACKUPS=${ENABLE_BACKUPS:-false}
-            - BACKUP_SCHEDULE=${BACKUP_SCHEDULE:-"0 0 * * *"}
             - SOLR_PORT=8983
-            - COMPOSE_PROJECT_NAME=daisy
             - RABBITMQ_MANAGEMENT_PORT=${RABBITMQ_MANAGEMENT_PORT:-15672}
         volumes:
             - ${BACKUP_VOLUME:-../backups}:/backups
@@ -125,7 +122,9 @@ services:
         networks:
             - daisy_network
         entrypoint: >
-            sh -c "apk add --no-cache docker-cli docker-compose postgresql-client lsof && chmod +x /code/setup_cron.sh && chmod +x /code/db.sh && exec /code/setup_cron.sh"
+            sh -c "apk add --no-cache docker-cli docker-compose postgresql-client lsof &&
+               chmod +x /code/db.sh &&
+               tail -f /dev/null"
 
 volumes:
     pgdata:
