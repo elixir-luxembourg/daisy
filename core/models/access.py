@@ -13,7 +13,7 @@ from django.db.models import Q, ObjectDoesNotExist, Count, signals
 
 from enumchoicefield import EnumChoiceField, ChoiceEnum
 
-from .utils import CoreModel, CoreNotifyMeta
+from .utils import CoreModel
 from notification import NotifyMixin
 from notification.models import NotificationVerb, Notification
 from core.utils import DaisyLogger
@@ -35,7 +35,7 @@ class StatusChoices(ChoiceEnum):
     terminated = "Terminated"
 
 
-class Access(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
+class Access(CoreModel, NotifyMixin):
     """
     Represents the access given to an internal (LCSB) entity over data storage locations.
     """

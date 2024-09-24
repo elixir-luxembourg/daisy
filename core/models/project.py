@@ -19,7 +19,7 @@ from notification import NotifyMixin
 from notification.models import NotificationVerb, Notification
 from core.utils import DaisyLogger
 
-from .utils import CoreTrackedModel, COMPANY, CoreNotifyMeta
+from .utils import CoreTrackedModel, COMPANY
 from .partner import HomeOrganisation
 
 
@@ -30,7 +30,7 @@ if typing.TYPE_CHECKING:
 logger = DaisyLogger(__name__)
 
 
-class Project(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
+class Project(CoreTrackedModel, NotifyMixin):
     class Meta:
         app_label = "core"
         get_latest_by = "added"
