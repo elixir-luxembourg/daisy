@@ -13,7 +13,17 @@ DAISY was published as an article [DAISY: A Data Information System for accounta
 
 You are encouraged to try Daisy for yourself using our [DEMO deployment](https://daisy-demo.elixir-luxembourg.org/).
 
-## Deployment using Docker
+## Deployment
+
+DAISY can be fully deployed using Docker. For more instructions see the deployment [guide](doc/deployment.md).
+
+## Documentation
+
+See our
+
+- [Backup manual](doc/backup.md) for creating and restoring backups.
+- [Update manual](doc/update.md) for migration to newer version
+- [Management and administration manual](doc/administration.md) for regular maintenance tasks
 
 ### Requirements
 
@@ -104,12 +114,7 @@ You are encouraged to try Daisy for yourself using our [DEMO deployment](https:/
         password: demo
     ```
 
-### Linting
 
-pip install black==23.7.0
-pre-commit install
-black --check .
-black .
 
 ### Operation manual
 
@@ -208,7 +213,12 @@ See [DEPLOYMENT](DEPLOYMENT.md).
 
 ## Development
 
-To be completed.
+### Linting
+
+pip install black==23.7.0
+pre-commit install
+black --check .
+black .
 
 ### Import users from active directory
 
