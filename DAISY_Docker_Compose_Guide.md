@@ -307,7 +307,7 @@ or
 
 ```bash
 docker compose stop nginx flower worker beat web mq solr
-docker compose exec backup sh /code/db.sh backup
+docker compose exec backup sh /code/scripts/db.sh backup
 docker compose up -d solr mq web worker beat flower nginx
 ```
 
@@ -319,7 +319,7 @@ Restore from a specific backup file:
 
 ```bash
 docker compose stop nginx flower worker beat web mq solr
-docker compose exec backup sh /code/db.sh restore ../backups/backup_<timestamp>.tar.gz
+docker compose exec backup sh /code/scripts/db.sh restore ../backups/backup_<timestamp>.tar.gz
 docker compose up -d solr mq web worker beat flower nginx
 ```
 
@@ -367,7 +367,7 @@ docker compose stop nginx flower worker beat web mq solr
 docker cp ../daisy_prod.tar.gz $(docker compose ps -q backup):/code/daisy_prod.tar.gz
 
 # Execute the legacy restore script inside the backup container
-docker compose exec backup sh /code/legacy_restore.sh /code/daisy_prod.tar.gz
+docker compose exec backup sh /code/scripts/legacy_restore.sh /code/daisy_prod.tar.gz
 
 # Remove the backup file from the container
 docker compose exec backup rm /code/daisy_prod.tar.gz
@@ -456,7 +456,7 @@ docker compose up -d
 Create a database backup before upgrading:
 
 ```bash
-docker compose exec backup sh /code/db.sh backup
+docker compose exec backup sh /code/scripts/db.sh backup
 ```
 
 ### Upgrade Steps

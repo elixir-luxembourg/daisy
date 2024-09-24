@@ -11,7 +11,7 @@ This manual describes steps to perform for backup creation and its restoration.
 
 ## Docker Compose Integration
 
-The `backup` service in `docker-compose.yaml` manages backup and restore using the `db.sh` script.
+The `backup` service in `docker-compose.yaml` manages backup and restore using the `scripts/db.sh` script.
 
 ### Configuration
 
@@ -45,7 +45,7 @@ ENABLE_BACKUPS=false docker compose up -d backup
 Create a manual backup:
 
 ```bash
-docker compose exec backup sh /code/db.sh backup
+docker compose exec backup sh /code/scripts/db.sh backup
 ```
 
 - **Output**: `backup_<timestamp>.tar.gz` in the `BACKUP_DIR` (`../backups` by default).
@@ -55,7 +55,7 @@ docker compose exec backup sh /code/db.sh backup
 Restore from a specific backup file:
 
 ```bash
-docker compose exec backup sh /code/db.sh restore ../backups/backup_<timestamp>.tar.gz
+docker compose exec backup sh /code/scripts/db.sh restore ../backups/backup_<timestamp>.tar.gz
 docker compose run web python manage.py rebuild_index --noinput
 ```
 
@@ -86,7 +86,7 @@ To restore backup created before version 1.8.1 on newer versions with docker dep
 docker cp ../daisy.tar.gz $(docker compose ps -q backup):/code/daisy_prod.tar.gz
 
 # Execute the legacy_restore.sh script inside the running container
-docker compose exec backup /bin/sh -c "sh /code/legacy_restore.sh /code/daisy_prod.tar.gz && rm /code/daisy_prod.tar.gz"
+docker compose exec backup /bin/sh -c "sh /code/scripts/legacy_restore.sh /code/daisy_prod.tar.gz && rm /code/daisy_prod.tar.gz"
 docker compose run web python manage.py rebuild_index --noinput
 ```
 

@@ -123,7 +123,7 @@ services:
             - daisy_network
         entrypoint: >
             sh -c "apk add --no-cache docker-cli docker-compose postgresql-client lsof &&
-               chmod +x /code/db.sh &&
+               chmod +x /code/scripts/db.sh &&
                tail -f /dev/null"
 
 volumes:
