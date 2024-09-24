@@ -2,7 +2,7 @@
 
 ## Overview
 
-Manage PostgreSQL database backups and Django media files in a Docker environment using `tar.gz` archives.
+This manual describes steps to perform for backup creation and its restoration.
 
 ## Key Functions
 
@@ -15,15 +15,7 @@ The `backup` service in `docker-compose.yaml` manages backup and restore using t
 
 ### Configuration
 
-- **Environment Variables**:
-  - `DB_HOST` (default: `db`)
-  - `DB_PORT` (default: `5432`)
-  - `DB_NAME` (default: `daisy`)
-  - `DB_USER` (default: `daisy`)
-  - `DB_PASSWORD` (default: `daisy`)
-  - `BACKUP_DIR` (default: `../backups`)
-  - `ENABLE_BACKUPS` (default: `true`)
-  - `BACKUP_SCHEDULE` (default: `"0 0 * * *"`)
+All variables can be set in the [environment file](.env.template). These include variables necessary for connection to the database, path to local folder where the backup is created and setup of cron tasks for backup.
 
 - **Volumes**:
   - `${BACKUP_VOLUME:-../backups}:/backups`
@@ -35,11 +27,6 @@ The `backup` service in `docker-compose.yaml` manages backup and restore using t
 
 To ensure automatic backups are enabled, set `ENABLE_BACKUPS=true` (enabled by default):
 
-To checkout if the cron is added
-
-```bash
-docker compose exec backup crontab -l
-```
 
 ```bash
 ENABLE_BACKUPS=true docker compose up -d backup
@@ -47,21 +34,10 @@ ENABLE_BACKUPS=true docker compose up -d backup
 
 This will configure automatic backups based on the `BACKUP_SCHEDULE`.
 
-#### Automatic Backups
-
-- Enabled by default (`ENABLE_BACKUPS=true`).
-- Schedule defined by `BACKUP_SCHEDULE` (cron format).
-
 To disable automatic backups:
 
 ```bash
 ENABLE_BACKUPS=false docker compose up -d backup
-```
-
-To checkout if the cron was removed
-
-```bash
-docker compose exec backup crontab -l
 ```
 
 #### Manual Backup
@@ -103,7 +79,7 @@ tar -ztvf ../backups/backup_<timestamp>.tar.gz
 
 #### Restore Legacy Backup
 
-Execute the `legacy_restore.sh` script inside the running container
+To restore backup created before version 1.8.1 on newer versions with docker deployment, execute the `legacy_restore.sh` script inside the running container
 
 ```bash
 # Copy the legacy backup file to the backup container
