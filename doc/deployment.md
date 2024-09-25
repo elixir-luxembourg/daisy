@@ -2,54 +2,6 @@
 
 This guide provides concise instructions for setting up and running the Daisy project using Docker Compose. It includes commands for managing the Django application and other services within the project.
 
----
-
-## Table of Contents
-
-- [Prerequisites](#prerequisites)
-- [Getting Started](#getting-started)
-  - [Clone the Repository](#clone-the-repository)
-  - [Environment Variables](#environment-variables)
-- [Running the Project](#running-the-project)
-  - [Build and Start Services](#build-and-start-services)
-  - [Initialize the Database](#initialize-the-database)
-  - [Build the Solr Schema](#build-the-solr-schema)
-  - [Compile and Deploy Static Files](#compile-and-deploy-static-files)
-  - [Load Initial Data into the Database](#load-initial-data-into-the-database)
-  - [Load Demo Data (Optional)](#load-demo-data-optional)
-  - [Build the Search Index](#build-the-search-index)
-  - [Access the Application](#access-the-application)
-- [Managing the Django Application](#managing-the-django-application)
-  - [Access the Web Service](#access-the-web-service)
-  - [Run Django Commands](#run-django-commands)
-- [Managing Other Services](#managing-other-services)
-  - [PostgreSQL Database (`db` Service)](#postgresql-database-db-service)
-  - [Solr (`solr` Service)](#solr-solr-service)
-  - [RabbitMQ (`mq` Service)](#rabbitmq-mq-service)
-  - [Celery Worker (`worker` Service)](#celery-worker-worker-service)
-  - [Celery Beat (`beat` Service)](#celery-beat-beat-service)
-  - [Flower Monitoring Tool (`flower` Service)](#flower-monitoring-tool-flower-service)
-- [Backup and Restore Operations](#backup-and-restore-operations)
-  - [Backup Service (`backup`)](#backup-service-backup)
-  - [Restore from Backup](#restore-from-backup)
-  - [Restore Legacy Backup](#restore-legacy-backup)
-- [Importing and Exporting Data](#importing-and-exporting-data)
-  - [Import Data](#import-data)
-  - [Export Data](#export-data)
-- [Updating the Project](#updating-the-project)
-  - [Pull Latest Changes](#pull-latest-changes)
-  - [Rebuild Services After Code Changes](#rebuild-services-after-code-changes)
-  - [Database Backup Before Upgrade](#database-backup-before-upgrade)
-  - [Upgrade Steps](#upgrade-steps)
-- [Administration](#administration)
-- [Settings Reference](#settings-reference)
-- [Additional Tips](#additional-tips)
-- [Docker Compose Services Overview](#docker-compose-services-overview)
-- [Logs and Monitoring](#logs-and-monitoring)
-- [Clean Up](#clean-up)
-
----
-
 ## Prerequisites
 
 - **Docker**
@@ -68,18 +20,7 @@ cd daisy
 
 ### Environment Variables
 
-Create a `.env` file in the project root to override default environment variables if necessary.
-
-Example `.env` file:
-
-```env
-DB_NAME=daisy
-DB_USER=daisy
-DB_PASSWORD=daisy
-BACKUP_VOLUME=../backups
-```
-
----
+Create a `.env` file in the project root to override default environment variables if necessary. See [.env.template](env.template) file for more detail.
 
 ## Installation
 
@@ -151,11 +92,13 @@ docker compose exec web python manage.py load_initial_data
 
 ### Load Demo Data (Optional)
 
-To load demo data, including mock datasets, projects, and a demo admin account:
+In case you are provisioning a demo instance, following command loads demo data, including mock datasets, projects, and a demo admin account:
 
 ```bash
 docker compose exec web python manage.py load_demo_data
 ```
+
+You can log in with the demo admin credentials provided during the demo data setup (username: `admin`, password:`admin` by default) or as one of the regular users (see the `About` page for more detail).
 
 ### Build the Search Index
 
@@ -172,51 +115,7 @@ The application should now be accessible at:
 - **HTTP:** `http://localhost/`
 - **HTTPS:** `https://localhost/`
 
-If you loaded the demo data, you can log in with the demo credentials provided during the demo data setup.
-
----
-
-## Backup and Restore Operations
-
-### Backup Service (`backup`)
-
-#### Manual Backup
-
-Create a manual backup:
-
-```bash
-chmod +x ./backup_script.sh && ./backup_script.sh
-```
-
-or
-
-```bash
-docker compose stop nginx flower worker beat web mq solr
-docker compose exec backup sh /code/scripts/db.sh backup
-docker compose up -d solr mq web worker beat flower nginx
-```
-
-Backup files are stored in the `BACKUP_DIR` (default is `../backups`).
-
-### Restore from Backup
-
-Restore from a specific backup file:
-
-```bash
-docker compose stop nginx flower worker beat web mq solr
-docker compose exec backup sh /code/scripts/db.sh restore ../backups/backup_<timestamp>.tar.gz
-docker compose up -d solr mq web worker beat flower nginx
-```
-
-Replace `<timestamp>` with the actual timestamp in the backup filename.
-
-Rebuild the Solr index after restoration:
-
-```bash
-docker compose exec web python manage.py rebuild_index --noinput
-```
-
-#### Scheduled Backup with Cron
+## Scheduled Backup with Cron
 
 To schedule the backup script to run automatically at a specific time using cron, add the following line to your crontab:
 
@@ -263,55 +162,3 @@ docker compose exec web python manage.py rebuild_index --noinput
 ```
 
 ---
-
-## Importing and Exporting Data
-
-### Import Data
-
-You can import data from JSON files using Django management commands.
-
-#### Import Projects
-
-```bash
-docker compose exec web python manage.py import_projects -f /path/to/projects.json
-```
-
-#### Import Datasets
-
-```bash
-docker compose exec web python manage.py import_datasets -f /path/to/datasets.json
-```
-
-#### Import Partners
-
-```bash
-docker compose exec web python manage.py import_partners -f /path/to/partners.json
-```
-
-To import multiple JSON files from a directory:
-
-```bash
-docker compose exec web python manage.py import_projects -d /path/to/directory/
-```
-
-### Export Data
-
-Export data to JSON files.
-
-#### Export Projects
-
-```bash
-docker compose exec web python manage.py export_projects -f /path/to/output/projects.json
-```
-
-#### Export Datasets
-
-```bash
-docker compose exec web python manage.py export_datasets -f /path/to/output/datasets.json
-```
-
-#### Export Partners
-
-```bash
-docker compose exec web python manage.py export_partners -f /path/to/output/partners.json
-```

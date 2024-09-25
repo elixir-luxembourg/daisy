@@ -1,12 +1,12 @@
 # Updating the Project
 
-### Pull Latest Changes
+## Pull Latest Changes
 
 ```bash
 git pull origin main
 ```
 
-### Rebuild Services After Code Changes
+## Rebuild Services After Code Changes
 
 If you make changes to the code or dependencies, rebuild the affected services:
 
@@ -15,7 +15,7 @@ docker compose build web worker beat
 docker compose up -d
 ```
 
-### Database Backup Before Upgrade
+## Database Backup Before Upgrade
 
 Create a database backup before upgrading:
 
@@ -23,7 +23,7 @@ Create a database backup before upgrading:
 docker compose exec backup sh /code/scripts/db.sh backup
 ```
 
-### Upgrade Steps
+## Upgrade Steps
 
 1. **Pull Latest Changes:**
 
@@ -68,5 +68,3 @@ docker compose exec backup sh /code/scripts/db.sh backup
     ```bash
     docker compose exec web python manage.py import_users
     ```
-
----

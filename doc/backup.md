@@ -27,7 +27,6 @@ All variables can be set in the [environment file](.env.template). These include
 
 To ensure automatic backups are enabled, set `ENABLE_BACKUPS=true` (enabled by default):
 
-
 ```bash
 ENABLE_BACKUPS=true docker compose up -d backup
 ```
@@ -50,7 +49,31 @@ docker compose exec backup sh /code/scripts/db.sh backup
 
 - **Output**: `backup_<timestamp>.tar.gz` in the `BACKUP_DIR` (`../backups` by default).
 
-#### Restore Backup
+## Scheduled Backup with Cron
+
+To schedule the backup script to run automatically at a specific time using cron, add the following line to your crontab:
+
+1. Open the crontab editor:
+
+    ```bash
+    crontab -e
+    ```
+
+2. Add the cron job entry (for example, to run the backup at 1 AM daily):
+
+    ```bash
+    0 1 * * * /path/to/backup_script.sh
+    ```
+
+3. Check if the cron job is added:
+
+    ```bash
+    docker compose exec backup crontab -l
+    ```
+
+Replace `/path/to/backup_script.sh` with the actual path to backup_script.
+
+## Restore Backup
 
 Restore from a specific backup file:
 
@@ -61,7 +84,13 @@ docker compose run web python manage.py rebuild_index --noinput
 
 - Replace `../backups/backup_<timestamp>.tar.gz` with the actual file path.
 
-#### List Cron Jobs
+Rebuild the Solr index after restoration:
+
+```bash
+docker compose exec web python manage.py rebuild_index --noinput
+```
+
+## List Cron Jobs
 
 View the automatic backup schedule:
 
@@ -69,7 +98,7 @@ View the automatic backup schedule:
 docker compose exec backup crontab -l
 ```
 
-#### List Backup Contents
+## List Backup Contents
 
 View contents of a backup archive:
 
@@ -77,7 +106,7 @@ View contents of a backup archive:
 tar -ztvf ../backups/backup_<timestamp>.tar.gz
 ```
 
-#### Restore Legacy Backup
+## Restore Legacy Backup
 
 To restore backup created before version 1.8.1 on newer versions with docker deployment, execute the `legacy_restore.sh` script inside the running container
 
@@ -91,11 +120,3 @@ docker compose run web python manage.py rebuild_index --noinput
 ```
 
 Replace `../daisy.tar.gz` with the actual path to legacy backup file.
-
-#### Reindex Solr
-
-To rebuild the Solr search index after a restore operation:
-
-```bash
-docker compose run web python manage.py rebuild_index --noinput
-```
