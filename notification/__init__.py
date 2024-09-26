@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 import typing
 from typing import List, Optional
 from datetime import timedelta
@@ -11,15 +10,14 @@ if typing.TYPE_CHECKING:
     User = settings.AUTH_USER_MODEL
 
 
-class NotifyMixin(ABC):
+class NotifyMixin:
     @staticmethod
-    @abstractmethod
     def get_notification_recipients() -> List["User"]:
         """
         Should query the users based on their notification settings
         and the entity.
         """
-        pass
+        raise NotImplementedError("Subclasses must implement this method")
 
     @classmethod
     def make_notifications(cls, exec_date: "date"):
@@ -41,7 +39,6 @@ class NotifyMixin(ABC):
             cls.make_notifications_for_user(day_offset, exec_date, user)
 
     @classmethod
-    @abstractmethod
     def make_notifications_for_user(
         cls, day_offset: "timedelta", exec_date: "date", user: "User"
     ):
@@ -53,15 +50,14 @@ class NotifyMixin(ABC):
             exec_date: The date of execution of the task.
             user: The user to create the notification for.
         """
-        pass
+        raise NotImplementedError("Subclasses must implement this method")
 
     @staticmethod
-    @abstractmethod
     def notify(user: "User", obj: object, verb: "NotificationVerb"):
         """
         Notify the user about the entity.
         """
-        pass
+        raise NotImplementedError("Subclasses must implement this method")
 
     @staticmethod
     def get_notification_setting(user: "User"):

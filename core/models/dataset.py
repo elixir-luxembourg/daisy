@@ -18,7 +18,7 @@ from core.models import DataDeclaration
 from core.permissions.mapping import PERMISSION_MAPPING
 from notification import NotifyMixin
 from notification.models import Notification, NotificationVerb
-from .utils import CoreTrackedModel, TextFieldWithInputWidget, CoreNotifyMeta
+from .utils import CoreTrackedModel, TextFieldWithInputWidget
 from .partner import HomeOrganisation
 
 if typing.TYPE_CHECKING:
@@ -28,7 +28,7 @@ if typing.TYPE_CHECKING:
 logger = DaisyLogger(__name__)
 
 
-class Dataset(CoreTrackedModel, NotifyMixin, metaclass=CoreNotifyMeta):
+class Dataset(CoreTrackedModel, NotifyMixin):
     class Meta:
         app_label = "core"
         get_latest_by = "added"

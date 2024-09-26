@@ -17,7 +17,7 @@ from django.dispatch import receiver
 from django.core.files.storage import default_storage
 from django.urls import reverse
 
-from .utils import CoreModel, CoreNotifyMeta
+from .utils import CoreModel
 from core.utils import DaisyLogger
 from notification.models import Notification, NotificationVerb
 from notification import NotifyMixin
@@ -39,7 +39,7 @@ def get_file_name(instance, filename):
     )
 
 
-class Document(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
+class Document(CoreModel, NotifyMixin):
     """
     Represents a document
     """
