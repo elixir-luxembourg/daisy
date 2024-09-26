@@ -10,6 +10,7 @@ DB_NAME="${DB_NAME:-daisy}"                # PostgreSQL database name
 DB_USER="${DB_USER:-daisy}"                # PostgreSQL user
 DB_PASSWORD="${DB_PASSWORD:-daisy}"        # PostgreSQL password
 MEDIA_DIR="${MEDIA_DIR:-/code/documents}"  # Django media directory
+BACKUP_VOLUME="${BACKUP_VOLUME:-../backups}"  # Backup volume
 
 if [ "${BACKUP_DIR}" == "../backups" ] && [ ! -d "${BACKUP_DIR}" ]; then
     mkdir -p "${BACKUP_DIR}"
@@ -58,7 +59,7 @@ backup() {
     # Remove temporary backup directory
     rm -rf "${temp_backup_dir}"
 
-    echo "Backup completed successfully: ${backup_file}"
+    echo "Backup completed successfully: ${BACKUP_VOLUME}/backup_${timestamp}.tar.gz"
 }
 
 # Function to perform restore

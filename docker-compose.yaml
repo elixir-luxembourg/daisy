@@ -112,6 +112,7 @@ services:
             - MEDIA_DIR=/code/documents
             - SOLR_PORT=8983
             - RABBITMQ_MANAGEMENT_PORT=${RABBITMQ_MANAGEMENT_PORT:-15672}
+            - BACKUP_VOLUME=${BACKUP_VOLUME:-../backups}
         volumes:
             - ${BACKUP_VOLUME:-../backups}:/backups
             - .:/code

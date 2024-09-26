@@ -28,13 +28,15 @@ if ! tar -xzf "$TAR_FILE" -C "$TEMP_DIR" > /dev/null 2>&1; then
     exit 1
 fi
 
-echo "Step 3: Locating SQL dump and documents directory..."
+echo "Step 3: Locating SQL dump, documents directory, and settings_local.py..."
 SQL_DUMP=$(find "$TEMP_DIR" -name "daisy_dump.sql")
 DOCUMENTS_DIR=$(find "$TEMP_DIR" -type d -name "documents" ! -path "*/templates/*" | head -n 1)
+SETTINGS_LOCAL=$(find "$TEMP_DIR" -type f -name "settings_local.py" | head -n 1)
 
 echo "Step 4: Verifying extracted contents..."
 echo "  - SQL dump found: $([ -n "$SQL_DUMP" ] && echo "Yes" || echo "No")"
 echo "  - Documents directory found: $([ -n "$DOCUMENTS_DIR" ] && echo "Yes" || echo "No")"
+echo "  - settings_local.py found: $([ -n "$SETTINGS_LOCAL" ] && echo "Yes" || echo "No")"
 
 if [ -z "$SQL_DUMP" ]; then
     echo "ERROR: Could not find daisy_dump.sql in the archive" >&2
@@ -45,6 +47,7 @@ fi
 echo "Step 5: Extraction successful."
 echo "  - SQL dump location: $SQL_DUMP"
 echo "  - Documents location: $DOCUMENTS_DIR"
+echo "  - settings_local.py location: $SETTINGS_LOCAL"
 
 echo "Step 6: Dropping existing database..."
 if [ "$SHOW_DB_LOGS" = "true" ]; then
@@ -98,7 +101,28 @@ else
     echo "WARNING: No media backup found in the archive. Skipping media restoration."
 fi
 
-echo "Step 10: Cleaning up temporary files..."
+echo "Step 10: Restoring settings_local.py..."
+if [ -n "$SETTINGS_LOCAL" ] && [ -f "$SETTINGS_LOCAL" ]; then
+    echo "  - Copying settings_local.py to /code/elixir_daisy/"
+    if [ -f "/code/elixir_daisy/settings_local.py" ]; then
+        echo "  - Existing settings_local.py found. Replacing it."
+        if ! cp -f "$SETTINGS_LOCAL" "/code/elixir_daisy/settings_local.py"; then
+            echo "ERROR: Failed to replace existing settings_local.py" >&2
+            rm -rf "$TEMP_DIR"
+            exit 1
+        fi
+    else
+        if ! cp "$SETTINGS_LOCAL" "/code/elixir_daisy/settings_local.py"; then
+            echo "ERROR: Failed to restore settings_local.py" >&2
+            rm -rf "$TEMP_DIR"
+            exit 1
+        fi
+    fi
+else
+    echo "WARNING: settings_local.py not found in the archive. Skipping restoration."
+fi
+
+echo "Step 11: Cleaning up temporary files..."
 rm -rf "$TEMP_DIR"
 
-echo "Step 11: Restoration completed successfully."
+echo "Step 12: Restoration completed successfully."
