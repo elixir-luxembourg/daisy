@@ -40,6 +40,7 @@ fi
 
 echo "Step 1: Starting restoration process..."
 
+# Step 2: Search for necessary files and directories
 echo "Step 2: Searching for daisy_dump.sql, documents directory, and settings_local.py in the archive..."
 
 # Initialize search result variables
@@ -48,7 +49,7 @@ DOCUMENTS_DIR_PATH=""
 SETTINGS_LOCAL_PATH=""
 
 # Search for daisy_dump.sql
-SQL_DUMP_PATH=$(tar -tzf "$TAR_FILE" | grep "/daisy_dump\.sql$" | head -n 1 || true)
+SQL_DUMP_PATH=$(tar -tzf "$TAR_FILE" | grep "/daisy_dump\.sql$" | grep -v "/daisy/" | head -n 1 || true)
 
 # Search for documents directory (any depth) excluding those under 'templates'
 DOCUMENTS_DIR_PATH=$(tar -tzf "$TAR_FILE" | grep "/documents/$" | grep -v "/templates/" | head -n 1 || true)
@@ -88,50 +89,33 @@ if [ -n "$SETTINGS_LOCAL_PATH" ]; then
     echo "$SETTINGS_LOCAL_PATH" >> "$EXTRACT_LIST"
 fi
 
+# Debug: Show the list of paths to extract
+echo "DEBUG: Paths to extract:"
+cat "$EXTRACT_LIST"
+
 # Check if EXTRACT_LIST has entries
 if [ ! -s "$EXTRACT_LIST" ]; then
     echo "ERROR: No files or directories to extract. Exiting." >&2
     exit 1
 fi
 
+# Step 3: Extract only the necessary files and directories
 echo "Step 3: Extracting the necessary files and directories..."
 if ! tar -xzf "$TAR_FILE" -C "$TEMP_DIR" -T "$EXTRACT_LIST" 2>&1; then
     echo "ERROR: Failed to extract necessary files from the backup archive." >&2
     exit 1
 fi
 
+# Step 4: Verify extracted contents
 echo "Step 4: Verifying extracted contents..."
-SQL_DUMP=$(find "$TEMP_DIR" -type f -name "daisy_dump.sql" | head -n 1 || true)
+SQL_DUMP=$(find "$TEMP_DIR" -type f -name "daisy_dump.sql" | grep -v "/home/daisy/" | head -n 1 || true)
 DOCUMENTS_DIR=$(find "$TEMP_DIR" -type d -name "documents" | grep -v "/templates/" | head -n 1 || true)
 SETTINGS_LOCAL=$(find "$TEMP_DIR" -type f -name "settings_local.py" | head -n 1 || true)
 
-echo "Step 5: Dropping existing database..."
-if [ "$SHOW_DB_LOGS" = "true" ]; then
-    PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d postgres -c "DROP DATABASE IF EXISTS ${DB_NAME};"
-else
-    PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d postgres -c "DROP DATABASE IF EXISTS ${DB_NAME};" > /dev/null 2>&1
-fi
-
-if [ $? -ne 0 ]; then
-    echo "ERROR: Failed to drop existing database" >&2
-    rm -rf "$TEMP_DIR"
-    exit 1
-fi
-
-echo "Step 6: Creating new database..."
-if [ "$SHOW_DB_LOGS" = "true" ]; then
-    PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d postgres -c "CREATE DATABASE ${DB_NAME};"
-else
-    PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d postgres -c "CREATE DATABASE ${DB_NAME};" > /dev/null 2>&1
-fi
-
-if [ $? -ne 0 ]; then
-    echo "ERROR: Failed to create new database" >&2
-    rm -rf "$TEMP_DIR"
-    exit 1
-fi
-
-echo "Step 7: Restoring PostgreSQL database from SQL dump..."
+echo "  - SQL dump found: $([ -n "$SQL_DUMP" ] && echo 'Yes' || echo 'No')"
+echo "  - Documents directory found: $([ -n "$DOCUMENTS_DIR" ] && echo 'Yes' || echo 'No')"
+echo "  - settings_local.py found: $([ -n "$SETTINGS_LOCAL" ] && echo 'Yes' || echo 'No')"
+echo "Step 8: Restoring PostgreSQL database from SQL dump..."
 if [ "$SHOW_DB_LOGS" = "true" ]; then
     PGPASSWORD="${DB_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -d "${DB_NAME}" -f "${SQL_DUMP}"
 else
@@ -144,8 +128,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "Step 8: Restoring Django media files..."
+echo "Step 9: Restoring Django media files..."
 if [ -n "$DOCUMENTS_DIR" ] && [ -d "$DOCUMENTS_DIR" ]; then
+    echo "  - Copying files from $DOCUMENTS_DIR to $MEDIA_DIR"
     rm -rf "${MEDIA_DIR:?}/"*
     if ! cp -R "${DOCUMENTS_DIR}/." "${MEDIA_DIR}/"; then
         echo "ERROR: Media files restoration failed" >&2
@@ -175,7 +160,7 @@ else
     echo "WARNING: settings_local.py not found in the archive. Skipping restoration."
 fi
 
-echo "Step 10: Cleaning up temporary files..."
+echo "Step 11: Cleaning up temporary files..."
 rm -rf "$TEMP_DIR"
 
-echo "Step 11: Restoration completed successfully."
+echo "Step 12: Restoration completed successfully."
