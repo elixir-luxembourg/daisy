@@ -112,11 +112,11 @@ To restore backup created before version 1.8.1 on newer versions with docker dep
 
 ```bash
 # Copy the legacy backup file to the backup container
-docker cp ../daisy.tar.gz $(docker compose ps -q backup):/code/daisy_prod.tar.gz
+docker cp ../daisy_prod.tar.gz $(docker compose ps -q backup):/code/daisy_prod.tar.gz
 
 # Execute the legacy_restore.sh script inside the running container
 docker compose exec backup /bin/sh -c "sh /code/scripts/legacy_restore.sh /code/daisy_prod.tar.gz && rm /code/daisy_prod.tar.gz"
 docker compose run web python manage.py rebuild_index --noinput
 ```
 
-Replace `../daisy.tar.gz` with the actual path to legacy backup file.
+Replace `../daisy_prod.tar.gz` with the actual path to legacy backup file.
