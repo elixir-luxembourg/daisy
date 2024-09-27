@@ -84,12 +84,6 @@ docker compose run web python manage.py rebuild_index --noinput
 
 - Replace `../backups/backup_<timestamp>.tar.gz` with the actual file path.
 
-Rebuild the Solr index after restoration:
-
-```bash
-docker compose exec web python manage.py rebuild_index --noinput
-```
-
 ## List Cron Jobs
 
 View the automatic backup schedule:
