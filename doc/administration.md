@@ -1,6 +1,6 @@
-# Managing
+# Management and administration
 
-### Access the Web Service
+## Access the Web Service
 
 Shell into the `web` container:
 
@@ -10,25 +10,14 @@ docker compose exec web /bin/bash
 
 ### Run Django Commands
 
-Run Django management commands using the `web` service.
+Run Django management commands, e.g. `makemigrations`, `migrate`, `createsuperuser`, etc., using the `web` service:
 
-#### Make Migrations
-
-```bash
-docker compose exec web python manage.py makemigrations
-```
-
-#### Apply Migrations
 
 ```bash
-docker compose exec web python manage.py migrate
+docker compose exec web python manage.py <django-command>
 ```
 
-#### Create Superuser
-
-```bash
-docker compose exec web python manage.py createsuperuser
-```
+See `docker compose exec web python manage.py --help` for all available commands.
 
 #### Collect Static Files
 
