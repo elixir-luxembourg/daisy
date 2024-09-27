@@ -1,20 +1,5 @@
 # Updating the Project
 
-## Pull Latest Changes
-
-```bash
-git pull origin main
-```
-
-## Rebuild Services After Code Changes
-
-If you make changes to the code or dependencies, rebuild the affected services:
-
-```bash
-docker compose build web worker beat
-docker compose up -d
-```
-
 ## Database Backup Before Upgrade
 
 Create a database backup before upgrading:
@@ -28,7 +13,7 @@ docker compose exec backup sh /code/scripts/db.sh backup
 1. **Pull Latest Changes:**
 
     ```bash
-    git pull origin main
+    git pull origin master
     ```
 
 2. **Rebuild Docker Images:**
