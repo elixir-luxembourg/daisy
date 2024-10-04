@@ -20,7 +20,7 @@ cd daisy
 
 ### Environment Variables
 
-Create a `.env` file in the project root to override default environment variables if necessary. See [.env.template](env.template) file for more detail.
+Create a `.env` file in the project root to override default environment variables if necessary. See [.env.template](env.template) file for more detail. Additionally, create `elixir_daisy/settings_local.py` file from `elixir_daisy/settings_local.template.py`.
 
 ## Installation
 
@@ -55,14 +55,13 @@ The project uses frontend assets that need to be compiled (e.g., with npm), you 
 #### Install npm Dependencies
 
 ```bash
-cd web/static/vendor
-npm ci
+docker compose exec web npm --prefix web/static/vendor ci
 ```
 
 #### Build Frontend Assets
 
 ```bash
-npm run build
+docker compose exec web npm --prefix web/static/vendor run build
 ```
 
 #### Collect Static Files
@@ -110,34 +109,31 @@ docker compose exec web python manage.py rebuild_index --noinput
 
 ### Access the Application
 
-The application should now be accessible at:
-
-- **HTTP:** `http://localhost/`
-- **HTTPS:** `https://localhost/`
+The application should now be accessible on `https://localhost/`
 
 ## Scheduled Backup with Cron
 
 To schedule the backup script to run automatically at a specific time using cron, add the following line to your crontab:
 
-1. Open the crontab editor:
+1. Ensure the destination location for backups in `.env` file (`BACKUP_VOLUME` variable)
+
+2. Open the crontab editor:
 
     ```bash
     crontab -e
     ```
 
-2. Add the cron job entry (for example, to run the backup at 1 AM daily):
+3. Add the cron job entry (for example, to run the backup at 1 AM daily) with path to the backup script:
 
     ```bash
-    0 1 * * * /path/to/backup_script.sh
+    0 1 * * * <path-to-project-root>/scripts/backup_script.sh
     ```
 
-3. Check if the cron job is added:
+4. Check if the cron job is added:
 
     ```bash
-    docker compose exec backup crontab -l
+    crontab -l
     ```
-
-Replace `/path/to/backup_script.sh` with the actual path to backup_script.
 
 ### Restore Legacy Backup
 
