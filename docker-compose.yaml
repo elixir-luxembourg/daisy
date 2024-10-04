@@ -6,6 +6,7 @@ services:
             - '5000'
         environment:
             - DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
+            - TZ=${TZ}
         volumes:
             - statics:/static
             - solrdata:/solr
@@ -25,6 +26,7 @@ services:
             POSTGRES_PASSWORD: ${DB_PASSWORD:-daisy}
             POSTGRES_USER: ${DB_USER:-daisy}
             POSTGRES_DB: ${DB_NAME:-daisy}
+            TZ: ${TZ}
         networks:
             - daisy_network
         volumes:
@@ -33,6 +35,8 @@ services:
     nginx:
         build: ./docker/nginx
         restart: unless-stopped
+        environment:
+            - - TZ=${TZ}
         volumes:
             - statics:/public/static:ro
         ports:
@@ -46,6 +50,8 @@ services:
     solr:
         build: ./docker/solr
         restart: unless-stopped
+        environment:
+            - TZ=${TZ}
         ports:
             - "8983:8983"
         networks:
@@ -56,6 +62,8 @@ services:
     mq:
         image: rabbitmq:3.9-management-alpine
         restart: unless-stopped
+        environment:
+            - TZ=${TZ}
         networks:
             - daisy_network
         ports:
@@ -65,6 +73,8 @@ services:
     flower:
         image: mher/flower:0.9.7
         command: --broker=amqp://guest:guest@mq:5672// --broker_api=http://guest:guest@mq:15672/api/
+        environment:
+            - TZ=${TZ}
         ports:
             - "5555:5555"
         restart: unless-stopped
@@ -77,6 +87,7 @@ services:
         build: .
         environment:
             - DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
+            - TZ=${TZ}
         volumes:
             - .:/code
         depends_on:
@@ -91,6 +102,7 @@ services:
         build: .
         environment:
             - DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
+            - TZ=${TZ}
         volumes:
             - .:/code
         depends_on:
@@ -113,6 +125,7 @@ services:
             - SOLR_PORT=8983
             - RABBITMQ_MANAGEMENT_PORT=${RABBITMQ_MANAGEMENT_PORT:-15672}
             - BACKUP_VOLUME=${BACKUP_VOLUME:-../backups}
+            - TZ=${TZ}
         volumes:
             - ${BACKUP_VOLUME:-../backups}:/backups
             - .:/code
