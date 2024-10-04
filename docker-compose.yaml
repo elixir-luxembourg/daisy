@@ -26,7 +26,7 @@ services:
             POSTGRES_PASSWORD: ${DB_PASSWORD:-daisy}
             POSTGRES_USER: ${DB_USER:-daisy}
             POSTGRES_DB: ${DB_NAME:-daisy}
-            TZ: ${TZ}
+            TZ: ${TZ:-UTC}
         networks:
             - daisy_network
         volumes:
