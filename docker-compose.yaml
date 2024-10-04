@@ -36,7 +36,7 @@ services:
         build: ./docker/nginx
         restart: unless-stopped
         environment:
-            - - TZ=${TZ:-UTC}
+            - TZ=${TZ:-UTC}
         volumes:
             - statics:/public/static:ro
         ports:
