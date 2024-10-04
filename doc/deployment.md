@@ -113,27 +113,9 @@ The application should now be accessible on `https://localhost/`
 
 ## Scheduled Backup with Cron
 
-To schedule the backup script to run automatically at a specific time using cron, add the following line to your crontab:
+To ensure the backups are properly set up, please refer to the [Backup manual](backup.md#Scheduled-Backup-with-Cron)
 
-1. Ensure the destination location for backups in `.env` file (`BACKUP_VOLUME` variable)
 
-2. Open the crontab editor:
-
-    ```bash
-    crontab -e
-    ```
-
-3. Add the cron job entry (for example, to run the backup at 1 AM daily) with path to the backup script:
-
-    ```bash
-    0 1 * * * <path-to-project-root>/scripts/backup_script.sh
-    ```
-
-4. Check if the cron job is added:
-
-    ```bash
-    crontab -l
-    ```
 
 ### Restore Legacy Backup
 

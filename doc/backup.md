@@ -53,25 +53,25 @@ docker compose exec backup sh /code/scripts/db.sh backup
 
 To schedule the backup script to run automatically at a specific time using cron, add the following line to your crontab:
 
-1. Open the crontab editor:
+1. Ensure the destination location for backups in `.env` file (`BACKUP_VOLUME` variable)
+
+2. Open the crontab editor:
 
     ```bash
     crontab -e
     ```
 
-2. Add the cron job entry (for example, to run the backup at 1 AM daily):
+3. Add the cron job entry (for example, to run the backup at 1 AM daily) with path to the backup script:
 
     ```bash
-    0 1 * * * /path/to/backup_script.sh
+    0 1 * * * <path-to-project-root>/scripts/backup_script.sh
     ```
 
-3. Check if the cron job is added:
+4. Check if the cron job is added:
 
     ```bash
-    docker compose exec backup crontab -l
+    crontab -l
     ```
-
-Replace `/path/to/backup_script.sh` with the actual path to backup_script.
 
 ## Restore Backup
 
