@@ -6,7 +6,7 @@ services:
             - '5000'
         environment:
             - DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
-            - TZ=${TZ}
+            - TZ=${TZ:-UTC}
         volumes:
             - statics:/static
             - solrdata:/solr
@@ -36,7 +36,7 @@ services:
         build: ./docker/nginx
         restart: unless-stopped
         environment:
-            - - TZ=${TZ}
+            - - TZ=${TZ:-UTC}
         volumes:
             - statics:/public/static:ro
         ports:
@@ -51,7 +51,7 @@ services:
         build: ./docker/solr
         restart: unless-stopped
         environment:
-            - TZ=${TZ}
+            - TZ=${TZ:-UTC}
         ports:
             - "8983:8983"
         networks:
@@ -63,7 +63,7 @@ services:
         image: rabbitmq:3.9-management-alpine
         restart: unless-stopped
         environment:
-            - TZ=${TZ}
+            - TZ=${TZ:-UTC}
         networks:
             - daisy_network
         ports:
@@ -74,7 +74,7 @@ services:
         image: mher/flower:0.9.7
         command: --broker=amqp://guest:guest@mq:5672// --broker_api=http://guest:guest@mq:15672/api/
         environment:
-            - TZ=${TZ}
+            - TZ=${TZ:-UTC}
         ports:
             - "5555:5555"
         restart: unless-stopped
@@ -87,7 +87,7 @@ services:
         build: .
         environment:
             - DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
-            - TZ=${TZ}
+            - TZ=${TZ:-UTC}
         volumes:
             - .:/code
         depends_on:
@@ -102,7 +102,7 @@ services:
         build: .
         environment:
             - DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
-            - TZ=${TZ}
+            - TZ=${TZ:-UTC}
         volumes:
             - .:/code
         depends_on:
@@ -125,7 +125,7 @@ services:
             - SOLR_PORT=8983
             - RABBITMQ_MANAGEMENT_PORT=${RABBITMQ_MANAGEMENT_PORT:-15672}
             - BACKUP_VOLUME=${BACKUP_VOLUME:-../backups}
-            - TZ=${TZ}
+            - TZ=${TZ:-UTC}
         volumes:
             - ${BACKUP_VOLUME:-../backups}:/backups
             - .:/code
