@@ -105,4 +105,8 @@ CELERY_BEAT_SCHEDULE = {
         "task": "core.tasks.run_synchronizer",
         "schedule": crontab(minute=0, hour=2),  # Execute task at 2am
     },
+    "update-rems-application-external-id": {
+        "task": "core.tasks.update_rems_access_external_id",
+        "schedule": crontab(minute=0, hour=3),  # Execute task at 3am
+    },
 }
