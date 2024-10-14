@@ -1,4 +1,7 @@
-# Installation
+
+**DISCLAIMER**: This is a set of instructions for legacy deployment and administration for version <1.8.1. It will be removed in future.
+
+# Legacy deployment and administration manual
 
 Following instructions are for CentOS Linux 7 (Core).
 
