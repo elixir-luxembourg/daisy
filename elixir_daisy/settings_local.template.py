@@ -70,6 +70,7 @@ REMS_API_KEY = ""
 REMS_URL = ""
 REMS_API_USER = ""
 REMS_VERIFY_SSL = True
+REMS_RETRIES = 3
 
 # IDSERVICE_FUNCTION = 'core.lcsb.idservice.generate_identifier'
 IDSERVICE_ENDPOINT = "https://10.240.16.199:8080/v1/api/id"
