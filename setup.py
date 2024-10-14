@@ -54,7 +54,7 @@ test_requirements = [
     "pytest-solr==1.0a1",
     "pytest-celery",
     "pytest-mock==3.12.0",
-    "requests-mock==1.12.1"
+    "requests-mock==1.12.1",
 ]
 
 dev_requirements = ["pre-commit==3.3.3"]

@@ -6,18 +6,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0037_auto_20240924_1020'),
+        ("core", "0037_auto_20240924_1020"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='access',
-            name='application_external_id',
-            field=models.CharField(help_text='REMS application external ID.', max_length=200, null=True),
+            model_name="access",
+            name="application_external_id",
+            field=models.CharField(
+                help_text="REMS application external ID.", max_length=200, null=True
+            ),
         ),
         migrations.AddField(
-            model_name='access',
-            name='application_id',
-            field=models.IntegerField(help_text='REMS application ID.', null=True),
+            model_name="access",
+            name="application_id",
+            field=models.IntegerField(help_text="REMS application ID.", null=True),
         ),
     ]
