@@ -196,6 +196,7 @@ class AccessFactory(factory.django.DjangoModelFactory):
         model = "core.Access"
         django_get_or_create = ("user",)
 
+    id = factory.Sequence(lambda n: n)
     access_notes = factory.Faker("sentence")
     dataset = factory.SubFactory(DatasetFactory)
     user = factory.SubFactory(UserFactory)

@@ -381,16 +381,29 @@ def test_update_accesses_external_id(caplog):
     with requests_mock.Mocker() as m:
         m.get(
             rems_url + f"api/applications/{access_0.application_id}",
-            json={"application/external-id": "0"},
+            json={"application/external-id": "new_external_id-0"},
         )
         m.get(
             rems_url + f"api/applications/{access_1.application_id}",
-            json={"application/external-id": "1"},
+            json={"application/external-id": "new_external_id-1"},
         )
         m.get(
             rems_url + f"api/applications/{access_2.application_id}",
-            json={"application/external-id": "2"},
+            json={"application/external-id": "new_external_id-2"},
         )
         bulk_update_rems_external_ids()
 
     assert "REMS :: Accesses updated: 1" in caplog.text
+
+    updated_access_0 = Access.objects.get(id=access_0.id)
+    assert not updated_access_0.application_external_id
+
+    updated_access_1 = Access.objects.get(id=access_1.id)
+    assert updated_access_1.application_external_id == "new_external_id-1"
+    assert (
+        updated_access_1.access_notes
+        == f"Set automatically by REMS data access request #{access_1.id} (new_external_id-1)"
+    )
+
+    updated_access_2 = Access.objects.get(id=access_2.id)
+    assert updated_access_2.application_external_id == access_2.application_external_id

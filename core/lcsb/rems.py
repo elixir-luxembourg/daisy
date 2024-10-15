@@ -281,5 +281,8 @@ def bulk_update_rems_external_ids():
     for access in accesses:
         external_id = get_rems_external_id(access.application_id)
         access.application_external_id = external_id
-    Access.objects.bulk_update(accesses, ["application_external_id"])
+        access.access_notes = build_access_notes_rems(
+            access.application_id, external_id
+        )
+    Access.objects.bulk_update(accesses, ["application_external_id", "access_notes"])
     logger.info(f"REMS :: Accesses updated: {len(accesses)}")
