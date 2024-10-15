@@ -77,3 +77,5 @@ REMS_URL = "http://localhost:3000/"
 REMS_RETRIES = 1
 REMS_API_KEY = "test"
 REMS_API_USER = "test"
+REMS_VERIFY_SSL = True
+REMS_SKIP_IP_CHECK = False
