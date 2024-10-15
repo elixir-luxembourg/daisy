@@ -23,22 +23,6 @@ All variables can be set in the [environment file](.env.template). These include
 
 ### Operations
 
-#### Enable Automatic Backups
-
-To ensure automatic backups are enabled, set `ENABLE_BACKUPS=true` (enabled by default):
-
-```bash
-ENABLE_BACKUPS=true docker compose up -d backup
-```
-
-This will configure automatic backups based on the `BACKUP_SCHEDULE`.
-
-To disable automatic backups:
-
-```bash
-ENABLE_BACKUPS=false docker compose up -d backup
-```
-
 #### Manual Backup
 
 Create a manual backup:
