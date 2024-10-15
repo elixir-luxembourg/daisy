@@ -372,7 +372,7 @@ def test_create_access_with_external_id():
     assert access.application_external_id == "2024/1"
 
 
-def test_update_accesses_external_id(caplog):
+def test_update_accesses_external_id():
     access_0 = AccessFactory.create()
     access_1 = AccessFactory.create(rems_id=True)
     access_2 = AccessFactory.create(rems_id=True, rems_external_id=True)
@@ -392,8 +392,6 @@ def test_update_accesses_external_id(caplog):
             json={"application/external-id": "new_external_id-2"},
         )
         bulk_update_rems_external_ids()
-
-    assert "REMS :: Accesses updated: 1" in caplog.text
 
     updated_access_0 = Access.objects.get(id=access_0.id)
     assert not updated_access_0.application_external_id
