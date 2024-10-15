@@ -185,10 +185,12 @@ class Access(CoreModel, NotifyMixin):
         help_text="Was the entry generated automatically, e.g. by REMS?",
     )
 
-    application_id = models.IntegerField(null=True, help_text="REMS application ID.")
+    application_id = models.IntegerField(
+        blank=True, null=True, help_text="REMS application ID."
+    )
 
     application_external_id = models.CharField(
-        blank=False,
+        blank=True,
         null=True,
         max_length=200,
         help_text="REMS application external ID.",
