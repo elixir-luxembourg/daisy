@@ -19,7 +19,7 @@ services:
         command: gunicorn --reload -w 2 -b :5000 --pid /run/gunicorn.pid elixir_daisy.wsgi
     # database
     db:
-        image: postgres:10.1
+        image: postgres:16.4-bullseye
         restart: unless-stopped
         environment:
             POSTGRES_PASSWORD: ${DB_PASSWORD:-daisy}
