@@ -186,10 +186,11 @@ class Access(CoreModel, NotifyMixin):
     )
 
     application_id = models.IntegerField(
-        blank=True, null=True, help_text="REMS application ID."
+        "Access request ID", blank=True, null=True, help_text="REMS application ID."
     )
 
     application_external_id = models.CharField(
+        "Other access request ID",
         blank=True,
         null=True,
         max_length=200,
