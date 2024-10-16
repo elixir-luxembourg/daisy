@@ -98,3 +98,34 @@ docker compose run web python manage.py rebuild_index --noinput
 ```
 
 Replace `../daisy_prod.tar.gz` with the actual path to legacy backup file.
+
+### Updating Django Settings to support Docker Compose
+
+After the restore script. you need to change settings_local.py to work with Docker Compose, follow these key changes:
+
+1. **Database Settings:**
+   - Change `HOST` from `'localhost'` to the service name defined in Docker (`'db'`):
+   ```python
+   'HOST': 'db',
+   ```
+
+2. **Haystack Solr Configuration:**
+   - Change Solr URL and Admin URL to use the Docker service name (`'solr'`):
+   ```python
+   'URL': 'http://solr:8983/solr/daisy',
+   'ADMIN_URL': 'http://solr:8983/solr/admin/cores',
+   ```
+
+3. **Static Files:**
+   - Update `STATIC_ROOT` to a directory accessible by Docker containers:
+   ```python
+   STATIC_ROOT = "/static/"
+   ```
+
+4. **Allowed Hosts:**
+   - Ensure you update the `ALLOWED_HOSTS` to include the IP addresses or domains used by your Docker environment:
+   ```python
+   ALLOWED_HOSTS = ['IP addresses', 'daisy domain here']
+   ```
+
+By making these adjustments,  daisy should now work seamlessly with Docker Compose.
