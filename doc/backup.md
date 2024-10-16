@@ -95,6 +95,11 @@ docker cp ../daisy_prod.tar.gz $(docker compose ps -q backup):/code/daisy_prod.t
 # Execute the legacy_restore.sh script inside the running container
 docker compose exec backup /bin/sh -c "sh /code/scripts/legacy_restore.sh /code/daisy_prod.tar.gz && rm /code/daisy_prod.tar.gz"
 docker compose run web python manage.py rebuild_index --noinput
+
+# you may also need to run migrate if you have new migration after this backup was created
+docker compose exec web python manage.py migrate
+docker compose exec web python manage.py collectstatic
+
 ```
 
 Replace `../daisy_prod.tar.gz` with the actual path to legacy backup file.
