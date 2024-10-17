@@ -6,7 +6,7 @@ This guide outlines the process for contributing to this repository.
 
 We follow a standard GitHub workflow for contributions:
 
-1. Fork the repository
+1. Fork the repository [if needed]
 2. Create a new branch
 3. Make your changes
 4. Submit a pull request
