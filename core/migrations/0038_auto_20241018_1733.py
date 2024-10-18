@@ -17,13 +17,17 @@ class Migration(migrations.Migration):
                 help_text="REMS application external ID.",
                 max_length=200,
                 null=True,
+                verbose_name="Other access request ID",
             ),
         ),
         migrations.AddField(
             model_name="access",
             name="application_id",
             field=models.IntegerField(
-                blank=True, help_text="REMS application ID.", null=True
+                blank=True,
+                help_text="REMS application ID.",
+                null=True,
+                verbose_name="Access request ID",
             ),
         ),
     ]
