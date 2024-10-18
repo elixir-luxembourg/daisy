@@ -1,12 +1,13 @@
 import json
 import urllib3
-
 from datetime import datetime, date, timedelta
 from dateutil.parser import isoparse
 from typing import Dict, Union, Tuple
 
 from django.conf import settings
 from django.http import HttpRequest
+from django.db.models import Q
+import requests
 
 from core.synchronizers import (
     DummyAccountSynchronizer,
@@ -24,7 +25,6 @@ from core.models.contact import Contact
 from core.models.dataset import Dataset
 from core.models.user import User
 from core.utils import DaisyLogger
-from django.db.models import Q
 
 logger = DaisyLogger(__name__)
 
@@ -107,7 +107,7 @@ def handle_rems_callback(request: HttpRequest) -> bool:
     return all(statuses)
 
 
-def extract_rems_data(data: Dict[str, str]) -> Tuple[str, str, str, str, date]:
+def extract_rems_data(data: Dict[str, str]) -> Tuple[int, str, str, str, date]:
     """
     Extracts the data from the REMS request
     """
@@ -172,7 +172,7 @@ def handle_rems_entitlement(data: Dict[str, str]) -> bool:
 
 
 def create_rems_entitlement(
-    obj: Union[Access, User], application: str, dataset_id: str, expiration_date: date
+    obj: Union[Access, User], application: int, dataset_id: str, expiration_date: date
 ) -> bool:
     """
     Tries to find a dataset with `elu_accession` equal to `dataset_id`.
@@ -180,31 +180,26 @@ def create_rems_entitlement(
     Assumes that the Dataset exists, otherwise will throw an exception.
     """
     dataset = Dataset.objects.get(elu_accession=dataset_id)
-    notes = build_access_notes_rems(application)
+    external_id = get_rems_external_id(application)
+    notes = build_access_notes_rems(application, external_id)
     system_rems_user = get_or_create_rems_user()
 
+    access_kwargs = {
+        "dataset": dataset,
+        "access_notes": notes,
+        "granted_on": datetime.now(),
+        "was_generated_automatically": True,
+        "created_by": system_rems_user,
+        "status": StatusChoices.active,
+        "grant_expires_on": expiration_date,
+        "application_id": application,
+        "application_external_id": external_id,
+    }
+
     if isinstance(obj, User):
-        new_logbook_entry = Access(
-            user=obj,
-            dataset=dataset,
-            access_notes=notes,
-            granted_on=datetime.now(),
-            was_generated_automatically=True,
-            created_by=system_rems_user,
-            status=StatusChoices.active,
-            grant_expires_on=expiration_date,
-        )
+        new_logbook_entry = Access(user=obj, **access_kwargs)
     elif isinstance(obj, Contact):
-        new_logbook_entry = Access(
-            contact=obj,
-            dataset=dataset,
-            access_notes=notes,
-            granted_on=datetime.now(),
-            was_generated_automatically=True,
-            created_by=system_rems_user,
-            status=StatusChoices.active,
-            grant_expires_on=expiration_date,
-        )
+        new_logbook_entry = Access(contact=obj, **access_kwargs)
     else:
         klass = obj.__class__.__name__
         raise TypeError(
@@ -215,11 +210,14 @@ def create_rems_entitlement(
     return True
 
 
-def build_access_notes_rems(application: str) -> str:
+def build_access_notes_rems(application: int, external_id: str) -> str:
     """
     Build and return note to be attached to the access created from a REMS application
     """
-    return f"Set automatically by REMS data access request #{application}"
+    result = f"Set automatically by REMS data access request #{application}"
+    if external_id:
+        result += f" ({external_id})"
+    return result
 
 
 def get_or_create_rems_user() -> User:
@@ -240,3 +238,51 @@ def get_or_create_rems_user() -> User:
     else:
         system_rems_user = system_rems_user.first()
     return system_rems_user
+
+
+def get_rems_application(application_id: int) -> dict:
+    headers = {
+        "x-rems-api-key": getattr(settings, "REMS_API_KEY"),
+        "x-rems-user-id": getattr(settings, "REMS_API_USER"),
+    }
+
+    request_url = getattr(settings, "REMS_URL") + "api/applications"
+    if application_id is not None:
+        request_url = request_url + "/" + str(application_id)
+
+    response = requests.get(
+        request_url, headers=headers, verify=getattr(settings, "REMS_VERIFY_SSL")
+    )
+    response.raise_for_status()
+    return json.loads(response.text)
+
+
+def get_rems_external_id(application_id: int) -> str:
+    attempt = 0
+    max_retries = getattr(settings, "REMS_RETRIES")
+
+    while attempt < max_retries:
+        try:
+            application_data = get_rems_application(application_id)
+            return application_data.get("application/external-id")
+        except Exception as e:
+            attempt += 1
+            logger.error(
+                f"REMS :: Exception on requesting external ID for application {application_id}",
+                exc_info=e,
+            )
+    return None
+
+
+def bulk_update_rems_external_ids():
+    accesses = Access.objects.filter(
+        Q(application_external_id__isnull=True) & Q(application_id__isnull=False)
+    )
+    for access in accesses:
+        external_id = get_rems_external_id(access.application_id)
+        access.application_external_id = external_id
+        access.access_notes = build_access_notes_rems(
+            access.application_id, external_id
+        )
+    Access.objects.bulk_update(accesses, ["application_external_id", "access_notes"])
+    logger.info(f"REMS :: Accesses updated: {len(accesses)}")

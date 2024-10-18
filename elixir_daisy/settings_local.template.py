@@ -70,6 +70,7 @@ REMS_API_KEY = ""
 REMS_URL = ""
 REMS_API_USER = ""
 REMS_VERIFY_SSL = True
+REMS_RETRIES = 3
 
 # IDSERVICE_FUNCTION = 'core.lcsb.idservice.generate_identifier'
 IDSERVICE_ENDPOINT = "https://10.240.16.199:8080/v1/api/id"
@@ -104,5 +105,9 @@ CELERY_BEAT_SCHEDULE = {
     "synchronizer-every-day": {
         "task": "core.tasks.run_synchronizer",
         "schedule": crontab(minute=0, hour=2),  # Execute task at 2am
+    },
+    "update-rems-application-external-id": {
+        "task": "core.tasks.update_rems_access_external_id",
+        "schedule": crontab(minute=0, hour=3),  # Execute task at 3am
     },
 }

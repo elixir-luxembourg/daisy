@@ -346,6 +346,7 @@
                         <th>Remarks</th>
                         <th>Granted on</th>
                         <th>Expires on</th>
+                        <th>Access requests</th>
                         {% if can_edit %}
                             <th>To whom</th>
                             <th style="width:7em">Actions</th>
@@ -360,9 +361,16 @@
                         <tr>
                             <td>{{ access.status }}</td>
                             <td><p>{{ access.display_locations |truncatechars:90 }}</p></td>
-                            <td>{{ access.access_notes |truncatechars:45  }}<br /><small>(Created {% if access.was_generated_automatically %}automatically{% endif %} by user: {{access.created_by}})</small></td>
+                            <td>{{ access.access_notes |truncatechars:75  }}<br /><small>(Created {% if access.was_generated_automatically %}automatically{% endif %} by user: {{access.created_by}})</small></td>
                             <td><p>{{ access.granted_on | default:"-"  }}</p></td>
                             <td><p>{{ access.grant_expires_on | default:"-"  }}</p></td>
+                            <td><p>
+                                {% if access.application_id %}
+                                    <a href="{{ rems_application_url }}{{ access.application_id }}">{{ access.application_external_id}}</a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </p></td>
                             {% if can_edit %}
                                 <td>
                                     {% if access.user %}
