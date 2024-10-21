@@ -185,6 +185,18 @@ class Access(CoreModel, NotifyMixin):
         help_text="Was the entry generated automatically, e.g. by REMS?",
     )
 
+    application_id = models.IntegerField(
+        "Access request ID", blank=True, null=True, help_text="REMS application ID."
+    )
+
+    application_external_id = models.CharField(
+        "Other access request ID",
+        blank=True,
+        null=True,
+        max_length=200,
+        help_text="REMS application external ID.",
+    )
+
     def __str__(self):
         try:
             if self.contact:
