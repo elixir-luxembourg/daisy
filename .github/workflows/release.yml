@@ -21,7 +21,7 @@ jobs:
       run: |
         VERSION=$(python setup.py --version)
         echo "Version in setup.py: $VERSION"
-        if [[ "$VERSION" != "$GITHUB_REF_NAME" ]]; then
-          echo "Version mismatch: setup.py ($VERSION) vs release tag ($GITHUB_REF_NAME)"
+        if [[ "v$VERSION" != "$GITHUB_REF_NAME" ]]; then
+          echo "Version mismatch: setup.py (v$VERSION) vs release tag ($GITHUB_REF_NAME)"
           exit 1
         fi
