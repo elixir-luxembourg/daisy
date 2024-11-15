@@ -13,7 +13,7 @@ from django.db.models import Q, ObjectDoesNotExist, Count, signals
 
 from enumchoicefield import EnumChoiceField, ChoiceEnum
 
-from .utils import CoreModel, CoreNotifyMeta
+from .utils import CoreModel
 from notification import NotifyMixin
 from notification.models import NotificationVerb, Notification
 from core.utils import DaisyLogger
@@ -35,7 +35,7 @@ class StatusChoices(ChoiceEnum):
     terminated = "Terminated"
 
 
-class Access(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
+class Access(CoreModel, NotifyMixin):
     """
     Represents the access given to an internal (LCSB) entity over data storage locations.
     """
@@ -183,6 +183,18 @@ class Access(CoreModel, NotifyMixin, metaclass=CoreNotifyMeta):
         verbose_name="Was created automatically",
         default=False,
         help_text="Was the entry generated automatically, e.g. by REMS?",
+    )
+
+    application_id = models.IntegerField(
+        "Access request ID", blank=True, null=True, help_text="REMS application ID."
+    )
+
+    application_external_id = models.CharField(
+        "Other access request ID",
+        blank=True,
+        null=True,
+        max_length=200,
+        help_text="REMS application external ID.",
     )
 
     def __str__(self):

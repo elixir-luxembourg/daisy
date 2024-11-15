@@ -197,6 +197,7 @@ class DatasetDetailView(DetailView):
         )
         context["company_name"] = COMPANY
         context["exposure_list"] = Exposure.objects.filter(dataset=self.object)
+        context["rems_application_url"] = getattr(settings, "REMS_URL") + "application/"
         return context
 
 
