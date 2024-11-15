@@ -62,7 +62,7 @@ dev_requirements = ["pre-commit==3.3.3"]
 
 setup(
     name="elixir-daisy",
-    version="1.7.12",
+    version="1.8.2",
     description="Elixir-LU DAISY",
     author="Pinar Alper, Valentin Grouès, Yohan Jarosz, Jacek Lebioda, Kavita Rege, Vilem Ded",
     author_email="lcsb.sysadmins@uni.lu",
