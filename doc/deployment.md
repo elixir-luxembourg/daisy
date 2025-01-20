@@ -20,7 +20,7 @@ cd daisy
 
 ### Environment Variables
 
-Create a `.env` file in the project root to override default environment variables if necessary. See [.env.template](env.template) file for more detail. Additionally, create `elixir_daisy/settings_local.py` file from `elixir_daisy/settings_local.template.py`.
+Create a `.env` file in the project root to override default environment variables if necessary. See [.env.template](/.env.template) file for more detail. Additionally, create `elixir_daisy/settings_local.py` file from `elixir_daisy/settings_local.template.py`.
 
 ## Installation
 
