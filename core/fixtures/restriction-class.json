@@ -98,5 +98,15 @@
     "code": "IS",
     "name": "Institution-Specific restrictions",
     "description": "Use of data is limited to use within an approved institution."
+  },
+  {
+    "code": "IP",
+    "name": "IP claim terms",
+    "description": "Intellectual property rights claims."
+  },
+  {
+    "code": "Other",
+    "name": "Other use restrictions",
+    "description": "Other use restrictions."
   }
 ]
