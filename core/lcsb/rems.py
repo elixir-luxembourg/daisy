@@ -28,6 +28,8 @@ from core.utils import DaisyLogger
 
 logger = DaisyLogger(__name__)
 
+DEFAULT_REMS_RETRIES = 3
+
 if getattr(settings, "KEYCLOAK_INTEGRATION", False) is True:
     urllib3.disable_warnings()
     keycloak_config = get_keycloak_config_from_settings()
@@ -259,7 +261,7 @@ def get_rems_application(application_id: int) -> dict:
 
 def get_rems_external_id(application_id: int) -> str:
     attempt = 0
-    max_retries = getattr(settings, "REMS_RETRIES")
+    max_retries = getattr(settings, "REMS_RETRIES", DEFAULT_REMS_RETRIES)
 
     while attempt < max_retries:
         try:
