@@ -115,8 +115,6 @@ The application should now be accessible on `https://localhost/`
 
 To ensure the backups are properly set up, please refer to the [Backup manual](backup.md#Scheduled-Backup-with-Cron)
 
-
-
 ### Restore Legacy Backup
 
 To restore from a legacy backup file (e.g., `daisy_prod.tar.gz`):
