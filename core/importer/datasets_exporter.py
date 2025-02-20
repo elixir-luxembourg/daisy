@@ -49,7 +49,9 @@ class DatasetsExporter:
         else:
             objects = Dataset.objects.all()
         if not self.include_unpublished:
-            objects = objects.filter(exposures__endpoint__id=self.endpoint_id)
+            objects = objects.filter(
+                exposures__endpoint__id=self.endpoint_id
+            ).distinct()  # we have deprecated exposures for one dataset
         for dataset in objects:
             dataset_repr = str(dataset)
             logger.debug(f' * Exporting dataset: "{dataset_repr}"...')
@@ -57,10 +59,15 @@ class DatasetsExporter:
                 pd = dataset.to_dict()
                 pd["source"] = settings.SERVER_URL
                 if not self.include_unpublished:
-                    rems_form_id = Exposure.objects.get(
+                    exposure = Exposure.objects.order_by("-deprecated_at").filter(
                         dataset=dataset, endpoint_id=self.endpoint_id
-                    ).form_id
-                    pd["form_id"] = rems_form_id
+                    )[0]
+                    pd["form_id"] = exposure.form_id
+                    pd["deprecated"] = exposure.is_deprecated
+                    pd["deprication_date"] = exposure.deprecated_at.isoformat(
+                        timespec="seconds"
+                    )
+                    pd["deprication_note"] = exposure.deprecation_reason
                 dataset_dicts.append(pd)
             except Exception as e:
                 logger.error(f"Export failed for dataset {dataset.title}")
