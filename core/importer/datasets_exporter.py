@@ -64,8 +64,10 @@ class DatasetsExporter:
                     )[0]
                     pd["form_id"] = exposure.form_id
                     pd["deprecated"] = exposure.is_deprecated
-                    pd["deprication_date"] = exposure.deprecated_at.isoformat(
-                        timespec="seconds"
+                    pd["deprication_date"] = (
+                        exposure.deprecated_at.isoformat(timespec="seconds")
+                        if exposure.deprecated_at
+                        else None
                     )
                     pd["deprication_note"] = exposure.deprecation_reason
                 dataset_dicts.append(pd)
