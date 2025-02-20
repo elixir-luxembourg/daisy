@@ -320,10 +320,6 @@ LOGIN_PASSWORD_PLACEHOLDER = ""
 # https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-CSRF_FAILURE_VIEW
 CSRF_FAILURE_VIEW = "web.views.error_views.custom_csrf"
 
-# See: https://github.com/groveco/django-sql-explorer
-EXPLORER_CONNECTIONS = {"Default": "default"}
-EXPLORER_DEFAULT_CONNECTION = "default"
-
 # JSON schemas used for validation on import
 IMPORT_JSON_SCHEMAS_URI = (
     "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.6/schemas/"
