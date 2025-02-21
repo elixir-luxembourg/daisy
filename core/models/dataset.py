@@ -229,18 +229,23 @@ class Dataset(CoreTrackedModel, NotifyMixin):
         d["legal_bases"] = ",".join(legal_bases)
         return d
 
-    def publish(self, save=True):
-        generate_id_function_path = getattr(settings, "IDSERVICE_FUNCTION")
-        generate_id_function = import_string(generate_id_function_path)
-        if self.project:
-            self.project.publish()
-        if not self.elu_accession:
-            self.elu_accession = generate_id_function(self)
-        if save:
-            self.save(update_fields=["elu_accession"])
-
+    def publish(self):
         for data_declaration in self.data_declarations.all():
             data_declaration.publish_subentities()
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.elu_accession:
+            generate_id_function_path = getattr(settings, "IDSERVICE_FUNCTION", None)
+            if generate_id_function_path:
+                generate_id_function = import_string(generate_id_function_path)
+                self.elu_accession = generate_id_function(self)
+
+            if not self.elu_accession:
+                raise ValueError(
+                    "Failed to generate 'elu_accession', object will not be saved."
+                )
+
+        super().save(*args, **kwargs)
 
     @staticmethod
     def get_notification_recipients():
