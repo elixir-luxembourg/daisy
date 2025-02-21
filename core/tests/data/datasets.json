@@ -4,6 +4,7 @@
             "source": "daisy.lcsb.uni.lu",
             "name": "ABCD data",
             "project": "ABCD",
+            "external_id": "DATASET-123",
             "transfers": [
                 {
                     "partner": "ELU_I_44",
