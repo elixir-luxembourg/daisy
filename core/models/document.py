@@ -35,9 +35,7 @@ def get_file_name(instance, filename):
     """
     now = timezone.now()
     date, timestamp = now.strftime("%Y/%m/%d"), now.timestamp()
-    return (
-        f"documents/{instance.content_type.name}/{date}/{timestamp}-{instance.object_id}_{filename}"
-    )
+    return f"documents/{instance.content_type.name}/{date}/{timestamp}-{instance.object_id}_{filename}"
 
 
 class Document(CoreModel, NotifyMixin):
