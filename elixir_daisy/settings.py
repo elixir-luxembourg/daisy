@@ -63,7 +63,6 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "celery_haystack",
     "sequences.apps.SequencesConfig",
-    "explorer",
     "auditlog",
 ]
 
