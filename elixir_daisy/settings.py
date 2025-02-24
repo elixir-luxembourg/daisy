@@ -63,7 +63,6 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "celery_haystack",
     "sequences.apps.SequencesConfig",
-    "explorer",
     "auditlog",
 ]
 
@@ -319,10 +318,6 @@ LOGIN_PASSWORD_PLACEHOLDER = ""
 # Custom error view, see e.g.
 # https://docs.djangoproject.com/en/2.2/ref/settings/#std:setting-CSRF_FAILURE_VIEW
 CSRF_FAILURE_VIEW = "web.views.error_views.custom_csrf"
-
-# See: https://github.com/groveco/django-sql-explorer
-EXPLORER_CONNECTIONS = {"Default": "default"}
-EXPLORER_DEFAULT_CONNECTION = "default"
 
 # JSON schemas used for validation on import
 IMPORT_JSON_SCHEMAS_URI = (
