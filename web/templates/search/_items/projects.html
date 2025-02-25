@@ -1,21 +1,23 @@
 {% for project in data.projects %}
     <div class="row">
-        <div class="col-md-11 mb-4 card-item card">
-            <div class="card-body">
-                <h2 class="card-title">
-                    <a href="{% url 'project' pk=project.pk %}">{{project.acronym}}</a>
-                    {% if project.title %}<small>- {{project.title}}</small>{% endif %}
-                </h2>
-                <ul class="card-text">
-                    {% if  project.project_web_page %}<li>Web: {{ project.project_web_page }}</li>{% endif %}
-                    <li>
-                      <strong>Publications:</strong> <span class="badge badge-pill badge-info">{{ project.publications|length }}</span>
-                    </li>
-                </ul>
-                <a href="{% url 'project' pk=project.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
+        <div class="col-12 mb-4">
+            <div class="card card-item">
+                <div class="card-body">
+                    <h2 class="card-title">
+                        <a href="{% url 'project' pk=project.pk %}">{{project.acronym}}</a>
+                        {% if project.title %}<small>- {{project.title}}</small>{% endif %}
+                    </h2>
+                    <ul class="card-text list-unstyled text-left py-1">
+                        {% if project.project_web_page %}<li>Web: {{ project.project_web_page }}</li>{% endif %}
+                        <li class="d-flex align-items-center">
+                            <strong>Publications:</strong> <span class="badge badge-pill badge-info ml-1">{{ project.publications|length }}</span>
+                        </li>
+                    </ul>
+                    <a href="{% url 'project' pk=project.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
+                </div>
             </div>
         </div>
     </div>
 {% empty %}
-    <p>No results</p>
+    {% include "search/_items/no_results.html" %}
 {% endfor %}

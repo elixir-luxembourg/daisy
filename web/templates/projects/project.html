@@ -7,7 +7,7 @@
 {% block content %}
     <div class="row mt-4">
         <div class="jumbotron col">
-            <span style="color: #8D8F8F;">Project</span>
+            <span style="color: #8D8F8F;">Project - {{ project.elu_accession }}</span>
             <h1>{{ project.acronym }} </h1>
             <div class="row">
                 <div class="col">
@@ -46,6 +46,8 @@
                 </div>
                 <div class="col">
                   <dl>
+                        <dt>Accession number</dt>
+                        <dd>{{ project.elu_accession | default:'-'  }}</dd>
                         <dt>Study features</dt>
                         <dd>{{ project.study_terms.all | join:", " | default:'-' }}</dd>
                         <dt>Disease terms</dt>

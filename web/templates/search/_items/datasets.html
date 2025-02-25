@@ -1,29 +1,31 @@
 {% for dataset in data.datasets %}
     <div class="row">
-        <div class="col-md-11 mb-4 card-item card">
-            <div class="card-body">
-                <h2 class="card-title">
-                  <a href="{% url 'dataset' pk=dataset.pk %}">{{ dataset.title }}</a>
-                </h2>
-                <ul class="card-text">
-                    <li><strong>Published:</strong> {{ dataset.is_published | yesno }}</li>
-                    <li><strong>Datatypes:</strong>
-                        {% for datatype in dataset.data_types %}
-                            <span class="badge badge-pill badge-secondary">{{ datatype }}</span>
-                        {% endfor %}
-                    </li>
-                    {% if dataset.local_custodians %}
-                        <li><strong>Local custodians:</strong>
-                            {% for local_custodian in dataset.local_custodians %}
-                                <span class="badge badge-pill badge-primary">{{ local_custodian }}</span>
+        <div class="col-12 mb-4">
+            <div class="card card-item">
+                <div class="card-body">
+                    <h2 class="card-title">
+                      <a href="{% url 'dataset' pk=dataset.pk %}">{{ dataset.title }}</a>
+                    </h2>
+                    <ul class="card-text list-unstyled text-left py-1">
+                        <li class="d-flex align-items-center"><strong>Published:</strong> {{ dataset.is_published | yesno }}</li>
+                        <li class="d-flex align-items-center flex-wrap"><strong>Datatypes:</strong>
+                            {% for datatype in dataset.data_types %}
+                                <span class="badge badge-pill badge-secondary ml-1 mb-1">{{ datatype }}</span>
                             {% endfor %}
                         </li>
-                    {% endif %}
-                </ul>
-                <a href="{% url 'dataset' pk=dataset.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
+                        {% if dataset.local_custodians %}
+                            <li class="d-flex align-items-center flex-wrap"><strong>Local custodians:</strong>
+                                {% for local_custodian in dataset.local_custodians %}
+                                    <span class="badge badge-pill badge-primary ml-1 mb-1">{{ local_custodian }}</span>
+                                {% endfor %}
+                            </li>
+                        {% endif %}
+                    </ul>
+                    <a href="{% url 'dataset' pk=dataset.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
+                </div>
             </div>
         </div>
     </div>
 {% empty %}
-    <p>No results</p>
+    {% include "search/_items/no_results.html" %}
 {% endfor %}

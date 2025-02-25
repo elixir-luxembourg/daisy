@@ -219,7 +219,7 @@ class OrderLinkNode(Node):
             + query_dict.urlencode(safe="/&:")
         )
 
-        return f'<a href="{url}"><button type="button" class="btn btn-secondary"><i class="material-icons">{icon}</i>{field_title}</button></a>'
+        return f'<a href="{url}" class="mr-1 mb-1"><button type="button" class="btn btn-secondary btn-sm"><i class="material-icons mr-1 align-middle">{icon}</i><span class="align-middle">{field_title}</span></button></a>'
 
 
 @register.tag

@@ -1,34 +1,36 @@
 {% extends 'layout.html' %}
 
 {% block title %}Search page{% endblock %}
-{% block containerclass %}container-fluid{% endblock %}
+{% block containerclass %}container{% endblock %}
 
 
 {% block content %}
-    <div class="container card bg-light text-dark">
+    <div class="card bg-light text-dark my-4">
         <div class="card-body">
             <div class="card-title">
                 <h1 class="display-4"><i class="material-icons text-secondary">info</i> {{ title }}</h1>
             </div>
             <p>{{ help_text }}</p>
-            <p>Use the categories on the left or the search box below to locate {{ title | lower }}. In order to create add a new one, use the button at bottom-right corner .</p>
+            <p>Use the categories on the left or the search box below to locate {{ title | lower }}. In order to create add a new one, use the button at bottom-right corner.</p>
         </div>
     </div>
-
-    <div class="container-fluid">
-      <div class="row">
-        <div id="sidebar-left" class="d-none d-md-block mt-5 pl-5 col-xs-12 col-md-5 col-lg-5 col-xl-4 order-2">
+    <div class="row">
+        <!-- Desktop sidebar - hidden on small screens -->
+        <div id="sidebar-left" class="d-none d-md-block col-md-5 col-lg-5 col-xl-4 order-2">
             {% include '_includes/facets_sidebar.html' with facets=facets url=search_url %}
         </div>
-        <div id="sidebar-responsive-left" class="d-md-none mt-5 pl-5 col-12 order-6">
-            <h1 class="display-4">Filter the results</h1>
-            {% include '_includes/facets_sidebar.html' with facets=facets url=search_url %}
-        </div>
-        <div class="mt-5 pr-5 pl-5 col-xs-12 col-md-7 col-lg-7 col-xl-8 order-4">
+        
+        <!-- Main content area -->
+        <div class="col-12 col-md-7 col-lg-7 col-xl-8 order-4">
             {% include '_includes/search_form.html' with title=title query=query url=search_url order_by_fields=order_by_fields %}
             {% include results_template_name with data=data %}
         </div>
-      </div>
+        
+        <!-- Mobile sidebar - shown only on small screens -->
+        <div id="sidebar-responsive-left" class="d-md-none col-12 order-6 mt-4">
+            <h1 class="display-4">Filter the results</h1>
+            {% include '_includes/facets_sidebar.html' with facets=facets url=search_url %}
+        </div>
     </div>
 {% endblock %}
 

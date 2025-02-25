@@ -1,27 +1,29 @@
 {% for contact in data.contacts %}
     <div class="row">
-        <div class="col-md-11 mb-4 card-item card">
-            <div class="card-body">
-                <h2 class="card-title">
-                    <a href="{% url 'contact' pk=contact.pk %}">{{ contact.first_name }} {{ contact.last_name }}</a>
-                </h2>
-                <ul class="card-text">
-                    <li>
-                      <strong>Role:</strong> <span class="badge badge-pill badge-secondary">{{ contact.type }}</span>
-                    </li>
-                    <li><strong>Affiliation(s):</strong>
-                        {% for partner in contact.partners %}
-                            <span class="badge badge-pill badge-primary">{{ partner }}</span>
+        <div class="col-12 mb-4">
+            <div class="card card-item">
+                <div class="card-body">
+                    <h2 class="card-title">
+                        <a href="{% url 'contact' pk=contact.pk %}">{{ contact.first_name }} {{ contact.last_name }}</a>
+                    </h2>
+                    <ul class="card-text list-unstyled text-left py-1">
+                        <li class="d-flex align-items-center">
+                          <strong>Role:</strong> <span class="badge badge-pill badge-secondary ml-1">{{ contact.type }}</span>
+                        </li>
+                        <li class="d-flex align-items-center flex-wrap"><strong>Affiliation(s):</strong>
+                            {% for partner in contact.partners %}
+                                <span class="badge badge-pill badge-primary ml-1 mb-1">{{ partner }}</span>
 
-                        {% empty %}
-                            -
-                        {% endfor %}
-                    </li>
-                </ul>
-                <a href="{% url 'contact' pk=contact.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
+                            {% empty %}
+                                -
+                            {% endfor %}
+                        </li>
+                    </ul>
+                    <a href="{% url 'contact' pk=contact.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
+                </div>
             </div>
         </div>
     </div>
 {% empty %}
-    <p>No results</p>
+    {% include "search/_items/no_results.html" %}
 {% endfor %}
