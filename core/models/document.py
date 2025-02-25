@@ -33,10 +33,9 @@ def get_file_name(instance, filename):
     """
     Return the path of the final path of the document on the filsystem.
     """
-    now = timezone.now().strftime("%Y/%m/%d")
-    return (
-        f"documents/{instance.content_type.name}/{now}/{instance.object_id}_{filename}"
-    )
+    now = timezone.now()
+    date, timestamp = now.strftime("%Y/%m/%d"), now.timestamp()
+    return f"documents/{instance.content_type.name}/{date}/{timestamp}-{instance.object_id}_{filename}"
 
 
 class Document(CoreModel, NotifyMixin):
@@ -96,7 +95,7 @@ class Document(CoreModel, NotifyMixin):
         Return the name of the files without the path relative to MEDIA_ROOT.
         Also remove the id prefix of the document.
         """
-        return "".join(os.path.basename(self.content.path).split("_")[1:])
+        return os.path.basename(self.content.name).split("_", 1)[-1]
 
     @property
     def size(self):

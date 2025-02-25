@@ -144,7 +144,7 @@ class FacetLinkNode(Node):
             icon = "radio_button_checked"
             clazz = "active"
 
-        return f'<li class="{clazz}"><a href="{url}"><i class="material-icons">{icon}</i><span>{current_facet[0]} ({current_facet[1]})</span></a></li>'
+        return f'<li class="{clazz} mt-1"><a href="{url}"><i class="material-icons">{icon}</i><span>{current_facet[0]} ({current_facet[1]})</span></a></li>'
 
 
 @register.tag
