@@ -10,7 +10,7 @@
                     <ul class="card-text list-unstyled text-left py-1">
                         {% if project.project_web_page %}<li>Web: {{ project.project_web_page }}</li>{% endif %}
                         <li class="d-flex align-items-center">
-                            <strong>Publications:</strong> <span class="badge badge-pill badge-info ml-1">{{ project.publications|length }}</span>
+                            <strong>Publications:</strong> <span class="badge badge-pill badge-info ml-1 align-middle">{{ project.publications|length }}</span>
                         </li>
                     </ul>
                     <a href="{% url 'project' pk=project.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
