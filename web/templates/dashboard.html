@@ -5,9 +5,11 @@
 
 {% block content %}
     <div class="row mt-4">
-        <div class="jumbotron col" style='background: url("{% static 'images/banner.png' %}"); background-repeat: no-repeat; background-size: contain;'>
+       <div class="col">
+        <div class="jumbotron" style='background: url("{% static 'images/banner.png' %}"); background-repeat: no-repeat; background-size: contain;'>
             <span class="badge badge-pill badge-light">Version {{ app_version }}</span>
         </div>
+       </div>
     </div>
     <div class="row mt-4">
         <div class="col">
