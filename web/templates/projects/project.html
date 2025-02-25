@@ -115,7 +115,7 @@
     {% endif %}
     
     <div class="row mt-4">
-        <div class="mh-100 card m-2 col">
+        <div class="mh-100 card col">
             <div class="card-body">
                 <h2 class="card-title">Ethics</h2>
                 <dl>
@@ -133,7 +133,7 @@
 
         {# PERSONNEL #}
 
-        <div class="mh-100 card m-2 col">
+        <div class="mh-100 card mx-4 col">
             <div class="card-body">
                 {% if can_edit %}
                 <div class="ml-1 float-right btn-group">
@@ -154,7 +154,7 @@
         </div>
 
         {# CONTACTS #}
-        <div class="mh-100 card m-2 col">
+        <div class="mh-100 card col">
             <div class="card-body">
                 {% if can_edit %}
                 <div class="ml-1 float-right btn-group">
@@ -189,7 +189,7 @@
     {# DATASETS OWNED BY PROJECT #}
 
     <div class="row mt-4">
-        <div class="card mh-100 card m-2 col">
+        <div class="card col mr-2">
             <div class="card-body">
                 {% if can_edit %}
                 <div class="ml-1 float-right btn-group">
@@ -228,7 +228,7 @@
         </div>
 
         {# DATASETS USED BY PROJECT #}
-        <div class="mh-100 card m-2 col">
+        <div class="card col ml-2">
             <div class="card-body">
                 <h2 class="card-title"><span><i class="material-icons">folder_shared</i></span> Data used from other projects
                 </h2>
@@ -250,7 +250,7 @@
     </div>
     <div class="row mt-4">
         {# CONTRACTS #}
-        <div class="card col m-2">
+        <div class="card col-md-12">
             <div class="card-body">
                 {% if can_edit %}
                 <div class="ml-1 float-right btn-group">
