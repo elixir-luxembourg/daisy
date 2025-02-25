@@ -19,8 +19,12 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("ID generation complete!"))
 
     def generate_ids(self, model_class):
-        entities = model_class.objects.filter(Q(elu_accession__isnull=True) | Q(elu_accession=""))
-        self.stdout.write(f"Found {entities.count()} {model_class.__name__.lower()}s without IDs.")
+        entities = model_class.objects.filter(
+            Q(elu_accession__isnull=True) | Q(elu_accession="")
+        )
+        self.stdout.write(
+            f"Found {entities.count()} {model_class.__name__.lower()}s without IDs."
+        )
 
         generate_id_function_path = getattr(settings, "IDSERVICE_FUNCTION", None)
         generate_id_function = None
@@ -31,7 +35,9 @@ class Command(BaseCommand):
             try:
                 if generate_id_function:
                     entity.elu_accession = generate_id_function(entity)
-                    entity.save(update_fields=['elu_accession'])
-                    self.stdout.write(f"Generated ID: {entity.elu_accession} for {entity}")
+                    entity.save(update_fields=["elu_accession"])
+                    self.stdout.write(
+                        f"Generated ID: {entity.elu_accession} for {entity}"
+                    )
             except Exception as e:
                 self.stderr.write(f"Error generating ID for {entity}: {e}")
