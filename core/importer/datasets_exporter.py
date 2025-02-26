@@ -64,12 +64,12 @@ class DatasetsExporter:
                     )[0]
                     pd["form_id"] = exposure.form_id
                     pd["deprecated"] = exposure.is_deprecated
-                    pd["deprication_date"] = (
+                    pd["deprecation_date"] = (
                         exposure.deprecated_at.isoformat(timespec="seconds")
                         if exposure.deprecated_at
                         else None
                     )
-                    pd["deprication_note"] = exposure.deprecation_reason
+                    pd["deprecation_notes"] = exposure.deprecation_reason
                 dataset_dicts.append(pd)
             except Exception as e:
                 logger.error(f"Export failed for dataset {dataset.title}")
