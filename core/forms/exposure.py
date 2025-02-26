@@ -8,7 +8,13 @@ class ExposureForm(forms.ModelForm):
     class Meta:
         model = Exposure
         fields = "__all__"
-        exclude = ["created_by", "form_name"]
+        exclude = [
+            "created_by",
+            "form_name",
+            "is_deprecated",
+            "deprecated_at",
+            "deprecation_reason",
+        ]
 
     def __init__(self, *args, **kwargs):
         dataset = kwargs.pop("dataset", None)
@@ -41,7 +47,7 @@ class ExposureForm(forms.ModelForm):
                 + " Error: No forms retrieved form REMS"
             )
 
-        exposure_list = Exposure.objects.filter(dataset=dataset)
+        exposure_list = Exposure.objects.filter(dataset=dataset, is_deprecated=False)
         endpoint_ids = exposure_list.values_list("endpoint", flat=True)
         self.fields["endpoint"].choices = [
             (e.id, e) for e in Endpoint.objects.exclude(id__in=endpoint_ids)
@@ -54,7 +60,13 @@ class ExposureEditForm(forms.ModelForm):
     class Meta:
         model = Exposure
         fields = "__all__"
-        exclude = ["created_by", "form_name"]
+        exclude = [
+            "created_by",
+            "form_name",
+            "is_deprecated",
+            "deprecated_at",
+            "deprecation_reason",
+        ]
 
     field_order = ["endpoint", "form_id"]
 
@@ -96,3 +108,24 @@ class ExposureEditForm(forms.ModelForm):
         self.fields["endpoint"].choices = [
             (e.id, e) for e in Endpoint.objects.exclude(id__in=endpoint_ids)
         ] + [(endpoint.id, endpoint)]
+
+
+class ExposureRemoveForm(forms.ModelForm):
+    class Meta:
+        model = Exposure
+        fields = ["deprecation_reason"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["deprecation_reason"] = forms.CharField(
+            widget=forms.Textarea(
+                attrs={
+                    "rows": 4,
+                    "class": "form-control",
+                    "placeholder": "Please provide a reason for deprecating this exposure",
+                }
+            ),
+            required=True,
+            label="Deprecation Reason",
+            help_text="Please provide a reason for deprecating this exposure.",
+        )
