@@ -61,6 +61,7 @@ def test_import_datasets(
     shares = d1.shares.all()
     share1 = shares[0]
     assert 1 == shares.count()
+    assert d1.elu_accession == "DATASET-123"  # Verify external_id was used
 
     d2 = Dataset.objects.filter(title="Hypertension data").first()
     assert ["Joanne Swift"] == [
@@ -68,21 +69,34 @@ def test_import_datasets(
     ]
     assert "Hypertension" == d2.project.acronym
     assert 1 == d2.data_locations.all().count()
+    assert d2.elu_accession is not None
+    assert len(d2.elu_accession) > 0
 
     d3 = Dataset.objects.filter(title="MDPDP data").first()
     assert ["Rob Blue"] == [
         employee.full_name for employee in d3.local_custodians.all()
     ]
     assert 2 == d3.data_locations.all().count()
+    assert d3.elu_accession is not None
+    assert len(d3.elu_accession) > 0
 
     d4 = Dataset.objects.filter(title="PD data").first()
     assert ["Ali Gator"] == [
         employee.full_name for employee in d4.local_custodians.all()
     ]
     assert 7 == d4.data_locations.all().count()
+    assert d4.elu_accession is not None
+    assert len(d4.elu_accession) > 0
 
     ddecs = DataDeclaration.objects.all()
     assert 5 == ddecs.count()
 
     ddec = DataDeclaration.objects.get(title="XYZ")
     assert "2030-05-10" == ddec.end_of_storage_duration.strftime("%Y-%m-%d")
+
+    d1_id = d1.elu_accession
+    d1.title = "Updated ABCD data"
+    d1.save()
+    d1.refresh_from_db()
+    assert d1.elu_accession == d1_id
+    assert d1.elu_accession == "DATASET-123"

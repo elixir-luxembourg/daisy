@@ -39,6 +39,7 @@ def test_import_projects(celery_session_worker, contact_types, partners):
     ]
     assert "test notes 123" == project1.erp_notes
     assert 2 == project1.publications.count()
+    assert project1.elu_accession == "PROJECT-123"
 
     project2 = Project.objects.filter(acronym="CCCC deficiency").first()
     assert ["Colman Level"] == [
@@ -51,6 +52,14 @@ def test_import_projects(celery_session_worker, contact_types, partners):
     assert 11 == project2.start_date.month
     assert 1 == project2.start_date.day
     assert 1 == project2.publications.count()
+    assert project2.elu_accession is not None
+    assert len(project2.elu_accession) > 0
+
+    project2_id = project2.elu_accession
+    project2.title = "Updated CCCC deficiency"
+    project2.save()
+    project2.refresh_from_db()
+    assert project2.elu_accession == project2_id
 
 
 @pytest.mark.django_db
