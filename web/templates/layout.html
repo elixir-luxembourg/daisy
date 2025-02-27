@@ -47,20 +47,38 @@
 {% endblock %}
 
 <main class="flex-grow-1">
-    {% block messages %}
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-            <h4>{{ message.tags | title }}</h4>
-            {{ message }}
-        </div>
-        {% endfor %}
+    <div class="container px-0 mt-3">
+        {% block messages %}
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show shadow-sm rounded">
+                    <div class="d-flex align-items-start">
+                        <div class="mr-3">
+                            {% if message.tags == 'success' %}
+                                <i class="material-icons">check_circle</i>
+                            {% elif message.tags == 'error' or message.tags == 'danger' %}
+                                <i class="material-icons">error</i>
+                            {% elif message.tags == 'warning' %}
+                                <i class="material-icons">warning</i>
+                            {% elif message.tags == 'info' %}
+                                <i class="material-icons">info</i>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1">{{ message.tags | title }}</h5>
+                            <div>{{ message }}</div>
+                        </div>
+                        <button type="button" class="close ml-2" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endblock %}
     </div>
-    {% endif %}
-    {% endblock %}
-    
     {% block container %}
     <div class="{% block containerclass %}container{% endblock containerclass %}">
         {% block content %}{% endblock %}
