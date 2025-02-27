@@ -2,6 +2,7 @@
     "items": [
         {
             "source": "daisy.lcsb.uni.lu",
+            "external_id": "PROJECT-123",
             "acronym": "In vitro disease modeling",
             "name": "Parkinson's disease in vitro disease modeling - Focus on genes ........., .",
             "description": "Generation of disease specific iPSCs; ...............",

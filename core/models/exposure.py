@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.timezone import now
 
 from .utils import CoreModel
 
@@ -43,6 +44,14 @@ class Exposure(CoreModel):
         help_text="Which User added this entry to DAISY",
     )
 
+    is_deprecated = models.BooleanField(default=False)
+    deprecated_at = models.DateTimeField(null=True, blank=True)
+    deprecation_reason = models.TextField(
+        null=True,
+        blank=True,
+        help_text="Reason for deprecating this exposure",
+    )
+
     @property
     def url(self):
         url = self.endpoint.url_pattern.replace(
@@ -52,3 +61,19 @@ class Exposure(CoreModel):
 
     def __str__(self):
         return f"Exposure: {self.dataset}@{self.endpoint}"
+
+    def delete(self, deprecation_reason: str = None):
+        self.is_deprecated = True
+        self.deprecated_at = now()
+        if deprecation_reason:
+            self.deprecation_reason = deprecation_reason
+        self.save()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["dataset", "endpoint"],
+                condition=models.Q(is_deprecated=False),
+                name="unique_active_dataset_endpoint",
+            ),
+        ]

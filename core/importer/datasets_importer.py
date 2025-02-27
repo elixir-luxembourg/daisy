@@ -66,7 +66,9 @@ class DatasetsImporter(BaseImporter):
                     data=f'Updating published entity is not supported - dataset: "{dataset.title}".'
                 )
         except Dataset.DoesNotExist:
-            dataset = Dataset.objects.create(title=title)
+            dataset = Dataset.objects.create(
+                title=title, elu_accession=dataset_dict.get("external_id", None)
+            )
 
         if "project" in dataset_dict and dataset_dict["project"]:
             dataset.project = self.process_project(dataset_dict["project"])
@@ -112,8 +114,6 @@ class DatasetsImporter(BaseImporter):
             dataset.legal_basis_definitions.set(legal_bases, bulk=False)
 
         dataset.save()
-
-        dataset.elu_accession = dataset_dict.get("elu_accession", None)
 
         if self.publish_on_import:
             self.publish_object(dataset)
