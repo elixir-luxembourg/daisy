@@ -6,7 +6,7 @@
                 Browse {{title}}
             </h1>
         </div>
-        <div class="col-md-6 d-flex gap-2 justify-content-md-end">
+        <div class="col-md-6 d-flex justify-content-end">
             {% if request.user.is_authenticated and request.user|has_group:"daisy-data-steward" %}
                 {% if search_url == 'projects' or search_url == 'datasets' or search_url == 'partners' %}
                     <button id="importModalButton" type="button" class="btn btn-secondary btn-outline float-right mx-2">
