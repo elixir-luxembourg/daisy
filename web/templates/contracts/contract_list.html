@@ -13,17 +13,17 @@
                     <h2 class="card-title">
                         <strong>{{ contract }}</strong>
                     </h2>
-                    <ul class="card-text">
+                    <ul class="card-text list-unstyled text-left py-1">
                         {% if contract.contact %}
-                            <li><strong>PI:</strong> {{ contract.contact.full_name }}</li>
+                            <li class="d-flex align-items-center"><strong>PI:</strong> {{ contract.contact.full_name }}</li>
                         {% endif %}
-                        <li><strong>Partner:</strong> {{ contract.partner.name }}</li>
+                        <li class="d-flex align-items-center"><strong>Partner:</strong> {{ contract.partner.name }}</li>
                     </ul>
                     <a href="{% url 'contract' pk=contract.id %}" class="btn btn-primary">Details</a>
                 </div>
             </div>
         {% empty %}
-            <p>No contracts yet</p>
+            {% include "search/_items/no_results.html" %}
         {% endfor %}
     </div>
 {% endblock %}

@@ -1,63 +1,70 @@
 {% extends 'layout.html' %}
-{% load static %}
+
+{% block content_title %}About{% endblock %}
 
 {% block content %}
     <div class="row mt-4">
-        <div class="jumbotron col">
-            <h1 class="display-4">About</h1>
+        <div class="col-12">
+            <div class="jumbotron">
+                <h1 class="display-4">About</h1>
+            </div>
+        </div>
+        <div class="col-12"> 
+            <div class="card">
+                <div class="card-body">
+                    <div class="col">
+                        <dd>
+                            <dt>Version</dt>
+                            <dd>{{ app_version }}</dd>
+                            <dt>User guide</dt>
+                    <dd><a href="https://elixir.pages.uni.lu/daisy-doc/">https://elixir.pages.uni.lu/daisy-doc/</a></dd>
+                    <dt>Bug reporting</dt>
+                    <dd><a href="https://github.com/elixir-luxembourg/daisy/issues">https://github.com/elixir-luxembourg/daisy/issues</a>
+                    </dd>
+                    <dt>Funding</dt>
+                    <dd>DAISY has been partially funded by the contribution of the Luxembourg Ministry of Higher Education and Research towards the ELIXIR Luxembourg.
+                    </dd>
+                    <dt>Notes</dt>
+                    <!-- For demo deployments  -->
+                    {% if demo_mode %}
+                    <dd>This is a demo deployment. It contains fictitious user accounts, projects and datasets to help you
+                        understand DAISY's information model.<br/>
+                        Data in the demo deployment is cleaned periodically. Please refrain from recording information that
+                        is
+                        private. Also refrain from recording any personal information.
+                        This deployment has the following users: <br/><br/>
+                        <table style="width:100%">
+                            <tr>
+                                <td><p style="text-decoration: underline;">username</p></td>
+                                <td><p style="text-decoration: underline;">password</p></td>
+                                <td><p style="text-decoration: underline;">role</p></td>
+                            </tr>
+                            <tr>
+                                <td>alice.white</td>
+                                <td>demo</td>
+                                <td>VIP User (Principle Investigator)</td>
+                            </tr>
+                            <tr>
+                                <td>john.black</td>
+                                <td>demo</td>
+                                <td>VIP User (Principle Investigator)</td>
+                            </tr>
+                            <tr>
+                                <td>roy.blue</td>
+                                <td>demo</td>
+                                <td>Standard User (Researcher)</td>
+                            </tr>
+                        </table>
+                    </dd>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
         </div>
     </div>
 
-    <div class="card row">
-        <div class="card-body">
-            <div class="col">
-                <dd>
-                <dt>Version</dt>
-                <dd>{{ app_version }}</dd>
-                <dt>User guide</dt>
-                <dd><a href="https://elixir.pages.uni.lu/daisy-doc/">https://elixir.pages.uni.lu/daisy-doc/</a></dd>
-                <dt>Bug reporting</dt>
-                <dd><a href="https://github.com/elixir-luxembourg/daisy/issues">https://github.com/elixir-luxembourg/daisy/issues</a>
-                </dd>
-                <dt>Funding</dt>
-                <dd>DAISY has been partially funded by the contribution of the Luxembourg Ministry of Higher Education and Research towards the ELIXIR Luxembourg.
-                </dd>
-                <dt>Notes</dt>
-                <!-- For demo deployments  -->
-                {% if demo_mode %}
-                <dd>This is a demo deployment. It contains fictitious user accounts, projects and datasets to help you
-                    understand DAISY's information model.<br/>
-                    Data in the demo deployment is cleaned periodically. Please refrain from recording information that
-                    is
-                    private. Also refrain from recording any personal information.
-                    This deployment has the following users: <br/><br/>
-                    <table style="width:100%">
-                        <tr>
-                            <td><p style="text-decoration: underline;">username</p></td>
-                            <td><p style="text-decoration: underline;">password</p></td>
-                            <td><p style="text-decoration: underline;">role</p></td>
-                        </tr>
-                        <tr>
-                            <td>alice.white</td>
-                            <td>demo</td>
-                            <td>VIP User (Principle Investigator)</td>
-                        </tr>
-                        <tr>
-                            <td>john.black</td>
-                            <td>demo</td>
-                            <td>VIP User (Principle Investigator)</td>
-                        </tr>
-                        <tr>
-                            <td>roy.blue</td>
-                            <td>demo</td>
-                            <td>Standard User (Researcher)</td>
-                        </tr>
-                    </table>
-                </dd>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+   
 
 
 {% endblock content %}

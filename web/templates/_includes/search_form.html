@@ -1,60 +1,59 @@
 {% load static daisy_utils %}
-<div class="row">
-    <div class="col-6">
-        <h1 class="display-4">
-            Browse {{title}}
-        </h1>
-    </div>
-    <div class="col-5 d-flex align-items-center justify-content-end">
-        {% if request.user.is_authenticated and request.user|has_group:"daisy-data-steward" %}
-            {% if search_url == 'projects' or search_url == 'datasets' or search_url == 'partners' %}
-                <button id="importModalButton" type="button" class="btn btn-secondary btn-outline float-right mx-2">
-                    Import
-                </button>
+    {# Header Section #}
+    <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+            <h1 class="h3 fw-bold text-gray-900 mb-0">
+                Browse {{title}}
+            </h1>
+        </div>
+        <div class="col-md-6 d-flex justify-content-end">
+            {% if request.user.is_authenticated and request.user|has_group:"daisy-data-steward" %}
+                {% if search_url == 'projects' or search_url == 'datasets' or search_url == 'partners' %}
+                    <button id="importModalButton" type="button" class="btn btn-secondary btn-outline float-right mx-2">
+                        Import
+                    </button>
                 {% include 'importer/import_modal.html' %}
+                {% endif %}
+                <a class="btn btn-secondary btn-outline float-right" href="export?{% if filters %}filters={{ filters }}&{% endif %}{% if order_by %}order_by={{ order_by | default:'' }}&{% endif %}{% if query %}query={{ query | default:'' }}{% endif %}">Save the results as xlsx</a>
             {% endif %}
-            <a class="btn btn-secondary btn-outline float-right" href="export?{% if filters %}filters={{ filters }}&{% endif %}{% if order_by %}order_by={{ order_by | default:'' }}&{% endif %}{% if query %}query={{ query | default:'' }}{% endif %}">Save the results as xlsx</a>
-        {% endif %}
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-12 col-lg-11">
-        <div class="row">
-            <div class="col-xl-5 col-lg-12">
-                <form class="form-inline" method="get" action="{% url url %}">
-                    <div class="form-group">
-                        <label for="query" class="bmd-label-floating">
-                            &nbsp;<i class="material-icons">search</i> Query
-                        </label>
-                        <input id="query_edit" type='text' class="form-control border border-top-0 bg-white" name='query' value='{{ query }}'/>
-
-                        {% if query %}
-                        <div class="input-group-append bg-white">
-                            <span class="input-group-text">
-                                 <i class="material-icons close reset-form-button" data-resets="query_edit" data-submits="yes">close</i>
-                            </span>
-                        </div>
-                        {% endif %}
+<div class="row mb-4">
+    <div class="col-lg-12 col-md-12">
+        <form method="get" action="{% url url %}" class="w-100">
+            <div class="search-container shadow-sm rounded mt-2">
+                <div class="input-group p-3 bg-white rounded align-items-center">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-white border-0">
+                            <i class="material-icons align-middle">search</i>
+                        </span>
                     </div>
-
-                    <span class="form-group bmd-form-group"> <!-- needed to match padding for floating labels -->
-                        <button type="submit" class="btn btn-primary">Search</button>
-                    </span>
-                </form>
-            </div>
-
-            <div class="col-xl-7 col-lg-12 mt-4 mb-2">
-                {% if order_by_fields %}
-                <div class="mr-auto float-right">
-                    <div class="btn-group-sm" role="group">
-                        {% for field in order_by_fields %}
-                            {% orderbylink search_url field %}
-                        {% endfor %}
+                    <input id="query_edit" type="text" class="form-control bg-white border-0 pl-2 ml-2" autocomplete="off" name="query" value="{{ query }}" placeholder="Search for {{ title }}">
+                    {% if query %}
+                    <div class="input-group-append">
+                        <span class="input-group-text bg-white border-0 mx-1">
+                            <i class="material-icons align-middle close reset-form-button" data-resets="query_edit" data-submits="yes">close</i>
+                        </span>
+                    </div>
+                    {% endif %}
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary px-4 d-flex align-items-center">Search</button>
                     </div>
                 </div>
-                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <div class="col-lg-12 col-md-12 mt-3 mb-n4">
+        {% if order_by_fields %}
+        <div class="d-flex justify-content-end">
+            <div class="btn-group btn-group-sm" role="group">
+                {% for field in order_by_fields %}
+                    {% orderbylink search_url field %}
+                {% endfor %}
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 <script>
