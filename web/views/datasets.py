@@ -196,7 +196,9 @@ class DatasetDetailView(DetailView):
             f"core.{Permissions.PROTECTED.value}_dataset", self.object
         )
         context["company_name"] = COMPANY
-        context["exposure_list"] = Exposure.objects.filter(dataset=self.object)
+        context["exposure_list"] = Exposure.objects.filter(
+            dataset=self.object
+        ).order_by("-added")
         context["rems_application_url"] = getattr(settings, "REMS_URL") + "application/"
         return context
 
