@@ -49,7 +49,11 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "entity", nargs="?", default=None, type=str, help="specific entity"
+            "entity",
+            nargs="?",
+            default=None,
+            type=str,
+            help="list of available entities: study_terms, disease_terms, phenotype_terms, gene_terms, contact_types, datatypes, sensitivity_classes, legal_basis_types, personal_data_types, restriction_classes, document_types, funding_sources, storage_resources, roles_and_permissions, elu_institutions, elu_cohorts, gdpr_roles, log_types",
         )
 
     @staticmethod

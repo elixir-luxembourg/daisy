@@ -515,7 +515,7 @@
                     </thead>
                     <tbody>
                     {% for exposure in exposure_list %}
-                        <tr>
+                        <tr {% if exposure.is_deprecated %}style="background-color: #fdeded;"{% endif %}>
                             <td><p>{{exposure.endpoint}}</p></td>
                             <td><p>{% if exposure.form_name %}{{exposure.form_name}} -- {% endif %}{{exposure.form_id}}</p></td>
                             <td><p>{{exposure.added}}</p></td>
