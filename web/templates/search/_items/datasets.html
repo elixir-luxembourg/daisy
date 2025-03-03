@@ -7,7 +7,7 @@
                       <a href="{% url 'dataset' pk=dataset.pk %}">{{ dataset.title }}</a>
                     </h2>
                     <ul class="card-text list-unstyled text-left py-1">
-                        <li class="d-flex align-items-center"><strong>Published:</strong> {{ dataset.is_published | yesno }}</li>
+                        <li class="d-flex align-items-center"><strong class="mr-1">Published:</strong> {{ dataset.is_published | yesno }}</li>
                         <li><strong>Datatypes:</strong>
                             {% for datatype in dataset.data_types %}
                                 <span class="badge badge-pill badge-secondary ml-1 mb-1">{{ datatype }}</span>
