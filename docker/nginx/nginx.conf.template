@@ -38,9 +38,27 @@ http {
             server_name  localhost;
             listen 80 default_server;
             listen [::]:80 default_server;
-            # Uncomment the line below and comment the "return" line to disable HTTPS redirect
-            # try_files $uri $uri/ @proxy_to_app;
+            
+            # Comment the line below to disable HTTPS redirect and use HTTP directly
             return  302 https://$host$request_uri;
+            
+            # Uncomment these location blocks when you want to serve HTTP directly
+            # location @proxy_to_app {
+            #     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            #     proxy_set_header X-Forwarded-Proto http;
+            #     proxy_set_header X-Real-IP $remote_addr;
+            #     proxy_set_header Host $http_host;
+            #     proxy_redirect off;
+            #     proxy_pass http://app_server;
+            # }
+            #
+            # location /static/ {
+            #     root /public/ ;
+            # }
+            #
+            # location / {
+            #     try_files $uri $uri/ @proxy_to_app;
+            # }
     }
 
     server_tokens off;
