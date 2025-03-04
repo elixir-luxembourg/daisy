@@ -24,6 +24,19 @@ Create a `.env` file in the project root to override default environment variabl
 
 ## Installation
 
+### Configure Nginx
+
+Copy the Nginx configuration template:
+
+```bash
+cp ./docker/nginx/nginx.conf.template ./docker/nginx/nginx.conf
+```
+Customize `nginx.conf` as needed and then start or restart the Nginx service:
+
+```bash
+docker compose restart nginx
+```
+
 ### Build and Start Services
 
 Build and start all services defined in `docker-compose.yaml`:
