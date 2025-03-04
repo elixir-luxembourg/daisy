@@ -38,6 +38,8 @@ http {
             server_name  localhost;
             listen 80 default_server;
             listen [::]:80 default_server;
+            # Uncomment the line below and comment the "return" line to disable HTTPS redirect
+            # try_files $uri $uri/ @proxy_to_app;
             return  302 https://$host$request_uri;
     }
 
