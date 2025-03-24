@@ -69,6 +69,11 @@ class DatasetsExporter:
                         if exposure.deprecated_at
                         else None
                     )
+                    pd["released_date"] = (
+                        exposure.added.isoformat(timespec="seconds")
+                        if exposure.added
+                        else None
+                    )
                     pd["deprecation_notes"] = exposure.deprecation_reason
                 dataset_dicts.append(pd)
             except Exception as e:
