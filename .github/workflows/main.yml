@@ -31,7 +31,7 @@ jobs:
       run: docker compose exec -T web black --check --verbose .
 
     - name: Install test dependencies
-      run: docker compose exec -T web pip install ".[test]"
+      run: docker compose exec -T --user root web pip install ".[test]"
 
     - name: Execute the tests
       run: docker compose exec -T web pytest

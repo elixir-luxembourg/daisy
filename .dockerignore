@@ -1,6 +1,5 @@
 .git
 .github
-
 *.sqlite3
 *.iml
 elixir_daisy/settings_local.py

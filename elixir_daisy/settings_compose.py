@@ -18,7 +18,7 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "guardian.backends.ObjectPermissionBackend",
 ]
-
+ALLOWED_HOSTS = ["localhost"]
 AUTH_LDAP_SERVER_URI = "ldap://localhost/"
 AUTH_LDAP_BIND_DN = "CN=Normal.User,OU=LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux"
 AUTH_LDAP_BIND_PASSWORD = "password"

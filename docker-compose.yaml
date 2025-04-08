@@ -1,25 +1,34 @@
 services:
-    # web app
+    # Web Application
     web:
         build: .
         expose:
-            - '5000'
+            - "5000"
         environment:
             - DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
         volumes:
             - statics:/static
             - solrdata:/solr
-            - .:/code
         networks:
             - daisy_network
         depends_on:
-            - db
-            - solr
-            - mq
-        command: gunicorn --reload -w 2 -b :5000 --pid /run/gunicorn.pid elixir_daisy.wsgi
-    # database
+            db:
+                condition: service_healthy
+            solr:
+                condition: service_healthy
+            mq:
+                condition: service_healthy
+        command: gunicorn --reload -w 2 -b :5000 --pid /code/gunicorn.pid elixir_daisy.wsgi
+        user: "1000:1000"  # Run as a non-root user
+        healthcheck:
+            test: ["CMD-SHELL", "curl --fail http://localhost:5000 || exit 1"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    # PostgreSQL Database
     db:
-        image: postgres:16.4-bullseye
+        image: postgres:16.4-alpine
         restart: unless-stopped
         expose:
             - "5432"
@@ -31,7 +40,13 @@ services:
             - daisy_network
         volumes:
             - pgdata:/var/lib/postgresql/data
-    # web server frontend
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-daisy}"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    # Web Server Frontend (Nginx)
     nginx:
         build: ./docker/nginx
         restart: unless-stopped
@@ -39,43 +54,68 @@ services:
             - statics:/public/static:ro
             - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
         ports:
-            - '80:80'
-            - '443:443'
+            - "80:80"
+            - "443:443"
         networks:
             - daisy_network
+        healthcheck:
+            test: [ "CMD-SHELL", "curl --fail http://localhost || exit 1" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
         depends_on:
-            - web
-    # FTS db
+            web:
+                condition: service_healthy
+
+    # Full-Text Search (Solr)
     solr:
         build: ./docker/solr
         restart: unless-stopped
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://localhost:8983/solr/" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
         expose:
             - "8983"
         networks:
             - daisy_network
         volumes:
             - solrdata:/opt/solr/server/solr
-    # rabbit mq
+        user: "8983:1000"
+
+    # Message Queue (RabbitMQ)
     mq:
         image: rabbitmq:3.9-management-alpine
         restart: unless-stopped
-        networks:
-            - daisy_network
         expose:
             - "15672"
             - "5672"
-    # task monitoring
+        networks:
+            - daisy_network
+        healthcheck:
+            test: ["CMD", "rabbitmqctl", "status"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        user: "1000:1000"
+
+    # Task Monitoring (Flower)
     flower:
         image: mher/flower:0.9.7
         command: --broker=amqp://guest:guest@mq:5672// --broker_api=http://guest:guest@mq:15672/api/
-        expose:
-            - "5555"
+        ports:
+            - "5555:5555"
         restart: unless-stopped
         networks:
             - daisy_network
         depends_on:
-            - mq
-    # task runner
+            mq:
+                condition: service_healthy
+        user: "1000:1000"
+        profiles: ["debug"]
+
+    # Task Runner (Celery Worker)
     worker:
         build: .
         environment:
@@ -83,13 +123,22 @@ services:
         volumes:
             - .:/code
         depends_on:
-            - db
-            - mq
+            db:
+                condition: service_healthy
+            mq:
+                condition: service_healthy
         restart: unless-stopped
+        healthcheck:
+            test: [ "CMD-SHELL", "celery -A elixir_daisy.celery_app inspect ping" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
         networks:
             - daisy_network
         command: "celery -A elixir_daisy.celery_app worker --loglevel=DEBUG"
-    # celery beat
+        user: "1000:1000"
+
+    # Celery Beat
     beat:
         build: .
         environment:
@@ -97,12 +146,21 @@ services:
         volumes:
             - .:/code
         depends_on:
-            - db
-            - mq
+            db:
+                condition: service_healthy
+            mq:
+                condition: service_healthy
+        healthcheck:
+            test: [ "CMD-SHELL", "celery -A elixir_daisy.celery_app inspect ping" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
         networks:
             - daisy_network
         command: "celery -A elixir_daisy beat --loglevel=DEBUG --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler"
-    # Backup service
+        user: "1000:1000"
+
+    # Backup Service
     backup:
         image: alpine:3.20.3
         environment:
@@ -121,14 +179,16 @@ services:
             - .:/code
             - /var/run/docker.sock:/var/run/docker.sock
         working_dir: /code
+        restart: unless-stopped
         depends_on:
-            - db
+            db:
+                condition: service_healthy
         networks:
             - daisy_network
         entrypoint: >
             sh -c "apk add --no-cache docker-cli docker-compose postgresql-client lsof &&
-               chmod +x /code/scripts/db.sh &&
-               tail -f /dev/null"
+                   chmod +x /code/scripts/db.sh &&
+                   tail -f /dev/null"
 
 volumes:
     pgdata:
@@ -137,5 +197,5 @@ volumes:
     backups:
 
 networks:
-  daisy_network:
-    driver: bridge
+    daisy_network:
+        driver: bridge
