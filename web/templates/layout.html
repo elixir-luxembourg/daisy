@@ -1,7 +1,7 @@
 {% load static %}
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="h-100">
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -40,33 +40,56 @@
     </style>
     {% endif %}
 </head>
-<body>
+<body class="d-flex flex-column h-100">
 
 {% block navbar %}
 {% include 'navbar.html' %}
 {% endblock %}
-{% block messages %}
-{% if messages %}
-<div class="messages">
-    {% for message in messages %}
-    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible">
-        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-        <h4>{{ message.tags | title }}</h4>
-        {{ message }}
+
+<main class="flex-grow-1">
+    <div class="container px-0 mt-3">
+        {% block messages %}
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show shadow-sm rounded">
+                    <div class="d-flex align-items-start">
+                        <div class="mr-3">
+                            {% if message.tags == 'success' %}
+                                <i class="material-icons">check_circle</i>
+                            {% elif message.tags == 'error' or message.tags == 'danger' %}
+                                <i class="material-icons">error</i>
+                            {% elif message.tags == 'warning' %}
+                                <i class="material-icons">warning</i>
+                            {% elif message.tags == 'info' %}
+                                <i class="material-icons">info</i>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1">{{ message.tags | title }}</h5>
+                            <div>{{ message }}</div>
+                        </div>
+                        <button type="button" class="close ml-2" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endblock %}
     </div>
-    {% endfor %}
-</div>
-{% endif %}
-{% endblock %}
-{% block container %}
-<div class="{% block containerclass %}container{% endblock containerclass %}">
-    {% block content %}{% endblock %}
-</div>
-<div class="floating-buttons">
-    {% block floating-buttons %}
+    {% block container %}
+    <div class="{% block containerclass %}container{% endblock containerclass %}">
+        {% block content %}{% endblock %}
+    </div>
+    <div class="floating-buttons">
+        {% block floating-buttons %}
+        {% endblock %}
+    </div>
     {% endblock %}
-</div>
-{% endblock %}
+</main>
+
 <!-- Modal -->
 <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -82,6 +105,7 @@
         </div>
     </div>
 </div>
+
 {% block footer %}{% include 'footer.html' %}{% endblock %}
 
     <!-- Optional JavaScript -->

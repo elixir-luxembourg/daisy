@@ -20,9 +20,22 @@ cd daisy
 
 ### Environment Variables
 
-Create a `.env` file in the project root to override default environment variables if necessary. See [.env.template](env.template) file for more detail. Additionally, create `elixir_daisy/settings_local.py` file from `elixir_daisy/settings_local.template.py`.
+Create a `.env` file in the project root to override default environment variables if necessary. See [.env.template](/.env.template) file for more detail. Additionally, create `elixir_daisy/settings_local.py` file from `elixir_daisy/settings_local.template.py`.
 
 ## Installation
+
+### Configure Nginx
+
+Copy the Nginx configuration template:
+
+```bash
+cp ./docker/nginx/nginx.conf.template ./docker/nginx/nginx.conf
+```
+Customize `nginx.conf` as needed and then start or restart the Nginx service:
+
+```bash
+docker compose restart nginx
+```
 
 ### Build and Start Services
 
@@ -114,8 +127,6 @@ The application should now be accessible on `https://localhost/`
 ## Scheduled Backup with Cron
 
 To ensure the backups are properly set up, please refer to the [Backup manual](backup.md#Scheduled-Backup-with-Cron)
-
-
 
 ### Restore Legacy Backup
 

@@ -7,7 +7,7 @@ from django.views.generic import CreateView, UpdateView
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import UserPassesTestMixin
 
-from core.forms.exposure import ExposureForm, ExposureEditForm
+from core.forms.exposure import ExposureForm, ExposureEditForm, ExposureRemoveForm
 from core.models import Dataset, Exposure
 from core.utils import DaisyLogger
 
@@ -101,6 +101,35 @@ class ExposureEditView(DataStewardGroupRequiredMixin, UpdateView, AjaxViewMixin)
         if self.object.dataset:
             return reverse_lazy("dataset", kwargs={"pk": self.object.dataset.pk})
         return super().get_success_url()
+
+
+class ExposureRemoveView(DataStewardGroupRequiredMixin, UpdateView, AjaxViewMixin):
+    model = Exposure
+    form_class = ExposureRemoveForm
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(
+            Exposure,
+            pk=self.kwargs.get("pk"),
+            dataset__pk=self.kwargs.get("dataset_pk"),
+        )
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.dataset = self.object.dataset
+        self.endpoint = self.object.endpoint
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self, **kwargs):
+        return reverse_lazy("dataset", kwargs={"pk": self.dataset.pk})
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.delete(deprecation_reason=form.cleaned_data["deprecation_reason"])
+        messages.add_message(
+            self.request, messages.SUCCESS, "Exposure record deprecated"
+        )
+        return super().form_valid(form)
 
 
 @require_http_methods(["DELETE"])

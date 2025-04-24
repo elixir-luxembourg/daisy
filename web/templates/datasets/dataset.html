@@ -508,28 +508,48 @@
                     <tr>
                         <th>Endpoint</th>
                         <th>Form</th>
+                        <th>Added</th>
+                        <th>Deprecated</th>
                         <th style="width:7em">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for exposure in exposure_list %}
-                        <tr>
+                        <tr {% if exposure.is_deprecated %}style="background-color: #fdeded;"{% endif %}>
                             <td><p>{{exposure.endpoint}}</p></td>
                             <td><p>{% if exposure.form_name %}{{exposure.form_name}} -- {% endif %}{{exposure.form_id}}</p></td>
+                            <td><p>{{exposure.added}}</p></td>
+                            <td><p>{% if exposure.is_deprecated %}{{exposure.deprecated_at}}{% else %}-{% endif %}</p></td>
                             <td>
-                                <i class="material-icons clickable"
+                                <i class="material-icons {% if exposure.is_deprecated %}dark{% else %}clickable{% endif %}"
                                    id="editexposure"
+                                   {% if not exposure.is_deprecated %}
                                    title="Edit exposure"
                                    data-toggle="modal"
                                    data-target="#modal"
                                    data-post-mode="true"
                                    data-modal-title="Edit exposure"
+                                   {% else %}
+                                   title="Exposure deprecated"
+                                   data-modal-title="Exposure deprecated"
+                                   style="color:gray;"
+                                   {% endif %}
                                    data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
                                    data-ajax-url="{% url 'dataset_exposure_edit' pk=exposure.id dataset_pk=dataset.id %}">edit</i>
-                                <i class="red material-icons clickable" data-method="delete"
-                                   data-parent-to-remove="tr"
-                                   title="Delete exposure"
-                                   data-url="{% url 'dataset_exposure_remove' dataset_pk=dataset.id exposure_pk=exposure.id %}">delete_forever</i>
+                                <i class="material-icons {% if exposure.is_deprecated %}dark{% else %}red clickable{% endif %}"
+                                   {% if not exposure.is_deprecated %}
+                                   title="Remove exposure"
+                                   data-toggle="modal"
+                                   data-target="#modal"
+                                   data-post-mode="true"
+                                   data-modal-title="Remove exposure"
+                                   {% else %}
+                                   title="Exposure deprecated"
+                                   data-modal-title="Exposure deprecated"
+                                   style="color:gray;"
+                                   {% endif %}
+                                   data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
+                                   data-ajax-url="{% url 'dataset_exposure_remove' pk=exposure.id dataset_pk=dataset.id %}">delete_forever</i>
                             </td>
                         </tr>
                     {% endfor %}

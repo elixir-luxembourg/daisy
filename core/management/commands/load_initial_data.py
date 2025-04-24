@@ -47,6 +47,15 @@ def get_classes(ontology):
 class Command(BaseCommand):
     help = "load initial data into database"
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "entity",
+            nargs="?",
+            default=None,
+            type=str,
+            help="list of available entities: study_terms, disease_terms, phenotype_terms, gene_terms, contact_types, datatypes, sensitivity_classes, legal_basis_types, personal_data_types, restriction_classes, document_types, funding_sources, storage_resources, roles_and_permissions, elu_institutions, elu_cohorts, gdpr_roles, log_types",
+        )
+
     @staticmethod
     def create_gdpr_roles():
         print("Creating GDPR roles")
@@ -319,6 +328,10 @@ class Command(BaseCommand):
                 PersonalDataType.objects.get_or_create(**lbt)
 
     def handle(self, *args, **options):
+        if entity := options.get("entity"):
+            getattr(self, f"create_{entity}")()
+            print("created")
+            return
         self.create_study_terms()
         self.create_disease_terms()
         self.create_phenotype_terms()

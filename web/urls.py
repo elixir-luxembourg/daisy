@@ -272,8 +272,8 @@ web_urls = [
         name="dataset_exposure_add",
     ),
     path(
-        "dataset/<int:dataset_pk>/exposure/remove/<int:exposure_pk>/",
-        exposure.remove_exposure,
+        "dataset/<int:dataset_pk>/exposure/<int:pk>/remove",
+        exposure.ExposureRemoveView.as_view(),
         name="dataset_exposure_remove",
     ),
     path(

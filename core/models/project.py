@@ -317,14 +317,25 @@ class Project(CoreTrackedModel, NotifyMixin):
 
     def publish(self):
         """
-        An ELU accession will be generated if absent. This function is triggered by the dataset's publish method
-        and should be invoked only when an ELU accession can and should be generated.
+        Publishes the project.
         """
-        if not self.elu_accession:
-            generate_id_function_path = getattr(settings, "IDSERVICE_FUNCTION")
-            generate_id_function = import_string(generate_id_function_path)
-            self.elu_accession = generate_id_function(self)
+        if not self.is_published:
+            self.is_published = True
             self.save()
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.elu_accession:
+            generate_id_function_path = getattr(settings, "IDSERVICE_FUNCTION", None)
+            if generate_id_function_path:
+                generate_id_function = import_string(generate_id_function_path)
+                self.elu_accession = generate_id_function(self)
+
+            if not self.elu_accession:
+                raise ValueError(
+                    "Failed to generate 'elu_accession', object will not be saved."
+                )
+
+        super().save(*args, **kwargs)
 
     @staticmethod
     def get_notification_recipients():
