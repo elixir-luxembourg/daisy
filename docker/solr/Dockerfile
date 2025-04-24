@@ -7,3 +7,7 @@ RUN mkdir -p /opt/solr/server/solr/daisy/ \
     && touch /opt/solr/server/solr/daisy_test/core.properties
 COPY *.xml /opt/solr/server/solr/daisy/conf/
 COPY *.xml /opt/solr/server/solr/daisy_test/conf/
+USER root
+RUN chown -R 8983:1000 /opt/solr/
+RUN chmod -R 770 /opt/solr/server/solr/daisy/conf/
+RUN chmod -R 770 /opt/solr/server/solr/daisy_test/conf/

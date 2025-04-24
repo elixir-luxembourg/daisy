@@ -1,34 +1,68 @@
 FROM python:3.9.6-slim
-ENV PYTHONUNBUFFERED 1
-RUN mkdir -p /code/log /static \
-    && apt-get update \
-    && apt-get install -yq libsasl2-dev python-dev libldap2-dev git libssl-dev build-essential wget \
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    NODE_VERSION=20 \
+    DEBIAN_FRONTEND=noninteractive \
+    DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libsasl2-dev \
+    python3-dev \
+    libldap2-dev \
+    libssl-dev \
+    build-essential \
+    git \
+    wget \
+    curl \
+    ca-certificates \
+    gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-# Install node 
-RUN apt-get update \
-    && apt-get install -y ca-certificates curl gnupg
-RUN mkdir -p /etc/apt/keyrings
-RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
-RUN apt-get update \
-    && apt-get install -y nodejs
+# Install Node.js
+RUN mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_VERSION}.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends nodejs \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY web/static /static
+# Create required directories
+RUN mkdir -p /code/log /static && chown -R 1000:1000 /code && chown -R 1000:1000 /static
 
-# Install npm dependencies
-RUN cd /static/vendor \
-    && npm ci \
-    && npm run-script build
+# Upgrade pip
+RUN pip install --upgrade pip
 
+
+# Install and build npm dependencies
+COPY web/static /code/web/static
+RUN chown -R 1000:1000 /code/web/static
+
+# Fix npm cache permission
+RUN mkdir -p /.npm && chown -R 1000:1000 /.npm
+
+WORKDIR /code/web/static/vendor
+USER 1000:1000
+RUN npm ci && npm run build
+
+# Set working directory
 WORKDIR /code
 
-RUN pip install --upgrade pip
-# Copy the list of Python dependencies
-COPY ./setup.py /code/.
-# Try to install as many Python dependencies as possible...
-RUN pip install --no-cache-dir -e . 2>/dev/null || true
-# ... so that next time the project changes, the previous steps will be cached...
-COPY . /code/
-# ... and this will be blazing fast
+# Copy dependency files first to leverage Docker caching
+COPY setup.py /code/
+COPY manage.py /code/
+
+USER root
 RUN pip install --no-cache-dir -e .
+
+# Copy the rest of the project files
+COPY . /code/
+RUN chown -R 1000:1000 /code
+# Switch back to /code
+WORKDIR /code
+USER 1000:1000
+RUN python manage.py collectstatic --noinput
+
+USER root
+RUN rm -rf /code/web/static
