@@ -177,6 +177,7 @@ services:
             - ${BACKUP_VOLUME:-../backups}:/backups
             - /var/run/docker.sock:/var/run/docker.sock
             - medias:/code/documents
+            - ./scripts/db.sh:/code/scripts/db.sh
         working_dir: /code
         restart: unless-stopped
         depends_on:
