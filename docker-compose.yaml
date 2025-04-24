@@ -9,6 +9,7 @@ services:
         volumes:
             - statics:/static
             - solrdata:/solr
+            - medias:/code/documents
         networks:
             - daisy_network
         depends_on:
@@ -120,14 +121,14 @@ services:
         build: .
         environment:
             - DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
-        volumes:
-            - .:/code
         depends_on:
             db:
                 condition: service_healthy
             mq:
                 condition: service_healthy
         restart: unless-stopped
+        volumes:
+            - medias:/code/documents
         healthcheck:
             test: [ "CMD-SHELL", "celery -A elixir_daisy.celery_app inspect ping" ]
             interval: 10s
@@ -143,8 +144,6 @@ services:
         build: .
         environment:
             - DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
-        volumes:
-            - .:/code
         depends_on:
             db:
                 condition: service_healthy
@@ -176,8 +175,8 @@ services:
             - BACKUP_VOLUME=${BACKUP_VOLUME:-../backups}
         volumes:
             - ${BACKUP_VOLUME:-../backups}:/backups
-            - .:/code
             - /var/run/docker.sock:/var/run/docker.sock
+            - medias:/code/documents
         working_dir: /code
         restart: unless-stopped
         depends_on:
@@ -195,6 +194,7 @@ volumes:
     statics:
     solrdata:
     backups:
+    medias:
 
 networks:
     daisy_network:
