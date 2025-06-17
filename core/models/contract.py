@@ -20,12 +20,15 @@ class PartnerRole(CoreModel):
         on_delete=models.CASCADE,
         blank=False,
         null=False,
+        help_text="Select the partner organisation involved in this contract.",
     )
 
     roles = models.ManyToManyField(
         "core.GDPRRole",
-        verbose_name="Partner roles",
+        verbose_name="Roles",
         related_name="partners_roles",
+        blank=True,
+        help_text="Role of the partner in the contract (e.g. GDPR role).",
     )
 
     contacts = models.ManyToManyField(
@@ -33,6 +36,7 @@ class PartnerRole(CoreModel):
         verbose_name="Contacts",
         related_name="partners_roles",
         blank=False,
+        help_text="Add contact persons representing this partner in the contract.",
     )
 
     contract = models.ForeignKey(
@@ -42,6 +46,7 @@ class PartnerRole(CoreModel):
         on_delete=models.CASCADE,
         blank=False,
         null=False,
+        help_text="The contract agreement this partner role belongs to.",
     )
 
     comments = models.TextField(
