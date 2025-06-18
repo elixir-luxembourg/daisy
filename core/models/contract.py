@@ -86,6 +86,14 @@ class Contract(CoreModel):
             " Material Transfer Agreements."
         )
 
+    name = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True,
+        verbose_name="Short name",
+        help_text="Select a meaningful name for your contract",
+    )
+
     local_custodians = models.ManyToManyField(
         "core.User",
         blank=False,
@@ -141,7 +149,7 @@ class Contract(CoreModel):
         return PartnerRole.objects.filter(contract=self)
 
     def __str__(self):
-        return self.short_name()
+        return self.name
 
     def short_name(self):
         partners_list = (
@@ -186,6 +194,7 @@ class Contract(CoreModel):
 
         base_dict = {
             "id": self.id,
+            "name": self.name,
             "comments": self.comments,
             "project_id": self.project.id,
             "local_custodians": contact_dicts,
