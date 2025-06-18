@@ -264,13 +264,54 @@
                 </div>
                 {% endif %}
                 <h2 class="card-title"><span><i class="material-icons">link</i></span> Contracts</h2>
-                <ul class="card-text list-group">
-                    {% for contract in project.contracts.all %}
-                    <li class="list-group-item {% if can_edit %}deletable" data-delete-title="Remove contract from project" data-url="{% url 'project_contract_remove' pk=project.id cid=contract.pk %}{% endif %}">
-                        <a href="{% url 'contract' pk=contract.id %}">{{ contract }}</a>
-                    </li>
-                    {% endfor %}
-                </ul>
+                {% if project.contracts.all %}
+                <div class="table-responsive">
+                    <table class="table table-striped w-100">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Remarks</th>
+                                <th>Partners</th>
+                                <th>Last updated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contract in project.contracts.all %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'contract' pk=contract.id %}">{{ contract.name|default:contract }}</a>
+                                </td>
+                                <td>
+                                    {{ contract.comments|default:"-" }}
+                                </td>
+                                <td>
+                                    {% with partners=contract.partners.all %}
+                                    {% if partners %}
+                                        {% if partners|length > 2 %}
+                                            <span data-toggle="tooltip" 
+                                                  data-placement="top"
+                                                  title="{% for partner in partners %}{{ partner }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+                                                {{ partners|slice:":2"|join:", " }} <span class="text-muted font-italic">and {{ partners|length|add:"-2" }} more...</span>
+                                            </span>
+                                        {% else %}
+                                            {{ partners|join:", " }}
+                                        {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td>
+                                    {{ contract.updated|date:"Y-m-d" }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No contracts yet.</p>
+                {% endif %}
             </div>
         </div>
 
