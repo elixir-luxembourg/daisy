@@ -3,14 +3,6 @@
 from django.db import migrations, models
 
 
-def populate_contract_names(apps, schema_editor):
-    from core.models import Contract
-
-    for contract in Contract.objects.all():
-        contract.name = contract.short_name()
-        contract.save()
-
-
 class Migration(migrations.Migration):
     dependencies = [
         ("core", "0039_auto_20250219_1834"),
@@ -27,8 +19,5 @@ class Migration(migrations.Migration):
                 null=True,
                 verbose_name="Short name",
             ),
-        ),
-        migrations.RunPython(
-            populate_contract_names, reverse_code=migrations.RunPython.noop
         ),
     ]

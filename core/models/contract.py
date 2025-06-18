@@ -149,7 +149,7 @@ class Contract(CoreModel):
         return PartnerRole.objects.filter(contract=self)
 
     def __str__(self):
-        return self.name
+        return self.name or self.short_name()
 
     def short_name(self):
         partners_list = (

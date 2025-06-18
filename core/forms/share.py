@@ -50,7 +50,6 @@ class ShareEditForm(ShareForm):
             self.fields[
                 "contract"
             ].help_text = "No contract found with selected partner."
-        self.fields["contract"].choices = [(c.id, c.name) for c in contracts]
         self.fields["data_declarations"].choices = [
             (d.id, d.title) for d in share_inst.dataset.data_declarations.all()
         ]
@@ -101,7 +100,6 @@ def shareFormFactory(*args, **kwargs):
                     "contract"
                 ].help_text = "No contract found with selected partner."
 
-            self.fields["contract"].choices = [(c.id, c.name) for c in contracts]
             self.fields["data_declarations"].choices = [
                 (d.id, d.title) for d in self.dataset.data_declarations.all()
             ]
