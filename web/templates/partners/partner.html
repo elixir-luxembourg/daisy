@@ -94,7 +94,7 @@
         {#    Contacts    #}
         <div class="card ml-0 col-md-6">
             <div class="card-body">
-                <h2 class="card-title">Contacts at this partner</h2>
+                <h2 class="card-title"><span><i class="material-icons">contacts</i></span> Contacts at this partner</h2>
                 <ul class="card-text list-group">
                     {% for contact in partner.contacts.all %}
                         <li class="list-group-item">
@@ -108,7 +108,7 @@
         {#    Contracts    #}
         <div class="card mr-0 col-md-6">
             <div class="card-body">
-                <h2 class="card-title">Contracts with this partner</h2>
+                <h2 class="card-title"><span><i class="material-icons">assignment</i></span> Contracts with this partner</h2>
                 <ul class="card-text list-group">
                     {% for collab in partner.contracts.all %}
                         <li class="list-group-item">

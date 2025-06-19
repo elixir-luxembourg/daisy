@@ -117,7 +117,7 @@
     <div class="row mt-4">
         <div class="mh-100 card col">
             <div class="card-body">
-                <h2 class="card-title">Ethics</h2>
+                <h2 class="card-title"><span><i class="material-icons">gavel</i></span> Ethics</h2>
                 <dl>
                     <dt>Has national approval?</dt>
                     <dd>{{ project.has_cner | yesno }} {% if project.cner_notes %}
@@ -142,7 +142,7 @@
                             </button>
                 </div>
                 {% endif %}
-                <h2 class="card-title">Personnel</h2>
+                <h2 class="card-title"><span><i class="material-icons">group</i></span> Personnel</h2>
                 <ul class="card-text list-group">
                     {% for company_personnel in project.company_personnel.all %}
                     <li class="list-group-item {% if can_edit %}deletable" data-delete-title="Remove personnel from project" data-url="{% url 'remove_personnel_from_project' pk=project.id user_id=company_personnel.pk %}{% endif %}">
@@ -170,7 +170,7 @@
                     </div>
                 </div>
                 {% endif %}
-                <h2 class="card-title">Contacts</h2>
+                <h2 class="card-title"><span><i class="material-icons">contacts</i></span> Contacts</h2>
                 <ul class="card-text list-group">
                     {% for contact in project.contacts.all %} {% if can_edit %}
                     <li class="list-group-item deletable" data-delete-title="Remove contact from project" data-url="{% url 'remove_contact_from_project' pk=project.id contact_id=contact.pk %}">
@@ -263,7 +263,7 @@
                     </div>
                 </div>
                 {% endif %}
-                <h2 class="card-title"><span><i class="material-icons">link</i></span> Contracts</h2>
+                <h2 class="card-title"><span><i class="material-icons">assignment</i></span> Contracts</h2>
                 <ul class="card-text list-group">
                     {% for contract in project.contracts.all %}
                     <li class="list-group-item {% if can_edit %}deletable" data-delete-title="Remove contract from project" data-url="{% url 'project_contract_remove' pk=project.id cid=contract.pk %}{% endif %}">
@@ -330,7 +330,7 @@
 
                 </div>
                 {% endif %}
-                <h2 class="card-title">Publications</h2>
+                <h2 class="card-title"><span><i class="material-icons">library_books</i></span> Publications</h2>
                 <ul class="card-text list-group">
                     {% for publication in project.publications.all %} {% if can_edit %}
                     <li class="list-group-item deletable" data-delete-title="Remove publication from project" data-url="{% url 'remove_publication_from_project' pk=project.id publication_id=publication.pk %}">
