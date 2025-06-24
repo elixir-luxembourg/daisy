@@ -110,6 +110,23 @@ class Dataset(CoreTrackedModel, NotifyMixin):
             all_data_types.update(data_declaration.data_types_received.all())
         return all_data_types
 
+    @property
+    def active_exposures_count(self):
+        """Count of non-deprecated exposures."""
+        return self.exposures.filter(is_deprecated=False).count()
+
+    @property
+    def publication_status(self):
+        """
+        Return publication status of the dataset.
+        - 'unpublished': No exposures
+        - 'published': Has active exposures
+        - 'deprecated': Has only deprecated exposures
+        """
+        if not self.is_published:
+            return "unpublished"
+        return "published" if self.active_exposures_count else "deprecated"
+
     def collect_contracts(self):
         result = set()
         for share in self.shares.all():
