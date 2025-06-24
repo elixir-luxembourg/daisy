@@ -208,8 +208,7 @@
                             <th>Accession Number</th>
                             <th>Title</th>
                             <th>Local Custodians</th>
-                            <th class="text-center">Exposures</th>
-                            <th>Status</th>
+                            <th>Exposure Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -222,16 +221,10 @@
                                     <span class="badge badge-pill badge-secondary">{{ custodian }}</span>
                                 {% endfor %}
                             </td>
-                            <td class="text-center">
-                                <span class="badge badge-secondary">{{ dataset.active_exposures_count }}</span>
-                            </td>
+                            
                             <td>
-                                {% if dataset.publication_status == 'published' %}
-                                    <span class="badge badge-success">Published</span>
-                                {% elif dataset.publication_status == 'deprecated' %}
-                                    <span class="badge badge-danger">Deprecated</span>
-                                {% else %}
-                                    <span class="badge badge-secondary">Unpublished</span>
+                                {% if dataset.publication_status %}
+                                    <span class="badge badge-secondary">{{dataset.publication_status}}</span>
                                 {% endif %}
                             </td>
                         </tr>
