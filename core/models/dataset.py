@@ -118,11 +118,11 @@ class Dataset(CoreTrackedModel, NotifyMixin):
         - '': No exposures
         """
         if self.is_published:
-            return 'published'
+            return "published"
         elif self.exposures.filter(is_deprecated=True).exists():
-            return 'deprecated'
+            return "deprecated"
         else:
-            return ''
+            return ""
 
     def collect_contracts(self):
         result = set()
