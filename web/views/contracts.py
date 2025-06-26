@@ -14,7 +14,7 @@ from django.views.generic import (
 
 from core.constants import Permissions
 from core.forms import ContractForm, ContractFormEdit, PartnerRoleForm
-from core.models import Contract, PartnerRole
+from core.models import Contract, PartnerRole, DAC
 from core.permissions import CheckerMixin
 from . import facet_view_utils
 
@@ -55,6 +55,7 @@ class ContractDetailView(DetailView):
         context["content_type"] = pk
         context["object_id"] = self.object.pk
         context["datafiles"] = [d for d in self.object.legal_documents.all()]
+        context["dacs"] = DAC.objects.filter(contract=self.object)
 
         return context
 

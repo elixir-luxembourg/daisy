@@ -8,7 +8,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 
 from core.forms import ContactForm, PickContactForm
-from core.models import Contact, Project
+from core.models import Contact, Project, DacMembership, DAC
 from core.permissions import permission_required, CheckerMixin
 from web.views.utils import AjaxViewMixin
 from core.constants import Permissions
@@ -105,6 +105,7 @@ class ContactDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["dacs"] = DAC.objects.filter(members=context["contact"])
         return context
 
 

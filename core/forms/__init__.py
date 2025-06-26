@@ -1,6 +1,7 @@
 from .cohort import CohortForm, CohortFormEdit
 from .contact import ContactForm, PickContactForm
 from .contract import ContractForm, ContractFormEdit, PartnerRoleForm
+from .dac import DACForm, DACFormEdit
 from .dataset import DatasetForm, SkipFieldValidationMixin
 from .use_condition import UseConditionForm
 from .data_declaration import (
@@ -26,6 +27,8 @@ __all__ = [
     "CohortFormEdit",
     "ContactForm",
     "PickContactForm",
+    "DACForm",
+    "DACFormEdit",
     "DatasetForm",
     "DataDeclarationForm",
     "DataDeclarationEditForm",

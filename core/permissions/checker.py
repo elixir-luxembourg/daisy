@@ -30,6 +30,7 @@ if TYPE_CHECKING:
     from core.models.share import Share
     from core.models.user import User
     from core.models.contact import Contact
+    from core.models.dac import DAC
 
 
 logger = logging.getLogger("daisy.permissions")
@@ -147,6 +148,15 @@ class ContactChecker(AbstractChecker):
     """
 
     def _check(self, perm: str, obj: "Contact", **kwargs) -> bool:
+        return self.checker.has_perm(perm, obj)
+
+
+class DACChecker(AbstractChecker):
+    """
+    Checks permissions on DAC
+    """
+
+    def _check(self, perm: str, obj: "DAC", **kwargs) -> bool:
         return self.checker.has_perm(perm, obj)
 
 

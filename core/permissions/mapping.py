@@ -58,6 +58,16 @@ PERMISSION_MAPPING = {
             "Can edit permissions on Dataset instances",
         ),
     ],
+    "DAC": [
+        (
+            f"{Permissions.PROTECTED.value}_dac",
+            "Can edit PROTECTED elements of DAC instances",
+        ),
+        (
+            f"{Permissions.ADMIN.value}_dac",
+            "Can edit permissions on DAC instances",
+        ),
+    ],
 }
 
 GROUP_PERMISSIONS = {

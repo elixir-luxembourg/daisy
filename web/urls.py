@@ -43,6 +43,14 @@ from web.views.contracts import (
     ContractDetailView,
     contract_list,
 )
+from web.views.dacs import (
+    DACCreateView,
+    DACDetailView,
+    DACEditView,
+    DACCreateCardView,
+    DACEditCardView,
+    dac_list,
+)
 from web.views.dashboard import dashboard
 from web.views.data_declarations import (
     DatadeclarationDetailView,
@@ -281,6 +289,17 @@ web_urls = [
         exposure.ExposureEditView.as_view(),
         name="dataset_exposure_edit",
     ),
+    # Dataset's DACs (Data Access Cards)
+    path(
+        "dataset/<int:dataset_pk>/dac/add/",
+        DACCreateCardView.as_view(),
+        name="dataset_dac_add",
+    ),
+    path(
+        "dataset/<int:dataset_pk>/dac/<int:pk>/edit/",
+        DACEditCardView.as_view(),
+        name="dataset_dac_edit",
+    ),
     # Cohorts
     path("definitions/cohorts/", cohort_list, name="cohorts"),
     path("definitions/cohorts/add", CohortCreateView.as_view(), name="cohort_add"),
@@ -478,4 +497,9 @@ web_urls = [
     # Activity log
     path("history/", LogEntryListView.as_view(), name="history"),
     path("import_data/<str:model_type>/", import_data, name="import_data"),
+    # DACs
+    path("dacs/", dac_list, name="dacs"),
+    path("dacs/add/", DACCreateView.as_view(), name="dac_add"),
+    path("dac/<int:pk>/", DACDetailView.as_view(), name="dac"),
+    path("dac/<int:pk>/edit", DACEditView.as_view(), name="dac_edit"),
 ]

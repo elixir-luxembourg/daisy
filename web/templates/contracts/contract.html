@@ -166,6 +166,33 @@
         </div>
     </div>
 
+
+
+    {#    DATASETS   #}
+    <div class="row card-deck mt-4">
+        <div class="card ml-0 mr-0 col-md-12">
+            <div class="card-body">
+                <h2 class="card-title">DACs covered by this contract</h2>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for dac in dacs %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'dac' pk=dac.id %}">{{ dac.title }}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
 
 

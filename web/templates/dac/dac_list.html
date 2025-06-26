@@ -1,0 +1,26 @@
+{% for dac in data.dacs %}
+        <div class="row">
+            <div class="col-md-9 mb-4 card-item card">
+                <div class="card-body">
+                    <h2 class="card-title">{{ dac.title }}</h2>
+                    <ul class="card-text">
+                        {% if dac.local_custodians %}
+                            <li>Local custodians:
+                                {% for local_custodian in dac.local_custodians %}
+                                    <span class="badge badge-pill badge-primary">{{ local_custodian }}</span>
+                                {% endfor %}
+                            </li>
+                        {% endif %}
+                    </ul>
+                    {% dac.contract as contract %}
+                        {% if contract %}
+                            <p class="card-text">Contract: <a href="{{ contract.get_absolute_url }}">{{ contract.title }}</a></p>
+                        {% endif %}
+                    {% enddac %}
+                    <a href="{% url 'dac' pk=dac.pk %}" class="btn btn-primary">Details</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>No results</p>
+    {% endfor %}

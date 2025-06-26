@@ -38,6 +38,25 @@
                                 {% endif %}
                             {% endfor %}
                         </dd>
+                        <dt>DAC</dt>
+                        <dd>
+                            {% if dataset.dac %}
+                                <a href="{% url 'dac' pk=dataset.dac.pk %}">{{ dataset.dac.title }}</a>
+                            {% else %}
+                                <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button"
+                                id="adddac"
+                                title="Add new DAC to dataset"
+                                data-toggle="modal"
+                                data-target="#modal"
+                                data-modal-title="Add new DAC"
+                                data-ajax-url="{% url 'dataset_dac_add' dataset_pk=dataset.id %}"
+                                data-post-mode="true"
+                                data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
+                                >
+                                    <i class="material-icons">add</i>
+                                </button>
+                            {% endif %}
+                        </dd>
                         {% endif %}
                     </dl>
                 </div>

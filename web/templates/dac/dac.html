@@ -1,0 +1,119 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ dac.title }}{% endblock %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="jumbotron col" style="position:relative;">
+            <span style="color: #8D8F8F;">DAC</span>
+            <h1>{{ dac.title }}</h1>
+            <div class="row">
+                <div class="col">
+                    <dl>
+                        <dt>Description</dt>
+                        <dd>{{ dac.description }}</dd>
+                        <dt>Contract</dt>
+                        <dd>
+                        {% if dac.contract  %}<a href="{% url 'contract' pk=dac.contract.pk %}">{{ dac.contract }}</a> {% else %}-{% endif %}
+                        </dd>
+                        <dt>Project</dt>
+                        <dd>
+                        {% if dac.contract.project  %}<a href="{% url 'project' pk=dac.contract.project.pk %}">{{ dac.contract.project }}</a> {% else %}-{% endif %}
+                        </dd>
+                        <dt>Local custodians</dt>
+                        <dd>
+                            {% for local_custodian in local_custodians %}
+                                <span class="badge badge-pill badge-primary">{{ local_custodian }}</span>
+                            {% endfor %}
+                        </dd>
+                    </dl>
+                </div>
+
+                <div class="col">
+                    <dl>
+                        <dt>Added on</dt>
+                        <dd>{{ dac.added }}</dd>
+                        <dt>Last edit</dt>
+                        <dd>{{ dac.updated }}</dd>
+                    </dl>
+                </div>
+                <div class="floating-buttons-absolute">
+                    {% if can_edit %}
+                        <a class="btn btn-primary bmd-btn-fab float-right"
+                           title="Edit DAC"
+                           href="{% url 'dac_edit' pk=dac.id %}">
+                            <i class="material-icons">edit</i>
+                        </a>
+                    {% endif %}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    {#    MEMBERS   #}
+    <div class="row card-deck mt-4">
+        <div class="card ml-0 mr-0 col-md-12">
+            <div class="card-body">
+                <h2 class="card-title">Members</h2>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Organization</th>
+                        <th>Date added</th>
+                        <th>Remark</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for member in memberships %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'contact' pk=member.id %}">{{ member.contact.full_name }}</a>
+                            </td>
+                            <td>{{ member.contact.email }}</td>
+                            {% if member.contact.partners %} <!-- member.organization -->
+                            <td>{% for partner in member.contact.partners.all %}
+                                <span class="badge badge-pill badge-primary">{{ partner.name }}</span>
+                            {% endfor %}
+                            </td>
+                            {% endif %}
+                            <td>{{ member.added }}</td>
+                            <td>{{ member.remark }}</td>
+                        </tr>
+
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {#    DATASETS   #}
+    <div class="row card-deck mt-4">
+        <div class="card ml-0 mr-0 col-md-12">
+            <div class="card-body">
+                <h2 class="card-title">Datasets managed by this DAC</h2>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for dataset in datasets %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'dataset' pk=dataset.id %}">{{ dataset.title }}</a>
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

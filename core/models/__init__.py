@@ -5,6 +5,7 @@ from .contract import Contract, PartnerRole
 from .contact import Contact
 from .contact_type import ContactType
 from .datatypes import DataType
+from .dac import DAC, DacMembership
 from .data_declaration import DataDeclaration
 from .dataset import Dataset
 from .document import Document
@@ -64,4 +65,6 @@ __all__ = [
     "Endpoint",
     "Exposure",
     "User",
+    "DAC",
+    "DacMembership",
 ]
