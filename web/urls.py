@@ -50,6 +50,7 @@ from web.views.dacs import (
     DACCreateCardView,
     DACEditCardView,
     dac_list,
+    pick_dac_for_dataset,
 )
 from web.views.dashboard import dashboard
 from web.views.data_declarations import (
@@ -63,6 +64,7 @@ from web.views.datasets import (
     DatasetDelete,
     dataset_list,
     DatasetWizardView,
+    set_dataset_dac,
 )
 from web.views.export import (
     cohorts_export,
@@ -305,6 +307,7 @@ web_urls = [
         DACEditCardView.as_view(),
         name="dataset_dac_edit",
     ),
+    path("dataset/set_dac/", set_dataset_dac, name="set_dataset_dac"),
     # Cohorts
     path("definitions/cohorts/", cohort_list, name="cohorts"),
     path("definitions/cohorts/add", CohortCreateView.as_view(), name="cohort_add"),
@@ -507,4 +510,7 @@ web_urls = [
     path("dacs/add/", DACCreateView.as_view(), name="dac_add"),
     path("dac/<int:pk>/", DACDetailView.as_view(), name="dac"),
     path("dac/<int:pk>/edit", DACEditView.as_view(), name="dac_edit"),
+    path(
+        "dac/pick/<int:dataset_pk>/", pick_dac_for_dataset, name="pick_dac_for_dataset"
+    ),
 ]

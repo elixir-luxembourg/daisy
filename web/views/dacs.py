@@ -175,3 +175,13 @@ def dac_list(request):
             ],
         },
     )
+
+
+def pick_dac_for_dataset(request, dataset_pk):
+    dataset = get_object_or_404(Dataset, id=dataset_pk)
+    dacs = DAC.objects.filter(contract=dataset.project.contracts.all()).order_by(
+        "title"
+    )
+    return render(
+        request, "dac/pick_dac_modal.html", {"dacs": dacs, "dataset_id": dataset_pk}
+    )

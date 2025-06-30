@@ -43,18 +43,16 @@
                             {% if dataset.dac %}
                                 <a href="{% url 'dac' pk=dataset.dac.pk %}">{{ dataset.dac.title }}</a>
                             {% else %}
-                                <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button"
-                                id="adddac"
-                                title="Add new DAC to dataset"
-                                data-toggle="modal"
-                                data-target="#modal"
-                                data-modal-title="Add new DAC"
-                                data-ajax-url="{% url 'dataset_dac_add' dataset_pk=dataset.id %}"
-                                data-post-mode="true"
-                                data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
-                                >
-                                    <i class="material-icons">add</i>
+                                <div class="btn-group">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="adddac" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Add DAC
                                 </button>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="adddac">
+                                    <button data-toggle="modal" data-target="#modal" data-modal-title="Select existing DAC" data-ajax-url="{% url 'pick_dac_for_dataset' dataset_pk=dataset.id %}" class="dropdown-item" type="button">Link to existing DAC</button>
+                                    <button data-toggle="modal" data-target="#modal" data-modal-title="Add new DAC" data-ajax-url="{% url 'dataset_dac_add' dataset_pk=dataset.id %}" data-post-mode="true"
+                                data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}" class="dropdown-item" type="button">Create new DAC</button>
+                                </div>
+                                </div>
                             {% endif %}
                         </dd>
                         {% endif %}
