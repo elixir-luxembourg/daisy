@@ -21,7 +21,8 @@ class DACForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         kwargs.pop("dac", None)
-        self.dataset_id = kwargs.get("initial", {}).get("dataset_id")
+        dataset_id = kwargs.pop("dataset_id", None)
+        contract_id = kwargs.pop("contract_id", None)
         super().__init__(*args, **kwargs)
 
         self.fields["local_custodians"].queryset = User.objects.exclude(
@@ -32,10 +33,20 @@ class DACForm(forms.ModelForm):
         contract_choices = [(c.id, str(c)) for c in Contract.objects.all()]
         self.fields["contract"].choices = contract_choices
 
-        if self.dataset_id:
-            dataset = get_object_or_404(Dataset, id=self.dataset_id)
+        # set only contracts related to the dataset if dataset_id is provided
+        if dataset_id:
+            dataset = get_object_or_404(Dataset, id=dataset_id)
             contract_choices = [(c.id, str(c)) for c in dataset.project.contracts.all()]
             self.fields["contract"].choices = contract_choices
+
+        # set initial contract if contract_id is provided
+        if contract_id:
+            try:
+                contract = Contract.objects.get(id=contract_id)
+                self.fields["contract"].initial = contract.id
+                self.fields["contract"].choices = [(contract.id, str(contract))]
+            except Contract.DoesNotExist:
+                pass
 
         self.fields_order = [
             "title",

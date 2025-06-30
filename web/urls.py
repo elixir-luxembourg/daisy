@@ -141,6 +141,11 @@ web_urls = [
         contracts.PartnerRoleCreateView.as_view(),
         name="add_partner_role_to_contract",
     ),
+    path(
+        "contracts/<int:contract_pk>/add-dac/",
+        DACCreateCardView.as_view(),
+        name="add_dac_to_contract",
+    ),
     path("contracts/<int:pk>/delete", ContractDelete.as_view(), name="contract_delete"),
     path("contracts/<int:pk>/edit", ContractEditView.as_view(), name="contract_edit"),
     path(

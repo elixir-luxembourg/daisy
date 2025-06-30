@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.db import transaction
 
 from core.forms import DACForm, DACFormEdit
-from core.models import DAC, DacMembership, Dataset
+from core.models import DAC, DacMembership, Dataset, Contract
 from core.models.utils import COMPANY
 from core.permissions import CheckerMixin
 from core.utils import DaisyLogger
@@ -65,9 +65,19 @@ class DACCreateCardView(CheckerMixin, CreateView, AjaxViewMixin):
     permission_target = "dac"
 
     def check_permissions(self, request):
-        dataset_id = request.resolver_match.kwargs["dataset_pk"]
-        self.permission_object = get_object_or_404(Dataset, id=dataset_id)
+        self.dataset_id = request.resolver_match.kwargs.get("dataset_pk")
+        self.contract_id = request.resolver_match.kwargs.get("contract_pk")
+        if self.dataset_id:
+            self.permission_object = get_object_or_404(Dataset, id=self.dataset_id)
+        elif self.contract_id:
+            self.permission_object = get_object_or_404(Contract, id=self.contract_id)
         super().check_permissions(request)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["dataset_id"] = self.dataset_id
+        kwargs["contract_id"] = self.contract_id
+        return kwargs
 
     def form_valid(self, form):
         """If the form is valid, save the associated model and add to the dataset"""

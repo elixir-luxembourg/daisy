@@ -172,8 +172,24 @@
     <div class="row card-deck mt-4">
         <div class="card ml-0 mr-0 col-md-12">
             <div class="card-body">
+                <div class="ml-1 float-right btn-group">
+                    <button class="btn bmd-btn-fab bmd-btn-fab-sm" type="button"
+                        id="adddac"
+                        title="Create new DAC for contract"
+                        data-toggle="modal"
+                        data-target="#modal"
+                        data-modal-title="Create new DAC"
+                        data-ajax-url="{% url 'add_dac_to_contract' contract_pk=contract.pk %}"
+                        data-post-mode="true"
+                        data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"
+                    >
+                        <i class="material-icons">add</i>
+                    </button>
+                </div>
+               
                 <h2 class="card-title">DACs covered by this contract</h2>
                 <table class="table table-striped">
+                    {% if dacs %}
                     <thead>
                     <tr>
                         <th>Name</th>
@@ -188,6 +204,7 @@
                         </tr>
                     {% endfor %}
                     </tbody>
+                    {% endif %}
                 </table>
             </div>
         </div>
