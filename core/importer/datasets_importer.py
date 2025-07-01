@@ -419,9 +419,7 @@ class DatasetsImporter(BaseImporter):
             ga4gh_code = use_condition_dict.get("use_class", "")
             notes = use_condition_dict.get("use_condition_note", "")
             use_class_note = use_condition_dict.get("use_class_note", "")
-            use_condition_rule_str = use_condition_dict.get(
-                "use_condition_rule", ""
-            )
+            use_condition_rule_str = use_condition_dict.get("use_condition_rule", "")
             try:
                 use_condition_rule = USE_CONDITION_CHOICES[use_condition_rule_str]
             except KeyError:

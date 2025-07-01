@@ -4,20 +4,19 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0043_rename_restrictionclass_conditionclass'),
+        ("core", "0043_rename_restrictionclass_conditionclass"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='usecondition',
-            old_name='restriction_class',
-            new_name='condition_class',
+            model_name="usecondition",
+            old_name="restriction_class",
+            new_name="condition_class",
         ),
         migrations.RenameField(
-            model_name='usecondition',
-            old_name='use_restriction_rule',
-            new_name='use_condition_rule',
+            model_name="usecondition",
+            old_name="use_restriction_rule",
+            new_name="use_condition_rule",
         ),
     ]

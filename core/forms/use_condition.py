@@ -48,9 +48,7 @@ class UseConditionForm(ModelForm):
         condition_class = cleaned_data.get("condition_class")
         notes = cleaned_data.get("notes")
         if not condition_class:
-            self.add_error(
-                "condition_class", "Please select a valid condition class"
-            )
+            self.add_error("condition_class", "Please select a valid condition class")
         return self.cleaned_data
 
     def is_empty(self):

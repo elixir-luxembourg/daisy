@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0042_rename_userestriction_usecondition'),
+        ("core", "0042_rename_userestriction_usecondition"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='RestrictionClass',
-            new_name='ConditionClass',
+            old_name="RestrictionClass",
+            new_name="ConditionClass",
         ),
     ]

@@ -270,10 +270,7 @@ class DatadeclarationEditView(CheckerMixin, UpdateView):
                         data_declaration=data_declaration
                     ).delete()
                     for condition_form in condition_formset:
-                        if (
-                            condition_form.is_valid()
-                            and not condition_form.is_empty()
-                        ):
+                        if condition_form.is_valid() and not condition_form.is_empty():
                             condition = condition_form.save(commit=False)
                             condition.data_declaration = data_declaration
                             condition.save()
