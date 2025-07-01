@@ -279,30 +279,3 @@ class DatasetDelete(CheckerMixin, DeleteView):
         context["action_url"] = "dataset_delete"
         context["id"] = self.object.id
         return context
-
-
-@require_POST
-@csrf_exempt
-def set_dataset_dac(request):
-    dataset_id = request.POST.get("dataset_id")
-    dac_id = request.POST.get("dac_id")
-    if not (dataset_id and dac_id):
-        return JsonResponse(
-            {"success": False, "error": "Missing parameters"}, status=400
-        )
-    try:
-        dataset = Dataset.objects.get(pk=dataset_id)
-        if dataset.dac:
-            return JsonResponse(
-                {"success": False, "error": "Dataset already has a DAC"}, status=400
-            )
-        dac = DAC.objects.get(pk=dac_id)
-        dataset.dac = dac
-        dataset.save()
-        return JsonResponse({"success": True})
-    except Dataset.DoesNotExist:
-        return JsonResponse(
-            {"success": False, "error": "Dataset not found"}, status=404
-        )
-    except DAC.DoesNotExist:
-        return JsonResponse({"success": False, "error": "DAC not found"}, status=404)

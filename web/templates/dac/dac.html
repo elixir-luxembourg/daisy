@@ -5,13 +5,15 @@
 {% block content %}
     <div class="row mt-4">
         <div class="jumbotron col" style="position:relative;">
-            <span style="color: #8D8F8F;">DAC</span>
+            <span style="color: #8D8F8F;">Data Access Committee (DAC)</span>
             <h1>{{ dac.title }}</h1>
             <div class="row">
                 <div class="col">
                     <dl>
+                        {% if dac.description  %}
                         <dt>Description</dt>
                         <dd>{{ dac.description }}</dd>
+                        {% endif %}
                         <dt>Contract</dt>
                         <dd>
                         {% if dac.contract  %}<a href="{% url 'contract' pk=dac.contract.pk %}">{{ dac.contract }}</a> {% else %}-{% endif %}
@@ -56,6 +58,22 @@
     <div class="row card-deck mt-4">
         <div class="card ml-0 mr-0 col-md-12">
             <div class="card-body">
+
+                {% if can_edit %}
+                <div class="ml-1 float-right btn-group">
+                    <button class="btn bmd-btn-fab bmd-btn-fab-sm"
+                            type="button"
+                            id="addmember"
+                            data-toggle="modal"
+                            data-target="#modal"
+                            data-modal-title="Add member to DAC"
+                            data-ajax-url="{% url 'pick_member_for_dac' dac_pk=dac.id %}"
+                            title="Add member to DAC">
+                        <i class="material-icons">add</i>
+                    </button>
+                </div>
+                {% endif %}
+                
                 <h2 class="card-title">Members</h2>
                 <table class="table table-striped">
                     <thead>
@@ -65,27 +83,38 @@
                         <th>Organization</th>
                         <th>Date added</th>
                         <th>Remark</th>
+                        {% if can_edit %}
+                        <th>Action</th>
+                        {% endif %}
                     </tr>
                     </thead>
+                    {% if memberships %}
                     <tbody>
                     {% for member in memberships %}
                         <tr>
                             <td>
-                                <a href="{% url 'contact' pk=member.id %}">{{ member.contact.full_name }}</a>
+                                <a href="{% url 'contact' pk=member.contact.id %}">{{ member.contact.full_name }}</a>
                             </td>
                             <td>{{ member.contact.email }}</td>
-                            {% if member.contact.partners %} <!-- member.organization -->
-                            <td>{% for partner in member.contact.partners.all %}
-                                <span class="badge badge-pill badge-primary">{{ partner.name }}</span>
-                            {% endfor %}
+                            <td>
+                                {% for partner in member.contact.partners.all %}
+                                    <span class="badge badge-pill badge-primary">{{ partner.name }}</span>
+                                {% endfor %}
                             </td>
-                            {% endif %}
                             <td>{{ member.added }}</td>
                             <td>{{ member.remark }}</td>
+                            {% if can_edit %}
+                            <td id="document-action">
+                                <i title="Delete document" class="material-icons red clickable" data-method="delete"
+                                   data-confirmation = "delete"
+                                   data-parent-to-remove="tr"
+                                   data-url="{% url 'remove_member_from_dac' dac_pk=dac.id member_pk=member.id  %}">delete_forever</i>
+                            </td>
+                            {% endif %}
                         </tr>
-
                     {% endfor %}
                     </tbody>
+                    {% endif %}
                 </table>
             </div>
         </div>
@@ -95,7 +124,22 @@
     <div class="row card-deck mt-4">
         <div class="card ml-0 mr-0 col-md-12">
             <div class="card-body">
+                {% if can_edit %}
+                <div class="ml-1 float-right btn-group">
+                    <button class="btn bmd-btn-fab bmd-btn-fab-sm"
+                            type="button"
+                            id="adddataset"
+                            data-toggle="modal"
+                            data-target="#modal"
+                            data-modal-title="Add Dataset to DAC"
+                            data-ajax-url="{% url 'pick_dataset_for_dac' dac_pk=dac.id %}"
+                            title="Add Dataset to DAC">
+                        <i class="material-icons">add</i>
+                    </button>
+                </div>
+                {% endif %}
                 <h2 class="card-title">Datasets managed by this DAC</h2>
+                {% if datasets %}
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -109,10 +153,10 @@
                                 <a href="{% url 'dataset' pk=dataset.id %}">{{ dataset.title }}</a>
                             </td>
                         </tr>
-
                     {% endfor %}
                     </tbody>
                 </table>
+                {% endif %}
             </div>
         </div>
     </div>

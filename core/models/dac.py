@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 from core.permissions.mapping import PERMISSION_MAPPING
 from .utils import CoreModel
@@ -52,11 +53,15 @@ class DAC(CoreModel):
         "core.User",
         related_name="dac_custodians",
         verbose_name="Local custodians",
-        blank=True,
+        blank=False,
         help_text="Local custodians are the members of the DAC who are responsible for managing data access requests.",
     )
 
-    members = models.ManyToManyField("core.Contact", through="DacMembership")
+    members = models.ManyToManyField(
+        "core.Contact",
+        through="DacMembership",
+        blank=True,
+    )
 
     @property
     def datasets(self):
@@ -89,6 +94,13 @@ class DAC(CoreModel):
             ],
             "members": [member.to_dict() for member in self.members.all()],
         }
+
+    def clean(self):
+        super().clean()
+        if self.pk and not self.local_custodians.exists():
+            raise ValidationError(
+                {"local_custodians": "At least one local custodian is required."}
+            )
 
 
 class DacMembership(CoreModel):

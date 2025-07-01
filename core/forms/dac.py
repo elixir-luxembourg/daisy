@@ -11,7 +11,6 @@ class DACForm(forms.ModelForm):
             "description",
             "contract",
             "local_custodians",
-            "members",
         ]
         widgets = {
             "comments": forms.Textarea(attrs={"rows": 2, "cols": 40}),
@@ -28,7 +27,6 @@ class DACForm(forms.ModelForm):
         self.fields["local_custodians"].queryset = User.objects.exclude(
             username="AnonymousUser"
         )
-        self.fields["members"].queryset = Contact.objects.all()
 
         contract_choices = [(c.id, str(c)) for c in Contract.objects.all()]
         self.fields["contract"].choices = contract_choices
@@ -53,7 +51,6 @@ class DACForm(forms.ModelForm):
             "description",
             "contract",
             "local_custodians",
-            "members",
         ]
         self.order_fields(self.fields_order)
 

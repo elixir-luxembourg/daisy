@@ -48,9 +48,10 @@ from web.views.dacs import (
     DACDetailView,
     DACEditView,
     DACCreateCardView,
-    DACEditCardView,
     dac_list,
-    pick_dac_for_dataset,
+    pick_member_for_dac,
+    remove_member_from_dac,
+    pick_dataset_for_dac,
 )
 from web.views.dashboard import dashboard
 from web.views.data_declarations import (
@@ -64,7 +65,6 @@ from web.views.datasets import (
     DatasetDelete,
     dataset_list,
     DatasetWizardView,
-    set_dataset_dac,
 )
 from web.views.export import (
     cohorts_export,
@@ -296,18 +296,6 @@ web_urls = [
         exposure.ExposureEditView.as_view(),
         name="dataset_exposure_edit",
     ),
-    # Dataset's DACs (Data Access Cards)
-    path(
-        "dataset/<int:dataset_pk>/dac/add/",
-        DACCreateCardView.as_view(),
-        name="dataset_dac_add",
-    ),
-    path(
-        "dataset/<int:dataset_pk>/dac/<int:pk>/edit/",
-        DACEditCardView.as_view(),
-        name="dataset_dac_edit",
-    ),
-    path("dataset/set_dac/", set_dataset_dac, name="set_dataset_dac"),
     # Cohorts
     path("definitions/cohorts/", cohort_list, name="cohorts"),
     path("definitions/cohorts/add", CohortCreateView.as_view(), name="cohort_add"),
@@ -511,6 +499,18 @@ web_urls = [
     path("dac/<int:pk>/", DACDetailView.as_view(), name="dac"),
     path("dac/<int:pk>/edit", DACEditView.as_view(), name="dac_edit"),
     path(
-        "dac/pick/<int:dataset_pk>/", pick_dac_for_dataset, name="pick_dac_for_dataset"
+        "dac/<int:dac_pk>/pick_member/",
+        pick_member_for_dac,
+        name="pick_member_for_dac",
+    ),
+    path(
+        "dac/<int:dac_pk>/remove_member/<int:member_pk>/",
+        remove_member_from_dac,
+        name="remove_member_from_dac",
+    ),
+    path(
+        "dac/<int:dac_pk>/pick_dataset/",
+        pick_dataset_for_dac,
+        name="pick_dataset_for_dac",
     ),
 ]

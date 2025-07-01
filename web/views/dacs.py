@@ -1,12 +1,15 @@
 from django.conf import settings
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, DetailView, UpdateView
 from django.contrib import messages
 from django.db import transaction
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.views.decorators.csrf import csrf_exempt
 
-from core.forms import DACForm, DACFormEdit
-from core.models import DAC, DacMembership, Dataset, Contract
+from core.forms import DACForm, DACFormEdit, PickContactForm, PickDatasetForm
+from core.models import DAC, DacMembership, Dataset, Contract, Contact
 from core.models.utils import COMPANY
 from core.permissions import CheckerMixin
 from core.utils import DaisyLogger
@@ -85,37 +88,10 @@ class DACCreateCardView(CheckerMixin, CreateView, AjaxViewMixin):
         with transaction.atomic():
             self.object = form.save(commit=False)
             self.object.save()
-            messages.add_message(
-                self.request, messages.SUCCESS, "DAC created successfully"
-            )
             if self.permission_object and not self.permission_object.dac:
                 self.permission_object.dac = self.object
                 self.permission_object.save()
-                messages.add_message(
-                    self.request,
-                    messages.SUCCESS,
-                    f"DAC {self.object.id} added to Dataset {self.permission_object.id} successfully",
-                )
-            form.members = form.cleaned_data.get("members", [])
-            if form.members:
-                for member in form.members:
-                    self.object.members.add(member)
-                    messages.add_message(
-                        self.request,
-                        messages.SUCCESS,
-                        f"Member {member} added to DAC {self.object.id} successfully",
-                    )
-            else:
-                messages.add_message(
-                    self.request,
-                    messages.WARNING,
-                    "No members were added to the DAC. Please add members to the DAC.",
-                )
-            messages.add_message(
-                self.request,
-                messages.SUCCESS,
-                f"DAC {self.object.id} created successfully",
-            )
+        messages.add_message(self.request, messages.SUCCESS, "DAC created successfully")
         return super().form_valid(form)
 
     def get_success_url(self, **kwargs):
@@ -177,11 +153,61 @@ def dac_list(request):
     )
 
 
-def pick_dac_for_dataset(request, dataset_pk):
-    dataset = get_object_or_404(Dataset, id=dataset_pk)
-    dacs = DAC.objects.filter(contract=dataset.project.contracts.all()).order_by(
-        "title"
-    )
+@require_http_methods(["DELETE"])
+@csrf_exempt
+def remove_member_from_dac(request, dac_pk, member_pk):
+    try:
+        membership = DacMembership.objects.get(dac_id=dac_pk, pk=member_pk)
+        membership.delete()
+        return HttpResponse("Member removed from DAC")
+    except DacMembership.DoesNotExist:
+        return HttpResponse("Membership not found", status=404)
+
+
+# @permission_required(Permissions.EDIT, "dac", (DAC, "pk", "pk"))
+def pick_member_for_dac(request, dac_pk):
+    if request.method == "POST":
+        form = PickContactForm(request.POST)
+        if form.is_valid():
+            dac = get_object_or_404(DAC, pk=dac_pk)
+            contact_id = form.cleaned_data["contact"]
+            contact = get_object_or_404(Contact, pk=contact_id)
+            dac.members.add(contact)
+        else:
+            return HttpResponseBadRequest("wrong parameters")
+        messages.add_message(request, messages.SUCCESS, "Member added")
+        return redirect(to="dac", pk=dac_pk)
+
+    else:
+        form = PickContactForm()
+
     return render(
-        request, "dac/pick_dac_modal.html", {"dacs": dacs, "dataset_id": dataset_pk}
+        request,
+        "modal_form.html",
+        {"form": form, "submit_url": request.get_full_path()},
+    )
+
+
+# @permission_required(Permissions.EDIT, "dac", (DAC, "pk", "pk"))
+def pick_dataset_for_dac(request, dac_pk):
+    if request.method == "POST":
+        form = PickDatasetForm(request.POST)
+        if form.is_valid():
+            dac = get_object_or_404(DAC, pk=dac_pk)
+            dataset_id = form.cleaned_data["dataset"]
+            dataset = get_object_or_404(Dataset, pk=dataset_id)
+            dataset.dac = dac
+            dataset.save()
+        else:
+            return HttpResponseBadRequest("wrong parameters")
+        messages.add_message(request, messages.SUCCESS, "Dataset added")
+        return redirect(to="dac", pk=dac_pk)
+
+    else:
+        form = PickDatasetForm()
+
+    return render(
+        request,
+        "modal_form.html",
+        {"form": form, "submit_url": request.get_full_path()},
     )
