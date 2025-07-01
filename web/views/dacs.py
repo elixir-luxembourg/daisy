@@ -6,15 +6,15 @@ from django.views.generic import CreateView, DetailView, UpdateView
 from django.contrib import messages
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import user_passes_test
 
 from core.forms import DACForm, DACFormEdit, PickContactForm, PickDatasetForm
 from core.models import DAC, DacMembership, Dataset, Contract, Contact
 from core.models.utils import COMPANY
-from core.permissions import CheckerMixin
+from core.permissions import CheckerMixin, permission_required
 from core.utils import DaisyLogger
 from core.constants import Permissions
-from web.views.utils import AjaxViewMixin
+from web.views.utils import AjaxViewMixin, is_data_steward
 from . import facet_view_utils
 
 
@@ -27,6 +27,8 @@ class DACCreateView(CreateView):
     model = DAC
     template_name = "dac/dac_form.html"
     form_class = DACForm
+    permission_required = Permissions.EDIT
+    permission_target = "dac"
 
     def get_initial(self):
         initial = super().get_initial()
@@ -150,8 +152,7 @@ def dac_list(request):
 
 
 @require_http_methods(["DELETE"])
-# @csrf_exempt
-# @permission_required(Permissions.EDIT, "dac", (DAC, "pk", "pk"))
+@permission_required(Permissions.EDIT, "dac", (DAC, "pk", "pk"))
 def remove_member_from_dac(request, dac_pk, member_pk):
     try:
         membership = DacMembership.objects.get(dac_id=dac_pk, pk=member_pk)
@@ -161,7 +162,7 @@ def remove_member_from_dac(request, dac_pk, member_pk):
         return HttpResponse("Membership not found", status=404)
 
 
-# @permission_required(Permissions.EDIT, "dac", (DAC, "pk", "pk"))
+@permission_required(Permissions.EDIT, "dac", (DAC, "pk", "pk"))
 def pick_member_for_dac(request, dac_pk):
     if request.method == "POST":
         form = PickContactForm(request.POST)
@@ -185,7 +186,7 @@ def pick_member_for_dac(request, dac_pk):
     )
 
 
-# @permission_required(Permissions.EDIT, "dac", (DAC, "pk", "pk"))
+@user_passes_test(is_data_steward)
 def pick_dataset_for_dac(request, dac_pk):
     if request.method == "POST":
         form = PickDatasetForm(request.POST)
