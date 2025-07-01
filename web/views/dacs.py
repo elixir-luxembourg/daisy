@@ -68,17 +68,13 @@ class DACCreateCardView(CheckerMixin, CreateView, AjaxViewMixin):
     permission_target = "dac"
 
     def check_permissions(self, request):
-        self.dataset_id = request.resolver_match.kwargs.get("dataset_pk")
         self.contract_id = request.resolver_match.kwargs.get("contract_pk")
-        if self.dataset_id:
-            self.permission_object = get_object_or_404(Dataset, id=self.dataset_id)
-        elif self.contract_id:
+        if self.contract_id:
             self.permission_object = get_object_or_404(Contract, id=self.contract_id)
         super().check_permissions(request)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["dataset_id"] = self.dataset_id
         kwargs["contract_id"] = self.contract_id
         return kwargs
 
@@ -154,7 +150,8 @@ def dac_list(request):
 
 
 @require_http_methods(["DELETE"])
-@csrf_exempt
+# @csrf_exempt
+# @permission_required(Permissions.EDIT, "dac", (DAC, "pk", "pk"))
 def remove_member_from_dac(request, dac_pk, member_pk):
     try:
         membership = DacMembership.objects.get(dac_id=dac_pk, pk=member_pk)

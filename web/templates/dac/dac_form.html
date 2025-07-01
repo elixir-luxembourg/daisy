@@ -14,6 +14,19 @@
             </div>
         </div>
     </div>
+{% endblock %}
 
-
+{% block js %}
+    <script>
+        $('#id_projects').change(function() {
+            var projectId = $(this).val();
+            $.get('/project/' + projectId + '/contracts', function(data) {
+                var $contract = $('#id_contract');
+                $contract.empty();
+                $.each(data.contracts, function(idx, contract) {
+                    $contract.append($('<option>', {value: contract.id, text: contract.name}));
+                });
+            });
+        });
+    </script>
 {% endblock %}

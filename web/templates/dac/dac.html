@@ -76,6 +76,7 @@
                 
                 <h2 class="card-title">Members</h2>
                 <table class="table table-striped">
+                    {% if memberships %}
                     <thead>
                     <tr>
                         <th>Name</th>
@@ -88,7 +89,6 @@
                         {% endif %}
                     </tr>
                     </thead>
-                    {% if memberships %}
                     <tbody>
                     {% for member in memberships %}
                         <tr>

@@ -90,6 +90,7 @@ from web.views.projects import (
     ProjectDetailView,
     ProjectDelete,
     dsw_list_projects,
+    project_contracts,
 )
 from web.views.publication import (
     PublicationCreateView,
@@ -475,6 +476,11 @@ web_urls = [
         "project/<int:pk>/dataset/<int:flag>/create",
         projects.project_dataset_create,
         name="project_dataset_create",
+    ),
+    path(
+        "project/<int:project_id>/contracts",
+        project_contracts,
+        name="project_contracts",
     ),
     # Publications
     path("publications/", PublicationListView.as_view(), name="publications"),
