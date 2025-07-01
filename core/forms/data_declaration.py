@@ -2,7 +2,7 @@ from django import forms
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 
-from core.forms import UseRestrictionForm, SkipFieldValidationMixin
+from core.forms import UseConditionForm, SkipFieldValidationMixin
 from core.models import DataDeclaration, Partner, Contract, GDPRRole
 from core.models.contract import PartnerRole
 
@@ -84,8 +84,8 @@ class DataDeclarationEditForm(forms.ModelForm):
         return title
 
 
-RestrictionFormset = forms.formset_factory(
-    UseRestrictionForm, extra=1, min_num=0, max_num=25
+ConditionFormset = forms.formset_factory(
+    UseConditionForm, extra=1, min_num=0, max_num=25
 )
 
 

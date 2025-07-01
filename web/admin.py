@@ -23,11 +23,11 @@ from core.models import (
     PersonalDataType,
     Project,
     Publication,
-    RestrictionClass,
+    ConditionClass,
     SensitivityClass,
     Share,
     StorageResource,
-    UseRestriction,
+    UseCondition,
     DataLogType,
     Endpoint,
     Exposure,
@@ -98,11 +98,11 @@ admin.site.register(PartnerRole)  # contract.py
 admin.site.register(PersonalDataType)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Publication)
-admin.site.register(RestrictionClass)
+admin.site.register(ConditionClass)
 admin.site.register(SensitivityClass)
 admin.site.register(Share)
 admin.site.register(StorageResource, StorageResourceAdmin)
-admin.site.register(UseRestriction)
+admin.site.register(UseCondition)
 admin.site.register(DataLogType)
 
 # Term models (term_model.py)

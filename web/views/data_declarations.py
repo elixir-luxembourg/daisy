@@ -22,8 +22,8 @@ from core.forms import (
     DataDeclarationSubFormNew,
 )
 from core.forms import DataDeclarationSubFormFromExisting, DataDeclarationEditForm
-from core.forms.data_declaration import RestrictionFormset
-from core.models import Dataset, Partner, DataDeclaration, UseRestriction
+from core.forms.data_declaration import ConditionFormset
+from core.models import Dataset, Partner, DataDeclaration, UseCondition
 from core.permissions import permission_required, CheckerMixin
 from core.utils import DaisyLogger
 
@@ -231,11 +231,11 @@ class DatadeclarationEditView(CheckerMixin, UpdateView):
         data_declaration = self.get_object()
 
         declaration_form = DataDeclarationEditForm(instance=data_declaration)
-        restriction_data = [
-            restriction.serialize()
-            for restriction in data_declaration.data_use_restrictions.all()
+        condition_data = [
+            condition.serialize()
+            for condition in data_declaration.data_use_conditions.all()
         ]
-        restriction_formset = RestrictionFormset(initial=restriction_data)
+        condition_formset = ConditionFormset(initial=condition_data)
         return render(
             request,
             self.template_name,
@@ -243,7 +243,7 @@ class DatadeclarationEditView(CheckerMixin, UpdateView):
                 "form": declaration_form,
                 "submit_url": request.get_full_path(),
                 "data_declaration": data_declaration,
-                "restriction_formset": restriction_formset,
+                "condition_formset": condition_formset,
             },
         )
 
@@ -253,30 +253,30 @@ class DatadeclarationEditView(CheckerMixin, UpdateView):
             request.POST, instance=data_declaration
         )
 
-        restriction_data = [
-            restriction.serialize()
-            for restriction in data_declaration.data_use_restrictions.all()
+        condition_data = [
+            condition.serialize()
+            for condition in data_declaration.data_use_conditions.all()
         ]
-        restriction_formset = RestrictionFormset(request.POST, initial=restriction_data)
+        condition_formset = ConditionFormset(request.POST, initial=condition_data)
 
-        formset_valid = restriction_formset.is_valid()
+        formset_valid = condition_formset.is_valid()
 
         if declaration_form.is_valid() and formset_valid:
             try:
                 with transaction.atomic():
                     declaration_form.save()
-                    # Replace the old use restrictions with the new
-                    UseRestriction.objects.filter(
+                    # Replace the old use conditions with the new
+                    UseCondition.objects.filter(
                         data_declaration=data_declaration
                     ).delete()
-                    for restriction_form in restriction_formset:
+                    for condition_form in condition_formset:
                         if (
-                            restriction_form.is_valid()
-                            and not restriction_form.is_empty()
+                            condition_form.is_valid()
+                            and not condition_form.is_empty()
                         ):
-                            restriction = restriction_form.save(commit=False)
-                            restriction.data_declaration = data_declaration
-                            restriction.save()
+                            condition = condition_form.save(commit=False)
+                            condition.data_declaration = data_declaration
+                            condition.save()
                     messages.add_message(
                         request,
                         messages.SUCCESS,
@@ -298,6 +298,6 @@ class DatadeclarationEditView(CheckerMixin, UpdateView):
                     "form": declaration_form,
                     "submit_url": request.get_full_path(),
                     "data_declaration": data_declaration,
-                    "restriction_formset": restriction_formset,
+                    "condition_formset": condition_formset,
                 },
             )
