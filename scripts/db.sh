@@ -116,6 +116,10 @@ restore() {
     # Restore media files
     echo "Restoring Django media files..."
     if [ -d "${tmp_restore_dir}/${extracted_dir}/documents" ]; then
+        if [ ! -d "${MEDIA_DIR}" ]; then
+            echo "Creating media directory: ${MEDIA_DIR}"
+            mkdir -p "${MEDIA_DIR}"
+        fi
         rm -rf "${MEDIA_DIR:?}/"*
         if ! cp -R "${tmp_restore_dir}/${extracted_dir}/documents/"* "${MEDIA_DIR}/"; then
             echo "ERROR: Media files restoration failed" >&2
