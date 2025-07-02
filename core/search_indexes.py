@@ -457,6 +457,7 @@ class DACIndex(CelerySearchIndex, indexes.Indexable):
     pk = indexes.IntegerField(indexed=True, stored=True, faceted=True)
     local_custodians = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
     title = indexes.CharField(indexed=True, stored=True, faceted=True)
+    project = indexes.CharField(indexed=True, stored=True, faceted=True)
 
     def prepare_title(self, obj):
         return obj.title
@@ -470,3 +471,8 @@ class DACIndex(CelerySearchIndex, indexes.Indexable):
 
     def get_updated_field(self):
         return "updated"
+
+    def prepare_project(self, obj):
+        if obj.contract.project:
+            return str(obj.contract.project)
+        return None

@@ -65,7 +65,17 @@ class DAC(CoreModel):
 
     @property
     def datasets(self):
+        """
+        Returns the datasets associated with the DAC.
+        """
         return self.datasets.all()
+
+    @property
+    def project(self):
+        """
+        Returns the projects associated with the DAC's contract.
+        """
+        return self.contract.project
 
     def __str__(self):
         return self.title
