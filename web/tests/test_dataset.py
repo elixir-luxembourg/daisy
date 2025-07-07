@@ -11,7 +11,8 @@ from test.factories import (
     UserFactory,
     VIPGroup,
     StorageResourceFactory,
-    LegalBasisFactory,
+    DatasetFactory,
+    ExposureFactory,
 )
 from django.urls import reverse
 from django.test import Client
@@ -155,3 +156,39 @@ def test_dataset_wizard_form(
         == LegalBasis.objects.all().count()
     )
     assert dataset.accesses.all().count() == Access.objects.all().count()
+
+
+@pytest.mark.django_db
+def test_dataset_publication_status_no_exposures():
+    """Test publication_status returns empty string when no exposures exist"""
+    dataset = DatasetFactory.create()
+    assert dataset.publication_status == ""
+    assert dataset.is_published is False
+
+
+@pytest.mark.django_db
+def test_dataset_publication_status_with_active_exposures():
+    """Test publication_status returns 'published' when active exposures exist"""
+    dataset = DatasetFactory.create()
+    ExposureFactory.create(dataset=dataset, is_deprecated=False)
+    assert dataset.publication_status == "published"
+    assert dataset.is_published is True
+
+
+@pytest.mark.django_db
+def test_dataset_publication_status_with_deprecated_exposures():
+    """Test publication_status returns 'deprecated' when only deprecated exposures exist"""
+    dataset = DatasetFactory.create()
+    ExposureFactory.create(dataset=dataset, is_deprecated=True)
+    assert dataset.publication_status == "deprecated"
+    assert dataset.is_published is False
+
+
+@pytest.mark.django_db
+def test_dataset_publication_status_with_mixed_exposures():
+    """Test publication_status returns 'published' when both active and deprecated exposures exist"""
+    dataset = DatasetFactory.create()
+    ExposureFactory.create(dataset=dataset, is_deprecated=False)
+    ExposureFactory.create(dataset=dataset, is_deprecated=True)
+    assert dataset.publication_status == "published"
+    assert dataset.is_published is True
