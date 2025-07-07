@@ -151,6 +151,17 @@ class Contract(CoreModel):
     def __str__(self):
         return self.name or self.short_name()
 
+    def display_partners(self):
+        partners = self.partners.all()
+        if len(partners) > 2:
+            partners_str = ', '.join(str(p) for p in partners[:2])
+            return f"{partners_str} and {len(partners)-2} more..."
+        return ', '.join(str(p) for p in partners) if partners else '-'
+
+    def display_partners_tooltip(self):
+        partners = self.partners.all()
+        return ", ".join(str(p) for p in partners) if partners else ""
+
     def short_name(self):
         partners_list = (
             ", ".join([p.name for p in self.partners.all()]) or "Undefined partner(s)"

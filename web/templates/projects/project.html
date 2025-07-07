@@ -285,21 +285,15 @@
                                     {{ contract.comments|default:"-" }}
                                 </td>
                                 <td>
-                                    {% with partners=contract.partners.all %}
-                                    {% if partners %}
-                                        {% if partners|length > 2 %}
-                                            <span data-toggle="tooltip" 
-                                                  data-placement="top"
-                                                  title="{% for partner in partners %}{{ partner }}{% if not forloop.last %}, {% endif %}{% endfor %}">
-                                                {{ partners|slice:":2"|join:", " }} <span class="text-muted font-italic">and {{ partners|length|add:"-2" }} more...</span>
-                                            </span>
-                                        {% else %}
-                                            {{ partners|join:", " }}
-                                        {% endif %}
+                                    {% if contract.partners.count > 2 %}
+                                        <span data-toggle="tooltip" 
+                                              data-placement="top"
+                                              title="{{ contract.display_partners_tooltip }}">
+                                            {{ contract.display_partners }}
+                                        </span>
                                     {% else %}
-                                        -
+                                        {{ contract.display_partners }}
                                     {% endif %}
-                                    {% endwith %}
                                 </td>
                                 <td>
                                     {{ contract.updated|date:"Y-m-d" }}
