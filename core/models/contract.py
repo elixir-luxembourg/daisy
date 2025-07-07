@@ -154,9 +154,9 @@ class Contract(CoreModel):
     def display_partners(self):
         partners = self.partners.all()
         if len(partners) > 2:
-            partners_str = ', '.join(str(p) for p in partners[:2])
+            partners_str = ", ".join(str(p) for p in partners[:2])
             return f"{partners_str} and {len(partners)-2} more..."
-        return ', '.join(str(p) for p in partners) if partners else '-'
+        return ", ".join(str(p) for p in partners) if partners else "-"
 
     def display_partners_tooltip(self):
         partners = self.partners.all()
