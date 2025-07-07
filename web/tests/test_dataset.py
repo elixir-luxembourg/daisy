@@ -13,6 +13,7 @@ from test.factories import (
     StorageResourceFactory,
     DatasetFactory,
     ExposureFactory,
+    EndpointFactory,
 )
 from django.urls import reverse
 from django.test import Client
@@ -170,7 +171,8 @@ def test_dataset_publication_status_no_exposures():
 def test_dataset_publication_status_with_active_exposures():
     """Test publication_status returns 'published' when active exposures exist"""
     dataset = DatasetFactory.create()
-    ExposureFactory.create(dataset=dataset, is_deprecated=False)
+    endpoint = EndpointFactory.create(name="test", api_key="test")
+    ExposureFactory.create(dataset=dataset, endpoint=endpoint, is_deprecated=False)
     assert dataset.publication_status == "published"
     assert dataset.is_published is True
 
@@ -179,7 +181,8 @@ def test_dataset_publication_status_with_active_exposures():
 def test_dataset_publication_status_with_deprecated_exposures():
     """Test publication_status returns 'deprecated' when only deprecated exposures exist"""
     dataset = DatasetFactory.create()
-    ExposureFactory.create(dataset=dataset, is_deprecated=True)
+    endpoint = EndpointFactory.create(name="test", api_key="test")
+    ExposureFactory.create(dataset=dataset, endpoint=endpoint, is_deprecated=True)
     assert dataset.publication_status == "deprecated"
     assert dataset.is_published is False
 
@@ -188,7 +191,9 @@ def test_dataset_publication_status_with_deprecated_exposures():
 def test_dataset_publication_status_with_mixed_exposures():
     """Test publication_status returns 'published' when both active and deprecated exposures exist"""
     dataset = DatasetFactory.create()
-    ExposureFactory.create(dataset=dataset, is_deprecated=False)
-    ExposureFactory.create(dataset=dataset, is_deprecated=True)
+    endpoint1 = EndpointFactory.create(name="test1", api_key="test1")
+    endpoint2 = EndpointFactory.create(name="test2", api_key="test2")
+    ExposureFactory.create(dataset=dataset, endpoint=endpoint1, is_deprecated=False)
+    ExposureFactory.create(dataset=dataset, endpoint=endpoint2, is_deprecated=True)
     assert dataset.publication_status == "published"
     assert dataset.is_published is True
