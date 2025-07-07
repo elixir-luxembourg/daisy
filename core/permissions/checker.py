@@ -260,6 +260,7 @@ class AutoChecker(AbstractChecker):
         "LegalBasis": DatasetEntityChecker,
         "Share": DatasetEntityChecker,
         "DataLocation": DatasetEntityChecker,
+        "DAC": DACChecker,
     }
 
     # override default check method

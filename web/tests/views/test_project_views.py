@@ -281,3 +281,22 @@ def test_project_views_scientific_metadata_field(
 
     response = client.get(url)
     assert (field_node in response.content.decode("utf-8")) is expected_result
+
+
+@pytest.mark.django_db
+def test_project_contracts_view_returns_contracts(client):
+    user = UserFactory()
+    client.force_login(user)
+    project = ProjectFactory()
+    contract1 = ContractFactory(project=project)
+    contract2 = ContractFactory(project=project)
+    other_project = ProjectFactory()
+    other_contract = ContractFactory(project=other_project)
+
+    url = reverse("project_contracts", args=[project.pk])
+    response = client.get(url)
+    assert response.status_code == 200
+    contract_ids = [c["id"] for c in response.json()["contracts"]]
+    assert contract1.pk in contract_ids
+    assert contract2.pk in contract_ids
+    assert other_contract.pk not in contract_ids

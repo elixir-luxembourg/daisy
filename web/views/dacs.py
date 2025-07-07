@@ -5,7 +5,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, DetailView, UpdateView
 from django.contrib import messages
 from django.db import transaction
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.contrib.auth.decorators import user_passes_test
 
 from core.forms import DACForm, DACFormEdit, PickContactForm, PickDatasetForm
@@ -28,14 +28,36 @@ class DACCreateView(CreateView):
     template_name = "dac/dac_form.html"
     form_class = DACForm
     permission_required = Permissions.EDIT
-    permission_target = "dac"
+    permission_target = "contract"
 
-    def get_initial(self):
-        initial = super().get_initial()
-        dataset_id = self.request.GET.get("dataset_id")
-        if dataset_id:
-            initial["dataset_id"] = dataset_id
-        return initial
+    def dispatch(self, request, *args, **kwargs):
+        self.contract = Contract.objects.get(id=request.POST.get("contract"))
+        the_user = request.user
+        can_edit = the_user.can_edit_contract(self.contract)
+        if can_edit:
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden()
+
+
+class DACEditView(UpdateView):
+    model = DAC
+    template_name = "dac/dac_form_edit.html"
+    form_class = DACFormEdit
+    permission_required = Permissions.EDIT
+    permission_target = "contract"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.contract = self.get_object().contract
+        the_user = request.user
+        can_edit = the_user.can_edit_contract(self.contract)
+        if can_edit:
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden()
+
+    def get_success_url(self):
+        return reverse_lazy("dac", kwargs={"pk": self.object.id})
 
 
 class DACDetailView(DetailView):
@@ -48,18 +70,9 @@ class DACDetailView(DetailView):
         context["local_custodians"] = context["dac"].local_custodians.all()
         context["datasets"] = context["dac"].datasets.all()
         context["can_edit"] = self.request.user.has_perm(
-            Permissions.EDIT, context["dac"]
+            Permissions.EDIT.value, context["dac"]
         )
         return context
-
-
-class DACEditView(UpdateView):
-    model = DAC
-    template_name = "dac/dac_form_edit.html"
-    form_class = DACFormEdit
-
-    def get_success_url(self):
-        return reverse_lazy("dac", kwargs={"pk": self.object.id})
 
 
 class DACCreateCardView(CheckerMixin, CreateView, AjaxViewMixin):
@@ -67,7 +80,7 @@ class DACCreateCardView(CheckerMixin, CreateView, AjaxViewMixin):
     template_name = "dac/dac_form.html"
     form_class = DACForm
     permission_required = Permissions.EDIT
-    permission_target = "dac"
+    permission_target = "contract"
 
     def check_permissions(self, request):
         self.contract_id = request.resolver_match.kwargs.get("contract_pk")
@@ -94,27 +107,6 @@ class DACCreateCardView(CheckerMixin, CreateView, AjaxViewMixin):
 
     def get_success_url(self, **kwargs):
         return reverse_lazy("dataset", kwargs={"pk": self.permission_object.pk})
-
-
-class DACEditCardView(CheckerMixin, UpdateView, AjaxViewMixin):
-    model = DAC
-    form_class = DACFormEdit
-    template_name = "dac/dac_form.html"
-    permission_required = Permissions.EDIT
-    permission_target = "dac"
-
-    def get_permission_object(self, queryset=None):
-        return self.get_object()
-
-    def form_valid(self, form):
-        """If the form is valid, save the associated model and add to the dataset"""
-        self.object = form.save(commit=False)
-        self.object.save()
-        messages.add_message(self.request, messages.SUCCESS, "DAC updated successfully")
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return reverse_lazy("dac", kwargs={"pk": self.object.pk})
 
 
 def dac_list(request):
@@ -152,7 +144,7 @@ def dac_list(request):
 
 
 @require_http_methods(["DELETE"])
-@permission_required(Permissions.EDIT, "dac", (DAC, "pk", "pk"))
+@permission_required(Permissions.EDIT, "dac", (DAC, "pk", "dac_pk"))
 def remove_member_from_dac(request, dac_pk, member_pk):
     try:
         membership = DacMembership.objects.get(dac_id=dac_pk, pk=member_pk)
@@ -162,7 +154,7 @@ def remove_member_from_dac(request, dac_pk, member_pk):
         return HttpResponse("Membership not found", status=404)
 
 
-@permission_required(Permissions.EDIT, "dac", (DAC, "pk", "pk"))
+@permission_required(Permissions.EDIT, "dac", (DAC, "pk", "dac_pk"))
 def pick_member_for_dac(request, dac_pk):
     if request.method == "POST":
         form = PickContactForm(request.POST)

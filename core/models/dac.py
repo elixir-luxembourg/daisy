@@ -112,6 +112,9 @@ class DAC(CoreModel):
                 {"local_custodians": "At least one local custodian is required."}
             )
 
+    def delete(self, *args, **kwargs):
+        raise ValidationError("DAC objects cannot be deleted.")
+
 
 class DacMembership(CoreModel):
     contact = models.ForeignKey("core.Contact", on_delete=models.CASCADE)
