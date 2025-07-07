@@ -115,7 +115,7 @@
                         </a>
                     </div>
                 {% endif %}
-                <h2 class="card-title"><span><i class="material-icons">assignment_turned_in</i></span> Data declarations</h2>
+                <h2 class="card-title"><span><i class="material-icons">assignment</i></span> Data declarations</h2>
 
                 {% if dataset.data_declarations.all %}
                     <div class="table-responsive">
@@ -327,7 +327,7 @@
                         </button>
                     </div>
                 {% endif %}
-                <h2 class="card-title"><span><i class="material-icons">group</i></span> Accesses
+                <h2 class="card-title"><span><i class="material-icons">groups</i></span> Accesses
                     {% if can_see_protected %}
                         <a href="{% url 'history' %}?entity_name=access&parent_entity_name=dataset&parent_entity_id={{ dataset.pk }}"
                            title="See dataset accesses history"
@@ -432,7 +432,7 @@
                         </button>
                     </div>
                 {% endif %}
-                <h2 class="card-title"><span><i class="material-icons">book</i></span> Logbook</h2>
+                <h2 class="card-title"><span><i class="material-icons">timeline</i></span> Logbook</h2>
 
                 <div class="table-responsive">
                 <table class="table table-striped">
