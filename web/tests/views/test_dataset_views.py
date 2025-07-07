@@ -101,13 +101,13 @@ def test_dataset_view_protected_documents(permissions, group):
     if user.is_part_of(DataStewardGroup()) or user.is_part_of(AuditorGroup()):
         assert b'<div class="row mt-4" id="documents-card">' in response.content
         assert (
-            b'<h2 class="card-title"><span><i class="material-icons">link</i></span> Documents</h2>'
+            b'<h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>'
             in response.content
         )
     else:
         assert b'<div class="row mt-4" id="documents-card">' not in response.content
         assert (
-            b'<h2 class="card-title"><span><i class="material-icons">link</i></span> Documents</h2>'
+            b'<h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>'
             not in response.content
         )
 
@@ -116,7 +116,7 @@ def test_dataset_view_protected_documents(permissions, group):
         response = client.get(url, follow=True)
         assert b'<div class="row mt-4" id="documents-card">' in response.content
         assert (
-            b'<h2 class="card-title"><span><i class="material-icons">link</i></span> Documents</h2>'
+            b'<h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>'
             in response.content
         )
 
