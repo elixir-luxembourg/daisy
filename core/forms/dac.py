@@ -44,6 +44,8 @@ class DACForm(forms.ModelForm):
                 if project:
                     self.fields["projects"].initial = project.id
                     self.fields["projects"].choices = [(project.id, str(project))]
+                    self.fields["projects"].disabled = True
+                    self.fields["contract"].disabled = True
             except Contract.DoesNotExist:
                 pass
 

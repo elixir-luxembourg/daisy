@@ -31,6 +31,8 @@ class DACCreateView(CreateView):
     permission_target = "contract"
 
     def dispatch(self, request, *args, **kwargs):
+        if request.method == "GET":
+            return super().dispatch(request, *args, **kwargs)
         self.contract = Contract.objects.get(id=request.POST.get("contract"))
         the_user = request.user
         can_edit = the_user.can_edit_contract(self.contract)

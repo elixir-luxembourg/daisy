@@ -136,14 +136,14 @@ def test_pick_member_for_dac_and_remove_member(client):
     client.force_login(user)
     dac = DACFactory()
     contact = ContactFactory()
-    pick_url = reverse("pick_member_for_dac", args=[dac.pk])
-    remove_url = reverse("remove_member_from_dac", args=[dac.pk, contact.pk])
     # Add member
+    pick_url = reverse("pick_member_for_dac", args=[dac.pk])
     response = client.post(pick_url, {"contact": contact.pk})
     assert response.status_code == 302
     assert response.url == reverse("dac", args=[dac.pk])
     assert DacMembership.objects.filter(dac=dac, contact=contact).exists()
     # Remove member
+    remove_url = reverse("remove_member_from_dac", args=[dac.pk, contact.pk])
     response = client.delete(remove_url)
     assert response.status_code == 200
     assert not DacMembership.objects.filter(dac=dac, contact=contact).exists()
