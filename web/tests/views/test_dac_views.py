@@ -64,6 +64,7 @@ def test_dac_detail(client):
     assert "local_custodians" in response.context
     assert "datasets" in response.context
     assert "can_edit" in response.context
+    assert "is_data_steward" in response.context
 
 
 @pytest.mark.django_db
@@ -138,12 +139,15 @@ def test_pick_member_for_dac_and_remove_member(client):
     contact = ContactFactory()
     # Add member
     pick_url = reverse("pick_member_for_dac", args=[dac.pk])
-    response = client.post(pick_url, {"contact": contact.pk})
+    response = client.post(pick_url, {"contact": contact.pk, "remark": "Test remark"})
     assert response.status_code == 302
     assert response.url == reverse("dac", args=[dac.pk])
-    assert DacMembership.objects.filter(dac=dac, contact=contact).exists()
+    member = DacMembership.objects.get(dac=dac, contact=contact)
+    assert member.contact == contact
+    assert member.added is not None
+    assert member.remark == "Test remark"
     # Remove member
-    remove_url = reverse("remove_member_from_dac", args=[dac.pk, contact.pk])
+    remove_url = reverse("remove_member_from_dac", args=[dac.pk, member.pk])
     response = client.delete(remove_url)
     assert response.status_code == 200
     assert not DacMembership.objects.filter(dac=dac, contact=contact).exists()

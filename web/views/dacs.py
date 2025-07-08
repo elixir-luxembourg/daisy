@@ -8,7 +8,7 @@ from django.db import transaction
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.contrib.auth.decorators import user_passes_test
 
-from core.forms import DACForm, DACFormEdit, PickContactForm, PickDatasetForm
+from core.forms import DACForm, DACFormEdit, PickContactWithRemarkForm, PickDatasetForm
 from core.models import DAC, DacMembership, Dataset, Contract, Contact
 from core.models.utils import COMPANY
 from core.permissions import CheckerMixin, permission_required
@@ -74,6 +74,7 @@ class DACDetailView(DetailView):
         context["can_edit"] = self.request.user.has_perm(
             Permissions.EDIT.value, context["dac"]
         )
+        context["is_data_steward"] = self.request.user.is_data_steward
         return context
 
 
@@ -159,19 +160,21 @@ def remove_member_from_dac(request, dac_pk, member_pk):
 @permission_required(Permissions.EDIT, "dac", (DAC, "pk", "dac_pk"))
 def pick_member_for_dac(request, dac_pk):
     if request.method == "POST":
-        form = PickContactForm(request.POST)
+        form = PickContactWithRemarkForm(request.POST)
         if form.is_valid():
             dac = get_object_or_404(DAC, pk=dac_pk)
             contact_id = form.cleaned_data["contact"]
             contact = get_object_or_404(Contact, pk=contact_id)
             dac.members.add(contact)
+            membership = DacMembership.objects.get(dac_id=dac_pk, contact=contact)
+            membership.remark = form.cleaned_data["remark"]
+            membership.save()
         else:
             return HttpResponseBadRequest("wrong parameters")
         messages.add_message(request, messages.SUCCESS, "Member added")
         return redirect(to="dac", pk=dac_pk)
-
     else:
-        form = PickContactForm()
+        form = PickContactWithRemarkForm()
 
     return render(
         request,
