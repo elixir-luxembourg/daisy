@@ -1,0 +1,11 @@
+services:
+  web:
+    volumes:
+      - ./web/static:/static
+      - solrdata:/solr
+      - .:/code
+  
+  nginx:
+    volumes:
+      - ./web/static:/public/static:ro
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
