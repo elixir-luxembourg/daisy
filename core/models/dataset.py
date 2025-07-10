@@ -99,8 +99,7 @@ class Dataset(CoreTrackedModel, NotifyMixin):
 
     @property
     def is_published(self):
-        exposures_list = self.exposures.all()
-        return len(exposures_list) > 0
+        return self.exposures.filter(is_deprecated=False).exists()
 
     @property
     def data_types(self):
@@ -109,6 +108,21 @@ class Dataset(CoreTrackedModel, NotifyMixin):
             all_data_types.update(data_declaration.data_types_generated.all())
             all_data_types.update(data_declaration.data_types_received.all())
         return all_data_types
+
+    @property
+    def publication_status(self):
+        """
+        Return publication status of the dataset.
+        - 'published': Has active (non-deprecated) exposures
+        - 'deprecated': Has only deprecated exposures
+        - '': No exposures
+        """
+        if self.is_published:
+            return "published"
+        elif self.exposures.filter(is_deprecated=True).exists():
+            return "deprecated"
+        else:
+            return ""
 
     def collect_contracts(self):
         result = set()
@@ -200,8 +214,6 @@ class Dataset(CoreTrackedModel, NotifyMixin):
         return base_dict
 
     def serialize_to_export(self):
-        import functools
-
         d = self.to_dict()
 
         contacts = map(
