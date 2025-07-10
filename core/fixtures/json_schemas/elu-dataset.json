@@ -107,7 +107,7 @@
         "title": {
           "type": "string"
         },
-        "use_restrictions": {
+        "use_conditions": {
           "type": "array",
           "items": {
             "type": "object",
@@ -141,7 +141,7 @@
               "use_class_note": {
                 "type": "string"
               },
-              "use_restriction_rule": {
+              "use_condition_rule": {
                 "enum": [
                   "OBLIGATION",
                   "PERMISSION",
@@ -149,17 +149,17 @@
                   "CONSTRAINED_PERMISSION"
                 ]
               },
-              "use_restriction_objects": {
+              "use_condition_objects": {
                 "type": "array",
                 "items": {
                   "type": "string"
                 },
-                "use_restriction_note": {
+                "use_condition_note": {
                   "type": "string"
                 }
               }
             },
-            "required": ["use_class_note", "use_restriction_rule"]
+            "required": ["use_class_note", "use_condition_rule"]
           }
         },
         "data_types": {

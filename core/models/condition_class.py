@@ -1,15 +1,17 @@
 from .utils import CoreModel, TextFieldWithInputWidget
 
 
-class RestrictionClass(CoreModel):
+class ConditionClass(CoreModel):
     """
-    Represents data use restriction code. We currently populate this with GA4GH Consent Codes.
+    Represents data use condition code. We currently populate this with GA4GH Consent Codes.
     """
 
     class Meta:
         app_label = "core"
         get_latest_by = "added"
         ordering = ["name"]
+        verbose_name = "Condition Class"
+        verbose_name_plural = "Condition Classes"
 
     code = TextFieldWithInputWidget(
         max_length=20, blank=False, verbose_name="Code", unique=True

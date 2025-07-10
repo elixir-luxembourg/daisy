@@ -44,16 +44,16 @@
                     "has_special_subjects": true,
                     "special_subjects_description": "2 year old children",
                     "source_notes": "Data is from collaborator.",
-                    "use_restrictions": [
+                    "use_conditions": [
                         {
                             "use_class": "PS",
                             "use_class_note": "Use is restricted to projects: ABCD",
-                            "use_restriction_rule": "OBLIGATION"
+                            "use_condition_rule": "OBLIGATION"
                         },
                         {
                             "use_class": "PUB",
                             "use_class_note": "Acknowledgement required.",
-                            "use_restriction_rule": "OBLIGATION"
+                            "use_condition_rule": "OBLIGATION"
                         }
                     ]
                 }
@@ -100,16 +100,16 @@
                         "collab_role": "joint_controller"
                     },
                     "source_notes": "Data is from collaborator.",
-                    "use_restrictions": [
+                    "use_conditions": [
                         {
                             "use_class": "PS",
                             "use_class_note": "Use is restricted to projects: Hypertension",
-                            "use_restriction_rule": "CONSTRAINED_PERMISSION"
+                            "use_condition_rule": "CONSTRAINED_PERMISSION"
                         },
                         {
                           "use_class": "RS",
                           "use_class_note": "Use is restricted to research areas: Hypertension-ABC disease",
-                          "use_restriction_rule": "CONSTRAINED_PERMISSION"
+                          "use_condition_rule": "CONSTRAINED_PERMISSION"
                         }
                     ]
                 }
@@ -199,11 +199,11 @@
                     "subjects_category": "cases_and_controls",
                     "has_special_subjects": false,
                     "access_category": "controlled_access",
-                    "use_restrictions": [
+                    "use_conditions": [
                         {
                             "use_class": "PUB",
                             "use_class_note": "Acknowledgement required.",
-                            "use_restriction_rule": "OBLIGATION"
+                            "use_condition_rule": "OBLIGATION"
                         }
                     ]
                 }
@@ -276,21 +276,21 @@
                     "has_special_subjects": false,
                     "storage_end_date": "2030-05-10",
                     "consent_status": "homogeneous",
-                    "use_restrictions": [
+                    "use_conditions": [
                         {
                             "use_class": "PS",
                             "use_class_note": "Consent form restricts data use to projects XYZ",
-                            "use_restriction_rule": "CONSTRAINED_PERMISSION"
+                            "use_condition_rule": "CONSTRAINED_PERMISSION"
                         },
                         {
                           "use_class": "RS",
                           "use_class_note": "Data is consented for research on Parkinson's disease",
-                          "use_restriction_rule": "CONSTRAINED_PERMISSION"
+                          "use_condition_rule": "CONSTRAINED_PERMISSION"
                         },
                         {
                           "use_class": "GS",
                           "use_class_note": "Data is consented for sharing outside institute (Within Luxembourg)",
-                          "use_restriction_rule": "CONSTRAINED_PERMISSION"
+                          "use_condition_rule": "CONSTRAINED_PERMISSION"
                         }
                     ]
                 },
@@ -311,16 +311,16 @@
                         "collab_role": "joint_controller"
                     },
                     "source_notes": "Data is from collaborator.",
-                    "use_restrictions": [
+                    "use_conditions": [
                         {
                             "use_class": "PUB",
                             "use_class_note": "Acknowledgement required.",
-                            "use_restriction_rule": "OBLIGATION"
+                            "use_condition_rule": "OBLIGATION"
                         },
                         {
                           "use_class": "TS",
                           "use_class_note": "Data is obtained for a limited duration. 2021-02-28",
-                          "use_restriction_rule": "OBLIGATION"
+                          "use_condition_rule": "OBLIGATION"
                         }
                     ]
                 }

@@ -2,7 +2,7 @@ from .cohort import CohortForm, CohortFormEdit
 from .contact import ContactForm, PickContactForm
 from .contract import ContractForm, ContractFormEdit, PartnerRoleForm
 from .dataset import DatasetForm, SkipFieldValidationMixin
-from .use_restriction import UseRestrictionForm
+from .use_condition import UseConditionForm
 from .data_declaration import (
     DataDeclarationForm,
     DataDeclarationSubFormOther,
@@ -41,7 +41,7 @@ __all__ = [
     "PublicationForm",
     "ShareForm",
     "PickPublicationForm",
-    "UseRestrictionForm",
+    "UseConditionForm",
     "AccessForm",
     "SkipFieldValidationMixin",
 ]

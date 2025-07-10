@@ -75,10 +75,10 @@
       "consent_notes": "Consent is consistent among all subjects",
       "de_identification": "pseudonymized",
       "subject_categories": "pseudonymized",
-      "use_restrictions": [
+      "use_conditions": [
         {
           "ga4gh_code": "NRES",
-          "note": "No known restrictions"
+          "note": "No known conditions"
         }
       ]
     },
@@ -98,7 +98,7 @@
       "consent_notes": "There are three primary consent groups",
       "de_identification": "pseudonymized",
       "subject_categories": "pseudonymized",
-      "use_restrictions": [
+      "use_conditions": [
         {
           "ga4gh_code": "TS",
           "note": "Annual renewal of collaboration agreement is necessary"

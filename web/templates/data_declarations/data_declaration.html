@@ -102,7 +102,7 @@
     <div class="row card-deck mt-4">
         <div class="card ml-0 mr-0 col-md-12">
             <div class="card-body">
-                <h2 class="card-title"><span><i class="material-icons">lock</i></span> Use restrictions</h2>
+                <h2 class="card-title"><span><i class="material-icons">lock</i></span> Use conditions</h2>
                 <hr />
                 <div class="card-text">
                     <dt>Embargo date</dt>
@@ -114,25 +114,25 @@
                     <dt>Storage duration criteria</dt>
                     <dd>{{ object.storage_duration_criteria }}</dd>
 
-                    {% if object.data_use_restrictions %}
+                    {% if object.data_use_conditions %}
                     <hr />
                     
                     <table class="table table-bordered table-condensed table-striped">
                         <thead>
                             <tr>
                                 <th>Use Category</th>
-                                <th>Use Restriction Rule</th>
+                                <th>Use Condition Rule</th>
                                 <th>Use Category note</th>
-                                <th>Use Restriction note</th>
+                                <th>Use Condition note</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for use_restriction in object.data_use_restrictions.all %}
+                            {% for use_condition in object.data_use_conditions.all %}
                             <tr>
-                                <td>{{ use_restriction.restriction_class }}</td>
-                                <td>{{ use_restriction.use_restriction_rule }}</td>
-                                <td>{{ use_restriction.use_class_note }}</td>
-                                <td>{{ use_restriction.notes }}</td>
+                                <td>{{ use_condition.condition_class }}</td>
+                                <td>{{ use_condition.use_condition_rule }}</td>
+                                <td>{{ use_condition.use_class_note }}</td>
+                                <td>{{ use_condition.notes }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
