@@ -29,7 +29,7 @@ class ContractForm(ModelForm):
         else:
             del self.fields["project"]
 
-    field_order = ["project", "type", "legal_documents", "comments"]
+    field_order = ["name", "project", "legal_documents", "comments"]
 
 
 class ContractFormEdit(ContractForm):

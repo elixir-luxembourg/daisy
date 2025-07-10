@@ -197,6 +197,8 @@ class ContractIndex(CelerySearchIndex, indexes.Indexable):
 
     data_declarations = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
 
+    name = indexes.CharField(indexed=True, stored=True, faceted=True, null=True)
+
     def prepare_local_custodians(self, obj):
         return [u.full_name for u in obj.local_custodians.all()]
 
@@ -231,6 +233,9 @@ class ContractIndex(CelerySearchIndex, indexes.Indexable):
         return [
             data_declaration.title for data_declaration in obj.data_declarations.all()
         ]
+
+    def prepare_name(self, obj):
+        return obj.name if obj.name else None
 
 
 class PartnerIndex(CelerySearchIndex, indexes.Indexable):

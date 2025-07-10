@@ -143,6 +143,10 @@
     
     <field name="data_declarations_exact" type="string" indexed="true" stored="true" multiValued="true" />
     
+    <field name="name" type="text_en" indexed="true" stored="true" multiValued="false" />
+    
+    <field name="name_exact" type="string" indexed="true" stored="true" multiValued="false" />
+    
     <field name="cohorts" type="text_en" indexed="true" stored="true" multiValued="true" />
     
     <field name="cohorts_exact" type="string" indexed="true" stored="true" multiValued="true" />
@@ -208,8 +212,6 @@
     <field name="address" type="text_en" indexed="true" stored="true" multiValued="false" />
     
     <field name="address_l" type="string" indexed="false" stored="true" multiValued="false" />
-    
-    <field name="name" type="text_en" indexed="true" stored="true" multiValued="false" />
     
     <field name="name_l" type="string" indexed="false" stored="true" multiValued="false" />
     
