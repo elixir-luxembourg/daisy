@@ -6,7 +6,7 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0039_auto_20250219_1834"),
+        ("core", "0041_add_name_to_contract"),
     ]
 
     operations = [

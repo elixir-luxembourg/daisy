@@ -6,7 +6,7 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0040_update_userestriction_verbose_names"),
+        ("core", "0042_update_userestriction_verbose_names"),
     ]
 
     operations = [

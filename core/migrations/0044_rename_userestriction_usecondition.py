@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0041_alter_userestriction_data_declaration"),
+        ("core", "0043_alter_userestriction_data_declaration"),
     ]
 
     operations = [
