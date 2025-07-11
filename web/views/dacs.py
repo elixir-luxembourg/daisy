@@ -1,22 +1,20 @@
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, DetailView, UpdateView
-from django.contrib import messages
-from django.db import transaction
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
-from django.contrib.auth.decorators import user_passes_test
+from django.urls import reverse_lazy
 
+from core.constants import Permissions
 from core.forms import DACForm, DACFormEdit, PickContactWithRemarkForm, PickDatasetForm
 from core.models import DAC, DacMembership, Dataset, Contract, Contact
 from core.models.utils import COMPANY
 from core.permissions import CheckerMixin, permission_required
 from core.utils import DaisyLogger
-from core.constants import Permissions
 from web.views.utils import AjaxViewMixin, is_data_steward
 from . import facet_view_utils
-
 
 log = DaisyLogger(__name__)
 
@@ -33,6 +31,9 @@ class DACCreateView(CreateView):
     def dispatch(self, request, *args, **kwargs):
         if request.method == "GET":
             return super().dispatch(request, *args, **kwargs)
+        if not request.POST.get("contract"):
+            messages.error(request, "Please select a contract to create a DAC.")
+            return redirect("dac_add")
         self.contract = Contract.objects.get(id=request.POST.get("contract"))
         the_user = request.user
         can_edit = the_user.can_edit_contract(self.contract)
@@ -97,14 +98,8 @@ class DACCreateCardView(CheckerMixin, CreateView, AjaxViewMixin):
         return kwargs
 
     def form_valid(self, form):
-        """If the form is valid, save the associated model and add to the dataset"""
-
-        with transaction.atomic():
-            self.object = form.save(commit=False)
-            self.object.save()
-            if self.permission_object and not self.permission_object.dac:
-                self.permission_object.dac = self.object
-                self.permission_object.save()
+        self.object = form.save(commit=False)
+        self.object.save()
         messages.add_message(self.request, messages.SUCCESS, "DAC created successfully")
         return super().form_valid(form)
 
@@ -132,7 +127,7 @@ def dac_list(request):
             "order_by": order_by or "",
             "facets": facet_view_utils.filter_empty_facets(dacs.facet_counts()),
             "query": query or "",
-            "title": "DACs",
+            "title": "Data Access Committees",
             "help_text": DAC.AppMeta.help_text,
             "search_url": "dacs",
             "add_url": "dac_add",
@@ -169,12 +164,10 @@ def pick_member_for_dac(request, dac_pk):
             membership = DacMembership.objects.get(dac_id=dac_pk, contact=contact)
             membership.remark = form.cleaned_data["remark"]
             membership.save()
-        else:
-            return HttpResponseBadRequest("wrong parameters")
-        messages.add_message(request, messages.SUCCESS, "Member added")
+            messages.add_message(request, messages.SUCCESS, "Member added")
         return redirect(to="dac", pk=dac_pk)
     else:
-        form = PickContactWithRemarkForm()
+        form = PickContactWithRemarkForm(**{"dac": dac_pk})
 
     return render(
         request,
@@ -193,11 +186,8 @@ def pick_dataset_for_dac(request, dac_pk):
             dataset = get_object_or_404(Dataset, pk=dataset_id)
             dataset.dac = dac
             dataset.save()
-        else:
-            return HttpResponseBadRequest("wrong parameters")
-        messages.add_message(request, messages.SUCCESS, "Dataset added")
+            messages.add_message(request, messages.SUCCESS, "Dataset added")
         return redirect(to="dac", pk=dac_pk)
-
     else:
         form = PickDatasetForm()
 

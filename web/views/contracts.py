@@ -1,6 +1,7 @@
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
@@ -114,6 +115,17 @@ def contract_list(request):
             "order_by_fields": [("Contact", "contact"), ("Project", "project")],
         },
     )
+
+
+@login_required
+def contracts_for_form(request):
+    project_id = request.GET.get("projectId")
+    if not project_id:
+        contracts = Contract.objects.all()
+    else:
+        contracts = Contract.objects.filter(project_id=project_id)
+    data = {"contracts": [{"id": c.id, "name": str(c)} for c in contracts]}
+    return JsonResponse(data)
 
 
 class PartnerRoleCreateView(CreateView):

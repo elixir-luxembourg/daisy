@@ -160,7 +160,8 @@ class PickDatasetForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields["dataset"] = forms.ChoiceField(
             label="Select dataset",
-            choices=[
+            choices=[(None, "---------------------")]
+            + [
                 (d.id, str(d))
                 for d in Dataset.objects.filter(dac=None)
                 if d.is_published

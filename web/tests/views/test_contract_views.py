@@ -16,6 +16,7 @@ from test.factories import (
     PartnerFactory,
     ContactFactory,
     GDPRRoleFactory,
+    ProjectFactory,
 )
 from core.constants import Permissions
 from core.models.user import User
@@ -296,3 +297,26 @@ def test_contract_display_partners_methods():
     # Tooltip should show all partners
     for partner in [partner1, partner2, partner3, partner4]:
         assert str(partner) in result_tooltip
+
+
+@pytest.mark.django_db
+def test_contracts_for_form(client):
+    user = UserFactory()
+    client.force_login(user)
+    project = ProjectFactory()
+    contract = ContractFactory(project=project)
+    other_contract = ContractFactory(project=ProjectFactory())
+
+    url = reverse("contracts_for_form")
+    response = client.get(url)
+    assert response.status_code == 200
+    contract_ids = [c["id"] for c in response.json()["contracts"]]
+    assert contract.pk in contract_ids
+    assert other_contract.pk in contract_ids
+
+    url += f"?projectId={project.pk}"
+    response = client.get(url)
+    assert response.status_code == 200
+    contract_ids = [c["id"] for c in response.json()["contracts"]]
+    assert contract.pk in contract_ids
+    assert other_contract.pk not in contract_ids

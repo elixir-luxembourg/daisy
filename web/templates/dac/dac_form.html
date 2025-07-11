@@ -20,9 +20,18 @@
     <script>
         $('#id_projects').change(function() {
             var projectId = $(this).val();
-            $.get('/project/' + projectId + '/contracts', function(data) {
+            url = '/ajax/contracts';
+            if (projectId) {
+                url += '?projectId=' + projectId;
+            }
+            $.get(url, function(data) {
                 var $contract = $('#id_contract');
                 $contract.empty();
+                if (!data.contracts || data.contracts.length === 0) {
+                    $contract.append($('<option>', {value: '', text: 'No contracts available'}));
+                    return;
+                }
+                $contract.append($('<option>', {value: '', text: 'Select contract'}));
                 $.each(data.contracts, function(idx, contract) {
                     $contract.append($('<option>', {value: contract.id, text: contract.name}));
                 });

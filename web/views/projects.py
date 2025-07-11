@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction, IntegrityError
 from django.db.models import Count
@@ -305,13 +304,6 @@ def project_contract_remove(request, pk, cid):
     contract.project = None
     contract.save()
     return HttpResponse("Contract removed from project")
-
-
-@login_required
-def project_contracts(request, project_id):
-    contracts = Contract.objects.filter(project_id=project_id)
-    data = {"contracts": [{"id": c.id, "name": str(c)} for c in contracts]}
-    return JsonResponse(data)
 
 
 class ProjectDelete(CheckerMixin, DeleteView):

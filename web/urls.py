@@ -42,6 +42,7 @@ from web.views.contracts import (
     ContractDelete,
     ContractDetailView,
     contract_list,
+    contracts_for_form,
 )
 from web.views.dacs import (
     DACCreateView,
@@ -90,7 +91,6 @@ from web.views.projects import (
     ProjectDetailView,
     ProjectDelete,
     dsw_list_projects,
-    project_contracts,
 )
 from web.views.publication import (
     PublicationCreateView,
@@ -477,11 +477,6 @@ web_urls = [
         projects.project_dataset_create,
         name="project_dataset_create",
     ),
-    path(
-        "project/<int:project_id>/contracts",
-        project_contracts,
-        name="project_contracts",
-    ),
     # Publications
     path("publications/", PublicationListView.as_view(), name="publications"),
     path("publications/add/", PublicationCreateView.as_view(), name="publication_add"),
@@ -518,5 +513,10 @@ web_urls = [
         "dac/<int:dac_pk>/pick_dataset/",
         pick_dataset_for_dac,
         name="pick_dataset_for_dac",
+    ),
+    path(
+        "ajax/contracts",
+        contracts_for_form,
+        name="contracts_for_form",
     ),
 ]

@@ -30,7 +30,7 @@ class DACForm(forms.ModelForm):
         self.fields["local_custodians"].queryset = User.objects.exclude(
             username="AnonymousUser"
         )
-        self.fields["contract"].choices = [
+        self.fields["contract"].choices = [(None, "---------------------")] + [
             (c.id, str(c)) for c in Contract.objects.all()
         ]
 
