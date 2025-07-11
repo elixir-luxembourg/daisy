@@ -1,8 +1,8 @@
 [
   {
     "code": "NRES",
-    "name": "No conditions",
-    "description": "No conditions on data use."
+    "name": "No restrictions",
+    "description": "No restrictions on data use."
   },
   {
     "code": "GRU",
@@ -26,7 +26,7 @@
   },
   {
     "code": "RS",
-    "name": "Other Research-specific conditions",
+    "name": "Other Research-specific restrictions",
     "description": "Use of the data is limited to studies of [research type] (e.g., pediatric research)."
   },
   {
@@ -71,7 +71,7 @@
   },
   {
     "code": "GS",
-    "name": "Geographical Conditions",
+    "name": "Geographical Restrictions",
     "description": "Use of the data is limited to within [geographic region]."
   },
   {
@@ -86,17 +86,17 @@
   },
   {
     "code": "US",
-    "name": "User-Specific conditions",
+    "name": "User-Specific restrictions",
     "description": "Use of data is limited to use by approved users."
   },
   {
     "code": "PS",
-    "name": "Project-Specific conditions",
+    "name": "Project-Specific restrictions",
     "description": "Use of data is limited to use within an approved project."
   },
   {
     "code": "IS",
-    "name": "Institution-Specific conditions",
+    "name": "Institution-Specific restrictionss",
     "description": "Use of data is limited to use within an approved institution."
   },
   {
