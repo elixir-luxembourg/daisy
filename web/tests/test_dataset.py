@@ -163,7 +163,7 @@ def test_dataset_wizard_form(
 def test_dataset_publication_status_no_exposures():
     """Test publication_status returns empty string when no exposures exist"""
     dataset = DatasetFactory.create()
-    assert dataset.publication_status == ""
+    assert dataset.publication_status == Dataset.ExposureStatus.UNPUBLISHED
     assert dataset.is_published is False
 
 
@@ -173,7 +173,7 @@ def test_dataset_publication_status_with_active_exposures():
     dataset = DatasetFactory.create()
     endpoint = EndpointFactory.create(name="test", api_key="test")
     ExposureFactory.create(dataset=dataset, endpoint=endpoint, is_deprecated=False)
-    assert dataset.publication_status == "published"
+    assert dataset.publication_status == Dataset.ExposureStatus.PUBLISHED
     assert dataset.is_published is True
 
 
@@ -183,7 +183,7 @@ def test_dataset_publication_status_with_deprecated_exposures():
     dataset = DatasetFactory.create()
     endpoint = EndpointFactory.create(name="test", api_key="test")
     ExposureFactory.create(dataset=dataset, endpoint=endpoint, is_deprecated=True)
-    assert dataset.publication_status == "deprecated"
+    assert dataset.publication_status == Dataset.ExposureStatus.DEPRECATED
     assert dataset.is_published is False
 
 
@@ -195,5 +195,5 @@ def test_dataset_publication_status_with_mixed_exposures():
     endpoint2 = EndpointFactory.create(name="test2", api_key="test2")
     ExposureFactory.create(dataset=dataset, endpoint=endpoint1, is_deprecated=False)
     ExposureFactory.create(dataset=dataset, endpoint=endpoint2, is_deprecated=True)
-    assert dataset.publication_status == "published"
+    assert dataset.publication_status == Dataset.ExposureStatus.PUBLISHED
     assert dataset.is_published is True

@@ -29,6 +29,11 @@ logger = DaisyLogger(__name__)
 
 
 class Dataset(CoreTrackedModel, NotifyMixin):
+    class ExposureStatus:
+        PUBLISHED = "published"
+        DEPRECATED = "deprecated"
+        UNPUBLISHED = ""
+
     class Meta:
         app_label = "core"
         get_latest_by = "added"
@@ -118,11 +123,11 @@ class Dataset(CoreTrackedModel, NotifyMixin):
         - '': No exposures
         """
         if self.is_published:
-            return "published"
+            return self.ExposureStatus.PUBLISHED
         elif self.exposures.filter(is_deprecated=True).exists():
-            return "deprecated"
+            return self.ExposureStatus.DEPRECATED
         else:
-            return ""
+            return self.ExposureStatus.UNPUBLISHED
 
     def collect_contracts(self):
         result = set()
