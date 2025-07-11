@@ -100,28 +100,19 @@
         {% endif %}
     </div>
 
-    {#    DATASETS   #}
+    {#    DACs   #}
     <div class="row card-deck mt-4">
         <div class="card ml-0 mr-0 col-md-12">
             {% if dacs %}
             <div class="card-body">
                 <h2 class="card-title">DACs the contact is member of</h2>
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                <ul class="card-text list-unstyled text-left py-1">
                     {% for dac in dacs %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'dac' pk=dac.id %}">{{ dac.title }}</a>
-                            </td>
-                        </tr>
+                    <li>
+                        <a href="{% url 'dac' pk=dac.id %}">{{ dac.title }}</a>
+                    </li>
                     {% endfor %}
-                    </tbody>
-                </table>
+                </ul>
             </div>
             {% endif %}
         </div>

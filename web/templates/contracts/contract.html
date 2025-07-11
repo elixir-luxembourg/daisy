@@ -166,9 +166,7 @@
         </div>
     </div>
 
-
-
-    {#    DATASETS   #}
+    {#    DACs   #}
     <div class="row card-deck mt-4">
         <div class="card ml-0 mr-0 col-md-12">
             <div class="card-body">
@@ -186,26 +184,16 @@
                         <i class="material-icons">add</i>
                     </button>
                 </div>
-               
                 <h2 class="card-title">DACs covered by this contract</h2>
-                <table class="table table-striped">
-                    {% if dacs %}
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                {% if dacs %}
+                <ul class="card-text list-unstyled text-left py-1">
                     {% for dac in dacs %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'dac' pk=dac.id %}">{{ dac.title }}</a>
-                            </td>
-                        </tr>
+                    <li>
+                        <a href="{% url 'dac' pk=dac.id %}">{{ dac.title }}</a>
+                    </li>
                     {% endfor %}
-                    </tbody>
-                    {% endif %}
-                </table>
+                </ul>
+                {% endif %}
             </div>
         </div>
     </div>

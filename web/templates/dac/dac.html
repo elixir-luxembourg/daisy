@@ -140,22 +140,13 @@
                 {% endif %}
                 <h2 class="card-title">Datasets managed by this DAC</h2>
                 {% if datasets %}
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                <ul class="card-text list-unstyled text-left py-1">
                     {% for dataset in datasets %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'dataset' pk=dataset.id %}">{{ dataset.title }}</a>
-                            </td>
-                        </tr>
+                    <li>
+                        <a href="{% url 'dataset' pk=dataset.id %}">{{ dataset.title }}</a>
+                    </li>
                     {% endfor %}
-                    </tbody>
-                </table>
+                </ul>
                 {% endif %}
             </div>
         </div>
