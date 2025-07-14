@@ -17,4 +17,4 @@
 {{ object.special_subjects_description }}
 {{ object.subjects_category }}
 {{ object.data_types_notes }}
-{% for o in object.use_restrictions.all %}{{o}} {% endfor %}
+{% for o in object.data_use_conditions.all %}{{o}} {% endfor %}

@@ -163,7 +163,7 @@ class CohortFactory(factory.django.DjangoModelFactory):
 class DatasetFactory(factory.django.DjangoModelFactory):
     """
     Dataset factory
-    #TODO: add data_files, local_custodians, use_restrictions, datatypes, contracts?
+    #TODO: add data_files, local_custodians, use_conditions, datatypes, contracts?
     """
 
     class Meta:

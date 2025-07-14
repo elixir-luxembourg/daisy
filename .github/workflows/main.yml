@@ -21,14 +21,22 @@ jobs:
     - name: Checkout the repository
       uses: actions/checkout@v2
 
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install Black
+      run: pip install black==23.7.0
+
+    - name: Check code formatting with Black
+      run: black --check --verbose .
+
     - name: Prepare DAISY settings for CI
       run: cp elixir_daisy/settings_compose_ci.py elixir_daisy/settings_compose.py
 
     - name: Build and start containers
       run: docker compose up -d --build
-
-    - name: Check code formatting with Black
-      run: docker compose exec -T web black --check --verbose .
 
     - name: Install test dependencies
       run: docker compose exec -T web pip install ".[test]"
