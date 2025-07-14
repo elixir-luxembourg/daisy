@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction, IntegrityError
 from django.db.models import Count
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
