@@ -189,7 +189,7 @@
     {# DATASETS OWNED BY PROJECT #}
 
     <div class="row mt-4">
-        <div class="card col mr-2">
+        <div class="card col">
             <div class="card-body">
                 {% if can_edit %}
                 <div class="ml-1 float-right btn-group">
@@ -202,17 +202,35 @@
                 {% endif %}
                 <h2 class="card-title"><span><i class="material-icons">folder</i></span> Data of this project</h2>
                 {% if project.datasets.all %}
-                <ul class="card-text list-group">
-                    {% for dataset in project.datasets.all %}
-                    <li class="list-group-item">
-                        <a href="{% url 'dataset' pk=dataset.id %}">{{ dataset }}</a>
-                        {% if dataset.is_published %}
-                        <span class="badge badge-success">published</span>
-                        {% endif %}
-                        
-                    </li>
-                    {% endfor %}
-                </ul>
+                <table class="table table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th>Accession Number</th>
+                            <th>Title</th>
+                            <th>Local Custodians</th>
+                            <th>Exposure Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dataset in project.datasets.all %}
+                        <tr>
+                            <td>{{ dataset.elu_accession|default:"" }}</td>
+                            <td><a href="{% url 'dataset' pk=dataset.id %}">{{ dataset.title }}</a></td>
+                            <td>
+                                {% for custodian in dataset.local_custodians.all %}
+                                    <span class="badge badge-pill badge-secondary">{{ custodian }}</span>
+                                {% endfor %}
+                            </td>
+                            
+                            <td>
+                                {% if dataset.publication_status %}
+                                    <span class="badge badge-secondary">{{dataset.publication_status}}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
                 {% else %}
                     {% if can_edit %}
                     <p class="text-center text-danger mt-4"><br/><em>Project is empty!</em></p>
@@ -227,26 +245,6 @@
             </div>
         </div>
 
-        {# DATASETS USED BY PROJECT #}
-        <div class="card col ml-2">
-            <div class="card-body">
-                <h2 class="card-title"><span><i class="material-icons">folder_shared</i></span> Data used from other projects
-                </h2>
-                <ul class="card-text list-group">
-                    {% for access in project.accesses_to_existing_datasets.all %}
-                    <li class="list-group-item">
-                        <ul>
-                            <li class="list-group-item">
-                                <a href="{% url 'dataset' pk=access.dataset.id %}"> {{ access.dataset.title|truncatechars:80 }}
-                                        </a>
-                            </li>
-                        </ul>
-                    </li>
-                    {% endfor %}
-
-                </ul>
-            </div>
-        </div>
     </div>
     <div class="row mt-4">
         {# CONTRACTS #}
