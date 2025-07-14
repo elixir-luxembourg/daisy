@@ -174,3 +174,5 @@ web/static/js/*.bundle.js.LICENSE.txt
 /web/static/css/daisy.min.css
 /web/static/css/daisy.css
 /docker/nginx/nginx.conf
+
+staticfiles
