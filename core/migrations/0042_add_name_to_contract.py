@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0040_auto_20250617_1512"),
+        ("core", "0041_rename_use_restrictions_to_conditions"),
     ]
 
     operations = [
