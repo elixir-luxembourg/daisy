@@ -251,3 +251,48 @@ def test_partner_role_edit_remove_roles(permissions):
 
     partner_role.refresh_from_db()
     assert partner_role.roles.count() == 0
+
+
+def test_contract_display_partners_methods():
+    """
+    Test display_partners and display_partners_tooltip methods for different partner counts
+    """
+    # Test with no partners
+    contract = ContractFactory()
+    contract.partners_roles.all().delete()
+    assert contract.display_partners() == "-"
+    assert contract.display_partners_tooltip() == ""
+
+    # One partner
+    partner1 = PartnerFactory()
+    PartnerRoleFactory(contract=contract, partner=partner1)
+    assert contract.display_partners() == str(partner1)
+    assert contract.display_partners_tooltip() == str(partner1)
+
+    # Two partners
+    partner2 = PartnerFactory()
+    PartnerRoleFactory(contract=contract, partner=partner2)
+    # Order may vary
+    expected_two_a = f"{partner1}, {partner2}"
+    expected_two_b = f"{partner2}, {partner1}"
+    result_display = contract.display_partners()
+    result_tooltip = contract.display_partners_tooltip()
+    assert result_display in [expected_two_a, expected_two_b]
+    assert result_tooltip in [expected_two_a, expected_two_b]
+
+    # More than two partners
+    partner3 = PartnerFactory()
+    partner4 = PartnerFactory()
+    PartnerRoleFactory(contract=contract, partner=partner3)
+    PartnerRoleFactory(contract=contract, partner=partner4)
+
+    # Check structure, not exact order
+    result_display = contract.display_partners()
+    result_tooltip = contract.display_partners_tooltip()
+
+    # Should show "and 2 more..." for 4 partners
+    assert "and 2 more..." in result_display
+
+    # Tooltip should show all partners
+    for partner in [partner1, partner2, partner3, partner4]:
+        assert str(partner) in result_tooltip
