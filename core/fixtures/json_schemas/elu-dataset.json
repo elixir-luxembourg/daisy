@@ -1,12 +1,12 @@
 {
-  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.5/schemas/elu-dataset.json",
+  "$id": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.6/schemas/elu-dataset.json",
   "title": "ELIXIR Luxembourg Datasets Schema",
   "description": "A JSON Schema for describing biomedical research Datasets.",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "allOf": [
     {
-      "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.5/schemas/elu-core.json"
+      "$ref": "https://raw.githubusercontent.com/elixir-luxembourg/json-schemas/v0.0.6/schemas/elu-core.json"
     }
   ],
   "properties": {
@@ -107,7 +107,7 @@
         "title": {
           "type": "string"
         },
-        "use_conditions": {
+        "use_restrictions": {
           "type": "array",
           "items": {
             "type": "object",
@@ -141,7 +141,7 @@
               "use_class_note": {
                 "type": "string"
               },
-              "use_condition_rule": {
+              "use_restriction_rule": {
                 "enum": [
                   "OBLIGATION",
                   "PERMISSION",
@@ -149,17 +149,17 @@
                   "CONSTRAINED_PERMISSION"
                 ]
               },
-              "use_condition_objects": {
+              "use_restriction_objects": {
                 "type": "array",
                 "items": {
                   "type": "string"
                 },
-                "use_condition_note": {
+                "use_restriction_note": {
                   "type": "string"
                 }
               }
             },
-            "required": ["use_class_note", "use_condition_rule"]
+            "required": ["use_class_note", "use_restriction_rule"]
           }
         },
         "data_types": {
