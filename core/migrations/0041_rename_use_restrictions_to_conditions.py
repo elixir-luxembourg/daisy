@@ -5,62 +5,103 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0040_auto_20250617_1512'),
+        ("core", "0040_auto_20250617_1512"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='userestriction',
-            options={'get_latest_by': 'added', 'ordering': ['added'], 'verbose_name': 'Use Condition', 'verbose_name_plural': 'Use Conditions'},
+            name="userestriction",
+            options={
+                "get_latest_by": "added",
+                "ordering": ["added"],
+                "verbose_name": "Use Condition",
+                "verbose_name_plural": "Use Conditions",
+            },
         ),
         migrations.AlterField(
-            model_name='userestriction',
-            name='data_declaration',
-            field=models.ForeignKey(help_text='The data declaration to which this condition applies.', on_delete=django.db.models.deletion.CASCADE, related_name='data_use_restrictions', to='core.datadeclaration'),
+            model_name="userestriction",
+            name="data_declaration",
+            field=models.ForeignKey(
+                help_text="The data declaration to which this condition applies.",
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="data_use_restrictions",
+                to="core.datadeclaration",
+            ),
         ),
         migrations.AlterField(
-            model_name='userestriction',
-            name='notes',
-            field=models.TextField(blank=True, help_text='Provide a free text description of the condition.', null=True, verbose_name='Use Condition note'),
+            model_name="userestriction",
+            name="notes",
+            field=models.TextField(
+                blank=True,
+                help_text="Provide a free text description of the condition.",
+                null=True,
+                verbose_name="Use Condition note",
+            ),
         ),
         migrations.AlterField(
-            model_name='userestriction',
-            name='restriction_class',
-            field=models.CharField(blank=True, help_text="Select the GA4GH code for the condition.  Refer to 'GA4GH Consent Codes' for a detailed explanation of each.", max_length=20, null=True, verbose_name='Use Category'),
+            model_name="userestriction",
+            name="restriction_class",
+            field=models.CharField(
+                blank=True,
+                help_text="Select the GA4GH code for the condition.  Refer to 'GA4GH Consent Codes' for a detailed explanation of each.",
+                max_length=20,
+                null=True,
+                verbose_name="Use Category",
+            ),
         ),
         migrations.AlterField(
-            model_name='userestriction',
-            name='use_class_note',
-            field=models.TextField(blank=True, help_text='A question asked when collecting the condition class', max_length=255, null=True, verbose_name='Use Category note'),
+            model_name="userestriction",
+            name="use_class_note",
+            field=models.TextField(
+                blank=True,
+                help_text="A question asked when collecting the condition class",
+                max_length=255,
+                null=True,
+                verbose_name="Use Category note",
+            ),
         ),
         migrations.AlterField(
-            model_name='userestriction',
-            name='use_restriction_rule',
-            field=models.TextField(choices=[('PROHIBITION', 'PROHIBITION'), ('OBLIGATION', 'OBLIGATION'), ('PERMISSION', 'PERMISSION'), ('CONSTRAINED_PERMISSION', 'CONSTRAINED_PERMISSION')], default='PROHIBITION', max_length=64, verbose_name='Use Condition Rule'),
+            model_name="userestriction",
+            name="use_restriction_rule",
+            field=models.TextField(
+                choices=[
+                    ("PROHIBITION", "PROHIBITION"),
+                    ("OBLIGATION", "OBLIGATION"),
+                    ("PERMISSION", "PERMISSION"),
+                    ("CONSTRAINED_PERMISSION", "CONSTRAINED_PERMISSION"),
+                ],
+                default="PROHIBITION",
+                max_length=64,
+                verbose_name="Use Condition Rule",
+            ),
         ),
         migrations.AlterField(
-            model_name='userestriction',
-            name='data_declaration',
-            field=models.ForeignKey(help_text='The data declaration to which this condition applies.', on_delete=django.db.models.deletion.CASCADE, related_name='data_use_conditions', to='core.datadeclaration'),
+            model_name="userestriction",
+            name="data_declaration",
+            field=models.ForeignKey(
+                help_text="The data declaration to which this condition applies.",
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="data_use_conditions",
+                to="core.datadeclaration",
+            ),
         ),
         migrations.RenameModel(
-            old_name='UseRestriction',
-            new_name='UseCondition',
+            old_name="UseRestriction",
+            new_name="UseCondition",
         ),
         migrations.RenameModel(
-            old_name='RestrictionClass',
-            new_name='ConditionClass',
+            old_name="RestrictionClass",
+            new_name="ConditionClass",
         ),
         migrations.RenameField(
-            model_name='usecondition',
-            old_name='restriction_class',
-            new_name='condition_class',
+            model_name="usecondition",
+            old_name="restriction_class",
+            new_name="condition_class",
         ),
         migrations.RenameField(
-            model_name='usecondition',
-            old_name='use_restriction_rule',
-            new_name='use_condition_rule',
+            model_name="usecondition",
+            old_name="use_restriction_rule",
+            new_name="use_condition_rule",
         ),
     ]
