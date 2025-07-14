@@ -12,6 +12,10 @@ from test.factories import (
     ContractFactory,
     UserFactory,
     ContractDocumentFactory,
+    PartnerRoleFactory,
+    PartnerFactory,
+    ContactFactory,
+    GDPRRoleFactory,
 )
 from core.constants import Permissions
 from core.models.user import User
@@ -95,7 +99,7 @@ def test_contract_view_protected_documents(permissions, group):
     if user.is_part_of(VIPGroup()):
         assert b'<div class="row mt-4" id="documents-card">' not in response.content
         assert (
-            b'<h2 class="carbd-title"><span><i class="material-icons">link</i></span> Documents</h2>'
+            b'<h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>'
             not in response.content
         )
 
@@ -103,14 +107,14 @@ def test_contract_view_protected_documents(permissions, group):
         response = client.get(url, follow=True)
         assert b'<div class="row mt-4" id="documents-card">' in response.content
         assert (
-            b'<h2 class="card-title"><span><i class="material-icons">link</i></span> Documents</h2>'
+            b'<h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>'
             in response.content
         )
 
     else:
         assert b'<div class="row mt-4" id="documents-card">' in response.content
         assert (
-            b'<h2 class="card-title"><span><i class="material-icons">link</i></span> Documents</h2>'
+            b'<h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>'
             in response.content
         )
 
@@ -187,3 +191,63 @@ def test_contract_views_context(permissions, group):
     check_response_context_data(
         url, user, f"core.{Permissions.EDIT.value}_contract", contract, "can_edit"
     )
+
+
+def test_partner_role_create_without_roles(permissions):
+    """
+    Test that a partner role can be created without selecting any roles
+    """
+    contract = ContractFactory(partners_roles=[])
+    user = UserFactory(groups=[DataStewardGroup()])
+    partner = PartnerFactory()
+    contact = ContactFactory()
+
+    client = Client()
+    assert client.login(username=user.username, password="test-user"), "Login failed"
+
+    url = reverse("add_partner_role_to_contract", kwargs={"pk": contract.pk})
+    client.post(
+        url,
+        {
+            "contract": contract.pk,
+            "partner": partner.pk,
+            "contacts": [contact.pk],
+        },
+        follow=True,
+    )
+
+    partner_role = contract.partners_roles.filter(partner=partner).first()
+    assert partner_role.roles.count() == 0
+
+
+def test_partner_role_edit_remove_roles(permissions):
+    """
+    Test that existing roles can be removed from a partner role
+    """
+    contract = ContractFactory()
+    user = UserFactory(groups=[DataStewardGroup()])
+    partner = PartnerFactory()
+    contact = ContactFactory()
+    gdpr_role = GDPRRoleFactory()
+
+    partner_role = PartnerRoleFactory(contract=contract, partner=partner)
+    partner_role.contacts.add(contact)
+    partner_role.roles.add(gdpr_role)
+    assert partner_role.roles.count() == 1
+
+    client = Client()
+    assert client.login(username=user.username, password="test-user"), "Login failed"
+
+    url = reverse("edit_partner_role", kwargs={"pk": partner_role.pk})
+    client.post(
+        url,
+        {
+            "contract": contract.pk,
+            "partner": partner.pk,
+            "contacts": [contact.pk],
+        },
+        follow=True,
+    )
+
+    partner_role.refresh_from_db()
+    assert partner_role.roles.count() == 0

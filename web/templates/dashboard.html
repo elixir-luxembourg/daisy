@@ -15,17 +15,17 @@
         <div class="col">
             {% url 'wizard' as base_url %}
             {% with dataset_add_url=base_url|add:"?reset=true" %}
-            {% include '_includes/card_list.html' with list=last_datasets list_title='My datasets' url_name='dataset' add_new_link=dataset_add_url  %}
+            {% include '_includes/card_list.html' with list=last_datasets list_title='My datasets' url_name='dataset' add_new_link=dataset_add_url icon_name='assessment'  %}
             {% endwith %}
         </div>
         <div class="col">
             {% url 'project_add' as project_add_url %}
-            {% include '_includes/card_list.html' with list=last_projects list_title='My projects' url_name='project' add_new_link=project_add_url %}
+            {% include '_includes/card_list.html' with list=last_projects list_title='My projects' url_name='project' add_new_link=project_add_url icon_name='assessment'  %}
         </div>
         <div class="col">
             <div class="card">
                 <div class="card-body">
-                    <h2 class="card-title">Help</h2>
+                    <h2 class="card-title"><span><i class="material-icons">help_outline</i></span> Help</h2>
                     <p>Please use the links at the top of the page to browse or submit 
                         information about Projects, Datasets or other entities.</p>
                     <p>

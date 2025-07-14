@@ -64,7 +64,7 @@
                         </a>
                     </div>
                 {% endif %}
-                <h2 class="card-title">Participants</h2>
+                <h2 class="card-title"><span><i class="material-icons">groups</i></span> Participants</h2>
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -145,13 +145,13 @@
     <div class="row card-deck mt-4">
         <div class="card ml-0 col-md-6">
             <div class="card-body">
-                <h2 class="card-title">Data declarations covered</h2>
+                <h2 class="card-title"><span><i class="material-icons">assignment</i></span> Data declarations covered</h2>
                 {% include '_includes/data_declarations_list.html' with entity=contract %}
             </div>
         </div>
         <div class="card col-md-6 mr-0">
             <div class="card-body">
-                <h2 class="card-title">Data logbook entries</h2>
+                <h2 class="card-title"><span><i class="material-icons">timeline</i></span> Data logbook entries</h2>
                 <ul class="card-text list-group">
                     {% for share in contract.shares.all %}
                         <li class="list-group-item">

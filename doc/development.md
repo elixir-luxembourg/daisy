@@ -71,3 +71,48 @@ If tests dependencies are already installed, one can also run the tests just by 
 ```bash
 pytest
 ```
+
+## Docker Development Setup
+
+DAISY includes Docker Compose configurations for both production and development environments.
+
+### Development Setup
+
+For development with live file mounting and automatic updates:
+
+```bash
+# Stop any running containers
+docker compose down
+
+# Start with development overrides
+docker compose -f docker-compose.yaml -f docker-compose.dev.yml up
+```
+
+The development setup provides:
+- **Live static file mounting**: Changes to CSS/JS files are immediately available
+- **Hot reload**: Code changes are reflected without rebuilding containers
+
+### Compiling Assets in Docker
+
+When you make changes to SCSS files, compile them using:
+
+```bash
+# Compile SCSS to CSS
+docker compose -f docker-compose.yaml -f docker-compose.dev.yml exec web bash -c "cd /static/vendor && npm run build:css"
+
+# Build all assets (CSS + JavaScript)
+docker compose -f docker-compose.yaml -f docker-compose.dev.yml exec web bash -c "cd /static/vendor && npm run build"
+
+# Watch for SCSS changes (auto-compile on file changes)
+docker compose -f docker-compose.yaml -f docker-compose.dev.yml exec web bash -c "cd /static/vendor && npm run watch:css"
+```
+
+### Installing Dependencies in Docker
+
+```bash
+# Install npm dependencies
+docker compose -f docker-compose.yaml -f docker-compose.dev.yml exec web bash -c "cd /static/vendor && npm ci"
+
+# Collect Django static files
+docker compose -f docker-compose.yaml -f docker-compose.dev.yml exec web python manage.py collectstatic --noinput
+```
