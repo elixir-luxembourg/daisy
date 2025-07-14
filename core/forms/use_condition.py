@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.forms import CharField, ModelForm, Select
 
 from core.models import UseCondition, ConditionClass
