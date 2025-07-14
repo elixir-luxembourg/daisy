@@ -71,8 +71,8 @@ class DataDeclarationIndex(CelerySearchIndex, indexes.Indexable):
     def prepare_deidentification_method(self, obj):
         return obj.deidentification_method.name
 
-    def prepare_data_use_restrictions(self, obj):
-        return [o.restriction_class for o in obj.data_use_restrictions.all()]
+    def prepare_data_use_conditions(self, obj):
+        return [o.condition_class for o in obj.data_use_conditions.all()]
 
     def prepare_subjects_category(self, obj):
         return obj.subjects_category.name

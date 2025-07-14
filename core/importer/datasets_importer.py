@@ -11,7 +11,7 @@ from core.models import (
     Project,
     StorageResource,
     Share,
-    UseRestriction,
+    UseCondition,
     PersonalDataType,
     LegalBasisType,
     LegalBasis,
@@ -23,7 +23,7 @@ from core.models.data_declaration import (
     SubjectCategory,
 )
 from core.models.storage_location import StorageLocationCategory, DataLocation
-from core.models.use_restriction import USE_RESTRICTION_CHOICES
+from core.models.use_condition import USE_CONDITION_CHOICES
 from django.db.models import Count
 
 
@@ -306,7 +306,7 @@ class DatasetsImporter(BaseImporter):
         #     datadec.contract = kwargs.pop('contract_obj')
         # if datadec.contract:
         #     datadec.partner = datadec.contract.partners.first()
-        self.process_use_restrictions(datadec, datadec_dict)
+        self.process_use_conditions(datadec, datadec_dict)
         datadec.dataset = dataset
         datadec.save()
         datadec.updated = True
@@ -413,29 +413,27 @@ class DatasetsImporter(BaseImporter):
     #         contract.save()
     #         return contract
 
-    def process_use_restrictions(self, data_dec, datadec_dict):
-        use_restrictions = []
-        for user_restriction_dict in datadec_dict["use_restrictions"]:
-            ga4gh_code = user_restriction_dict.get("use_class", "")
-            notes = user_restriction_dict.get("use_restriction_note", "")
-            use_class_note = user_restriction_dict.get("use_class_note", "")
-            use_restriction_rule_str = user_restriction_dict.get(
-                "use_restriction_rule", ""
-            )
+    def process_use_conditions(self, data_dec, datadec_dict):
+        use_conditions = []
+        for use_condition_dict in datadec_dict["use_conditions"]:
+            ga4gh_code = use_condition_dict.get("use_class", "")
+            notes = use_condition_dict.get("use_condition_note", "")
+            use_class_note = use_condition_dict.get("use_class_note", "")
+            use_condition_rule_str = use_condition_dict.get("use_condition_rule", "")
             try:
-                use_restriction_rule = USE_RESTRICTION_CHOICES[use_restriction_rule_str]
+                use_condition_rule = USE_CONDITION_CHOICES[use_condition_rule_str]
             except KeyError:
-                use_restriction_rule = "-"
+                use_condition_rule = "-"
 
-            use_restriction, _ = UseRestriction.objects.get_or_create(
+            use_condition, _ = UseCondition.objects.get_or_create(
                 data_declaration=data_dec,
-                restriction_class=ga4gh_code,
+                condition_class=ga4gh_code,
                 notes=notes,
                 use_class_note=use_class_note,
-                use_restriction_rule=use_restriction_rule,
+                use_condition_rule=use_condition_rule,
             )
-            use_restrictions.append(use_restriction)
-        return use_restrictions
+            use_conditions.append(use_condition)
+        return use_conditions
 
     def process_access_category(self, datadec_dict):
         share_category_str = datadec_dict.get("access_category", "")

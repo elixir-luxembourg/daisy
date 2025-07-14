@@ -56,7 +56,7 @@
                         </div>
                     </fieldset>
                     <fieldset>
-                        <legend>Use Restrictions</legend>
+                        <legend>Use Conditions</legend>
                         <div class="row">
                             <div class="col">
                                 {% include '_includes/field.html' with field=form.end_of_storage_duration %}
@@ -69,22 +69,22 @@
                         <div class="row">
                         </div>
                         <div class="form-group row">
-                            {{ restriction_formset.management_form }}
+                            {{ condition_formset.management_form }}
                             <div class="col">
                                 <table class="table  table-condensed">
                                     <tr>
-                                        <th colspan="3">Other Restrictions</th>
+                                        <th colspan="3">Other Conditions</th>
                                     </tr>
                                     <tbody>
-                                    {% for restriction_form in restriction_formset.forms %}
+                                    {% for condition_form in condition_formset.forms %}
                                     <tr class="formset-row">
                                             <td>
-                                                {% include '_includes/field.html' with field=restriction_form.restriction_class %}
-                                                {% include '_includes/field.html' with field=restriction_form.use_restriction_rule %}
+                                                {% include '_includes/field.html' with field=condition_form.condition_class %}
+                                                {% include '_includes/field.html' with field=condition_form.use_condition_rule %}
                                             </td>
                                             <td> 
-                                                {% include '_includes/field.html' with field=restriction_form.use_class_note %}
-                                                {% include '_includes/field.html' with field=restriction_form.notes %}
+                                                {% include '_includes/field.html' with field=condition_form.use_class_note %}
+                                                {% include '_includes/field.html' with field=condition_form.notes %}
                                             </td>
                                             <td></td>{% comment %}<!-- Needed an empty column to prevent jquery formset from placing the remove below the row   --> {% endcomment %}
                                     </tr>

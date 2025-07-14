@@ -25,21 +25,21 @@
                     "storage_duration_criteria": "The project PI will assess whether data should be retained for further research at the storage end date.",
                     "has_special_subjects": false,
                     "consent_status": "homogeneous",
-                    "use_restrictions": [
+                    "use_conditions": [
                         {
                           "use_class": "COL",
                           "use_class_note": "Data is shared as part of the LUX-Epigen programme, a collaboration with CHL, IBBL, LCSB and LSRU.",
-                          "use_restriction_rule": "OBLIGATION"
+                          "use_condition_rule": "OBLIGATION"
                         },
                         {
                           "use_class": "DS",
                           "use_class_note": "Data is consented for cancer research studies only.",
-                          "use_restriction_rule": "CONSTRAINED_PERMISSION"
+                          "use_condition_rule": "CONSTRAINED_PERMISSION"
                         },
                         {
                           "use_class": "GS",
                           "use_class_note": "Data is consented for sharing outside EU/EEA region.",
-                          "use_restriction_rule": "PERMISSION"
+                          "use_condition_rule": "PERMISSION"
                         }
                     ]
                 }
@@ -90,16 +90,16 @@
                     "source_notes": "Data is from collaborator.",
                     "storage_end_date": "2022-02-28",
                     "storage_duration_criteria": "The project PI will assess whether data should be retained for further research at the storage end date.",
-                    "use_restrictions": [
+                    "use_conditions": [
                         {
                             "use_class": "PUB",
                             "use_class_note": "Acknowledgement required.",
-                            "use_restriction_rule": "OBLIGATION"
+                            "use_condition_rule": "OBLIGATION"
                         },
                         {
                           "use_class": "TS",
                           "use_class_note": "Data is obtained for a limited duration. 2022-02-28",
-                          "use_restriction_rule": "OBLIGATION"
+                          "use_condition_rule": "OBLIGATION"
                         }
                     ]
                 }
