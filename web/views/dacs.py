@@ -26,7 +26,7 @@ class DACCreateView(CreateView):
     template_name = "dac/dac_form.html"
     form_class = DACForm
     permission_required = Permissions.EDIT
-    permission_target = "contract"
+    permission_target = "dac"
 
     def dispatch(self, request, *args, **kwargs):
         if request.method == "GET":
@@ -34,13 +34,19 @@ class DACCreateView(CreateView):
         if not request.POST.get("contract"):
             messages.error(request, "Please select a contract to create a DAC.")
             return redirect("dac_add")
+
         self.contract = Contract.objects.get(id=request.POST.get("contract"))
-        the_user = request.user
-        can_edit = the_user.can_edit_contract(self.contract)
+        can_edit = request.user.can_edit_contract(self.contract)
         if can_edit:
             return super().dispatch(request, *args, **kwargs)
         else:
             return HttpResponseForbidden()
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.request.user.assign_permissions_to_dac(form.instance)
+        messages.add_message(self.request, messages.SUCCESS, "DAC created successfully")
+        return response
 
 
 class DACEditView(UpdateView):
@@ -48,19 +54,22 @@ class DACEditView(UpdateView):
     template_name = "dac/dac_form_edit.html"
     form_class = DACFormEdit
     permission_required = Permissions.EDIT
-    permission_target = "contract"
+    permission_target = "dac"
 
     def dispatch(self, request, *args, **kwargs):
-        self.contract = self.get_object().contract
-        the_user = request.user
-        can_edit = the_user.can_edit_contract(self.contract)
-        if can_edit:
+        dac = self.get_object()
+        if self.request.user.can_edit_dac(dac):
             return super().dispatch(request, *args, **kwargs)
         else:
             return HttpResponseForbidden()
 
     def get_success_url(self):
         return reverse_lazy("dac", kwargs={"pk": self.object.id})
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.add_message(self.request, messages.SUCCESS, "DAC edited successfully")
+        return response
 
 
 class DACDetailView(DetailView):
@@ -72,9 +81,7 @@ class DACDetailView(DetailView):
         context["memberships"] = DacMembership.objects.filter(dac=context["dac"])
         context["local_custodians"] = context["dac"].local_custodians.all()
         context["datasets"] = context["dac"].datasets.all()
-        context["can_edit"] = self.request.user.has_perm(
-            Permissions.EDIT.value, context["dac"]
-        )
+        context["can_edit"] = self.request.user.can_edit_dac(context["dac"])
         context["is_data_steward"] = self.request.user.is_data_steward
         return context
 
@@ -94,14 +101,15 @@ class DACCreateCardView(CheckerMixin, CreateView, AjaxViewMixin):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
+        # pass the contract_id to the form to prepopulate the contract field
         kwargs["contract_id"] = self.contract_id
         return kwargs
 
     def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.save()
+        response = super().form_valid(form)
+        self.request.user.assign_permissions_to_dac(form.instance)
         messages.add_message(self.request, messages.SUCCESS, "DAC created successfully")
-        return super().form_valid(form)
+        return response
 
     def get_success_url(self, **kwargs):
         return reverse_lazy("dataset", kwargs={"pk": self.permission_object.pk})

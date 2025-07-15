@@ -1,6 +1,7 @@
 """
 Module that handle permission management.
 """
+
 import logging
 
 from typing import Union, Optional, TYPE_CHECKING
@@ -157,7 +158,17 @@ class DACChecker(AbstractChecker):
     """
 
     def _check(self, perm: str, obj: "DAC", **kwargs) -> bool:
-        return self.checker.has_perm(perm, obj)
+        if self.checker.has_perm(perm, obj):
+            return True
+        no_follow = kwargs.pop("nofollow", False)
+        if no_follow:
+            return False
+        if obj.contract is None:
+            return False
+        contract_perm = perm.replace("dac", "contract")
+        return ContractChecker(self.user_or_group, checker=self.checker).check(
+            contract_perm, obj.contract, **kwargs
+        )
 
 
 class PartnerChecker(AbstractChecker):
