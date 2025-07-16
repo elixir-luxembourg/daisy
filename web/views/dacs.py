@@ -40,7 +40,11 @@ class DACCreateView(CreateView):
         if can_edit:
             return super().dispatch(request, *args, **kwargs)
         else:
-            return HttpResponseForbidden()
+            messages.error(
+                request,
+                "You need permissions to create DAC for the Contract.",
+            )
+            return redirect("dac_add")
 
     def form_valid(self, form):
         response = super().form_valid(form)
