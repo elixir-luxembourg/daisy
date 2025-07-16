@@ -52,7 +52,7 @@ def test_dac_create_error_datastweard(client):
         "local_custodians": [custodian.pk],
     }
     response = client.post(url, data)
-    assert response.status_code == 403
+    assert response.status_code == 302
     assert not DAC.objects.exists()
 
 
@@ -78,7 +78,8 @@ def test_dac_create_error_no_perm(client):
         "local_custodians": [custodian.pk],
     }
     response = client.post(reverse("dac_add"), data)
-    assert response.status_code == 403
+    assert response.status_code == 302
+    assert not DAC.objects.exists()
 
 
 @pytest.mark.django_db
