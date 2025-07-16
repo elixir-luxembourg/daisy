@@ -10,6 +10,7 @@ from core.models import (
     Contact,
     Partner,
     GDPRRole,
+    DAC,
 )
 
 
@@ -444,3 +445,34 @@ class ProjectIndex(CelerySearchIndex, indexes.Indexable):
 
     def prepare_title(self, obj):
         return obj.title
+
+
+class DACIndex(CelerySearchIndex, indexes.Indexable):
+    def get_model(self):
+        return DAC
+
+    # needed
+    text = indexes.CharField(document=True, use_template=True)
+
+    pk = indexes.IntegerField(indexed=True, stored=True, faceted=True)
+    local_custodians = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
+    title = indexes.CharField(indexed=True, stored=True, faceted=True)
+    project = indexes.CharField(indexed=True, stored=True, faceted=True)
+
+    def prepare_title(self, obj):
+        return obj.title
+
+    def prepare_title_l(self, obj):
+        if obj.title:
+            return obj.title.lower().strip()
+
+    def prepare_local_custodians(self, obj):
+        return [u.full_name for u in obj.local_custodians.all()]
+
+    def get_updated_field(self):
+        return "updated"
+
+    def prepare_project(self, obj):
+        if obj.contract.project:
+            return str(obj.contract.project)
+        return None

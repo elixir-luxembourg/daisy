@@ -39,6 +39,12 @@
                             {% endfor %}
                         </dd>
                         {% endif %}
+                        {% if dataset.dac %}
+                            <dt>Data Access Committee (DAC)</dt>
+                            <dd>
+                                <span class="badge badge-pill badge-primary">{{ dataset.dac.title }}</span>
+                            </dd>
+                        {% endif %}
                     </dl>
                 </div>
 

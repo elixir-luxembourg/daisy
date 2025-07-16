@@ -6,6 +6,7 @@ import typing
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.urls import reverse
@@ -102,6 +103,16 @@ class Dataset(CoreTrackedModel, NotifyMixin):
         help_text="Sensitivity denotes the security classification of this dataset.",
     )
 
+    dac = models.ForeignKey(
+        "core.DAC",
+        related_name="datasets",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name="Data Access Committee",
+        help_text="Data Access Committee (DAC) is responsible for reviewing and approving data access requests for this dataset.",
+    )
+
     @property
     def is_published(self):
         return self.exposures.filter(is_deprecated=False).exists()
@@ -166,9 +177,11 @@ class Dataset(CoreTrackedModel, NotifyMixin):
                     "first_name": lc.first_name,
                     "last_name": lc.last_name,
                     "email": lc.email,
-                    "role": "Principal_Investigator"
-                    if lc.is_part_of(constants.Groups.VIP.name)
-                    else "Researcher",
+                    "role": (
+                        "Principal_Investigator"
+                        if lc.is_part_of(constants.Groups.VIP.name)
+                        else "Researcher"
+                    ),
                     "affiliations": [HomeOrganisation().name],
                 }
             )
@@ -189,9 +202,9 @@ class Dataset(CoreTrackedModel, NotifyMixin):
                 {
                     "partner": trf.partner.name,
                     "transfer_details": trf.share_notes,
-                    "transfer_date": trf.granted_on.strftime("%Y-%m-%d")
-                    if trf.granted_on
-                    else None,
+                    "transfer_date": (
+                        trf.granted_on.strftime("%Y-%m-%d") if trf.granted_on else None
+                    ),
                 }
             )
 
@@ -202,9 +215,9 @@ class Dataset(CoreTrackedModel, NotifyMixin):
             "name": self.title,
             "description": self.comments if self.comments else None,
             "elu_uuid": self.unique_id.__str__() if self.unique_id else None,
-            "other_external_id": self.other_external_id
-            if self.other_external_id
-            else None,
+            "other_external_id": (
+                self.other_external_id if self.other_external_id else None
+            ),
             "project": self.project.acronym if self.project else None,
             "project_external_id": self.project.elu_accession if self.project else None,
             "data_declarations": [
@@ -263,6 +276,13 @@ class Dataset(CoreTrackedModel, NotifyMixin):
                 )
 
         super().save(*args, **kwargs)
+
+    def clean(self):
+        super().clean()
+        if self.pk:
+            orig = Dataset.objects.get(pk=self.pk)
+            if orig.dac_id and self.dac_id != orig.dac_id:
+                raise ValidationError("You cannot change the DAC once it is set.")
 
     @staticmethod
     def get_notification_recipients():

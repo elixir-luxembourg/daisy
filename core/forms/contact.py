@@ -1,4 +1,4 @@
-from django.forms import ModelForm, ChoiceField, Form, ValidationError
+from django.forms import ModelForm, CharField, ChoiceField, Form, ValidationError
 
 from core.models import Contact
 
@@ -34,4 +34,26 @@ class PickContactForm(Form):
         self.fields["contact"] = ChoiceField(
             label="Select contact",
             choices=[(d.id, str(d)) for d in Contact.objects.all()],
+        )
+
+
+class PickContactWithRemarkForm(Form):
+    def __init__(self, *args, **kwargs):
+        dac_pk = kwargs.pop("dac", None)
+        super().__init__(*args, **kwargs)
+        if dac_pk:
+            contacts = Contact.objects.exclude(dacmembership__dac__id=dac_pk)
+        else:
+            contacts = Contact.objects.all()
+
+        self.fields["contact"] = ChoiceField(
+            label="Select contact",
+            choices=[(None, "---------------------")]
+            + [(d.id, str(d)) for d in contacts],
+        )
+        self.fields["remark"] = CharField(
+            label="Remark",
+            max_length=255,
+            required=False,
+            help_text="Optional remark for the contact.",
         )

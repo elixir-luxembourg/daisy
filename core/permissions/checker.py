@@ -1,6 +1,7 @@
 """
 Module that handle permission management.
 """
+
 import logging
 
 from typing import Union, Optional, TYPE_CHECKING
@@ -30,6 +31,7 @@ if TYPE_CHECKING:
     from core.models.share import Share
     from core.models.user import User
     from core.models.contact import Contact
+    from core.models.dac import DAC
 
 
 logger = logging.getLogger("daisy.permissions")
@@ -150,6 +152,25 @@ class ContactChecker(AbstractChecker):
         return self.checker.has_perm(perm, obj)
 
 
+class DACChecker(AbstractChecker):
+    """
+    Checks permissions on DAC
+    """
+
+    def _check(self, perm: str, obj: "DAC", **kwargs) -> bool:
+        if self.checker.has_perm(perm, obj):
+            return True
+        no_follow = kwargs.pop("nofollow", False)
+        if no_follow:
+            return False
+        if obj.contract is None:
+            return False
+        contract_perm = perm.replace("dac", "contract")
+        return ContractChecker(self.user_or_group, checker=self.checker).check(
+            contract_perm, obj.contract, **kwargs
+        )
+
+
 class PartnerChecker(AbstractChecker):
     """
     Check permission on Partner.
@@ -250,6 +271,7 @@ class AutoChecker(AbstractChecker):
         "LegalBasis": DatasetEntityChecker,
         "Share": DatasetEntityChecker,
         "DataLocation": DatasetEntityChecker,
+        "DAC": DACChecker,
     }
 
     # override default check method

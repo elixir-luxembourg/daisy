@@ -9,6 +9,7 @@ from core.models import (
     Cohort,
     ContactType,
     Contact,
+    DAC,
     Document,
     DocumentType,
     FundingSource,
@@ -302,3 +303,9 @@ class ExposureAdmin(ReadOnlyAdmin):
     list_filter = ("endpoint__name", "form_name")
     search_fields = ("id", "dataset", "endpoint", "form_id", "form_name")
     ordering = ("added",)
+
+
+@admin.register(DAC)
+class DACAdmin(admin.ModelAdmin):
+    def has_delete_permission(self, request, obj=None):
+        return False
