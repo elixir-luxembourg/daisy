@@ -9,7 +9,7 @@ from core.models import (
     Cohort,
     ContactType,
     Contact,
-    DAC,  # Data Access Committee
+    DAC,
     Document,
     DocumentType,
     FundingSource,
