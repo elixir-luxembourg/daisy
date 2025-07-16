@@ -278,19 +278,9 @@ class User(AbstractUser):
         )
 
     def assign_permissions_to_dac(self, dac):
-        self._assign_perm(
-            f"core.{constants.Permissions.PROTECTED.value}_dac", self, dac
-        )
-        self._assign_perm(f"core.{constants.Permissions.ADMIN.value}_dac", self, dac)
-        self._assign_perm(f"core.{constants.Permissions.DELETE.value}_dac", self, dac)
         self._assign_perm(f"core.{constants.Permissions.EDIT.value}_dac", self, dac)
 
     def remove_permissions_to_dac(self, dac):
-        self._remove_perm(
-            f"core.{constants.Permissions.PROTECTED.value}_dac", self, dac
-        )
-        self._remove_perm(f"core.{constants.Permissions.ADMIN.value}_dac", self, dac)
-        self._remove_perm(f"core.{constants.Permissions.DELETE.value}_dac", self, dac)
         self._remove_perm(f"core.{constants.Permissions.EDIT.value}_dac", self, dac)
 
     def is_admin_of_project(self, project_object):
