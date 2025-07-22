@@ -2,7 +2,6 @@
 .github
 *.sqlite3
 *.iml
-#elixir_daisy/settings_local.py
 core/fixtures/h*.json
 
 
