@@ -3,31 +3,31 @@
     "name": "Samples"
   },
   {
-    "name": "Genotype_data"
+    "name": "Genotype data"
   },
   {
-    "name": "Whole_genome_sequencing"
+    "name": "Whole genome sequencing"
   },
   {
-    "name": "Exome_sequencing"
+    "name": "Exome sequencing"
   },
   {
-    "name": "Genomics_variant_array"
+    "name": "Genomics variant array"
   },
   {
     "name": "RNASeq"
   },
   {
-    "name":  "Genetic_and_derived_genetic_data"
+    "name":  "Genetic and derived genetic data"
   },
   {
-    "name": "Transcriptome_array"
+    "name": "Transcriptome array"
   },
   {
-    "name": "Methylation_array"
+    "name": "Methylation array"
   },
   {
-    "name": "MicroRNA_array"
+    "name": "MicroRNA array"
   },
   {
     "name": "Metabolomics"
@@ -36,43 +36,43 @@
     "name": "Proteomics"
   },
   {
-    "name": "Other_omics_data"
+    "name": "Other omics data"
   },
   {
     "name": "Imaging"
   },
   {
-    "name": "Clinical_Imaging"
+    "name": "Clinical Imaging"
   },
   {
-    "name": "Cell_Imaging"
+    "name": "Cell Imaging"
   },
   {
-    "name": "Other_Imaging"
+    "name": "Other Imaging"
   },
   {
-    "name": "Human_subject_data"
+    "name": "Human subject data"
   },
   {
-    "name":  "Clinical_data"
+    "name":  "Clinical data"
   },
   {
-     "name": "Lifestyle_data"
+     "name": "Lifestyle data"
   },
   {
-     "name": "Socio_Economic_Data"
+     "name": "Socio Economic Data"
   },
   {
-     "name": "Ethnic_origin"
+     "name": "Ethnic origin"
   },
   {
-     "name": "Biometric_data"
+     "name": "Biometric data"
   },
   {
-     "name": "Disease_status"
+     "name": "Disease status"
   },
   {
-     "name": "Other_Phenotype_data"
+     "name": "Other Phenotype data"
   },
   {
      "name": "Other"
