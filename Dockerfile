@@ -47,12 +47,13 @@ RUN mkdir -p /code/log /static /.npm /solr/daisy/conf \
 WORKDIR /code
 
 # Copy dependency files first (better caching)
-COPY --chown=appuser:appuser setup.py requirements.txt* ./
+COPY --chown=appuser:appuser pyproject.toml ./
 COPY --chown=appuser:appuser manage.py ./
 
 # Upgrade pip and install Python dependencies as root (for system-wide packages)
-RUN pip install --upgrade pip setuptools wheel \
-    && pip install --no-cache-dir -e .
+RUN pip install --upgrade pip build pip-tools \
+    && if [ -f "requirements.txt" ]; then pip install --no-cache-dir -r requirements.txt; fi \
+    && if [ -f "pyproject.toml" ]; then pip install --no-cache-dir .; fi
 
 # Copy frontend assets and package files
 COPY --chown=appuser:appuser web/static /code/web/static
