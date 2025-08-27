@@ -13,15 +13,16 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.x'
+        python-version: '3.12'
 
-    - name: Validate version in setup.py
+    - name: Validate version in pyproject.toml
       run: |
-        VERSION=$(python setup.py --version)
-        echo "Version in setup.py: $VERSION"
+        # Extract version from pyproject.toml (first matching "version = \"...\"")
+        VERSION=$(grep -E '^version\s*=\s*"' pyproject.toml | head -n1 | sed -E 's/.*= *"(.*)".*/\1/')
+        echo "Version in pyproject.toml: $VERSION"
         if [[ "v$VERSION" != "$GITHUB_REF_NAME" ]]; then
-          echo "Version mismatch: setup.py (v$VERSION) vs release tag ($GITHUB_REF_NAME)"
+          echo "Version mismatch: pyproject.toml (v$VERSION) vs release tag ($GITHUB_REF_NAME)"
           exit 1
         fi

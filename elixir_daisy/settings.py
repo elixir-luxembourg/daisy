@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "haystack",
-    "stronghold",
     "guardian",
     "formtools",
     "widget_tweaks",
@@ -76,7 +75,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "auditlog.middleware.AuditlogMiddleware",
-    "stronghold.middleware.LoginRequiredMiddleware",
+    "django.contrib.auth.middleware.LoginRequiredMiddleware",
 ]
 
 ROOT_URLCONF = "elixir_daisy.urls"

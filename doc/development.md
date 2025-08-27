@@ -54,16 +54,22 @@ npm run-script build
 
 ## Run the tests
 
-The following command will install the test dependencies and execute the tests:
+The recommended way to run tests is with pytest. If test dependencies are installed, run:
 
 ```bash
-python setup.py pytest
+pytest
 ```
 
-run test for a specific file:
+To run tests using the Python module invocation (explicit interpreter):
 
 ```bash
-python setup.py pytest --addopts web/tests/test_dataset.py
+python -m pytest
+```
+
+Run tests for a specific file:
+
+```bash
+pytest web/tests/test_dataset.py
 ```
 
 If tests dependencies are already installed, one can also run the tests just by executing:
