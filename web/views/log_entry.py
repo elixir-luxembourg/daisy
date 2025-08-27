@@ -38,7 +38,7 @@ class LogEntryListView(CheckerMixin, ListView):
             entry_content_type = ContentType.objects.get(pk=entry["content_type"])
             entry_model = entry_content_type.model_class()
             entry_model_name = entry_content_type.name
-            changed_fields = json.loads(entry["changes"]).keys()
+            changed_fields = entry["changes"]
 
             for key in changed_fields:
                 field_name = self.get_verbose_field_name(entry_model, key)
