@@ -1,0 +1,78 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elixir-daisy"
+version = "1.9.0"
+description = "Elixir-LU DAISY"
+readme = "README.md"
+authors = [
+    { name = "Pinar Alper, Valentin Grou\u00e8s, Yohan Jarosz, Jacek Lebioda, Kavita Rege, Vilem Ded", email = "lcsb.sysadmins@uni.lu" },
+]
+urls = { "Homepage" = "https://github.com/elixir-luxembourg/daisy" }
+keywords = ["elixir", "gdpr", "data protection"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "Django==5.1",
+    "django-auth-ldap==4.8.0",
+    "authlib==1.6.3",
+    "celery==5.5",
+    "celery-haystack-ng",
+    "django-celery-beat==2.7.0",
+    "django-celery-results==2.5.1",
+    "django-excel-response==2.0.5",
+    "xlsxwriter==3.2.0",
+    "django-model-utils==4.5.1",
+    "django-sequences==2.8",
+    "django-enumchoicefield==3.0.1",
+    "django-compressor==4.5.1",
+    "django-debug-toolbar==4.4.6",
+    "django-formtools==2.5.1",
+    "django-widget-tweaks==1.5.0",
+    "django-countries==7.6.1",
+    "django-haystack==3.3.0",
+    "django-reversion==5.1.0",
+    "django-guardian==2.4.0",
+    "gunicorn==23.0.0",
+    "ipython==8.27.0",
+    "ontobio==2.8.8",
+    "yamldown>=0.1.8",
+    "psycopg2-binary>=2.9.0",
+    "pysolr",
+    "pytest-runner==6.0.1",
+    "python-keycloak==4.2.2",
+    "pytz==2024.1",
+    "requests==2.32.3",
+    "urllib3==2.2.2",
+    "setuptools-scm>=8.0.0",
+    "jsonschema==4.23.0",
+    "mockldap@git+https://github.com/elixir-luxembourg/mockldap2.git",
+    "django-auditlog==3.0.0",
+    "black==24.8.0",
+]
+
+[project.optional-dependencies]
+dev = ["pre-commit==3.3.3"]
+test = [
+    "coverage==7.6.1",
+    "factory_boy==3.3.1",
+    "pytest==8.3.3",
+    "pytest-django==4.9.0",
+    "pytest-solr==1.0a1",
+    "pytest-celery==1.2.1",
+    "pytest-mock==3.14.0",
+    "requests-mock==1.12.1",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+exclude = ["contrib", "docs", "tests*"]

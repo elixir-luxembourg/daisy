@@ -10,7 +10,20 @@
             This is a demo deployment, sample credentials that can be used for login are described <a href="{% url 'about' %}">here</a>.
         </div>
         {% endcomment %}
+
+        <!-- Traditional Login Form -->
         {% include '_includes/forms.html' with submit_label="Login" %}
+
+        <!-- OIDC Login Option -->
+        <div class="mb-4">
+            <div class="text-center mt-3 mb-3">
+                <span class="text-muted">— or —</span>
+            </div>
+            <a href="{% url 'oidc_login' %}" class="btn btn-primary btn-lg btn-block">
+                <i class="fas fa-sign-in-alt"></i> Login with University account
+            </a>
+        </div>
+
     </div>
 {% endblock %}
 

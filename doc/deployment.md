@@ -31,6 +31,7 @@ Copy the Nginx configuration template:
 ```bash
 cp ./docker/nginx/nginx.conf.template ./docker/nginx/nginx.conf
 ```
+
 Customize `nginx.conf` as needed and then start or restart the Nginx service:
 
 ```bash
@@ -53,13 +54,18 @@ Run database migrations:
 docker compose exec web python manage.py migrate
 ```
 
-### Build the Solr Schema
+### Initialize Solr Search Index
 
-Build the Solr schema required for full-text search:
+Solr uses a managed schema (fields are created from the Django search indexes). Ensure Solr is running, then build the index.
 
 ```bash
-docker compose exec web python manage.py build_solr_schema -c /solr/daisy/conf -r daisy -u default
+docker compose up -d solr
+curl -s "http://localhost:8983/solr/admin/cores?action=STATUS&wt=json" | jq .
+curl -s "http://localhost:8983/solr/daisy/schema/fields?wt=json" | jq .
+docker compose exec web python manage.py rebuild_index --noinput
 ```
+
+Replace host/port or drop `| jq .` if `jq` is not available.
 
 ### Compile and Deploy Static Files
 

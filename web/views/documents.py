@@ -3,7 +3,7 @@ import unicodedata
 
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.http import urlquote
+from urllib.parse import quote as urlquote
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
