@@ -6,6 +6,7 @@ from django.urls import path, include
 from core.forms.user import UserAuthForm
 from web.urls import web_urls
 from notification.urls import notif_urls
+from web.views.user import oidc_login, auth
 
 urlpatterns = [
     path(
@@ -16,6 +17,8 @@ urlpatterns = [
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("admin/", admin.site.urls),
     path("notifications/", include(notif_urls)),
+    path("oidc-login/", oidc_login, name="oidc_login"),
+    path("auth/", auth, name="auth"),
     path("", include(web_urls)),
 ]
 

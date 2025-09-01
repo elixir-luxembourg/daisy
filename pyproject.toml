@@ -21,6 +21,7 @@ classifiers = [
 dependencies = [
     "Django==5.1",
     "django-auth-ldap==4.8.0",
+    "authlib==1.6.3",
     "celery==5.5",
     "celery-haystack-ng",
     "django-celery-beat==2.7.0",
@@ -64,7 +65,7 @@ test = [
     "pytest==8.3.3",
     "pytest-django==4.9.0",
     "pytest-solr==1.0a1",
-    "pytest-celery==1.1.0",
+    "pytest-celery==1.2.1",
     "pytest-mock==3.14.0",
     "requests-mock==1.12.1",
 ]
