@@ -1,11 +1,11 @@
 from django.contrib import messages
-from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash, login
+from django.contrib.auth.decorators import login_required, login_not_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import PasswordChangeView
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import (
     CreateView,
     ListView,
@@ -13,6 +13,7 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
 )
+from authlib.integrations.django_client import OAuth
 
 from core.constants import Permissions
 from core.forms.user import UserForm, UserEditFormActiveDirectory, UserEditFormManual
@@ -20,7 +21,6 @@ from core.models import User
 from core.models.project import ProjectUserObjectPermission
 from core.models.dataset import DatasetUserObjectPermission
 from core.models.user import UserSource
-from core.permissions.checker import CheckerMixin
 from web.views.utils import AjaxViewMixin
 
 
@@ -165,3 +165,53 @@ class UserDelete(DeleteView):
         context["action_url"] = "user_delete"
         context["id"] = self.object.id
         return context
+
+
+# OIDC authentication views
+oauth = OAuth()
+oauth.register("keycloak")
+
+
+@login_not_required
+def oidc_login(request):
+    redirect_uri = request.build_absolute_uri(reverse("auth"))
+    return oauth.keycloak.authorize_redirect(request, redirect_uri)
+
+
+@login_not_required
+def auth(request):
+    token = oauth.keycloak.authorize_access_token(request)
+    user_info = token.get("userinfo")
+    request.session["user"] = user_info
+
+    if not user_info:
+        messages.error(request, "Authentication failed.")
+        return redirect("login")
+
+    oidc_id = user_info.get("sub")
+    email = user_info.get("email")
+    if not email:
+        messages.error(request, "Authentication failed.")
+        return redirect("login")
+
+    try:
+        user = User.objects.get(oidc_id=oidc_id)
+    except User.DoesNotExist:
+        try:
+            user = User.objects.get(email=email)
+            user.oidc_id = oidc_id
+            user.save()
+        except User.DoesNotExist:
+            user = User.objects.create_user(
+                username=user_info.get("preferred_username", email),
+                email=email,
+            )
+            user.first_name = user_info.get("given_name", "")
+            user.last_name = user_info.get("family_name", "")
+            user.oidc_id = oidc_id
+            user.save()
+
+    # django login
+    login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+    messages.success(request, f"Welcome, {user.get_full_name() or user.username}!")
+    return redirect("dashboard")

@@ -25,8 +25,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     gnupg \
-    # Additional dependencies that might be needed
-    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js (using more efficient method)
