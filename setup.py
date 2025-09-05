@@ -37,7 +37,7 @@ requirements = [
     "python-keycloak==2.6.0",
     "pytz==2022.1",
     "requests==2.31.0",
-    "urllib3==1.26.18",
+    "urllib3==2.5.0",
     "setuptools-scm==3.3.3",
     "jsonschema==3.2.0",
     "mockldap@git+https://github.com/elixir-luxembourg/mockldap2.git",
