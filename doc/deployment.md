@@ -68,13 +68,13 @@ The project uses frontend assets that need to be compiled (e.g., with npm), you 
 #### Install npm Dependencies
 
 ```bash
-docker compose exec web npm --prefix web/static/vendor ci
+docker compose exec web npm --prefix /static/vendor ci
 ```
 
 #### Build Frontend Assets
 
 ```bash
-docker compose exec web npm --prefix web/static/vendor run build
+docker compose exec web npm --prefix /static/vendor run build
 ```
 
 #### Collect Static Files
