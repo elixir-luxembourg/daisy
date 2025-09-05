@@ -36,7 +36,7 @@ requirements = [
     "pytest-runner==5.1",
     "python-keycloak==2.6.0",
     "pytz==2022.1",
-    "requests==2.31.0",
+    "requests==2.32.4",
     "urllib3==1.26.18",
     "setuptools-scm==3.3.3",
     "jsonschema==3.2.0",
