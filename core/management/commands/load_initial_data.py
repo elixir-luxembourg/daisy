@@ -16,7 +16,7 @@ from core.models import (
     DocumentType,
     StorageResource,
     FundingSource,
-    RestrictionClass,
+    ConditionClass,
     SensitivityClass,
     Cohort,
     Contact,
@@ -53,7 +53,7 @@ class Command(BaseCommand):
             nargs="?",
             default=None,
             type=str,
-            help="list of available entities: study_terms, disease_terms, phenotype_terms, gene_terms, contact_types, datatypes, sensitivity_classes, legal_basis_types, personal_data_types, restriction_classes, document_types, funding_sources, storage_resources, roles_and_permissions, elu_institutions, elu_cohorts, gdpr_roles, log_types",
+            help="list of available entities: study_terms, disease_terms, phenotype_terms, gene_terms, contact_types, datatypes, sensitivity_classes, legal_basis_types, personal_data_types, condition_classes, document_types, funding_sources, storage_resources, roles_and_permissions, elu_institutions, elu_cohorts, gdpr_roles, log_types",
         )
 
     @staticmethod
@@ -122,12 +122,12 @@ class Command(BaseCommand):
                 SensitivityClass.objects.get_or_create(**sensitivity_class)
 
     @staticmethod
-    def create_restriction_classes():
-        print("Creating restriction classes")
-        with open(os.path.join(FIXTURE_DIR, "restriction-class.json"), "r") as handler:
+    def create_condition_classes():
+        print("Creating condition classes")
+        with open(os.path.join(FIXTURE_DIR, "condition-class.json"), "r") as handler:
             data = json.load(handler)
-            for restriction_class in data:
-                RestrictionClass.objects.get_or_create(**restriction_class)
+            for condition_class in data:
+                ConditionClass.objects.get_or_create(**condition_class)
 
     @staticmethod
     def create_storage_resources():
@@ -341,7 +341,7 @@ class Command(BaseCommand):
         self.create_sensitivity_classes()
         self.create_legal_basis_types()
         self.create_personal_data_types()
-        self.create_restriction_classes()
+        self.create_condition_classes()
         self.create_document_types()
         self.create_funding_sources()
         self.create_storage_resources()

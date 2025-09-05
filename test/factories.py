@@ -163,7 +163,7 @@ class CohortFactory(factory.django.DjangoModelFactory):
 class DatasetFactory(factory.django.DjangoModelFactory):
     """
     Dataset factory
-    #TODO: add data_files, local_custodians, use_restrictions, datatypes, contracts?
+    #TODO: add data_files, local_custodians, use_conditions, datatypes, contracts?
     """
 
     class Meta:
@@ -488,3 +488,27 @@ class ExposureFactory(factory.django.DjangoModelFactory):
     dataset = factory.SubFactory(DatasetFactory)
     form_id = 1
     created_by = factory.SubFactory(UserFactory)
+
+
+class DACFactory(factory.django.DjangoModelFactory):
+    """
+    DAC factory
+    """
+
+    class Meta:
+        model = "core.DAC"
+        django_get_or_create = ("title",)
+
+    title = factory.Faker("bs")
+    contract = factory.SubFactory(ContractFactory)
+
+    @factory.post_generation
+    def local_custodians(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            # A list of users were passed in, use them
+            for user in extracted:
+                self.local_custodians.add(user)

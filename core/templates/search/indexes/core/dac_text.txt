@@ -1,0 +1,3 @@
+{{ object.title }}
+{% for o in object.local_custodians.all %}{{o}} {% endfor %}
+{{ object.project }}

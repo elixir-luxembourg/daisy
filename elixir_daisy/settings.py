@@ -307,6 +307,7 @@ FACET_FIELDS = {
     "cohort": ("owners", "institutes"),
     "partner": ("geo_category", "sector_category", "is_clinical"),
     "contact": ("type", "partners"),
+    "dac": ("local_custodians", "project"),
 }
 
 # by default, notifications by email are disabled

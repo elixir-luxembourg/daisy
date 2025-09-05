@@ -1,0 +1,25 @@
+{% for dac in data.dacs %}
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card card-item">
+                <div class="card-body">
+                    <h2 class="card-title">
+                      <a href="{% url 'dac' pk=dac.pk %}">{{ dac.title }}</a>
+                    </h2>
+                    <ul class="card-text list-unstyled text-left py-1">
+                        {% if dac.local_custodians %}
+                            <li><strong>Local custodians:</strong>
+                                {% for local_custodian in dac.local_custodians %}
+                                    <span class="badge badge-pill badge-primary ml-1 mb-1">{{ local_custodian }}</span>
+                                {% endfor %}
+                            </li>
+                        {% endif %}
+                    </ul>
+                    <a href="{% url 'dac' pk=dac.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% empty %}
+    {% include "search/_items/no_results.html" %}
+{% endfor %}

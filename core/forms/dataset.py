@@ -153,3 +153,17 @@ class DatasetSelection(forms.Form):
         self.fields["dataset"].queryset = Dataset.objects.exclude(pk=self.dataset.pk)
 
     dataset = forms.ModelChoiceField(queryset=Dataset.objects.none())
+
+
+class PickDatasetForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["dataset"] = forms.ChoiceField(
+            label="Select dataset",
+            choices=[(None, "---------------------")]
+            + [
+                (d.id, str(d))
+                for d in Dataset.objects.filter(dac=None)
+                if d.is_published
+            ],
+        )

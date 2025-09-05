@@ -42,6 +42,17 @@ from web.views.contracts import (
     ContractDelete,
     ContractDetailView,
     contract_list,
+    contracts_for_form,
+)
+from web.views.dacs import (
+    DACCreateView,
+    DACDetailView,
+    DACEditView,
+    DACCreateCardView,
+    dac_list,
+    pick_member_for_dac,
+    remove_member_from_dac,
+    pick_dataset_for_dac,
 )
 from web.views.dashboard import dashboard
 from web.views.data_declarations import (
@@ -132,6 +143,11 @@ web_urls = [
         "contracts/<int:pk>/add-partner-role",
         contracts.PartnerRoleCreateView.as_view(),
         name="add_partner_role_to_contract",
+    ),
+    path(
+        "contracts/<int:contract_pk>/add-dac/",
+        DACCreateCardView.as_view(),
+        name="add_dac_to_contract",
     ),
     path("contracts/<int:pk>/delete", ContractDelete.as_view(), name="contract_delete"),
     path("contracts/<int:pk>/edit", ContractEditView.as_view(), name="contract_edit"),
@@ -478,4 +494,29 @@ web_urls = [
     # Activity log
     path("history/", LogEntryListView.as_view(), name="history"),
     path("import_data/<str:model_type>/", import_data, name="import_data"),
+    # DACs
+    path("dacs/", dac_list, name="dacs"),
+    path("dacs/add/", DACCreateView.as_view(), name="dac_add"),
+    path("dac/<int:pk>/", DACDetailView.as_view(), name="dac"),
+    path("dac/<int:pk>/edit", DACEditView.as_view(), name="dac_edit"),
+    path(
+        "dac/<int:dac_pk>/pick_member/",
+        pick_member_for_dac,
+        name="pick_member_for_dac",
+    ),
+    path(
+        "dac/<int:dac_pk>/remove_member/<int:member_pk>/",
+        remove_member_from_dac,
+        name="remove_member_from_dac",
+    ),
+    path(
+        "dac/<int:dac_pk>/pick_dataset/",
+        pick_dataset_for_dac,
+        name="pick_dataset_for_dac",
+    ),
+    path(
+        "ajax/contracts",
+        contracts_for_form,
+        name="contracts_for_form",
+    ),
 ]

@@ -9,6 +9,7 @@ from core.models import (
     Cohort,
     ContactType,
     Contact,
+    DAC,
     Document,
     DocumentType,
     FundingSource,
@@ -23,11 +24,11 @@ from core.models import (
     PersonalDataType,
     Project,
     Publication,
-    RestrictionClass,
+    ConditionClass,
     SensitivityClass,
     Share,
     StorageResource,
-    UseRestriction,
+    UseCondition,
     DataLogType,
     Endpoint,
     Exposure,
@@ -98,11 +99,11 @@ admin.site.register(PartnerRole)  # contract.py
 admin.site.register(PersonalDataType)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Publication)
-admin.site.register(RestrictionClass)
+admin.site.register(ConditionClass)
 admin.site.register(SensitivityClass)
 admin.site.register(Share)
 admin.site.register(StorageResource, StorageResourceAdmin)
-admin.site.register(UseRestriction)
+admin.site.register(UseCondition)
 admin.site.register(DataLogType)
 
 # Term models (term_model.py)
@@ -302,3 +303,9 @@ class ExposureAdmin(ReadOnlyAdmin):
     list_filter = ("endpoint__name", "form_name")
     search_fields = ("id", "dataset", "endpoint", "form_id", "form_name")
     ordering = ("added",)
+
+
+@admin.register(DAC)
+class DACAdmin(admin.ModelAdmin):
+    def has_delete_permission(self, request, obj=None):
+        return False

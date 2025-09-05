@@ -20,12 +20,15 @@ class PartnerRole(CoreModel):
         on_delete=models.CASCADE,
         blank=False,
         null=False,
+        help_text="Select the partner organisation involved in this contract.",
     )
 
     roles = models.ManyToManyField(
         "core.GDPRRole",
-        verbose_name="Partner roles",
+        verbose_name="Roles",
         related_name="partners_roles",
+        blank=True,
+        help_text="Role of the partner in the contract (e.g. GDPR role).",
     )
 
     contacts = models.ManyToManyField(
@@ -33,6 +36,7 @@ class PartnerRole(CoreModel):
         verbose_name="Contacts",
         related_name="partners_roles",
         blank=False,
+        help_text="Add contact persons representing this partner in the contract.",
     )
 
     contract = models.ForeignKey(
@@ -42,6 +46,7 @@ class PartnerRole(CoreModel):
         on_delete=models.CASCADE,
         blank=False,
         null=False,
+        help_text="The contract agreement this partner role belongs to.",
     )
 
     comments = models.TextField(
@@ -85,6 +90,14 @@ class Contract(CoreModel):
             "one or more mutually-signed legal documents such as Data Sharing Agreements, Consortium Agreements,"
             " Material Transfer Agreements."
         )
+
+    name = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True,
+        verbose_name="Short name",
+        help_text="Select a meaningful name for your contract",
+    )
 
     local_custodians = models.ManyToManyField(
         "core.User",
@@ -141,7 +154,18 @@ class Contract(CoreModel):
         return PartnerRole.objects.filter(contract=self)
 
     def __str__(self):
-        return self.short_name()
+        return self.name or self.short_name()
+
+    def display_partners(self):
+        partners = self.partners.all()
+        if len(partners) > 2:
+            partners_str = ", ".join(str(p) for p in partners[:2])
+            return f"{partners_str} and {len(partners)-2} more..."
+        return ", ".join(str(p) for p in partners) if partners else "-"
+
+    def display_partners_tooltip(self):
+        partners = self.partners.all()
+        return ", ".join(str(p) for p in partners) if partners else ""
 
     def short_name(self):
         partners_list = (
@@ -186,6 +210,7 @@ class Contract(CoreModel):
 
         base_dict = {
             "id": self.id,
+            "name": self.name,
             "comments": self.comments,
             "project_id": self.project.id,
             "local_custodians": contact_dicts,

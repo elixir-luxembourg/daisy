@@ -79,7 +79,7 @@ class DataDeclaration(CoreModel):
         default=ConsentStatus.unknown,
         blank=False,
         null=False,
-        help_text="Is the consent given by data subjects heterogeneous or homogeneous. Homogeneous consent  means that all subjects' data have the same restrictions. Heterogeneous means that there are differences among consents given by subjects, therefore  there are differing use restrictions on data.",
+        help_text="Is the consent given by data subjects heterogeneous or homogeneous. Homogeneous consent  means that all subjects' data have the same conditions. Heterogeneous means that there are differences among consents given by subjects, therefore  there are differing use conditions on data.",
     )
 
     dataset = models.ForeignKey(
@@ -244,10 +244,10 @@ class DataDeclaration(CoreModel):
         if ignore_many_to_many:
             return
 
-        for use_restriction in source_data_declaration.data_use_restrictions.all():
-            clone_restriction = use_restriction.clone_shallow()
-            clone_restriction.data_declaration = self
-            self.data_use_restrictions.add(clone_restriction, bulk=False)
+        for use_condition in source_data_declaration.data_use_conditions.all():
+            clone_condition = use_condition.clone_shallow()
+            clone_condition.data_declaration = self
+            self.data_use_conditions.add(clone_condition, bulk=False)
 
         for field in many_to_many_fields:
             if field not in excluded_fields:
@@ -265,9 +265,9 @@ class DataDeclaration(CoreModel):
         return lname
 
     def to_dict(self):
-        use_restrictions_list = []
-        for restriction in self.data_use_restrictions.all():
-            use_restrictions_list.append(restriction.to_dict())
+        use_conditions_list = []
+        for condition in self.data_use_conditions.all():
+            use_conditions_list.append(condition.to_dict())
 
         cohort_short_dicts = []
         for cohort in self.cohorts.all():
@@ -311,7 +311,7 @@ class DataDeclaration(CoreModel):
             "storage_duration_criteria": self.storage_duration_criteria
             if self.storage_duration_criteria
             else None,
-            "use_restrictions": use_restrictions_list,
+            "use_conditions": use_conditions_list,
         }
 
         return base_dict

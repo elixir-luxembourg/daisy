@@ -3,8 +3,8 @@ from django.conf import settings
 from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 
-from core.models import Dataset, Project, User, Contract
-from core.search_indexes import DatasetIndex, ProjectIndex, ContractIndex
+from core.models import Dataset, Project, User, Contract, DAC
+from core.search_indexes import DatasetIndex, ProjectIndex, ContractIndex, DACIndex
 
 logger = logging.getLogger("daisy.signals")
 
@@ -91,9 +91,25 @@ def project_local_custodians_changed(sender, **kwargs):
     ProjectIndex().update_object(instance)
 
 
-# @receiver(post_save, sender=Project, dispatch_uid='project_saved')
-# def project_saved(sender, instance, created, **kwargs):
-#     print('project saved')
-#     if created:
-#         for user in instance.local_custodians.all():
-#             user.assign_permissions_to_project(instance)
+@receiver(
+    m2m_changed,
+    sender=DAC.local_custodians.through,
+    dispatch_uid="dac_local_custodians_changed",
+)
+def dac_local_custodians_changed(sender, instance, action, pk_set, **kwargs):
+    """
+    DAC m2m changed
+    * Change custodians permissions
+    * Index DAC
+    """
+    if action == "post_add":
+        added_custodians_ids = pk_set
+        added_custodians = User.objects.filter(pk__in=added_custodians_ids)
+        for custodian in added_custodians:
+            custodian.assign_permissions_to_dac(instance)
+    elif action == "post_remove":
+        removed_custodians_ids = pk_set
+        removed_custodians = User.objects.filter(pk__in=removed_custodians_ids)
+        for custodian in removed_custodians:
+            custodian.remove_permissions_to_dac(instance)
+    DACIndex().update_object(instance)

@@ -117,7 +117,7 @@
     <div class="row mt-4">
         <div class="mh-100 card col">
             <div class="card-body">
-                <h2 class="card-title">Ethics</h2>
+                <h2 class="card-title"><span><i class="material-icons">admin_panel_settings</i></span> Ethics</h2>
                 <dl>
                     <dt>Has national approval?</dt>
                     <dd>{{ project.has_cner | yesno }} {% if project.cner_notes %}
@@ -142,7 +142,7 @@
                             </button>
                 </div>
                 {% endif %}
-                <h2 class="card-title">Personnel</h2>
+                <h2 class="card-title"><span><i class="material-icons">groups</i></span> Personnel</h2>
                 <ul class="card-text list-group">
                     {% for company_personnel in project.company_personnel.all %}
                     <li class="list-group-item {% if can_edit %}deletable" data-delete-title="Remove personnel from project" data-url="{% url 'remove_personnel_from_project' pk=project.id user_id=company_personnel.pk %}{% endif %}">
@@ -170,7 +170,7 @@
                     </div>
                 </div>
                 {% endif %}
-                <h2 class="card-title">Contacts</h2>
+                <h2 class="card-title"><span><i class="material-icons">contact_page</i></span> Contacts</h2>
                 <ul class="card-text list-group">
                     {% for contact in project.contacts.all %} {% if can_edit %}
                     <li class="list-group-item deletable" data-delete-title="Remove contact from project" data-url="{% url 'remove_contact_from_project' pk=project.id contact_id=contact.pk %}">
@@ -189,7 +189,7 @@
     {# DATASETS OWNED BY PROJECT #}
 
     <div class="row mt-4">
-        <div class="card col mr-2">
+        <div class="card col">
             <div class="card-body">
                 {% if can_edit %}
                 <div class="ml-1 float-right btn-group">
@@ -202,17 +202,35 @@
                 {% endif %}
                 <h2 class="card-title"><span><i class="material-icons">folder</i></span> Data of this project</h2>
                 {% if project.datasets.all %}
-                <ul class="card-text list-group">
-                    {% for dataset in project.datasets.all %}
-                    <li class="list-group-item">
-                        <a href="{% url 'dataset' pk=dataset.id %}">{{ dataset }}</a>
-                        {% if dataset.is_published %}
-                        <span class="badge badge-success">published</span>
-                        {% endif %}
-                        
-                    </li>
-                    {% endfor %}
-                </ul>
+                <table class="table table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th>Accession Number</th>
+                            <th>Title</th>
+                            <th>Local Custodians</th>
+                            <th>Exposure Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dataset in project.datasets.all %}
+                        <tr>
+                            <td>{{ dataset.elu_accession|default:"" }}</td>
+                            <td><a href="{% url 'dataset' pk=dataset.id %}">{{ dataset.title }}</a></td>
+                            <td>
+                                {% for custodian in dataset.local_custodians.all %}
+                                    <span class="badge badge-pill badge-secondary">{{ custodian }}</span>
+                                {% endfor %}
+                            </td>
+                            
+                            <td>
+                                {% if dataset.publication_status %}
+                                    <span class="badge badge-secondary">{{dataset.publication_status}}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
                 {% else %}
                     {% if can_edit %}
                     <p class="text-center text-danger mt-4"><br/><em>Project is empty!</em></p>
@@ -227,26 +245,6 @@
             </div>
         </div>
 
-        {# DATASETS USED BY PROJECT #}
-        <div class="card col ml-2">
-            <div class="card-body">
-                <h2 class="card-title"><span><i class="material-icons">folder_shared</i></span> Data used from other projects
-                </h2>
-                <ul class="card-text list-group">
-                    {% for access in project.accesses_to_existing_datasets.all %}
-                    <li class="list-group-item">
-                        <ul>
-                            <li class="list-group-item">
-                                <a href="{% url 'dataset' pk=access.dataset.id %}"> {{ access.dataset.title|truncatechars:80 }}
-                                        </a>
-                            </li>
-                        </ul>
-                    </li>
-                    {% endfor %}
-
-                </ul>
-            </div>
-        </div>
     </div>
     <div class="row mt-4">
         {# CONTRACTS #}
@@ -263,14 +261,49 @@
                     </div>
                 </div>
                 {% endif %}
-                <h2 class="card-title"><span><i class="material-icons">link</i></span> Contracts</h2>
-                <ul class="card-text list-group">
-                    {% for contract in project.contracts.all %}
-                    <li class="list-group-item {% if can_edit %}deletable" data-delete-title="Remove contract from project" data-url="{% url 'project_contract_remove' pk=project.id cid=contract.pk %}{% endif %}">
-                        <a href="{% url 'contract' pk=contract.id %}">{{ contract }}</a>
-                    </li>
-                    {% endfor %}
-                </ul>
+                <h2 class="card-title"><span><i class="material-icons">handshake</i></span> Contracts</h2>
+                {% if project.contracts.all %}
+                <div class="table-responsive">
+                    <table class="table table-striped w-100">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Remarks</th>
+                                <th>Partners</th>
+                                <th>Last updated</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contract in project.contracts.all %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'contract' pk=contract.id %}">{{ contract.name|default:contract }}</a>
+                                </td>
+                                <td>
+                                    {{ contract.comments|default:"-" }}
+                                </td>
+                                <td>
+                                    {% if contract.partners.count > 2 %}
+                                        <span data-toggle="tooltip" 
+                                              data-placement="top"
+                                              title="{{ contract.display_partners_tooltip }}">
+                                            {{ contract.display_partners }}
+                                        </span>
+                                    {% else %}
+                                        {{ contract.display_partners }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ contract.updated|date:"Y-m-d" }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No contracts yet.</p>
+                {% endif %}
             </div>
         </div>
 
@@ -330,7 +363,7 @@
 
                 </div>
                 {% endif %}
-                <h2 class="card-title">Publications</h2>
+                <h2 class="card-title"><span><i class="material-icons">book</i></span> Publications</h2>
                 <ul class="card-text list-group">
                     {% for publication in project.publications.all %} {% if can_edit %}
                     <li class="list-group-item deletable" data-delete-title="Remove publication from project" data-url="{% url 'remove_publication_from_project' pk=project.id publication_id=publication.pk %}">

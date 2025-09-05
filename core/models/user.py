@@ -15,6 +15,7 @@ from core.permissions import (
     DatasetChecker,
     ContractChecker,
     AutoChecker,
+    DACChecker,
 )
 from .utils import TextFieldWithInputWidget
 
@@ -276,6 +277,12 @@ class User(AbstractUser):
             f"core.{constants.Permissions.EDIT.value}_project", self, project_object
         )
 
+    def assign_permissions_to_dac(self, dac):
+        self._assign_perm(f"core.{constants.Permissions.EDIT.value}_dac", self, dac)
+
+    def remove_permissions_to_dac(self, dac):
+        self._remove_perm(f"core.{constants.Permissions.EDIT.value}_dac", self, dac)
+
     def is_admin_of_project(self, project_object):
         return ProjectChecker(self).check(
             f"core.{constants.Permissions.ADMIN.value}_project", project_object
@@ -309,6 +316,15 @@ class User(AbstractUser):
         """
         return ContractChecker(self).check(
             f"core.{constants.Permissions.EDIT.value}_contract", contract
+        )
+
+    def can_edit_dac(self, dac):
+        """
+        Check if user can edit a contract.
+        Should return True if user is data steward, legal or local custodian on contract
+        """
+        return DACChecker(self).check(
+            f"core.{constants.Permissions.EDIT.value}_dac", dac
         )
 
     def can_see_protected(self, obj: Union[Contract, Dataset, Project]):

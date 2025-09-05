@@ -5,6 +5,7 @@ from .contract import Contract, PartnerRole
 from .contact import Contact
 from .contact_type import ContactType
 from .datatypes import DataType
+from .dac import DAC, DacMembership
 from .data_declaration import DataDeclaration
 from .dataset import Dataset
 from .document import Document
@@ -20,8 +21,8 @@ from .personal_data_type import PersonalDataType
 from .storage_location import DataLocation
 from .storage_resource import StorageResource
 from .sensitivity_class import SensitivityClass
-from .restriction_class import RestrictionClass
-from .use_restriction import UseRestriction
+from .condition_class import ConditionClass
+from .use_condition import UseCondition
 from .term_model import StudyTerm, GeneTerm, PhenotypeTerm, DiseaseTerm
 from .data_log_type import DataLogType
 from .endpoint import Endpoint
@@ -37,7 +38,7 @@ __all__ = [
     "Cohort",
     "Contact",
     "ContactType",
-    "RestrictionClass",
+    "ConditionClass",
     "DataDeclaration",
     "DataLocation",
     "Dataset",
@@ -55,7 +56,7 @@ __all__ = [
     "Share",
     "Access",
     "StorageResource",
-    "UseRestriction",
+    "UseCondition",
     "StudyTerm",
     "GeneTerm",
     "PhenotypeTerm",
@@ -64,4 +65,6 @@ __all__ = [
     "Endpoint",
     "Exposure",
     "User",
+    "DAC",
+    "DacMembership",
 ]
