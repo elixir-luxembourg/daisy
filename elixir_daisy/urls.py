@@ -6,15 +6,15 @@ from django.urls import path, include
 from core.forms.user import UserAuthForm
 from web.urls import web_urls
 from notification.urls import notif_urls
-from web.views.user import oidc_login, auth
+from web.views.user import oidc_login, auth, logout, CustomLoginView
 
 urlpatterns = [
     path(
         "login/",
-        auth_views.LoginView.as_view(authentication_form=UserAuthForm),
+        CustomLoginView.as_view(authentication_form=UserAuthForm),
         name="login",
     ),
-    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path("logout/", logout, name="logout"),
     path("admin/", admin.site.urls),
     path("notifications/", include(notif_urls)),
     path("oidc-login/", oidc_login, name="oidc_login"),

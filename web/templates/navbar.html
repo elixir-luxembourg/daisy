@@ -86,10 +86,7 @@
                             {% if request.user.source.name == 'MANUAL' %}
                                 <a class="dropdown-item" href="{% url 'users_change_password'%}">change password</a>
                              {% endif %}
-                            <form method="post" action="{% url 'logout' %}">
-                              {% csrf_token %}
-                              <button type="submit" class="dropdown-item">logout</button>
-                            </form>
+                            <a class="dropdown-item" href="{% url 'logout' %}">logout</a>
                         </div>
                     </li>
                 </ul>

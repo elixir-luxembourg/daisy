@@ -30,9 +30,29 @@ docker compose exec backup sh /code/scripts/db.sh backup
 
 4. **Update Solr Schema:**
 
+    Note: Schema auto-generation has issues with Solr 9 ([issue #1986](https://github.com/django-haystack/django-haystack/issues/1986)).
+
+    **Option A - Automated (Recommended):**
+    Complete schema update and Solr rebuild:
+    # run script to update Solr schema
     ```bash
-    docker compose exec web python manage.py build_solr_schema -c /solr/daisy/conf -r daisy -u default
+    docker compose exec web bash -c "cd /code && ./scripts/update_solr_schema.sh"
     ```
+    # recreate Solr container
+    ```bash
+    docker compose down && docker volume rm daisy_solrdata && docker image rm daisy-solr && docker compose up -d
+    ```
+
+    **Option B - Manual:**
+    Generate schema and manually fix field types:
+    ```bash
+    docker compose exec web python manage.py build_solr_schema -f docker/solr/schema.xml
+    ```
+    Then manually update `docker/solr/schema.xml`:
+    - Change `LatLonType` to `LatLonPointSpatialField`
+    - Remove currency-related fields
+    
+    
 
 5. **Collect Static Files:**
 

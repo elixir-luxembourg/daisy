@@ -1,4 +1,4 @@
-FROM solr:9.7
+FROM solr:9.9-slim
 
 USER root
 
@@ -16,13 +16,9 @@ RUN cp -r /opt/solr/server/solr/configsets/_default/conf/* /var/solr/data/daisy/
 RUN echo "name=daisy" > /var/solr/data/daisy/core.properties \
     && echo "name=daisy_test" > /var/solr/data/daisy_test/core.properties
 
-# Copy your existing managed-schema.xml and solrconfig.xml to both cores
-COPY managed-schema.xml /var/solr/data/daisy/conf/
-COPY managed-schema.xml /var/solr/data/daisy_test/conf/
-COPY solrconfig.xml /var/solr/data/daisy/conf/
-COPY solrconfig.xml /var/solr/data/daisy_test/conf/
-COPY elevate.xml /var/solr/data/daisy/conf/
-COPY elevate.xml /var/solr/data/daisy_test/conf/
+# Copy your existing files to both cores
+COPY *.xml /var/solr/data/daisy/conf/
+COPY *.xml /var/solr/data/daisy_test/conf/
 
 # Set proper ownership and permissions
 RUN chown -R solr:solr /var/solr/data \

@@ -1,9 +1,9 @@
 from django.contrib import messages
-from django.contrib.auth import update_session_auth_hash, login
+from django.contrib.auth import update_session_auth_hash, login, logout as dj_logout
 from django.contrib.auth.decorators import login_required, login_not_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.views import PasswordChangeView, LoginView
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import (
@@ -13,6 +13,7 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
 )
+from django.conf import settings
 from authlib.integrations.django_client import OAuth
 
 from core.constants import Permissions
@@ -33,6 +34,13 @@ def superuser_required():
         return WrappedClass
 
     return wrapper
+
+
+class CustomLoginView(LoginView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["oidc_enabled"] = bool(getattr(settings, "AUTHLIB_OAUTH_CLIENTS", {}))
+        return context
 
 
 @superuser_required()
@@ -174,6 +182,11 @@ oauth.register("keycloak")
 
 @login_not_required
 def oidc_login(request):
+    oidc_clients = getattr(settings, "AUTHLIB_OAUTH_CLIENTS", {})
+    if not oidc_clients:
+        messages.error(request, "OIDC authentication is not available.")
+        return redirect("login")
+
     redirect_uri = request.build_absolute_uri(reverse("auth"))
     return oauth.keycloak.authorize_redirect(request, redirect_uri)
 
@@ -214,4 +227,16 @@ def auth(request):
     # django login
     login(request, user, backend="django.contrib.auth.backends.ModelBackend")
     messages.success(request, f"Welcome, {user.get_full_name() or user.username}!")
+    return redirect("dashboard")
+
+
+def logout(request):
+    dj_logout(request)
+    request.session.pop("user", None)
+
+    # keycloak_logout_url = oauth.keycloak.server_metadata.get("end_session_endpoint")
+    # redirect_uri = request.build_absolute_uri(reverse("dashboard"))
+    # TODO: redirect from KC to redirect_uri does not work
+    # logout_url = f"{keycloak_logout_url}?redirect_uri={redirect_uri}"
+
     return redirect("dashboard")

@@ -27,72 +27,58 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js (using more efficient method)
-RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - \
+# Install distutils via pip for node-sass compatibility
+RUN pip install setuptools
+
+# Install Node.js
+RUN mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_VERSION}.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
+    && apt-get update \
     && apt-get install -y --no-install-recommends nodejs \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Create non-root user early
-RUN groupadd --gid 1000 appuser \
-    && useradd --uid 1000 --gid 1000 --create-home --shell /bin/bash appuser
+# Create required directories
+RUN mkdir -p /code/log /static && chown -R 1000:1000 /code && chown -R 1000:1000 /static
 
-# Create required directories with proper permissions
-RUN mkdir -p /code/log /static /.npm /solr/daisy/conf \
-    && chown -R appuser:appuser /code /static /.npm /solr \
-    && chmod -R 755 /solr
+# Create app user and solr user/group with same IDs as Solr container for cross-container permissions
+RUN groupadd -g 1000 app && \
+    useradd -u 1000 -g app -s /bin/bash -m app && \
+    groupadd -g 8983 solr && \
+    useradd -u 8983 -g solr -s /bin/bash -m solr && \
+    usermod -a -G solr app
+
+# Upgrade pip
+RUN pip install --upgrade pip
+
+# Install and build npm dependencies
+COPY web/static /code/web/static
+RUN chown -R 1000:1000 /code/web/static
+
+# Fix npm cache permission
+RUN mkdir -p /.npm && chown -R 1000:1000 /.npm
+
+WORKDIR /code/web/static/vendor
+USER 1000:1000
+RUN npm ci && npm run build
 
 # Set working directory
 WORKDIR /code
 
-# Copy dependency files first (better caching)
-COPY --chown=appuser:appuser pyproject.toml ./
-COPY --chown=appuser:appuser manage.py ./
+# Copy dependency files first to leverage Docker caching
+COPY pyproject.toml /code/
+COPY manage.py /code/
 
-# Upgrade pip and install Python dependencies as root (for system-wide packages)
-RUN pip install --upgrade pip build pip-tools \
-    && if [ -f "requirements.txt" ]; then pip install --no-cache-dir -r requirements.txt; fi \
-    && if [ -f "pyproject.toml" ]; then pip install --no-cache-dir .; fi
-
-# Copy frontend assets and package files
-COPY --chown=appuser:appuser web/static /code/web/static
-COPY --chown=appuser:appuser package*.json /code/
-
-# Set npm cache directory and permissions
-RUN mkdir -p /home/appuser/.npm \
-    && chown -R appuser:appuser /home/appuser/.npm
-
-# Switch to non-root user for npm operations
-USER appuser
-WORKDIR /code
-
-# Install and build npm dependencies
-RUN if [ -f "package.json" ]; then \
-    npm ci --omit=dev && \
-    npm run build && \
-    npm cache clean --force; \
-    fi
-
-# Switch back to /code and copy remaining files
-WORKDIR /code
-COPY --chown=appuser:appuser . .
-
-# Collect static files
-RUN python manage.py collectstatic --noinput --clear
-
-# Clean up build artifacts to reduce image size
 USER root
+RUN pip install --no-cache-dir -e .
 
 # Copy the rest of the project files
 COPY . /code/
 RUN chown -R 1000:1000 /code
 # Switch back to /code
 WORKDIR /code
+USER 1000:1000
+RUN python manage.py collectstatic --noinput
 
-RUN apt-get remove -y build-essential python3-dev pkg-config \
-    && apt-get autoremove -y \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && rm -rf /code/web/static/vendor/node_modules
-
-# Switch back to non-root user for runtime
-# USER appuser
+USER root
+RUN rm -rf /code/web/static
