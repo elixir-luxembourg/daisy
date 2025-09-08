@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED=1 \
     DEBIAN_FRONTEND=noninteractive \
     DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
 
-# Install system dependencies in one layer
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # LDAP dependencies
     libsasl2-dev \

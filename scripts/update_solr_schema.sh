@@ -9,18 +9,17 @@ SCHEMA_FILE="docker/solr/schema.xml"
 
 echo "=== Solr Schema Update Script ==="
 
-# Step 1: Generate new schema using Django management command
+# Generate new schema using Django management command
 echo "Step 1: Generating new schema using Django..."
 echo "Running: python manage.py build_solr_schema -f $SCHEMA_FILE"
-
 if ! python manage.py build_solr_schema -f "$SCHEMA_FILE"; then
     echo "❌ Error: Failed to generate schema using Django management command"
     exit 1
 fi
 echo "✅ Schema generated successfully"
 
-# Step 2: Change LatLonType to LatLonPointSpatialField
-echo "Step 2.1: Updating location field type..."
+# Change LatLonType to LatLonPointSpatialField
+echo "Step 2: Updating location field type..."
 if grep -q 'name="location".*class="solr.LatLonType"' "$SCHEMA_FILE"; then
     sed -i.bak 's/<fieldType name="location" class="solr.LatLonType" subFieldSuffix="_coordinate"\/>/<fieldType name="location" class="solr.LatLonPointSpatialField"\/>/' "$SCHEMA_FILE"
     echo "✅ Updated location fieldType from LatLonType to LatLonPointSpatialField"
