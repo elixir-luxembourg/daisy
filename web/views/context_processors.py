@@ -1,4 +1,5 @@
 from importlib.metadata import version, PackageNotFoundError
+from django.conf import settings
 
 
 def daisy_version(request):
@@ -8,11 +9,7 @@ def daisy_version(request):
         the_version = "develop"
     except Exception:
         the_version = "develop"
-
     return {"app_version": the_version}
-
-
-from django.conf import settings
 
 
 def instance_branding(request):
