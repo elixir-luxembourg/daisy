@@ -41,12 +41,6 @@ RUN mkdir -p /etc/apt/keyrings \
 # Create required directories
 RUN mkdir -p /code/log /static && chown -R 1000:1000 /code && chown -R 1000:1000 /static
 
-# Create app user and solr user/group with same IDs as Solr container for cross-container permissions
-RUN groupadd -g 1000 app && \
-    useradd -u 1000 -g app -s /bin/bash -m app && \
-    groupadd -g 8983 solr && \
-    useradd -u 8983 -g solr -s /bin/bash -m solr && \
-    usermod -a -G solr app
 
 # Upgrade pip
 RUN pip install --upgrade pip

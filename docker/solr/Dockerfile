@@ -21,8 +21,8 @@ COPY *.xml /var/solr/data/daisy/conf/
 COPY *.xml /var/solr/data/daisy_test/conf/
 
 # Set proper ownership and permissions
-RUN chown -R solr:solr /var/solr/data \
-    && chmod -R 755 /var/solr/data
+RUN chown -R 8983:1000 /var/solr/data \
+    && chmod -R 775 /var/solr/data
 
 # Switch back to solr user
 USER solr

@@ -83,7 +83,7 @@ services:
             - daisy_network
         volumes:
             - solrdata:/var/solr/data
-        user: "solr:solr"
+        user: "8983:1000"
 
     # Message Queue (RabbitMQ)
     mq:
