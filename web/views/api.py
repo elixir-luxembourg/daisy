@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q, Count
 from django.contrib.auth.hashers import get_hasher
 
-from stronghold.decorators import public
+from django.contrib.auth.decorators import login_not_required
 
 from core.importer.datasets_exporter import DatasetsExporter
 from core.importer.projects_exporter import ProjectsExporter
@@ -107,7 +107,7 @@ def users(request):
     )
 
 
-@public
+@login_not_required
 @csrf_exempt
 def cohorts(request):
     return JsonResponse(
@@ -119,7 +119,7 @@ def cohorts(request):
     )
 
 
-@public
+@login_not_required
 @csrf_exempt
 def partners(request):
     return JsonResponse(
@@ -132,7 +132,7 @@ def partners(request):
     )
 
 
-@public
+@login_not_required
 def termsearch(request, category):
     search = request.GET.get("search")
     page = request.GET.get("page")
@@ -170,7 +170,7 @@ def termsearch(request, category):
     )
 
 
-@public
+@login_not_required
 @csrf_exempt
 @protect_with_api_key
 def datasets(request):
@@ -211,7 +211,7 @@ def get_filtered_entities(request, model_name):
     return getattr(sys.modules["core.models"], model_name).objects.filter(**filters)
 
 
-@public
+@login_not_required
 @csrf_exempt
 @protect_with_api_key
 def contracts(request):
@@ -238,7 +238,7 @@ def contracts(request):
         )
 
 
-@public
+@login_not_required
 @csrf_exempt
 @protect_with_api_key
 def projects(request):
@@ -263,7 +263,7 @@ def projects(request):
         )
 
 
-@public
+@login_not_required
 @csrf_exempt
 def rems_endpoint(request):
     try:
@@ -302,7 +302,7 @@ def rems_endpoint(request):
         return create_error_response(message, {"more": more})
 
 
-@public
+@login_not_required
 @csrf_exempt
 @protect_with_api_key
 def force_keycloak_synchronization(request) -> JsonResponse:
@@ -321,7 +321,7 @@ def force_keycloak_synchronization(request) -> JsonResponse:
         )
 
 
-@public
+@login_not_required
 @csrf_exempt
 @protect_with_api_key
 def permissions(request, user_oidc_id: str) -> JsonResponse:

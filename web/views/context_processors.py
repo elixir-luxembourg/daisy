@@ -1,19 +1,14 @@
-import pkg_resources
-
+from importlib.metadata import version, PackageNotFoundError
 from django.conf import settings
 
 
 def daisy_version(request):
     try:
-        daisy_packages = pkg_resources.require("elixir-daisy")
-
-        if len(daisy_packages) == 0:
-            the_version = "develop"
-        else:
-            the_version = daisy_packages[0].version
-    except:
+        the_version = version("elixir-daisy")
+    except PackageNotFoundError:
         the_version = "develop"
-
+    except Exception:
+        the_version = "develop"
     return {"app_version": the_version}
 
 

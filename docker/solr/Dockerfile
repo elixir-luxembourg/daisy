@@ -1,13 +1,31 @@
-FROM solr:7.3
-RUN mkdir -p /opt/solr/server/solr/daisy/ \
-    && cp -r /opt/solr/example/files/* /opt/solr/server/solr/daisy/. \
-    && touch /opt/solr/server/solr/daisy/core.properties \
-    &&  mkdir -p /opt/solr/server/solr/daisy_test/ \
-    && cp -r /opt/solr/example/files/* /opt/solr/server/solr/daisy_test/. \
-    && touch /opt/solr/server/solr/daisy_test/core.properties
-COPY *.xml /opt/solr/server/solr/daisy/conf/
-COPY *.xml /opt/solr/server/solr/daisy_test/conf/
+FROM solr:9.9-slim
+
 USER root
-RUN chown -R 8983:1000 /opt/solr/
-RUN chmod -R 770 /opt/solr/server/solr/daisy/conf/
-RUN chmod -R 770 /opt/solr/server/solr/daisy_test/conf/
+
+# Create core directories with proper structure
+RUN mkdir -p /var/solr/data/daisy/conf \
+    && mkdir -p /var/solr/data/daisy/data \
+    && mkdir -p /var/solr/data/daisy_test/conf \
+    && mkdir -p /var/solr/data/daisy_test/data
+
+# Copy default configuration files from Solr 9 template
+RUN cp -r /opt/solr/server/solr/configsets/_default/conf/* /var/solr/data/daisy/conf/ \
+    && cp -r /opt/solr/server/solr/configsets/_default/conf/* /var/solr/data/daisy_test/conf/
+
+# Create core.properties files for both cores
+RUN echo "name=daisy" > /var/solr/data/daisy/core.properties \
+    && echo "name=daisy_test" > /var/solr/data/daisy_test/core.properties
+
+# Copy your existing files to both cores
+COPY *.xml /var/solr/data/daisy/conf/
+COPY *.xml /var/solr/data/daisy_test/conf/
+
+# Set proper ownership and permissions
+RUN chown -R 8983:1000 /var/solr/data \
+    && chmod -R 775 /var/solr/data
+
+# Switch back to solr user
+USER solr
+
+# Expose Solr port
+EXPOSE 8983

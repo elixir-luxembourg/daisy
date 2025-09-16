@@ -95,8 +95,6 @@
     
     <field name="title_exact" type="string" indexed="true" stored="true" multiValued="false" />
     
-    <field name="title_l" type="string" indexed="false" stored="true" multiValued="false" />
-    
     <field name="institutes" type="text_en" indexed="true" stored="true" multiValued="true" />
     
     <field name="institutes_exact" type="string" indexed="true" stored="true" multiValued="true" />
@@ -106,10 +104,6 @@
     <field name="first_name" type="text_en" indexed="true" stored="true" multiValued="false" />
     
     <field name="last_name" type="text_en" indexed="true" stored="true" multiValued="false" />
-    
-    <field name="first_name_l" type="string" indexed="false" stored="true" multiValued="false" />
-    
-    <field name="last_name_l" type="string" indexed="false" stored="true" multiValued="false" />
     
     <field name="partners" type="text_en" indexed="true" stored="true" multiValued="true" />
     
@@ -144,8 +138,6 @@
     <field name="data_declarations_exact" type="string" indexed="true" stored="true" multiValued="true" />
     
     <field name="name" type="text_en" indexed="true" stored="true" multiValued="false" />
-    
-    <field name="name_exact" type="string" indexed="true" stored="true" multiValued="false" />
     
     <field name="cohorts" type="text_en" indexed="true" stored="true" multiValued="true" />
     
@@ -207,13 +199,7 @@
     
     <field name="acronym" type="text_en" indexed="true" stored="true" multiValued="false" />
     
-    <field name="acronym_l" type="string" indexed="false" stored="true" multiValued="false" />
-    
     <field name="address" type="text_en" indexed="true" stored="true" multiValued="false" />
-    
-    <field name="address_l" type="string" indexed="false" stored="true" multiValued="false" />
-    
-    <field name="name_l" type="string" indexed="false" stored="true" multiValued="false" />
     
     <field name="is_clinical" type="boolean" indexed="true" stored="true" multiValued="false" />
     
@@ -810,7 +796,7 @@
     <fieldType name="point" class="solr.PointType" dimension="2" subFieldSuffix="_d"/>
 
     <!-- A specialized field for geospatial search. If indexed, this fieldType must not be multivalued. -->
-    <fieldType name="location" class="solr.LatLonType" subFieldSuffix="_coordinate"/>
+    <fieldType name="location" class="solr.LatLonPointSpatialField"/>
 
     <!-- An alternative geospatial field type new to Solr 4.  It supports multiValued and polygon shapes.
       For more information about this and other Spatial fields new to Solr 4, see:

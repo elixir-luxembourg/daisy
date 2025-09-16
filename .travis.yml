@@ -1,7 +1,7 @@
 language: python
 
 python:
-  - "3.9.6"
+  - "3.12"
 
 services:
   - docker
@@ -17,7 +17,7 @@ install:
   - sleep 60
 
 script:
-  - docker-compose exec web python setup.py pytest 
+  - docker-compose exec web pytest
   
 branches:
   only:
