@@ -57,6 +57,7 @@ HAYSTACK_CONNECTIONS = {
 HAYSTACK_SIGNAL_PROCESSOR = "celery_haystack.signals.CelerySignalProcessor"
 
 STATIC_ROOT = "/static"
+MEDIA_ROOT = "/code/medias/"
 SASS_PROCESSOR_ROOT = "/static"
 
 # Celery config

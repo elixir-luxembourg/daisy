@@ -10,7 +10,7 @@ services:
         volumes:
             - statics:/static
             - solrdata:/solr
-            - medias:/code/documents
+            - medias:/code/medias
         networks:
             - daisy_network
         depends_on:
@@ -129,7 +129,7 @@ services:
                 condition: service_healthy
         restart: unless-stopped
         volumes:
-            - medias:/code/documents
+            - medias:/code/medias
         healthcheck:
             test: [ "CMD-SHELL", "celery -A elixir_daisy.celery_app inspect ping" ]
             interval: 10s
@@ -170,14 +170,14 @@ services:
             - DB_USER=${DB_USER:-daisy}
             - DB_PASSWORD=${DB_PASSWORD:-daisy}
             - BACKUP_DIR=/backups
-            - MEDIA_DIR=/code/documents
+            - MEDIA_DIR=/code/medias
             - SOLR_PORT=8983
             - RABBITMQ_MANAGEMENT_PORT=${RABBITMQ_MANAGEMENT_PORT:-15672}
             - BACKUP_VOLUME=${BACKUP_VOLUME:-../backups}
         volumes:
             - ${BACKUP_VOLUME:-../backups}:/backups
             - /var/run/docker.sock:/var/run/docker.sock
-            - medias:/code/documents
+            - medias:/code/medias
             - ./scripts/db.sh:/code/scripts/db.sh
         working_dir: /code
         restart: unless-stopped
