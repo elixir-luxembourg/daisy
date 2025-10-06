@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
 from django.http import HttpResponseRedirect
@@ -9,7 +9,7 @@ from formtools.wizard.views import NamedUrlSessionWizardView
 from core.forms.storage_location import StorageLocationForm
 from core.forms import DatasetForm, DataDeclarationForm, LegalBasisForm, AccessForm
 from core.forms.dataset import DatasetFormEdit
-from core.models import Dataset, Exposure
+from core.models import Dataset, Exposure, Project
 from core.models.utils import COMPANY
 from core.permissions import CheckerMixin
 from core.utils import DaisyLogger
@@ -85,6 +85,16 @@ class DatasetWizardView(NamedUrlSessionWizardView):
 
         return kwargs
 
+    def get_form_initial(self, step: str) -> Dict[str, Any]:
+        """Add project context for dataset step."""
+        initial = super().get_form_initial(step)
+        project_id = self.kwargs.get("pk")  
+        if step == "dataset" and project_id:
+            project = get_object_or_404(Project, pk=int(project_id))
+            initial.update({"project": project.id})
+
+        return initial
+
     def process_step(self, form, **kwargs) -> Dict[str, Any]:
         """
         Processes the form at the current step.
@@ -143,6 +153,13 @@ class DatasetWizardView(NamedUrlSessionWizardView):
         if dataset_id is not None:
             context["dataset_id"] = Dataset.objects.get(pk=dataset_id).id
         return context
+
+    def get_step_url(self, step):
+        """Override to maintain project context in wizard step URLs."""
+        kwargs = {'step': step}
+        if 'pk' in self.kwargs:
+            kwargs['pk'] = self.kwargs['pk']
+        return reverse(self.url_name, kwargs=kwargs)
 
 
 class DatasetCreateView(CreateView):
@@ -251,7 +268,7 @@ def dataset_list(request):
             "title": "Datasets",
             "help_text": Dataset.AppMeta.help_text,
             "search_url": "datasets",
-            "add_url": "wizard",
+            "add_url": "dataset_wizard",
             "data": {"datasets": datasets},
             "results_template_name": "search/_items/datasets.html",
             "company_name": COMPANY,

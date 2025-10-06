@@ -14,9 +14,11 @@ from test.factories import (
     DatasetFactory,
     ExposureFactory,
     EndpointFactory,
+    ProjectFactory,
 )
 from django.urls import reverse
 from django.test import Client
+from web.views.datasets import DatasetWizardView
 
 
 def test_get_dataset_add(client_user_normal):
@@ -132,7 +134,7 @@ def test_dataset_wizard_form(
     for step_name, step_data in wizard_test_data.items():
         form_data, Model = step_data
         assert Model.objects.all().count() == 0
-        response = client_user_normal.post(reverse("wizard"), form_data)
+        response = client_user_normal.post(reverse("dataset_wizard"), form_data)
 
         if step_name != "dataset":
             skip_wizard_value = form_data[f"{step_name}-skip_wizard"][0]
@@ -197,3 +199,30 @@ def test_dataset_publication_status_with_mixed_exposures():
     ExposureFactory.create(dataset=dataset, endpoint=endpoint2, is_deprecated=True)
     assert dataset.publication_status == Dataset.ExposureStatus.PUBLISHED
     assert dataset.is_published is True
+
+@pytest.mark.django_db
+def test_dataset_wizard_get_step_url_with_project_context():
+    """Test DatasetWizardView get_step_url includes project pk in URL parameters."""
+    project = ProjectFactory.create()
+    view = DatasetWizardView()
+    view.url_name = "project_dataset_wizard_step"
+    view.kwargs = {"pk": project.id}
+
+    step_url = view.get_step_url("dataset")
+
+    expected_url = reverse(
+        "project_dataset_wizard_step",
+        kwargs={"pk": project.id, "step": "dataset"}
+    )
+    assert step_url == expected_url
+
+
+@pytest.mark.django_db
+def test_dataset_wizard_get_form_initial_with_valid_project():
+    """Test DatasetWizardView get_form_initial correctly adds project context."""
+    project = ProjectFactory.create()
+    view = DatasetWizardView()
+    view.kwargs = {"pk": project.id}
+    view.initial_dict = {}
+    initial = view.get_form_initial("dataset")
+    assert initial["project"] == project.id
