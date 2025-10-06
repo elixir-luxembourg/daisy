@@ -200,6 +200,7 @@ def test_dataset_publication_status_with_mixed_exposures():
     assert dataset.publication_status == Dataset.ExposureStatus.PUBLISHED
     assert dataset.is_published is True
 
+
 @pytest.mark.django_db
 def test_dataset_wizard_get_step_url_with_project_context():
     """Test DatasetWizardView get_step_url includes project pk in URL parameters."""
@@ -211,8 +212,7 @@ def test_dataset_wizard_get_step_url_with_project_context():
     step_url = view.get_step_url("dataset")
 
     expected_url = reverse(
-        "project_dataset_wizard_step",
-        kwargs={"pk": project.id, "step": "dataset"}
+        "project_dataset_wizard_step", kwargs={"pk": project.id, "step": "dataset"}
     )
     assert step_url == expected_url
 

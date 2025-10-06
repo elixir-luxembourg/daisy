@@ -113,7 +113,9 @@ from web.views.users import add_personnel_to_project, remove_personnel_from_proj
 from web.views.log_entry import LogEntryListView
 
 dataset_wizard_view = DatasetWizardView.as_view(url_name="dataset_wizard_step")
-project_dataset_wizard_view = DatasetWizardView.as_view(url_name="project_dataset_wizard_step")
+project_dataset_wizard_view = DatasetWizardView.as_view(
+    url_name="project_dataset_wizard_step"
+)
 
 web_urls = [
     # Single pages
@@ -462,8 +464,16 @@ web_urls = [
         name="project_contract_remove",
     ),
     # Project's dataset
-    path("project/<int:pk>/dataset/wizard/<str:step>/", project_dataset_wizard_view, name="project_dataset_wizard_step"),
-    path("project/<int:pk>/dataset/wizard/", project_dataset_wizard_view, name="project_dataset_wizard"),
+    path(
+        "project/<int:pk>/dataset/wizard/<str:step>/",
+        project_dataset_wizard_view,
+        name="project_dataset_wizard_step",
+    ),
+    path(
+        "project/<int:pk>/dataset/wizard/",
+        project_dataset_wizard_view,
+        name="project_dataset_wizard",
+    ),
     path(
         "project/<int:pk>/dataset/add",
         projects.project_dataset_add,
