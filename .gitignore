@@ -78,8 +78,11 @@ celerybeat-schedule.*
 # SageMath parsed files
 *.sage.py
 
-# Environments
-.env
+
+.env.*
+!.env.example
+!.env.test
+!.env.compose
 .out
 .venv
 env/
@@ -161,7 +164,6 @@ fabric.properties
 # End of https://www.gitignore.io/api/intellij
 *.sqlite3
 *.iml
-elixir_daisy/settings_local.py
 static/css/*
 web/static/vendor/node_modules/*
 web/static/js/*.bundle.js

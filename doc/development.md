@@ -3,7 +3,7 @@
 
 ## Linting
 
-pip install black==23.7.0
+pip install black==25.1.0
 pre-commit install
 black --check .
 black .
