@@ -127,9 +127,9 @@ services:
     worker:
         build: .
         environment:
-            - ENVIRONMENT=compose
+            - ENVIRONMENT=${ENVIRONMENT:-compose}
         env_file:
-            - .env.compose
+            - ${ENV_FILE:-.env.compose}
         depends_on:
             db:
                 condition: service_healthy
@@ -152,9 +152,9 @@ services:
     beat:
         build: .
         environment:
-            - ENVIRONMENT=compose
+            - ENVIRONMENT=${ENVIRONMENT:-compose}
         env_file:
-            - .env.compose
+            - ${ENV_FILE:-.env.compose}
         depends_on:
             db:
                 condition: service_healthy

@@ -425,7 +425,9 @@ class AbstractDocumentFactory(factory.django.DjangoModelFactory):
     class Params:
         with_file = factory.Trait(
             content=factory.LazyAttribute(
-                lambda o: NamedTemporaryFile(mode="r+b", dir=".", delete=False).name
+                lambda o: NamedTemporaryFile(
+                    mode="r+b", dir=settings.MEDIA_ROOT, delete=False
+                ).name
             ),
         )
 
