@@ -47,9 +47,9 @@ class DataDeclarationEditForm(forms.ModelForm):
             + " "
             + self.fields["data_declarations_parents"].widget.attrs.get("class", "")
         )
-        self.fields["data_declarations_parents"].widget.attrs[
-            "data-url"
-        ] = reverse_lazy("data_dec_paginated_search")
+        self.fields["data_declarations_parents"].widget.attrs["data-url"] = (
+            reverse_lazy("data_dec_paginated_search")
+        )
 
     def clean(self):
         """

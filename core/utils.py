@@ -1,6 +1,7 @@
 """
 Module that regroup some utilities.
 """
+
 import logging
 
 from django.conf import settings

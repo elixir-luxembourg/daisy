@@ -282,35 +282,43 @@ class DataDeclaration(CoreModel):
             "title": self.title,
             "cohorts": cohort_short_dicts,
             "data_types": [dt.name for dt in list(self.data_types)],
-            "data_types_notes": self.data_types_notes
-            if self.data_types_notes
-            else None,
-            "access_category": self.share_category.name
-            if self.share_category
-            else None,
-            "access_procedure": self.access_procedure
-            if self.access_procedure
-            else None,
-            "subjects_category": self.subjects_category.name
-            if self.subjects_category
-            else None,
-            "de_identification": self.deidentification_method.name
-            if self.deidentification_method
-            else None,
-            "consent_status": self.consent_status.name
-            if self.consent_status != ConsentStatus.unknown
-            else None,
+            "data_types_notes": (
+                self.data_types_notes if self.data_types_notes else None
+            ),
+            "access_category": (
+                self.share_category.name if self.share_category else None
+            ),
+            "access_procedure": (
+                self.access_procedure if self.access_procedure else None
+            ),
+            "subjects_category": (
+                self.subjects_category.name if self.subjects_category else None
+            ),
+            "de_identification": (
+                self.deidentification_method.name
+                if self.deidentification_method
+                else None
+            ),
+            "consent_status": (
+                self.consent_status.name
+                if self.consent_status != ConsentStatus.unknown
+                else None
+            ),
             "has_special_subjects": self.has_special_subjects,
             "special_subjects_description": self.special_subjects_description,
-            "embargo_date": self.embargo_date.strftime("%Y-%m-%d")
-            if self.embargo_date
-            else None,
-            "storage_end_date": self.end_of_storage_duration.strftime("%Y-%m-%d")
-            if self.end_of_storage_duration
-            else None,
-            "storage_duration_criteria": self.storage_duration_criteria
-            if self.storage_duration_criteria
-            else None,
+            "embargo_date": (
+                self.embargo_date.strftime("%Y-%m-%d") if self.embargo_date else None
+            ),
+            "storage_end_date": (
+                self.end_of_storage_duration.strftime("%Y-%m-%d")
+                if self.end_of_storage_duration
+                else None
+            ),
+            "storage_duration_criteria": (
+                self.storage_duration_criteria
+                if self.storage_duration_criteria
+                else None
+            ),
             "use_conditions": use_conditions_list,
         }
 

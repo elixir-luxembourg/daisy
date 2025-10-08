@@ -47,9 +47,9 @@ class ShareEditForm(ShareForm):
         for pc in partner_contracts:
             contracts.append(pc.contract)
         if not contracts:
-            self.fields[
-                "contract"
-            ].help_text = "No contract found with selected partner."
+            self.fields["contract"].help_text = (
+                "No contract found with selected partner."
+            )
         self.fields["data_declarations"].choices = [
             (d.id, d.title) for d in share_inst.dataset.data_declarations.all()
         ]
@@ -96,9 +96,9 @@ def shareFormFactory(*args, **kwargs):
                     partners_roles__partner=partner, project=self.dataset.project
                 )
             if partner and contracts.count() == 0:
-                self.fields[
-                    "contract"
-                ].help_text = "No contract found with selected partner."
+                self.fields["contract"].help_text = (
+                    "No contract found with selected partner."
+                )
 
             self.fields["data_declarations"].choices = [
                 (d.id, d.title) for d in self.dataset.data_declarations.all()
