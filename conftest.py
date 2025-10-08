@@ -94,20 +94,6 @@ def enable_db_access_for_all_tests(db):
     pass
 
 
-@pytest.fixture(autouse=True)
-def ensure_media_root_exists():
-    """
-    Ensure MEDIA_ROOT directory exists before running tests.
-    This is needed for temporary file creation in factories.
-    """
-    import os
-    from django.conf import settings
-
-    media_root = settings.MEDIA_ROOT
-    if not os.path.exists(media_root):
-        os.makedirs(media_root, exist_ok=True)
-
-
 # solr_process = solr_process(
 #   executable=None,
 #   host='solr',
