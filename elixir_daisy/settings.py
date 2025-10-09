@@ -32,12 +32,10 @@ ENVIRONMENT = env("ENVIRONMENT")
 
 DEBUG = env.bool("DEBUG", default=(ENVIRONMENT == "local"))
 
-# Secret key
 SECRET_KEY = env("SECRET_KEY", default=None)
 if ENVIRONMENT == "production" and not SECRET_KEY:
     raise RuntimeError("SECRET_KEY must be set in production via environment variable")
 
-# Basic metadata
 COMPANY = env("COMPANY", default="LCSB")
 DEMO_MODE = env.bool("DEMO_MODE", default=False)
 INSTANCE_LABEL = env("INSTANCE_LABEL", default=None)
@@ -51,11 +49,9 @@ SESSION_COOKIE_SECURE = env.bool(
 CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=(ENVIRONMENT != "local"))
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
-# Login URLs
 LOGIN_REDIRECT_URL = env("LOGIN_REDIRECT_URL", default="dashboard")
 LOGIN_URL = env("LOGIN_URL", default="login")
 
-# REMS integration
 REMS_INTEGRATION_ENABLED = env.bool("REMS_INTEGRATION_ENABLED", default=False)
 REMS_URL = env("REMS_URL", default=env("REMS_URL", default=""))
 REMS_API_USER = env("REMS_API_USER", default="")
@@ -65,7 +61,6 @@ REMS_RETRIES = env.int("REMS_RETRIES", default=3)
 REMS_SKIP_IP_CHECK = env.bool("REMS_SKIP_IP_CHECK", default=False)
 REMS_ALLOWED_IP_ADDRESSES = env.list("REMS_ALLOWED_IP_ADDRESSES", default=[])
 
-# Haystack connections
 HAYSTACK_CONNECTIONS = {
     "default": {
         "ENGINE": "haystack.backends.solr_backend.SolrEngine",
@@ -80,8 +75,6 @@ HAYSTACK_CONNECTIONS = {
         "ADMIN_URL": env("SOLR_ADMIN_URL", default="http://solr:8983/solr/admin/cores"),
     },
 }
-
-# http://celery-haystack.readthedocs.io/en/latest/#usage
 HAYSTACK_SIGNAL_PROCESSOR = env(
     "HAYSTACK_SIGNAL_PROCESSOR",
     default="celery_haystack.signals.CelerySignalProcessor",
@@ -375,7 +368,11 @@ IMPORT_JSON_SCHEMAS_DIR = os.path.join(BASE_DIR, "core", "fixtures", "json_schem
 
 ACCESS_DEFAULT_EXPIRATION_DAYS = env.int("ACCESS_DEFAULT_EXPIRATION_DAYS", default=90)
 IDSERVICE_FUNCTION = env(
-    "IDSERVICE_FUNCTION", default="web.views.utils.generate_elu_accession"
+    "IDSERVICE_FUNCTION",
+    default="web.views.utils.generate_elu_accession",  # "core.lcsb.idservice.generate_identifier"
+)
+IDSERVICE_ENDPOINT = env(
+    "IDSERVICE_ENDPOINT", default="https://10.240.16.199:8080/v1/api/id"
 )
 
 # Data Stewardship Wizard - pop up integration
@@ -386,7 +383,7 @@ ENABLE_PASSWORD_CHANGE_IN_ADMIN = env.bool(
     "ENABLE_PASSWORD_CHANGE_IN_ADMIN", default=False
 )
 
-# Keycloak integration, uncomment and fill the values below
+# Keycloak integration for user synchronization
 KEYCLOAK_URL = env("KEYCLOAK_URL", default="https://sso.lcsb.uni.lu/")
 KEYCLOAK_REALM_LOGIN = env("KEYCLOAK_REALM_LOGIN", default="End-2-End-Testing")
 KEYCLOAK_REALM_ADMIN = env("KEYCLOAK_REALM_ADMIN", default="End-2-End-Testing")
@@ -394,6 +391,7 @@ KEYCLOAK_USER = env("KEYCLOAK_USER", default="")
 KEYCLOAK_PASS = env("KEYCLOAK_PASS", default="")
 KEYCLOAK_INTEGRATION = env("KEYCLOAK_INTEGRATION", default=False)
 
+# OIDC authentication via Keycloak
 if OIDC_METADATA_URL := env("OIDC_METADATA_URL", default=""):
     AUTHLIB_OAUTH_CLIENTS = {
         "keycloak": {
@@ -405,7 +403,6 @@ if OIDC_METADATA_URL := env("OIDC_METADATA_URL", default=""):
     }
 
 if DEBUG:
-    # Removing staticfiles panel from Django Debug Toolbar
     DEBUG_TOOLBAR_PANELS = [
         "debug_toolbar.panels.versions.VersionsPanel",
         "debug_toolbar.panels.timer.TimerPanel",
@@ -421,44 +418,50 @@ if DEBUG:
         "debug_toolbar.panels.profiling.ProfilingPanel",
     ]
 
-# Local/global API key
 GLOBAL_API_KEY = env("GLOBAL_API_KEY", default=None)
 if ENVIRONMENT not in ("local", "development") and not GLOBAL_API_KEY:
     raise RuntimeError("GLOBAL_API_KEY must be set in non-local environments")
 
-# if LDAP authentication will be used and user definitions will be bulk imported from LDAP
-if env.bool("LDAP_ENABLED", default=False):
+# # if LDAP authentication will be used and user definitions will be bulk imported from LDAP
+if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
     import ldap
-    from django_auth_ldap.config import LDAPSearch
+    from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 
-    # Prepend the LDAP backend to the auth backends when enabled
     AUTHENTICATION_BACKENDS = [
         "django_auth_ldap.backend.LDAPBackend",
     ] + AUTHENTICATION_BACKENDS
-
-    # LDAP connection and search settings (can be overridden via env)
     AUTH_LDAP_SERVER_URI = env("AUTH_LDAP_SERVER_URI", default="ldap://localhost/")
     AUTH_LDAP_BIND_DN = env(
         "AUTH_LDAP_BIND_DN",
         default="CN=Normal.User,OU=LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux",
     )
     AUTH_LDAP_BIND_PASSWORD = env("AUTH_LDAP_BIND_PASSWORD", default="")
-
-    AUTH_LDAP_USER_SEARCH = LDAPSearch(
-        env(
-            "AUTH_LDAP_USER_SEARCH_BASE",
-            default="OU=Faculties,OU=UNI-Users,DC=uni,DC=lux",
-        ),
-        ldap.SCOPE_SUBTREE,
-        env("AUTH_LDAP_USER_SEARCH_FILTER", default="(userPrincipalName=%(user)s)"),
-    )
-
+    ldap_search = [
+        LDAPSearch(
+            "OU=LCSB,OU=Rectorate,OU=BoG,OU=UNI-Users,DC=uni,DC=lux",
+            ldap.SCOPE_SUBTREE,
+            "(&(userPrincipalName=%(user)s)(mail=*@uni.lu)(objectClass=person))",
+        )
+    ]
+    ldap_users = env.list("AUTH_LDAP_ALLOWED_USERS", default=[])
+    for user_principal_name in ldap_users:
+        ldap_search.append(
+            LDAPSearch(
+                "OU=UNI-Users,DC=uni,DC=lux",
+                ldap.SCOPE_SUBTREE,
+                """(&(userPrincipalName=%(user)s)(mail=*@uni.lu)(objectClass=person)
+                (|
+                (userPrincipalName="""
+                + user_principal_name
+                + """)))""",
+            )
+        )
+    AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(*ldap_search)
     AUTH_LDAP_USER_ATTR_MAP = {
-        "first_name": env("AUTH_LDAP_USER_ATTR_MAP_FIRST_NAME", default="givenName"),
-        "last_name": env("AUTH_LDAP_USER_ATTR_MAP_LAST_NAME", default="sn"),
-        "email": env("AUTH_LDAP_USER_ATTR_MAP_EMAIL", default="mail"),
+        "first_name": "givenName",
+        "last_name": "sn",
+        "email": "mail",
     }
-
     LDAP_USERS_IMPORT_CLASS = env(
         "LDAP_USERS_IMPORT_CLASS", default="(objectClass=person)"
     )
@@ -476,17 +479,8 @@ if env.bool("LDAP_ENABLED", default=False):
 
 # list of usernames of users that will imported and set as pi when
 # import_users is used to bulk create users from an LDAP server
-PREDEFINED_PIS_LIST = [
-    # "name.surname@uni.lu", "othername.othersurname@uni.lu",
-]
+PREDEFINED_PIS_LIST = env.list("PREDEFINED_PIS_LIST", default=[])
 
-
-# IDSERVICE_FUNCTION = 'core.lcsb.idservice.generate_identifier'
-IDSERVICE_ENDPOINT = env(
-    "IDSERVICE_ENDPOINT", default="https://10.240.16.199:8080/v1/api/id"
-)
-
-# Celery beat setting to schedule tasks on docker creation
 from celery.schedules import crontab
 
 CELERY_BEAT_SCHEDULE = {
@@ -512,9 +506,6 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-# Test environment detection
 TESTING = os.environ.get("TEST", False)
-
-# Password hashers (can be overridden for faster tests in CI)
 if password_hashers := env.list("PASSWORD_HASHERS", default=None):
     PASSWORD_HASHERS = password_hashers
