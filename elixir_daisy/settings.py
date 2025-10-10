@@ -485,6 +485,7 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-TESTING = os.environ.get("TEST", False)
-if password_hashers := env.list("PASSWORD_HASHERS", default=None) and TESTING:
-    PASSWORD_HASHERS = password_hashers
+
+if ENVIRONMENT == "test":
+    if password_hashers := env.list("PASSWORD_HASHERS", default=None):
+        PASSWORD_HASHERS = password_hashers

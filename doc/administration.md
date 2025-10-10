@@ -122,57 +122,93 @@ To access the admin interface:
 
 ## Settings Reference
 
-To get access to the admin page, you must log in with a superuser account.  
-On the `Users` section, you can give any user a `staff` status and he will be able to access any project/datasets.
+DAISY loads configuration from `.env.{ENVIRONMENT}` files. Generate production config with:
 
-### `local_settings.py` reference
+```bash
+./scripts/create_production_env.sh
+```
 
-#### Display
+### Environment Variables Reference
 
-| Key                          | Description                                                                      | Expected values | Example value                  |
+#### Core Settings
+
+Defaults work for development; **production requires explicit configuration**.
+
+| Key                   | Description                                                            | Required for Production | Default value                                  |
+| --------------------- | ---------------------------------------------------------------------- | ----------------------- | ---------------------------------------------- |
+| `ENVIRONMENT`         | Environment name (development, production, test)                       | No                      | `'development'`                                |
+| `SECRET_KEY`          | Django secret key for cryptographic signing                            | **Yes**                 | None                                           |
+| `GLOBAL_API_KEY`      | API authentication key                                                 | **Yes**                 | None                                           |
+| `DATABASE_URL`        | PostgreSQL connection string                                           | **Yes**                 | `'postgresql://daisy:daisy@db:5432/daisy'`    |
+| `CELERY_BROKER_URL`   | RabbitMQ message broker URL                                            | **Yes**                 | `'amqp://guest:guest@mq:5672//'`              |
+| `SOLR_URL`            | Solr search engine URL                                                 | **Yes**                 | `'http://solr:8983/solr/daisy'`               |
+| `SOLR_URL_TEST`       | Solr test core URL                                                     | **Yes**                 | `'http://solr:8983/solr/daisy_test'`          |
+| `SOLR_ADMIN_URL`      | Solr admin interface URL                                               | **Yes**                 | `'http://solr:8983/solr/admin/cores'`         |
+| `ALLOWED_HOSTS`       | Comma-separated list of allowed hostnames                              | **Yes**                 | `'*'`                                          |
+| `CSRF_TRUSTED_ORIGINS`| Comma-separated list of trusted origins (with scheme)                  | **Yes**                 | `[]`                                           |
+
+#### Display Settings
+
+| Key                          | Description                                                                      | Expected values | Default value                  |
 | ---------------------------- | -------------------------------------------------------------------------------- | --------------- | ------------------------------ |
-| `COMPANY`                    | A name that is used to generate verbose names of some models                     | str             | `'LCSB'`                       |
-| `DEMO_MODE`                  | A flag which makes a simple banneer about demo mode appear in About page         | bool            | `False`                        |
-| `INSTANCE_LABEL`             | A name that is used in navbar header to help differentiate different deployments | str             | `'Staging test VM'`            |
-| `INSTANCE_PRIMARY_COLOR`     | A color that will be navbar header's background                                  | str of a color  | `'#076505'`                    |
-| `LOGIN_USERNAME_PLACEHOLDER` | A helpful placeholder in login form for logins                                   | str             | `'@uni.lu'`                    |
-| `LOGIN_PASSWORD_PLACEHOLDER` | A helpful placeholder in login form for passwords                                | str             | `'Hint: use your AD password'` |
+| `COMPANY`                    | Company/organization name used in verbose model names                            | str             | `'LCSB'`                       |
+| `DEMO_MODE`                  | Show demo mode banner on About page                                              | bool            | `False`                        |
+| `INSTANCE_LABEL`             | Label shown in navbar to differentiate deployments                               | str             | `None`                         |
+| `INSTANCE_PRIMARY_COLOR`     | Navbar background color                                                          | str (color)     | `None`                         |
+| `LOGIN_USERNAME_PLACEHOLDER` | Placeholder text in login form username field                                    | str             | `''`                           |
+| `LOGIN_PASSWORD_PLACEHOLDER` | Placeholder text in login form password field                                    | str             | `''`                           |
 
 #### Integration with other tools
 
 ##### ID Service
 
-| Key                  | Description                                                                               | Expected values | Example value                              |
+| Key                  | Description                                                                               | Expected values | Default value                              |
 | -------------------- | ----------------------------------------------------------------------------------------- | --------------- | ------------------------------------------ |
-| `IDSERVICE_FUNCTION` | Path to a function (`lambda: str`) that generates IDs for entities which are published    | str             | `'web.views.utils.generate_elu_accession'` |
-| `IDSERVICE_ENDPOINT` | In case LCSB's idservice function is being used, the setting contains the IDservice's URI | str             | `'https://192.168.1.101/v1/api/`           |
+| `IDSERVICE_FUNCTION` | Path to function that generates IDs for published entities                                | str             | `'web.views.utils.generate_elu_accession'` |
+| `IDSERVICE_ENDPOINT` | ID service endpoint URL (if using LCSB's idservice)                                       | str             | `None`                                     |
 
-##### REMS
+##### REMS (Resource Entitlement Management System)
 
-| Key                         | Description                                                                                                                                                                                  | Expected values | Example value                    |
+| Key                         | Description                                                                                                                                                                                  | Expected values | Default value                    |
 | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- | -------------------------------- |
-| `REMS_INTEGRATION_ENABLED`  | A feature flag for REMS integration. In practice, there's a dedicated endpoint which processes the information from REMS about dataset entitlements                                          | str             | `True`                           |
-| `REMS_SKIP_IP_CHECK`        | If set to `True`, there will be no IP checking if the request comes from trusted REMS instance.                                                                                              | bool            | `False`                          |
-| `REMS_ALLOWED_IP_ADDRESSES` | A list of IP addresses that should be considered trusted REMS instances. Beware of configuration difficulties when using reverse proxies. The check can be skipped with `REMS_SKIP_IP_CHECK` | dict[str]       | `['127.0.0.1', '192.168.1.101']` |
+| `REMS_INTEGRATION_ENABLED`  | Enable REMS integration for dataset entitlements                                                                                                                                             | bool            | `False`                          |
+| `REMS_URL`                  | REMS instance URL (required if enabled)                                                                                                                                                      | str             | Required when enabled            |
+| `REMS_API_USER`             | REMS API username (required if enabled)                                                                                                                                                      | str             | Required when enabled            |
+| `REMS_API_KEY`              | REMS API key (required if enabled)                                                                                                                                                           | str             | Required when enabled            |
+| `REMS_VERIFY_SSL`           | Verify SSL certificates for REMS connections                                                                                                                                                 | bool            | `True`                           |
+| `REMS_SKIP_IP_CHECK`        | Skip IP address validation for REMS requests                                                                                                                                                 | bool            | `False`                          |
+| `REMS_ALLOWED_IP_ADDRESSES` | Comma-separated list of trusted REMS IP addresses                                                                                                                                            | str             | `''`                             |
 
 ##### Keycloak
 
-| Key                    | Description                                                            | Expected values | Example value                          |
+| Key                    | Description                                                            | Expected values | Default value                          |
 | ---------------------- | ---------------------------------------------------------------------- | --------------- | -------------------------------------- |
-| `KEYCLOAK_INTEGRATION` | A feature flag for importing user information from Keycloak (OIDC IDs) | bool            | `True`                                 |
-| `KEYCLOAK_URL`         | URL to the Keycloak instance                                           | str             | `'https://keycloak.lcsb.uni.lu/auth/'` |
-| `KEYCLOAK_REALM_LOGIN` | Realm's login name in your Keycloak instance                           | str             | `'master'`                             |
-| `KEYCLOAK_REALM_ADMIN` | Realm's admin name in your Keycloak instance                           | str             | `'master'`                             |
-| `KEYCLOAK_USER`        | Username to access Keycloak                                            | str             | `'username'`                           |
-| `KEYCLOAK_PASS`        | Password to access Keycloak                                            | str             | `'secure123'`                          |
+| `KEYCLOAK_INTEGRATION` | Enable Keycloak user synchronization                                   | bool            | `False`                                |
+| `KEYCLOAK_URL`         | Keycloak instance URL (required if enabled)                            | str             | Required when enabled                  |
+| `KEYCLOAK_REALM_LOGIN` | Keycloak login realm name                                              | str             | `'End-2-End-Testing'`                  |
+| `KEYCLOAK_REALM_ADMIN` | Keycloak admin realm name                                              | str             | `'End-2-End-Testing'`                  |
+| `KEYCLOAK_USER`        | Keycloak admin username (required if enabled)                          | str             | Required when enabled                  |
+| `KEYCLOAK_PASS`        | Keycloak admin password (required if enabled)                          | str             | Required when enabled                  |
 
-#### Others
+##### OIDC (OpenID Connect)
 
-| Key              | Description                                                               | Expected values | Example value                                            |
-| ---------------- | ------------------------------------------------------------------------- | --------------- | -------------------------------------------------------- |
-| `SERVER_SCHEME`  | A URL's scheme to access your DAISY instance (http or https)              | str             | `'https'`                                                |
-| `SERVER_URL`     | A URL to access your DAISY instance (without the scheme)                  | str             | `'example.com'`                                          |
-| `GLOBAL_API_KEY` | An API key that is not connected with any user. Disabled if set to `None` | optional[str]   | `'in-practice-you-dont-want-to-use-it-unless-debugging'` |
+| Key                   | Description                                   | Expected values | Default value           |
+| --------------------- | --------------------------------------------- | --------------- | ----------------------- |
+| `OIDC_ENABLED`        | Enable OIDC authentication                    | bool            | `False`                 |
+| `OIDC_CLIENT_ID`      | OIDC client ID (required if enabled)          | str             | Required when enabled   |
+| `OIDC_CLIENT_SECRET`  | OIDC client secret (required if enabled)      | str             | Required when enabled   |
+| `OIDC_METADATA_URL`   | OIDC metadata URL (required if enabled)       | str             | Required when enabled   |
+
+##### LDAP
+
+| Key                      | Description                                   | Expected values | Default value           |
+| ------------------------ | --------------------------------------------- | --------------- | ----------------------- |
+| `LDAP_ENABLED`           | Enable LDAP authentication                    | bool            | `False`                 |
+| `AUTH_LDAP_SERVER_URI`   | LDAP server URI (required if enabled)         | str             | Required when enabled   |
+| `AUTH_LDAP_BIND_DN`      | LDAP bind DN                                  | str             | `None`                  |
+| `AUTH_LDAP_BIND_PASSWORD`| LDAP bind password (required if enabled)      | str             | Required when enabled   |
+
+See `.env.example` for a complete list of all available configuration options.
 
 ---
 
