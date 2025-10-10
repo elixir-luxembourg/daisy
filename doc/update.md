@@ -8,6 +8,45 @@ Create a database backup before upgrading:
 docker compose exec backup sh /code/scripts/db.sh backup
 ```
 
+## Migrating to Environment-Based Configuration
+
+1. **Back up your existing configuration:**
+
+   ```bash
+   cp elixir_daisy/local_settings.py elixir_daisy/local_settings.py.backup
+   cp elixir_daisy/settings_compose.py elixir_daisy/settings_compose.py.backup
+   cp .env .env.backup
+   ```
+
+2. **Create environment file for your deployment:**
+
+   For production:
+
+   ```bash
+   ./scripts/create_production_env.sh
+   ```
+
+3. **Migrate your settings:**
+
+   The new environment-based configuration uses these key variables:
+
+   | Old Setting            | New Environment Variable                      |
+   | ---------------------- | --------------------------------------------- |
+   | `DATABASES`            | `DATABASE_URL`                                |
+   | `HAYSTACK_CONNECTIONS` | `SOLR_URL`, `SOLR_URL_TEST`, `SOLR_ADMIN_URL` |
+
+   See [administration documentation](administration.md#environment-variables-reference) for a complete list.
+
+4. **Set environment for production:**
+
+   ```bash
+   ENVIRONMENT=production docker compose up -d
+   ```
+
+   This automatically loads `.env.production`. You can override with `ENV_FILE` if needed.
+
+5. **Remove old settings files:**
+
 ## Upgrade Steps
 
 1. **Pull Latest Changes:**

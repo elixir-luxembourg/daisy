@@ -176,7 +176,7 @@ USE_L10N = True
 USE_TZ = True
 
 # Celery configs
-CELERY_BROKER_URL = env("CELERY_BROKER_URL")
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="amqp://guest:guest@mq:5672//")
 CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="django-db")
 CELERY_TIMEZONE = "Europe/Luxembourg"
 

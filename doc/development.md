@@ -1,5 +1,21 @@
-
 # Development
+
+## Environment Setup
+
+DAISY loads configuration from `.env.{ENVIRONMENT}` files:
+
+- `.env.development` (default, works with Docker)
+- `.env.local` (for local development outside Docker)
+- `.env.test` (testing)
+
+**For local development:**
+
+```bash
+cp .env.development .env.local
+# Edit .env.local: set ENVIRONMENT=local, adjust DATABASE_URL/SOLR_URL for localhost
+```
+
+See [administration.md](administration.md#environment-variables-reference) for all settings.
 
 ## Linting
 
