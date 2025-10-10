@@ -46,7 +46,7 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 LOGIN_REDIRECT_URL = env("LOGIN_REDIRECT_URL", default="dashboard")
 LOGIN_URL = env("LOGIN_URL", default="login")
 
-REMS_INTEGRATION_ENABLED = env.bool("REMS_INTEGRATION_ENABLED")
+REMS_INTEGRATION_ENABLED = env.bool("REMS_INTEGRATION_ENABLED", default=False)
 if REMS_INTEGRATION_ENABLED:
     REMS_URL = env("REMS_URL")
     REMS_API_USER = env("REMS_API_USER")
@@ -359,7 +359,7 @@ ENABLE_PASSWORD_CHANGE_IN_ADMIN = env.bool(
 )
 
 # Keycloak integration for user synchronization
-KEYCLOAK_INTEGRATION = env.bool("KEYCLOAK_INTEGRATION")
+KEYCLOAK_INTEGRATION = env.bool("KEYCLOAK_INTEGRATION", default=False)
 if KEYCLOAK_INTEGRATION:
     KEYCLOAK_URL = env("KEYCLOAK_URL")
     KEYCLOAK_REALM_LOGIN = env("KEYCLOAK_REALM_LOGIN", default="End-2-End-Testing")
@@ -368,7 +368,7 @@ if KEYCLOAK_INTEGRATION:
     KEYCLOAK_PASS = env("KEYCLOAK_PASS")
 
 # OIDC authentication via Keycloak
-if OIDC_ENABLED := env.bool("OIDC_ENABLED"):
+if OIDC_ENABLED := env.bool("OIDC_ENABLED", default=False):
     AUTHLIB_OAUTH_CLIENTS = {
         "keycloak": {
             "client_id": env("OIDC_CLIENT_ID"),
@@ -397,7 +397,7 @@ if DEBUG:
 GLOBAL_API_KEY = env("GLOBAL_API_KEY")
 
 # if LDAP authentication will be used and user definitions will be bulk imported from LDAP
-if LDAP_ENABLED := env.bool("LDAP_ENABLED"):
+if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
     import ldap
     from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 
