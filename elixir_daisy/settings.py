@@ -134,7 +134,12 @@ WSGI_APPLICATION = "elixir_daisy.wsgi.application"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-DATABASES = {"default": env.db("DATABASE_URL")}
+DATABASES = {
+    "default": env.db(
+        "DATABASE_URL",
+        default="postgresql://daisy:daisy@db:5432/daisy",
+    )
+}
 
 # Authentication backend
 # https://django-guardian.readthedocs.io/en/stable/configuration.html
