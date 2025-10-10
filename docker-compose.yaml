@@ -34,8 +34,6 @@ services:
     db:
         image: postgres:16.4-alpine
         restart: unless-stopped
-        ports:
-            - "5432:5432"
         expose:
             - "5432"
         environment:
@@ -82,8 +80,6 @@ services:
             interval: 10s
             timeout: 5s
             retries: 5
-        ports:
-            - "8983:8983"
         expose:
             - "8983"
         networks:

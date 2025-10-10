@@ -21,16 +21,12 @@ if env_name:
         environ.Env.read_env(str(candidate))
 
 DOTENV_PATH = DOTENV_BASE / ".env"
-if os.environ.get("DJANGO_READ_DOTENV", str(DOTENV_PATH.exists())).lower() in (
-    "1",
-    "true",
-    "yes",
-):
+if env.bool("DJANGO_READ_DOTENV", default=DOTENV_PATH.exists()):
     environ.Env.read_env(str(DOTENV_PATH))
 
 ENVIRONMENT = env("ENVIRONMENT")
 
-DEBUG = env.bool("DEBUG", default=(ENVIRONMENT == "local"))
+DEBUG = env.bool("DEBUG", default=False)
 
 SECRET_KEY = env("SECRET_KEY", default=None)
 if ENVIRONMENT == "production" and not SECRET_KEY:
@@ -193,7 +189,7 @@ CELERY_BROKER_URL = env(
     "CELERY_BROKER_URL", default="amqp://guest:guest@localhost:5672//"
 )
 CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="django-db")
-CELERY_TIMEZONE = env("CELERY_TIMEZONE", default=TIME_ZONE)
+CELERY_TIMEZONE = "Europe/Luxembourg"
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = env("STATIC_URL", default="/static/")
@@ -204,13 +200,10 @@ INTERNAL_IPS = env.list("INTERNAL_IPS", default=["127.0.0.1"])
 
 EMAIL_HOST = env("EMAIL_HOST", default="localhost")
 EMAIL_PORT = env.int("EMAIL_PORT", default=25)
-EMAIL_BACKEND = env(
-    "EMAIL_BACKEND",
-    default=(
-        "django.core.mail.backends.console.EmailBackend"
-        if DEBUG
-        else "django.core.mail.backends.smtp.EmailBackend"
-    ),
+EMAIL_BACKEND = (
+    "django.core.mail.backends.console.EmailBackend"
+    if DEBUG
+    else "django.core.mail.backends.smtp.EmailBackend"
 )
 EMAIL_DONOTREPLY = env("EMAIL_DONOTREPLY", default="do-not-reply@daisy.lcsb.uni.lu")
 
@@ -349,8 +342,8 @@ FACET_FIELDS = {
     "dac": ("local_custodians", "project"),
 }
 
-# by default, notifications by email are disabled
-NOTIFICATIONS_DISABLED = False
+# Notifications settings
+NOTIFICATIONS_DISABLED = env.bool("NOTIFICATIONS_DISABLED", default=False)
 ADMIN_NOTIFICATIONS_EMAIL = env("ADMIN_NOTIFICATIONS_EMAIL", default="")
 
 # Placeholders on login page
@@ -419,10 +412,10 @@ if DEBUG:
     ]
 
 GLOBAL_API_KEY = env("GLOBAL_API_KEY", default=None)
-if ENVIRONMENT not in ("local", "development") and not GLOBAL_API_KEY:
+if ENVIRONMENT not in ("local", "test") and not GLOBAL_API_KEY:
     raise RuntimeError("GLOBAL_API_KEY must be set in non-local environments")
 
-# # if LDAP authentication will be used and user definitions will be bulk imported from LDAP
+# if LDAP authentication will be used and user definitions will be bulk imported from LDAP
 if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
     import ldap
     from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
