@@ -39,7 +39,7 @@ def superuser_required():
 class CustomLoginView(LoginView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["oidc_enabled"] = bool(getattr(settings, "AUTHLIB_OAUTH_CLIENTS", {}))
+        context["oidc_enabled"] = getattr(settings, "OIDC_ENABLED", False)
         return context
 
 
@@ -182,8 +182,7 @@ oauth.register("keycloak")
 
 @login_not_required
 def oidc_login(request):
-    oidc_clients = getattr(settings, "AUTHLIB_OAUTH_CLIENTS", {})
-    if not oidc_clients:
+    if not getattr(settings, "OIDC_ENABLED", False):
         messages.error(request, "OIDC authentication is not available.")
         return redirect("login")
 

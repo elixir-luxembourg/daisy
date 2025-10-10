@@ -28,9 +28,7 @@ ENVIRONMENT = env("ENVIRONMENT")
 
 DEBUG = env.bool("DEBUG", default=False)
 
-SECRET_KEY = env("SECRET_KEY", default=None)
-if ENVIRONMENT == "production" and not SECRET_KEY:
-    raise RuntimeError("SECRET_KEY must be set in production via environment variable")
+SECRET_KEY = env("SECRET_KEY")
 
 COMPANY = env("COMPANY", default="LCSB")
 DEMO_MODE = env.bool("DEMO_MODE", default=False)
@@ -48,27 +46,26 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 LOGIN_REDIRECT_URL = env("LOGIN_REDIRECT_URL", default="dashboard")
 LOGIN_URL = env("LOGIN_URL", default="login")
 
-REMS_INTEGRATION_ENABLED = env.bool("REMS_INTEGRATION_ENABLED", default=False)
-REMS_URL = env("REMS_URL", default=env("REMS_URL", default=""))
-REMS_API_USER = env("REMS_API_USER", default="")
-REMS_API_KEY = env("REMS_API_KEY", default="")
-REMS_VERIFY_SSL = env.bool("REMS_VERIFY_SSL", default=True)
-REMS_RETRIES = env.int("REMS_RETRIES", default=3)
-REMS_SKIP_IP_CHECK = env.bool("REMS_SKIP_IP_CHECK", default=False)
-REMS_ALLOWED_IP_ADDRESSES = env.list("REMS_ALLOWED_IP_ADDRESSES", default=[])
+REMS_INTEGRATION_ENABLED = env.bool("REMS_INTEGRATION_ENABLED")
+if REMS_INTEGRATION_ENABLED:
+    REMS_URL = env("REMS_URL")
+    REMS_API_USER = env("REMS_API_USER")
+    REMS_API_KEY = env("REMS_API_KEY")
+    REMS_VERIFY_SSL = env.bool("REMS_VERIFY_SSL", default=True)
+    REMS_RETRIES = env.int("REMS_RETRIES", default=3)
+    REMS_SKIP_IP_CHECK = env.bool("REMS_SKIP_IP_CHECK", default=False)
+    REMS_ALLOWED_IP_ADDRESSES = env.list("REMS_ALLOWED_IP_ADDRESSES", default=[])
 
 HAYSTACK_CONNECTIONS = {
     "default": {
         "ENGINE": "haystack.backends.solr_backend.SolrEngine",
-        "URL": env("SOLR_URL", default="http://localhost:8983/solr/daisy"),
-        "ADMIN_URL": env(
-            "SOLR_ADMIN_URL", default="http://localhost:8983/solr/admin/cores"
-        ),
+        "URL": env("SOLR_URL"),
+        "ADMIN_URL": env("SOLR_ADMIN_URL"),
     },
     "test": {
         "ENGINE": "haystack.backends.solr_backend.SolrEngine",
-        "URL": env("SOLR_URL_TEST", default="http://solr:8983/solr/daisy_test"),
-        "ADMIN_URL": env("SOLR_ADMIN_URL", default="http://solr:8983/solr/admin/cores"),
+        "URL": env("SOLR_URL_TEST"),
+        "ADMIN_URL": env("SOLR_ADMIN_URL"),
     },
 }
 HAYSTACK_SIGNAL_PROCESSOR = env(
@@ -137,18 +134,7 @@ WSGI_APPLICATION = "elixir_daisy.wsgi.application"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-DATABASES = {
-    "default": env.db(
-        "DATABASE_URL",
-        default="postgres://daisy:daisy@localhost:5432/daisy",
-    )
-}
-
-# For test/ci environments, use template0 to avoid PostgreSQL collation version issues
-if ENVIRONMENT in ("test", "ci"):
-    DATABASES["default"]["TEST"] = {
-        "TEMPLATE": "template0",
-    }
+DATABASES = {"default": env.db("DATABASE_URL")}
 
 # Authentication backend
 # https://django-guardian.readthedocs.io/en/stable/configuration.html
@@ -185,9 +171,7 @@ USE_L10N = True
 USE_TZ = True
 
 # Celery configs
-CELERY_BROKER_URL = env(
-    "CELERY_BROKER_URL", default="amqp://guest:guest@localhost:5672//"
-)
+CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="django-db")
 CELERY_TIMEZONE = "Europe/Luxembourg"
 
@@ -364,9 +348,7 @@ IDSERVICE_FUNCTION = env(
     "IDSERVICE_FUNCTION",
     default="web.views.utils.generate_elu_accession",  # "core.lcsb.idservice.generate_identifier"
 )
-IDSERVICE_ENDPOINT = env(
-    "IDSERVICE_ENDPOINT", default="https://10.240.16.199:8080/v1/api/id"
-)
+IDSERVICE_ENDPOINT = env("IDSERVICE_ENDPOINT", default=None)
 
 # Data Stewardship Wizard - pop up integration
 DSW_ORIGIN = env("DSW_ORIGIN", default="localhost")
@@ -377,20 +359,21 @@ ENABLE_PASSWORD_CHANGE_IN_ADMIN = env.bool(
 )
 
 # Keycloak integration for user synchronization
-KEYCLOAK_URL = env("KEYCLOAK_URL", default="https://sso.lcsb.uni.lu/")
-KEYCLOAK_REALM_LOGIN = env("KEYCLOAK_REALM_LOGIN", default="End-2-End-Testing")
-KEYCLOAK_REALM_ADMIN = env("KEYCLOAK_REALM_ADMIN", default="End-2-End-Testing")
-KEYCLOAK_USER = env("KEYCLOAK_USER", default="")
-KEYCLOAK_PASS = env("KEYCLOAK_PASS", default="")
-KEYCLOAK_INTEGRATION = env("KEYCLOAK_INTEGRATION", default=False)
+KEYCLOAK_INTEGRATION = env("KEYCLOAK_INTEGRATION")
+if KEYCLOAK_INTEGRATION:
+    KEYCLOAK_URL = env("KEYCLOAK_URL")
+    KEYCLOAK_REALM_LOGIN = env("KEYCLOAK_REALM_LOGIN", default="End-2-End-Testing")
+    KEYCLOAK_REALM_ADMIN = env("KEYCLOAK_REALM_ADMIN", default="End-2-End-Testing")
+    KEYCLOAK_USER = env("KEYCLOAK_USER")
+    KEYCLOAK_PASS = env("KEYCLOAK_PASS")
 
 # OIDC authentication via Keycloak
-if OIDC_METADATA_URL := env("OIDC_METADATA_URL", default=""):
+if OIDC_ENABLED := env("OIDC_ENABLED"):
     AUTHLIB_OAUTH_CLIENTS = {
         "keycloak": {
-            "client_id": env("OIDC_CLIENT_ID", default=""),
-            "client_secret": env("OIDC_CLIENT_SECRET", default=""),
-            "server_metadata_url": OIDC_METADATA_URL,
+            "client_id": env("OIDC_CLIENT_ID"),
+            "client_secret": env("OIDC_CLIENT_SECRET"),
+            "server_metadata_url": env("OIDC_METADATA_URL"),
             "client_kwargs": {"scope": "openid email profile"},
         }
     }
@@ -411,24 +394,22 @@ if DEBUG:
         "debug_toolbar.panels.profiling.ProfilingPanel",
     ]
 
-GLOBAL_API_KEY = env("GLOBAL_API_KEY", default=None)
-if ENVIRONMENT not in ("local", "test") and not GLOBAL_API_KEY:
-    raise RuntimeError("GLOBAL_API_KEY must be set in non-local environments")
+GLOBAL_API_KEY = env("GLOBAL_API_KEY")
 
 # if LDAP authentication will be used and user definitions will be bulk imported from LDAP
-if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
+if LDAP_ENABLED := env.bool("LDAP_ENABLED"):
     import ldap
     from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 
     AUTHENTICATION_BACKENDS = [
         "django_auth_ldap.backend.LDAPBackend",
     ] + AUTHENTICATION_BACKENDS
-    AUTH_LDAP_SERVER_URI = env("AUTH_LDAP_SERVER_URI", default="ldap://localhost/")
+    AUTH_LDAP_SERVER_URI = env("AUTH_LDAP_SERVER_URI")
     AUTH_LDAP_BIND_DN = env(
         "AUTH_LDAP_BIND_DN",
         default="CN=Normal.User,OU=LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux",
     )
-    AUTH_LDAP_BIND_PASSWORD = env("AUTH_LDAP_BIND_PASSWORD", default="")
+    AUTH_LDAP_BIND_PASSWORD = env("AUTH_LDAP_BIND_PASSWORD")
     ldap_search = [
         LDAPSearch(
             "OU=LCSB,OU=Rectorate,OU=BoG,OU=UNI-Users,DC=uni,DC=lux",
@@ -500,5 +481,5 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 TESTING = os.environ.get("TEST", False)
-if password_hashers := env.list("PASSWORD_HASHERS", default=None):
+if password_hashers := env.list("PASSWORD_HASHERS", default=None) and TESTING:
     PASSWORD_HASHERS = password_hashers
