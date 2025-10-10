@@ -59,13 +59,13 @@ if REMS_INTEGRATION_ENABLED:
 HAYSTACK_CONNECTIONS = {
     "default": {
         "ENGINE": "haystack.backends.solr_backend.SolrEngine",
-        "URL": env("SOLR_URL"),
-        "ADMIN_URL": env("SOLR_ADMIN_URL"),
+        "URL": env("SOLR_URL", default="http://solr:8983/solr/daisy"),
+        "ADMIN_URL": env("SOLR_ADMIN_URL", default="http://solr:8983/solr/admin/cores"),
     },
     "test": {
         "ENGINE": "haystack.backends.solr_backend.SolrEngine",
-        "URL": env("SOLR_URL_TEST"),
-        "ADMIN_URL": env("SOLR_ADMIN_URL"),
+        "URL": env("SOLR_URL_TEST", default="http://solr:8983/solr/daisy_test"),
+        "ADMIN_URL": env("SOLR_ADMIN_URL", default="http://solr:8983/solr/admin/cores"),
     },
 }
 HAYSTACK_SIGNAL_PROCESSOR = env(
