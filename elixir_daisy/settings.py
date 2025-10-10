@@ -359,7 +359,7 @@ ENABLE_PASSWORD_CHANGE_IN_ADMIN = env.bool(
 )
 
 # Keycloak integration for user synchronization
-KEYCLOAK_INTEGRATION = env("KEYCLOAK_INTEGRATION")
+KEYCLOAK_INTEGRATION = env.bool("KEYCLOAK_INTEGRATION")
 if KEYCLOAK_INTEGRATION:
     KEYCLOAK_URL = env("KEYCLOAK_URL")
     KEYCLOAK_REALM_LOGIN = env("KEYCLOAK_REALM_LOGIN", default="End-2-End-Testing")
@@ -368,7 +368,7 @@ if KEYCLOAK_INTEGRATION:
     KEYCLOAK_PASS = env("KEYCLOAK_PASS")
 
 # OIDC authentication via Keycloak
-if OIDC_ENABLED := env("OIDC_ENABLED"):
+if OIDC_ENABLED := env.bool("OIDC_ENABLED"):
     AUTHLIB_OAUTH_CLIENTS = {
         "keycloak": {
             "client_id": env("OIDC_CLIENT_ID"),

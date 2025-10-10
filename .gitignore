@@ -82,7 +82,7 @@ celerybeat-schedule.*
 .env.*
 !.env.example
 !.env.test
-!.env.compose
+!.env.development
 .out
 .venv
 env/

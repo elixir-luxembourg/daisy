@@ -6,9 +6,9 @@ services:
         expose:
             - "5000"
         environment:
-            - ENVIRONMENT=${ENVIRONMENT:-compose}
+            - ENVIRONMENT=${ENVIRONMENT:-development}
         env_file:
-            - ${ENV_FILE:-.env.compose}
+            - ${ENV_FILE:-.env.development}
         volumes:
             - statics:/static
             - solrdata:/solr
@@ -123,9 +123,9 @@ services:
     worker:
         build: .
         environment:
-            - ENVIRONMENT=${ENVIRONMENT:-compose}
+            - ENVIRONMENT=${ENVIRONMENT:-development}
         env_file:
-            - ${ENV_FILE:-.env.compose}
+            - ${ENV_FILE:-.env.development}
         depends_on:
             db:
                 condition: service_healthy
@@ -148,9 +148,9 @@ services:
     beat:
         build: .
         environment:
-            - ENVIRONMENT=${ENVIRONMENT:-compose}
+            - ENVIRONMENT=${ENVIRONMENT:-development}
         env_file:
-            - ${ENV_FILE:-.env.compose}
+            - ${ENV_FILE:-.env.development}
         depends_on:
             db:
                 condition: service_healthy
