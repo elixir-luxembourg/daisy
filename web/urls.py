@@ -112,7 +112,10 @@ from web.views.user import (
 from web.views.users import add_personnel_to_project, remove_personnel_from_project
 from web.views.log_entry import LogEntryListView
 
-wizard_view = DatasetWizardView.as_view(url_name="wizard_step")
+dataset_wizard_view = DatasetWizardView.as_view(url_name="dataset_wizard_step")
+project_dataset_wizard_view = DatasetWizardView.as_view(
+    url_name="project_dataset_wizard_step"
+)
 
 web_urls = [
     # Single pages
@@ -208,9 +211,8 @@ web_urls = [
         data_declarations.data_dec_paginated_search,
         name="data_dec_paginated_search",
     ),
-    # Datasets
-    path("wizard/<str:step>/", wizard_view, name="wizard_step"),
-    path("wizard/", wizard_view, name="wizard"),
+    path("dataset/wizard/<str:step>/", dataset_wizard_view, name="dataset_wizard_step"),
+    path("dataset/wizard/", dataset_wizard_view, name="dataset_wizard"),
     path("datasets/", dataset_list, name="datasets"),
     path("datasets/export", datasets_export, name="datasets_export"),
     path("dataset/add/", DatasetCreateView.as_view(), name="dataset_add"),
@@ -462,6 +464,16 @@ web_urls = [
         name="project_contract_remove",
     ),
     # Project's dataset
+    path(
+        "project/<int:pk>/dataset/wizard/<str:step>/",
+        project_dataset_wizard_view,
+        name="project_dataset_wizard_step",
+    ),
+    path(
+        "project/<int:pk>/dataset/wizard/",
+        project_dataset_wizard_view,
+        name="project_dataset_wizard",
+    ),
     path(
         "project/<int:pk>/dataset/add",
         projects.project_dataset_add,

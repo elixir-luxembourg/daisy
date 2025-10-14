@@ -13,7 +13,7 @@
     </div>
     <div class="row mt-4">
         <div class="col">
-            {% url 'wizard' as base_url %}
+            {% url 'dataset_wizard' as base_url %}
             {% with dataset_add_url=base_url|add:"?reset=true" %}
             {% include '_includes/card_list.html' with list=last_datasets list_title='My datasets' url_name='dataset' add_new_link=dataset_add_url icon_name='assessment'  %}
             {% endwith %}

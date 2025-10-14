@@ -193,7 +193,7 @@
             <div class="card-body">
                 {% if can_edit %}
                 <div class="ml-1 float-right btn-group">
-                    <a href="{% url 'datasets_add_to_project' pk=project.pk %}">
+                    <a href="{% url 'project_dataset_wizard' pk=project.pk %}">
                         <button class="btn bmd-btn-fab bmd-btn-fab-sm dropdown-toggle" type="button" title="Add new dataset to project">
                                     <i class="material-icons">add</i>
                                 </button>

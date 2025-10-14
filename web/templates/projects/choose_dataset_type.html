@@ -10,7 +10,7 @@
     <div class="row">
         {% for type in types %}
             <a class="card col-md-5 btn-secondary btn btn-raised mb-4 ml-4"
-               href="{% url 'project_dataset_create' pk=project.pk flag=type.value %}">
+               href="{% url 'project_dataset_wizard' pk=project.pk %}">
                 <div class="card-body">
                     <h2 class="card-title">{% block card_title %}{{ type }}{% endblock %}</h2>
                 </div>
