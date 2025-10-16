@@ -22,15 +22,18 @@ cd daisy
 
 DAISY loads configuration from `.env.{ENVIRONMENT}` files (default: `.env.development`).
 
-**For production**, generate a secure configuration:
+**For production or staging**, generate a secure configuration:
 
 ```bash
-./scripts/create_production_env.sh
+./scripts/create_env.sh
 ```
 
 Then start services with:
 
 ```bash
+# for stage
+ENVIRONMENT=staging docker compose up -d
+# for prod
 ENVIRONMENT=production docker compose up -d
 ```
 

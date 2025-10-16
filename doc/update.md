@@ -10,7 +10,7 @@ docker compose exec backup sh /code/scripts/db.sh backup
 
 ## Migrating to Environment-Based Configuration
 
-1. **Back up your existing configuration:**
+1. **Before git pull - back up your existing configuration:**
 
    ```bash
    cp elixir_daisy/local_settings.py elixir_daisy/local_settings.py.backup
@@ -18,13 +18,18 @@ docker compose exec backup sh /code/scripts/db.sh backup
    cp .env .env.backup
    ```
 
+   You should also export the environment variables from the `web` container:
+   ```bash
+   docker compose exec web env
+   ```
+
 2. **Create environment file for your deployment:**
 
-   For production:
+    Use the interactive script to create `production`, `staging` or `local` env files:
 
-   ```bash
-   ./scripts/create_production_env.sh
-   ```
+    ```bash
+    ./scripts/create_env.sh
+    ```
 
 3. **Migrate your settings:**
 

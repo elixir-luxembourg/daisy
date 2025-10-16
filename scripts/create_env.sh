@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+# Create .env file for DAISY deployment
+# Usage: ./scripts/create_env.sh
+
+set -e
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Helper functions
+gen_secret() { python3 -c "import secrets; print(secrets.token_urlsafe(50))"; }
+ask() { read -p "$1 [${2}]: " v; echo "${v:-$2}"; }
+ask_secret() { read -sp "$1: " v; echo "" >&2; echo "$v"; }
+ask_yn() { read -p "$1 (y/n) [${2:-n}]: " v; [[ "${v:-$2}" =~ ^[Yy] ]] && echo "True" || echo "False"; }
+
+# Select environment
+echo "Select environment: 1) production 2) staging"
+read -p "Choice [1]: " choice
+ENV_TYPE=$([[ "$choice" == "2" ]] && echo "staging" || echo "production")
+ENV_FILE="$PROJECT_ROOT/.env.$ENV_TYPE"
+
+# Backup if exists
+if [[ -f "$ENV_FILE" ]]; then
+    read -p "⚠️  $ENV_FILE exists. Overwrite? (y/n): " -r
+    [[ ! $REPLY =~ ^[Yy] ]] && echo "Aborted." && exit 0
+    cp "$ENV_FILE" "$ENV_FILE.backup.$(date +%Y%m%d_%H%M%S)"
+fi
+
+# Collect inputs
+echo -e "\n🔐 Security (leave empty to auto-generate)"
+SECRET_KEY=$(ask "SECRET_KEY" "")
+[[ -z "$SECRET_KEY" ]] && SECRET_KEY=$(gen_secret)
+GLOBAL_API_KEY=$(ask "GLOBAL_API_KEY" "")
+[[ -z "$GLOBAL_API_KEY" ]] && GLOBAL_API_KEY=$(gen_secret)
+
+echo -e "\n🗄️ PostgreSQL DB"
+DB_HOST=$(ask "Host" "db")
+DB_PORT=$(ask "Port" "5432")
+DB_NAME=$(ask "Name" "daisy")
+DB_USER=$(ask "User" "daisy")
+DB_PASS=$(ask_secret "Password")
+
+echo -e "\n📬 AMQP broker for Celery"
+MQ_HOST=$(ask "RabbitMQ host" "mq")
+MQ_USER=$(ask "User" "guest")
+MQ_PASS=$(ask "Password" "guest")
+
+echo -e "\n🔍 Solr for search"
+SOLR_HOST=$(ask "Solr host" "solr")
+
+echo -e "\n🌐 Network"
+ALLOWED_HOSTS=$(ask "Allowed hosts" "example.com")
+CSRF_ORIGINS=$(ask "CSRF origins" "https://example.com")
+
+echo -e "\n🔌 Integrations (optional)"
+REMS_ENABLED=$(ask_yn "Enable REMS?")
+LDAP_ENABLED=$(ask_yn "Enable LDAP?")
+KC_ENABLED=$(ask_yn "Enable Keycloak user synchronization?")
+OIDC_ENABLED=$(ask_yn "Enable OIDC authentication?")
+
+# Write file
+cat > "$ENV_FILE" << EOF
+# DAISY $ENV_TYPE - $(date +"%Y-%m-%d %H:%M:%S")
+ENVIRONMENT=$ENV_TYPE
+DJANGO_READ_DOTENV=true
+DEBUG=False
+
+SECRET_KEY=$SECRET_KEY
+GLOBAL_API_KEY=$GLOBAL_API_KEY
+
+DATABASE_URL=postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+
+CELERY_BROKER_URL=amqp://${MQ_USER}:${MQ_PASS}@${MQ_HOST}:5672//
+CELERY_RESULT_BACKEND=django-db
+
+SOLR_URL=http://${SOLR_HOST}:8983/solr/daisy
+SOLR_URL_TEST=http://${SOLR_HOST}:8983/solr/daisy_test
+SOLR_ADMIN_URL=http://${SOLR_HOST}:8983/solr/admin/cores
+
+ALLOWED_HOSTS=$ALLOWED_HOSTS
+CSRF_TRUSTED_ORIGINS=$CSRF_ORIGINS
+SESSION_COOKIE_SECURE=True
+CSRF_COOKIE_SECURE=True
+
+EMAIL_HOST=localhost
+EMAIL_PORT=25
+
+REMS_INTEGRATION_ENABLED=$REMS_ENABLED
+LDAP_ENABLED=$LDAP_ENABLED
+KEYCLOAK_INTEGRATION=$KC_ENABLED
+OIDC_ENABLED=$OIDC_ENABLED
+
+NOTIFICATIONS_DISABLED=False
+EOF
+
+# Add integration details if enabled
+[[ "$REMS_ENABLED" == "True" ]] && cat >> "$ENV_FILE" << EOF
+
+REMS_URL=$(ask "REMS URL" "")
+REMS_API_USER=$(ask "REMS User" "")
+REMS_API_KEY=$(ask_secret "REMS API Key")
+REMS_VERIFY_SSL=True
+EOF
+
+[[ "$LDAP_ENABLED" == "True" ]] && cat >> "$ENV_FILE" << EOF
+
+AUTH_LDAP_SERVER_URI=$(ask "LDAP Server URI" "ldap://localhost/")
+AUTH_LDAP_BIND_PASSWORD=$(ask_secret "LDAP Password")
+EOF
+
+[[ "$KC_ENABLED" == "True" ]] && cat >> "$ENV_FILE" << EOF
+
+KEYCLOAK_URL=$(ask "Keycloak URL" "https://sso.example.com/")
+KEYCLOAK_REALM_LOGIN=$(ask "KC Realm" "End-2-End-Testing")
+KEYCLOAK_REALM_ADMIN=$(ask "KC Admin Realm" "End-2-End-Testing")
+KEYCLOAK_USER=$(ask "KC Admin User" "")
+KEYCLOAK_PASS=$(ask_secret "KC Admin Password")
+EOF
+
+[[ "$OIDC_ENABLED" == "True" ]] && cat >> "$ENV_FILE" << EOF
+
+OIDC_CLIENT_ID=$(ask "OIDC Client ID" "")
+OIDC_CLIENT_SECRET=$(ask_secret "OIDC Secret")
+OIDC_METADATA_URL=$(ask "OIDC Metadata URL" "")
+EOF
+
+chmod 600 "$ENV_FILE"
+echo -e "\n✅ Created: $ENV_FILE (permissions: 600)"
+echo "⚠️  Never commit this file to version control"

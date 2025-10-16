@@ -122,10 +122,10 @@ To access the admin interface:
 
 ## Settings Reference
 
-DAISY loads configuration from `.env.{ENVIRONMENT}` files. Generate production config with:
+DAISY loads configuration from `.env.{ENVIRONMENT}` files. Use the interactive script to generate a production or staging config:
 
 ```bash
-./scripts/create_production_env.sh
+./scripts/create_env.sh
 ```
 
 ### Environment Variables Reference

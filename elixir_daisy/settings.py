@@ -47,14 +47,13 @@ LOGIN_REDIRECT_URL = env("LOGIN_REDIRECT_URL", default="dashboard")
 LOGIN_URL = env("LOGIN_URL", default="login")
 
 REMS_INTEGRATION_ENABLED = env.bool("REMS_INTEGRATION_ENABLED", default=False)
-if REMS_INTEGRATION_ENABLED:
-    REMS_URL = env("REMS_URL")
-    REMS_API_USER = env("REMS_API_USER")
-    REMS_API_KEY = env("REMS_API_KEY")
-    REMS_VERIFY_SSL = env.bool("REMS_VERIFY_SSL", default=True)
-    REMS_RETRIES = env.int("REMS_RETRIES", default=3)
-    REMS_SKIP_IP_CHECK = env.bool("REMS_SKIP_IP_CHECK", default=False)
-    REMS_ALLOWED_IP_ADDRESSES = env.list("REMS_ALLOWED_IP_ADDRESSES", default=[])
+REMS_URL = env("REMS_URL", default=None)
+REMS_API_USER = env("REMS_API_USER", default=None)
+REMS_API_KEY = env("REMS_API_KEY", default=None)
+REMS_VERIFY_SSL = env.bool("REMS_VERIFY_SSL", default=True)
+REMS_RETRIES = env.int("REMS_RETRIES", default=3)
+REMS_SKIP_IP_CHECK = env.bool("REMS_SKIP_IP_CHECK", default=False)
+REMS_ALLOWED_IP_ADDRESSES = env.list("REMS_ALLOWED_IP_ADDRESSES", default=[])
 
 HAYSTACK_CONNECTIONS = {
     "default": {
@@ -376,9 +375,9 @@ if KEYCLOAK_INTEGRATION:
 if OIDC_ENABLED := env.bool("OIDC_ENABLED", default=False):
     AUTHLIB_OAUTH_CLIENTS = {
         "keycloak": {
-            "client_id": env("OIDC_CLIENT_ID"),
-            "client_secret": env("OIDC_CLIENT_SECRET"),
-            "server_metadata_url": env("OIDC_METADATA_URL"),
+            "client_id": env("OIDC_CLIENT_ID", default=None),
+            "client_secret": env("OIDC_CLIENT_SECRET", default=None),
+            "server_metadata_url": env("OIDC_METADATA_URL", default=None),
             "client_kwargs": {"scope": "openid email profile"},
         }
     }
@@ -409,12 +408,12 @@ if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
     AUTHENTICATION_BACKENDS = [
         "django_auth_ldap.backend.LDAPBackend",
     ] + AUTHENTICATION_BACKENDS
-    AUTH_LDAP_SERVER_URI = env("AUTH_LDAP_SERVER_URI")
+    AUTH_LDAP_SERVER_URI = env("AUTH_LDAP_SERVER_URI", default=None)
     AUTH_LDAP_BIND_DN = env(
         "AUTH_LDAP_BIND_DN",
         default="CN=Normal.User,OU=LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux",
     )
-    AUTH_LDAP_BIND_PASSWORD = env("AUTH_LDAP_BIND_PASSWORD")
+    AUTH_LDAP_BIND_PASSWORD = env("AUTH_LDAP_BIND_PASSWORD", default=None)
     ldap_search = [
         LDAPSearch(
             "OU=LCSB,OU=Rectorate,OU=BoG,OU=UNI-Users,DC=uni,DC=lux",

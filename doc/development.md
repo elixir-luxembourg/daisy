@@ -70,22 +70,10 @@ npm run-script build
 
 ## Run the tests
 
-The recommended way to run tests is with pytest. If test dependencies are installed, run:
+Install test dependencies:
 
 ```bash
-pytest
-```
-
-To run tests using the Python module invocation (explicit interpreter):
-
-```bash
-python -m pytest
-```
-
-Run tests for a specific file:
-
-```bash
-pytest web/tests/test_dataset.py
+pip install ".[test]"
 ```
 
 If tests dependencies are already installed, one can also run the tests just by executing:
@@ -111,6 +99,7 @@ docker compose -f docker-compose.yaml -f docker-compose.dev.yml up
 ```
 
 The development setup provides:
+
 - **Live static file mounting**: Changes to CSS/JS files are immediately available
 - **Hot reload**: Code changes are reflected without rebuilding containers
 
@@ -139,10 +128,9 @@ docker compose -f docker-compose.yaml -f docker-compose.dev.yml exec web bash -c
 docker compose -f docker-compose.yaml -f docker-compose.dev.yml exec web python manage.py collectstatic --noinput
 ```
 
-
 ### Testing in Docker
 
 ```bash
-docker compose exec web pip install -e ".[test]"
+docker compose exec --user root web pip install ".[test]"
 docker compose exec web pytest
 ```
