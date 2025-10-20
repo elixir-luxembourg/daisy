@@ -196,6 +196,9 @@ def auth(request):
     user_info = token.get("userinfo")
     request.session["user"] = user_info
 
+    if "id_token" in token:
+        request.session["oidc_id_token"] = token["id_token"]
+
     if not user_info:
         messages.error(request, "Authentication failed.")
         return redirect("login")
@@ -230,12 +233,16 @@ def auth(request):
 
 
 def logout(request):
+    id_token = request.session.get("oidc_id_token")
+
     dj_logout(request)
     request.session.pop("user", None)
+    request.session.pop("oidc_id_token", None)
 
-    # keycloak_logout_url = oauth.keycloak.server_metadata.get("end_session_endpoint")
-    # redirect_uri = request.build_absolute_uri(reverse("dashboard"))
-    # TODO: redirect from KC to redirect_uri does not work
-    # logout_url = f"{keycloak_logout_url}?redirect_uri={redirect_uri}"
+    if id_token and getattr(settings, "OIDC_ENABLED", False):
+        keycloak_logout_url = oauth.keycloak.server_metadata.get("end_session_endpoint")
+        redirect_uri = request.build_absolute_uri(reverse("login"))
+        logout_url = f"{keycloak_logout_url}?post_logout_redirect_uri={redirect_uri}&id_token_hint={id_token}"
+        return redirect(logout_url)
 
-    return redirect("dashboard")
+    return redirect("login")
