@@ -61,13 +61,20 @@ HAYSTACK_CONNECTIONS = {
         "ENGINE": "haystack.backends.solr_backend.SolrEngine",
         "URL": env("SOLR_URL", default="http://solr:8983/solr/daisy"),
         "ADMIN_URL": env("SOLR_ADMIN_URL", default="http://solr:8983/solr/admin/cores"),
-    },
-    "test": {
-        "ENGINE": "haystack.backends.solr_backend.SolrEngine",
-        "URL": env("SOLR_URL_TEST", default="http://solr:8983/solr/daisy_test"),
-        "ADMIN_URL": env("SOLR_ADMIN_URL", default="http://solr:8983/solr/admin/cores"),
-    },
+    }
 }
+if SOLR_URL_TEST := env("SOLR_URL_TEST", default=None):
+    HAYSTACK_CONNECTIONS.update(
+        {
+            "test": {
+                "ENGINE": "haystack.backends.solr_backend.SolrEngine",
+                "URL": env("SOLR_URL_TEST", default="http://solr:8983/solr/daisy_test"),
+                "ADMIN_URL": env(
+                    "SOLR_ADMIN_URL", default="http://solr:8983/solr/admin/cores"
+                ),
+            }
+        }
+    )
 HAYSTACK_SIGNAL_PROCESSOR = env(
     "HAYSTACK_SIGNAL_PROCESSOR",
     default="celery_haystack.signals.CelerySignalProcessor",

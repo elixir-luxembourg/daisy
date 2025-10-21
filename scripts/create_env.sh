@@ -72,7 +72,6 @@ CELERY_BROKER_URL=amqp://${MQ_USER}:${MQ_PASS}@${MQ_HOST}:5672//
 CELERY_RESULT_BACKEND=django-db
 
 SOLR_URL=http://${SOLR_HOST}:8983/solr/daisy
-SOLR_URL_TEST=http://${SOLR_HOST}:8983/solr/daisy_test
 SOLR_ADMIN_URL=http://${SOLR_HOST}:8983/solr/admin/cores
 
 ALLOWED_HOSTS=$ALLOWED_HOSTS

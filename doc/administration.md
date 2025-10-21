@@ -142,7 +142,7 @@ Defaults work for development; **production requires explicit configuration**.
 | `DATABASE_URL`        | PostgreSQL connection string                                           | **Yes**                 | `'postgresql://daisy:daisy@db:5432/daisy'`    |
 | `CELERY_BROKER_URL`   | RabbitMQ message broker URL                                            | **Yes**                 | `'amqp://guest:guest@mq:5672//'`              |
 | `SOLR_URL`            | Solr search engine URL                                                 | **Yes**                 | `'http://solr:8983/solr/daisy'`               |
-| `SOLR_URL_TEST`       | Solr test core URL                                                     | **Yes**                 | `'http://solr:8983/solr/daisy_test'`          |
+| `SOLR_URL_TEST`       | Solr test core URL                                                     | No                      | `'http://solr:8983/solr/daisy_test'`          |
 | `SOLR_ADMIN_URL`      | Solr admin interface URL                                               | **Yes**                 | `'http://solr:8983/solr/admin/cores'`         |
 | `ALLOWED_HOSTS`       | Comma-separated list of allowed hostnames                              | **Yes**                 | `'*'`                                          |
 | `CSRF_TRUSTED_ORIGINS`| Comma-separated list of trusted origins (with scheme)                  | **Yes**                 | `[]`                                           |
