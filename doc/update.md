@@ -10,13 +10,13 @@ docker compose exec backup sh /code/scripts/db.sh backup
 
 ## Migrating to Environment-Based Configuration
 
-1. **Before git pull - back up your existing configuration:**
+0. **Before git pull - back up your existing configuration:**
 
-   ```bash
-   cp elixir_daisy/local_settings.py elixir_daisy/local_settings.py.backup
-   cp elixir_daisy/settings_compose.py elixir_daisy/settings_compose.py.backup
-   cp .env .env.backup 2>/dev/null || true
-   ```
+```bash
+cp elixir_daisy/settings.py elixir_daisy/settings.py.backup
+cp elixir_daisy/settings_compose.py elixir_daisy/settings_compose.py.backup
+cp elixir_daisy/settings_local.py elixir_daisy/settings_local.py.backup
+```
 
    **For legacy setups with settings file inheritance (without django-environ):**
 
@@ -44,35 +44,39 @@ EOF
 
    The command creates a timestamped JSON file like `settings_backup_20251020_143025.json` that you can use to compare with your new settings after the update.
 
+1. **Pull updates**
 
 2. **Create environment file for your deployment:**
 
-   Use the interactive script to create `production`, `staging` or `local` env files:
+   Use the interactive script to create `production` or `staging` env files:
 
-   ```bash
-   ./scripts/create_env.sh
-   ```
+```bash
+./scripts/create_env.sh
+```
 
-3. **Migrate your settings:**
+3. **Verify your settings file**
 
-   The new environment-based configuration uses these key variables:
-
-   | Old Setting            | New Environment Variable                       |
-   |------------------------|------------------------------------------------|
-   | `DATABASES`            | `DATABASE_URL`                                 |
-   | `HAYSTACK_CONNECTIONS` | `SOLR_URL`, `SOLR_URL_TEST`, `SOLR_ADMIN_URL` |
+```bash
+# prod:
+cat .env.production
+# stage:
+cat .emv.staging
+```
 
    See [administration documentation](administration.md#environment-variables-reference) for a complete list.
 
-4. **Set environment for production:**
+4. **Set environment for VM:**
 
-   ```bash
-   ENVIRONMENT=production docker compose up -d
-   ```
+```bash
+# prod:
+ENVIRONMENT=production docker compose up -d
+# stage:
+ENVIRONMENT=staging docker compose up -d
+```
 
-   This automatically loads `.env.production`. You can override with `ENV_FILE` if needed.
+   This automatically loads env file. You can override with `ENV_FILE` if needed.
 
-5. **Remove old settings files:**
+5. **Remove old settings files**
 
 ## Upgrade Steps
 

@@ -98,12 +98,14 @@ REMS_URL=$(ask "REMS URL" "")
 REMS_API_USER=$(ask "REMS User" "")
 REMS_API_KEY=$(ask_secret "REMS API Key")
 REMS_VERIFY_SSL=True
+REMS_ALLOWED_IP_ADDRESSES=$(ask "REMS Allowed IPs (comma-separated, or '*' for all)" "")
 EOF
 
 [[ "$LDAP_ENABLED" == "True" ]] && cat >> "$ENV_FILE" << EOF
 
 AUTH_LDAP_SERVER_URI=$(ask "LDAP Server URI" "ldap://localhost/")
 AUTH_LDAP_BIND_PASSWORD=$(ask_secret "LDAP Password")
+PREDEFINED_PIS_LIST=$(ask "Predefined PIs (comma-separated emails)" "")
 EOF
 
 [[ "$KC_ENABLED" == "True" ]] && cat >> "$ENV_FILE" << EOF
