@@ -54,13 +54,21 @@ EOF
 ./scripts/create_env.sh
 ```
 
+   It also create a .env file with specific for VM variables:
+
+```bash
+ENVIRONMENT=staging
+ENV_FILE=.env.staging
+```
+
 3. **Verify your settings file**
 
 ```bash
+cat .env
 # prod:
 cat .env.production
 # stage:
-cat .emv.staging
+cat .env.staging
 ```
 
    See [administration documentation](administration.md#environment-variables-reference) for a complete list.
@@ -68,10 +76,9 @@ cat .emv.staging
 4. **Set environment for VM:**
 
 ```bash
-# prod:
-ENVIRONMENT=production docker compose up -d
-# stage:
-ENVIRONMENT=staging docker compose up -d
+docker compose down
+docker compose build web
+docker compose up -d
 ```
 
    This automatically loads env file. You can override with `ENV_FILE` if needed.

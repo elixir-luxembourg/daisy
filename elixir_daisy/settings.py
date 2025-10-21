@@ -14,15 +14,16 @@ env = environ.Env(
 )
 
 DOTENV_BASE = Path(BASE_DIR)
+
+DOTENV_PATH = DOTENV_BASE / ".env"
+if DOTENV_PATH.exists():
+    environ.Env.read_env(str(DOTENV_PATH))
+
 env_name = os.environ.get("ENVIRONMENT", "local")
 if env_name:
     candidate = DOTENV_BASE / f".env.{env_name}"
     if candidate.exists():
         environ.Env.read_env(str(candidate))
-
-DOTENV_PATH = DOTENV_BASE / ".env"
-if env.bool("DJANGO_READ_DOTENV", default=DOTENV_PATH.exists()):
-    environ.Env.read_env(str(DOTENV_PATH))
 
 ENVIRONMENT = env("ENVIRONMENT")
 
@@ -370,6 +371,7 @@ if KEYCLOAK_INTEGRATION:
     KEYCLOAK_REALM_ADMIN = env("KEYCLOAK_REALM_ADMIN", default="End-2-End-Testing")
     KEYCLOAK_USER = env("KEYCLOAK_USER")
     KEYCLOAK_PASS = env("KEYCLOAK_PASS")
+    KEYCLOAK_SSL_VERIFY = env.bool("KEYCLOAK_SSL_VERIFY", default=True)
 
 # OIDC authentication via Keycloak
 if OIDC_ENABLED := env.bool("OIDC_ENABLED", default=False):
