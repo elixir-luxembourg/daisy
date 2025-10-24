@@ -150,3 +150,30 @@ docker compose up -d
     ```bash
     docker compose exec web python manage.py import_users
     ```
+
+
+# Breaking migrations
+
+## Daisy 1.10.0 to 1.11.0
+
+The settings is fully moved to environment files. Following steps are necessary to migrate to new version:
+
+### 1. Backup your current settings files
+
+```bash
+cp elixir_daisy/settings.py elixir_daisy/settings.py.backup
+cp elixir_daisy/settings_compose.py elixir_daisy/settings_compose.py.backup
+cp elixir_daisy/settings_local.py elixir_daisy/settings_local.py.backup
+```
+
+### 2. Retrieve all variables from DJANGO environment
+
+```bash
+docker compose exec -T web python manage.py shell <<'EOF' > settings_backup_$(date +%Y%m%d_%H%M%S).json
+from django.conf import settings
+import json
+settings_list = ['COMPANY', 'DEMO_MODE', 'INSTANCE_LABEL', 'INSTANCE_PRIMARY_COLOR', 'AUTH_USER_MODEL', 'SECRET_KEY', 'DEBUG', 'LOGIN_REDIRECT_URL', 'LOGIN_URL', 'ALLOWED_HOSTS', 'DATABASES', 'AUTHENTICATION_BACKENDS', 'LANGUAGE_CODE', 'TIME_ZONE', 'USE_I18N', 'USE_L10N', 'USE_TZ', 'CELERY_BROKER_URL', 'CELERY_TIMEZONE', 'CELERY_RESULT_BACKEND', 'STATIC_URL', 'STATIC_ROOT', 'MEDIA_ROOT', 'INTERNAL_IPS', 'EMAIL_HOST', 'EMAIL_PORT', 'EMAIL_BACKEND', 'EMAIL_DONOTREPLY', 'SERVER_SCHEME', 'SERVER_URL', 'HELPDESK_EMAIL', 'LOGFILE_MAX_BYTES', 'LOG_DIR', 'LOG_LEVEL', 'HAYSTACK_SIGNAL_PROCESSOR', 'NOTIFICATIONS_DISABLED', 'LOGIN_USERNAME_PLACEHOLDER', 'LOGIN_PASSWORD_PLACEHOLDER', 'IMPORT_JSON_SCHEMAS_URI', 'REMS_INTEGRATION_ENABLED', 'REMS_SKIP_IP_CHECK', 'REMS_ALLOWED_IP_ADDRESSES', 'REMS_URL', 'REMS_API_USER', 'REMS_API_KEY', 'REMS_VERIFY_SSL', 'REMS_RETRIES', 'REMS_MATCH_USERS_BY', 'REMS_FORM_ID', 'ACCESS_DEFAULT_EXPIRATION_DAYS', 'IDSERVICE_FUNCTION', 'IDSERVICE_ENDPOINT', 'DSW_ORIGIN', 'ENABLE_PASSWORD_CHANGE_IN_ADMIN', 'KEYCLOAK_INTEGRATION', 'KEYCLOAK_URL', 'KEYCLOAK_REALM_LOGIN', 'KEYCLOAK_REALM_ADMIN', 'KEYCLOAK_USER', 'KEYCLOAK_PASS', 'LDAP_ENABLED', 'AUTH_LDAP_SERVER_URI', 'AUTH_LDAP_BIND_DN', 'AUTH_LDAP_BIND_PASSWORD', 'LDAP_USERS_IMPORT_CLASS', 'LDAP_USERS_IMPORT_USERNAME_ATTR', 'AUTH_LDAP_USER_DN_TEMPLATE', 'LDAP_USERS_IMPORT_SEARCH_DN', 'PREDEFINED_PIS_LIST', 'SESSION_COOKIE_SECURE', 'CSRF_COOKIE_SECURE', 'CSRF_TRUSTED_ORIGINS', 'GLOBAL_API_KEY', 'ENVIRONMENT', 'ADMIN_NOTIFICATIONS_EMAIL', 'HAYSTACK_CONNECTIONS', 'SASS_PROCESSOR_ROOT', 'OIDC_ENABLED']
+result = {s: str(getattr(settings, s)) if hasattr(settings, s) else None for s in settings_list}
+print(json.dumps(result, indent=2, default=str))
+EOF
+```
