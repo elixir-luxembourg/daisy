@@ -15,6 +15,7 @@ from test.factories import (
     DatasetFactory,
     ExposureFactory,
     ProjectFactory,
+    PartnerFactory,
 )
 from web.views.api import create_error_response, create_protect_with_api_key_decorator
 from web.views.api import permissions
@@ -146,3 +147,117 @@ def test_project_export_api():
     response = api.projects(request)
     assert response.status_code == 200
     assert len(loads(response.content).get("items")) == 1
+
+
+def test_project_export_api_with_fields():
+    project = ProjectFactory(title="Test Project", acronym="TEST")
+    endpoint = EndpointFactory()
+    ExposureFactory(endpoint=endpoint, dataset=DatasetFactory(project=project))
+    path = reverse("api_projects")
+
+    # with fields
+    request = RequestFactory().get(
+        path, {"API_KEY": endpoint.api_key, "fields": "acronym,name"}
+    )
+    response = api.projects(request)
+    test_project = loads(response.content).get("items")[0]
+
+    assert response.status_code == 200
+    assert len(test_project) == 3
+    assert "acronym" in test_project
+    assert "name" in test_project
+    assert "source" in test_project
+    assert not "description" in test_project
+
+    # without fields
+    request = RequestFactory().get(path, {"API_KEY": endpoint.api_key})
+    response = api.projects(request)
+    test_project = loads(response.content).get("items")[0]
+
+    assert response.status_code == 200
+    assert len(test_project) == 15
+    assert "description" in test_project
+
+
+def test_partners_public_access():
+    PartnerFactory(name="Published Partner", _is_published=True)
+    PartnerFactory(name="Unpublished Partner", _is_published=False)
+    request = RequestFactory().get(reverse("api_partners"))
+    response = api.partners(request)
+    first_results = loads(response.content).get("results")
+
+    assert response.status_code == 200
+    assert len(first_results) == 1
+    assert first_results[0]["name"] == "Published Partner"
+
+    # with fields
+    request = RequestFactory().get(reverse("api_partners"), {"fields": "name"})
+    partner_dict = loads(api.partners(request).content).get("results")[0]
+
+    assert all(field in partner_dict for field in ["name", "acronym", "address"])
+
+    # with published
+    request = RequestFactory().get(reverse("api_partners"), {"published": "true"})
+    result = loads(api.partners(request).content).get("results")
+
+    assert result == first_results
+
+
+def test_partners_published_with_apikey():
+    user = UserFactory.create()
+    PartnerFactory(name="Published Partner", _is_published=True)
+    PartnerFactory(name="Unpublished Partner", _is_published=False)
+    path = reverse("api_partners")
+
+    # without published filter
+    request = RequestFactory().get(path, {"API_KEY": user.api_key})
+    response = api.partners(request)
+    results = loads(response.content).get("results")
+
+    assert response.status_code == 200
+    assert len(results) == 2
+    assert results[0]["name"] == "Published Partner"
+    assert results[1]["name"] == "Unpublished Partner"
+
+    # with published=true filter
+    request = RequestFactory().get(path, {"API_KEY": user.api_key, "published": "true"})
+    results = loads(api.partners(request).content).get("results")
+
+    assert len(results) == 1
+    assert results[0]["name"] == "Published Partner"
+
+    # with published=false filter
+    request = RequestFactory().get(
+        path, {"API_KEY": user.api_key, "published": "false"}
+    )
+    results = loads(api.partners(request).content).get("results")
+
+    assert len(results) == 1
+    assert results[0]["name"] == "Unpublished Partner"
+
+
+def test_partners_fields_with_apikey():
+    user = UserFactory.create()
+    PartnerFactory(
+        name="Test Partner", acronym="TP", address="123 Test St", _is_published=True
+    )
+    path = reverse("api_partners")
+
+    # with fields
+    request = RequestFactory().get(
+        path, {"API_KEY": user.api_key, "fields": "name,acronym"}
+    )
+    response = api.partners(request)
+    partner_dict = loads(response.content).get("results")[0]
+
+    assert response.status_code == 200
+    assert all(field in partner_dict for field in ["name", "acronym"])
+    assert not "address" in partner_dict
+    assert not "geo_category" in partner_dict
+
+    # without fields
+    request = RequestFactory().get(path, {"API_KEY": user.api_key})
+    partner_dict = loads(api.partners(request).content).get("results")[0]
+
+    assert "name" in partner_dict
+    assert "acronym" in partner_dict
