@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     NODE_VERSION=20 \
     DEBIAN_FRONTEND=noninteractive \
-    DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
+    DJANGO_SETTINGS_MODULE=elixir_daisy.settings
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -27,8 +27,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-# Install distutils via pip for node-sass compatibility
-RUN pip install setuptools
+# Install distutils and upgrade pip
+RUN pip install --upgrade pip setuptools
 
 # Install Node.js
 RUN mkdir -p /etc/apt/keyrings \
@@ -40,10 +40,6 @@ RUN mkdir -p /etc/apt/keyrings \
 
 # Create required directories
 RUN mkdir -p /code/log /static && chown -R 1000:1000 /code && chown -R 1000:1000 /static
-
-
-# Upgrade pip
-RUN pip install --upgrade pip
 
 # Install and build npm dependencies
 COPY web/static /code/web/static

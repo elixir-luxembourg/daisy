@@ -248,9 +248,11 @@ class Project(CoreTrackedModel, NotifyMixin):
                     "first_name": lc.first_name,
                     "last_name": lc.last_name,
                     "email": lc.email,
-                    "role": "Principal_Investigator"
-                    if lc.is_part_of(constants.Groups.VIP.value)
-                    else "Researcher",
+                    "role": (
+                        "Principal_Investigator"
+                        if lc.is_part_of(constants.Groups.VIP.value)
+                        else "Researcher"
+                    ),
                     "affiliations": [HomeOrganisation().name],
                 }
             )
@@ -283,15 +285,15 @@ class Project(CoreTrackedModel, NotifyMixin):
             "description": self.description if self.description else None,
             "has_institutional_ethics_approval": self.has_erp,
             "has_national_ethics_approval": self.has_cner,
-            "institutional_ethics_approval_notes": self.erp_notes
-            if self.erp_notes
-            else None,
-            "national_ethics_approval_notes": self.cner_notes
-            if self.cner_notes
-            else None,
-            "start_date": self.start_date.strftime("%Y-%m-%d")
-            if self.start_date
-            else None,
+            "institutional_ethics_approval_notes": (
+                self.erp_notes if self.erp_notes else None
+            ),
+            "national_ethics_approval_notes": (
+                self.cner_notes if self.cner_notes else None
+            ),
+            "start_date": (
+                self.start_date.strftime("%Y-%m-%d") if self.start_date else None
+            ),
             "end_date": self.end_date.strftime("%Y-%m-%d") if self.end_date else None,
             "contacts": contact_dicts,
             "publications": pub_dicts,

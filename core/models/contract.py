@@ -190,9 +190,11 @@ class Contract(CoreModel):
                     "first_name": lc.first_name,
                     "last_name": lc.last_name,
                     "email": lc.email,
-                    "role": "Principal_Investigator"
-                    if lc.is_part_of(constants.Groups.VIP.name)
-                    else "Researcher",
+                    "role": (
+                        "Principal_Investigator"
+                        if lc.is_part_of(constants.Groups.VIP.name)
+                        else "Researcher"
+                    ),
                     "affiliations": [HomeOrganisation().name],
                 }
             )

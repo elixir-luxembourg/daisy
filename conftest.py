@@ -116,6 +116,15 @@ def celery_session_worker(celery_session_worker):
     yield celery_session_worker
 
 
+@pytest.fixture(scope="session")
+def celery_config():
+    """Configure Celery for testing with synchronous task execution."""
+    return {
+        "task_always_eager": True,
+        "task_eager_propagates": True,
+    }
+
+
 # clients / users fixtures
 # thoses users must correspond to those created in the LDAP tree
 @pytest.fixture

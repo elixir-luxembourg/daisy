@@ -1,6 +1,7 @@
 """
 Template tags utils
 """
+
 from typing import Union
 from django.template.base import Node
 from django.template.defaulttags import register

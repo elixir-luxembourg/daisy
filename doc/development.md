@@ -1,9 +1,25 @@
-
 # Development
+
+## Environment Setup
+
+DAISY loads configuration from `.env.{ENVIRONMENT}` files:
+
+- `.env.development` (default, works with Docker)
+- `.env.local` (for local development outside Docker)
+- `.env.test` (testing)
+
+**For local development:**
+
+```bash
+cp .env.development .env.local
+# Edit .env.local: set ENVIRONMENT=local, adjust DATABASE_URL/SOLR_URL for localhost
+```
+
+See [administration.md](administration.md#environment-variables-reference) for all settings.
 
 ## Linting
 
-pip install black==23.7.0
+pip install black==25.1.0
 pre-commit install
 black --check .
 black .
@@ -54,22 +70,10 @@ npm run-script build
 
 ## Run the tests
 
-The recommended way to run tests is with pytest. If test dependencies are installed, run:
+Install test dependencies:
 
 ```bash
-pytest
-```
-
-To run tests using the Python module invocation (explicit interpreter):
-
-```bash
-python -m pytest
-```
-
-Run tests for a specific file:
-
-```bash
-pytest web/tests/test_dataset.py
+pip install ".[test]"
 ```
 
 If tests dependencies are already installed, one can also run the tests just by executing:
@@ -95,6 +99,7 @@ docker compose -f docker-compose.yaml -f docker-compose.dev.yml up
 ```
 
 The development setup provides:
+
 - **Live static file mounting**: Changes to CSS/JS files are immediately available
 - **Hot reload**: Code changes are reflected without rebuilding containers
 
@@ -123,10 +128,9 @@ docker compose -f docker-compose.yaml -f docker-compose.dev.yml exec web bash -c
 docker compose -f docker-compose.yaml -f docker-compose.dev.yml exec web python manage.py collectstatic --noinput
 ```
 
-
 ### Testing in Docker
 
 ```bash
-docker compose exec web pip install -e ".[test]"
+docker compose exec --user root web pip install ".[test]"
 docker compose exec web pytest
 ```

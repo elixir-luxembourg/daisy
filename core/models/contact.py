@@ -6,7 +6,6 @@ from core.models.utils import CoreModel, TextFieldWithInputWidget
 
 
 class Contact(CoreModel):
-
     """
     Contact represents a contact person.
     For instance:

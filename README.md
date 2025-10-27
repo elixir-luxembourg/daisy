@@ -15,7 +15,9 @@ You are encouraged to try Daisy for yourself using our [DEMO deployment](https:/
 
 ## Documentation
 
-DAISY comes with a **Docker deployment*. For more instructions see the deployment [guide](doc/deployment.md).
+DAISY comes with **Docker deployment** and uses environment-specific configuration files (`.env.{environment}`). 
+
+For more instructions see the deployment [guide](doc/deployment.md).
 
 See also our
 

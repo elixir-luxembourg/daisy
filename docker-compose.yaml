@@ -6,7 +6,9 @@ services:
         expose:
             - "5000"
         environment:
-            - DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
+            - ENVIRONMENT=${ENVIRONMENT:-development}
+        env_file:
+            - ${ENV_FILE:-.env.development}
         volumes:
             - statics:/static
             - solrdata:/solr
@@ -121,7 +123,9 @@ services:
     worker:
         build: .
         environment:
-            - DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
+            - ENVIRONMENT=${ENVIRONMENT:-development}
+        env_file:
+            - ${ENV_FILE:-.env.development}
         depends_on:
             db:
                 condition: service_healthy
@@ -144,7 +148,9 @@ services:
     beat:
         build: .
         environment:
-            - DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
+            - ENVIRONMENT=${ENVIRONMENT:-development}
+        env_file:
+            - ${ENV_FILE:-.env.development}
         depends_on:
             db:
                 condition: service_healthy
