@@ -9,7 +9,11 @@ log/*.log
 log/*.log*
 documents
 
+!static/vendor/package.json
+!static/vendor/package-lock.json
 static/*
+!static/vendor/**
+static/vendor/node_modules/*
 static/css/*
 
 

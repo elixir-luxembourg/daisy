@@ -189,7 +189,7 @@ CELERY_TIMEZONE = "Europe/Luxembourg"
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = env("STATIC_URL", default="/static/")
-STATIC_ROOT = env("STATIC_ROOT", default=os.path.join(BASE_DIR, "staticfiles"))
+STATIC_ROOT = os.environ.get('STATIC_ROOT', '/static')
 SASS_PROCESSOR_ROOT = env("SASS_PROCESSOR_ROOT", default=STATIC_ROOT)
 
 INTERNAL_IPS = env.list("INTERNAL_IPS", default=["127.0.0.1"])

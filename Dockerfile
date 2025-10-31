@@ -71,4 +71,4 @@ USER 1000:1000
 RUN python manage.py collectstatic --noinput
 
 USER root
-RUN rm -rf /code/web/static
+#RUN rm -rf /code/web/static
