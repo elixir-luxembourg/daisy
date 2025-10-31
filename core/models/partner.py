@@ -111,7 +111,7 @@ class Partner(CoreTrackedDBModel):
     def sector_category_display(self):
         return SECTOR_CATEGORY[self.sector_category]
 
-    def to_dict(self):
+    def to_dict(self, fields: str | None = None) -> dict:
         base_dict = {
             "source": settings.SERVER_URL,
             "id_at_source": self.id.__str__(),
@@ -125,6 +125,13 @@ class Partner(CoreTrackedDBModel):
             "country_code": self.country.ioc_code if self.country.ioc_code else None,
             "metadata": self.scientific_metadata,
         }
+        if fields:
+            field_list = fields.split(",")
+            filtered_dict = {
+                key: value for key, value in base_dict.items() if key in field_list
+            }
+            return filtered_dict
+
         return base_dict
 
     def serialize_to_export(self):

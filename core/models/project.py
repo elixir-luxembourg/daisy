@@ -227,7 +227,7 @@ class Project(CoreTrackedModel, NotifyMixin):
     def is_published(self):
         return any(dataset.is_published for dataset in self.datasets.all())
 
-    def to_dict(self):
+    def to_dict(self, fields: str | None = None) -> dict:
         contact_dicts = []
         for contact in self.contacts.all():
             affiliations = []
@@ -299,6 +299,13 @@ class Project(CoreTrackedModel, NotifyMixin):
             "publications": pub_dicts,
             "metadata": self.scientific_metadata,
         }
+
+        if fields:
+            field_list = fields.split(",")
+            filtered_dict = {
+                key: value for key, value in base_dict.items() if key in field_list
+            }
+            return filtered_dict
 
         return base_dict
 

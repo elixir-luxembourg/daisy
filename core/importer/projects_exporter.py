@@ -43,7 +43,13 @@ class ProjectsExporter:
         logger.info(f"Project export complete see file: {file_handle}")
         return result
 
-    def export_to_buffer(self, buffer, stop_on_error=False, verbose=False):
+    def export_to_buffer(
+        self,
+        buffer,
+        stop_on_error=False,
+        verbose=False,
+        fields=None,
+    ):
         project_dicts = []
 
         if self.objects is not None:
@@ -57,7 +63,7 @@ class ProjectsExporter:
         for project in objects:
             logger.debug(f' * Exporting project: "{project.acronym}"...')
             try:
-                pd = project.to_dict()
+                pd = project.to_dict(fields=fields)
                 pd["source"] = settings.SERVER_URL
                 project_dicts.append(pd)
             except Exception as e:

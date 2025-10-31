@@ -119,17 +119,26 @@ def cohorts(request):
     )
 
 
+@protect_with_api_key
+def partners_extended(request):
+    fields = request.GET.get("fields", None)
+    partners = Partner.objects.all()
+    if "published" in request.GET:
+        published = request.GET.get("published", "true").lower() == "true"
+        partners = partners.filter(_is_published=published)
+    return JsonResponse(
+        {"results": [partner.to_dict(fields=fields) for partner in partners]}
+    )
+
+
 @login_not_required
 @csrf_exempt
 def partners(request):
-    return JsonResponse(
-        {
-            "results": [
-                partner.to_dict()
-                for partner in Partner.objects.filter(_is_published=True)
-            ]
-        }
-    )
+    if request.GET.get("API_KEY"):
+        return partners_extended(request)
+
+    partners = Partner.objects.filter(_is_published=True)
+    return JsonResponse({"results": [partner.to_dict() for partner in partners]})
 
 
 @login_not_required
@@ -244,6 +253,7 @@ def contracts(request):
 def projects(request):
     endpoint_id = request.COOKIES.get("endpoint_id")
     global_export = request.COOKIES.get("global")
+    fields = request.GET.get("fields", None)
     objects = get_filtered_entities(request, "Project")
     if "project_id" in request.GET:
         project_id = request.GET.get("project_id", "")
@@ -254,7 +264,7 @@ def projects(request):
     )
 
     try:
-        buffer = exporter.export_to_buffer(StringIO())
+        buffer = exporter.export_to_buffer(StringIO(), fields=fields)
 
         return HttpResponse(buffer.getvalue())
     except Exception as e:
