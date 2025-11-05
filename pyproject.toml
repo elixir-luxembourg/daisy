@@ -19,7 +19,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "Django==5.2.7",
+    "Django==5.2.8",
     "django-auth-ldap==4.8.0",
     "authlib==1.6.5",
     "celery==5.5.3",
