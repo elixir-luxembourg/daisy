@@ -110,8 +110,8 @@ EOF
 [[ "$KC_ENABLED" == "True" ]] && cat >> "$ENV_FILE" << EOF
 
 KEYCLOAK_URL=$(ask "Keycloak URL" "https://sso.example.com/")
-KEYCLOAK_REALM_LOGIN=$(ask "KC Realm" "End-2-End-Testing")
-KEYCLOAK_REALM_ADMIN=$(ask "KC Admin Realm" "End-2-End-Testing")
+KEYCLOAK_REALM_LOGIN=$(ask "KC Realm" "testing")
+KEYCLOAK_REALM_ADMIN=$(ask "KC Admin Realm" "testing")
 KEYCLOAK_USER=$(ask "KC Admin User" "")
 KEYCLOAK_PASS=$(ask_secret "KC Admin Password")
 EOF
