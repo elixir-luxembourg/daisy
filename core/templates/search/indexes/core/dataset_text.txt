@@ -5,3 +5,4 @@
 {{ object.is_published }}
 {{ object.other_external_id }}
 {{ object.project }}
+{{ object.elu_accession }}

@@ -135,6 +135,8 @@ class DatasetIndex(CelerySearchIndex, indexes.Indexable):
 
     unique_id = indexes.CharField(indexed=True, stored=True, faceted=True)
 
+    elu_accession = indexes.CharField(indexed=True, stored=True, faceted=True)
+
     def prepare_title(self, obj):
         return obj.title
 
@@ -152,6 +154,9 @@ class DatasetIndex(CelerySearchIndex, indexes.Indexable):
 
     def prepare_local_custodians(self, obj):
         return [u.full_name for u in obj.local_custodians.all()]
+
+    def prepare_elu_accession(self, obj):
+        return obj.elu_accession
 
     def get_updated_field(self):
         return "updated"
@@ -319,6 +324,7 @@ class ProjectIndex(CelerySearchIndex, indexes.Indexable):
     study_terms = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
     title = indexes.CharField(indexed=True, stored=True, faceted=True)
     local_custodians = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
+    elu_accession = indexes.CharField(indexed=True, stored=True, faceted=True)
 
     def prepare_contacts(self, obj):
         return [str(o) for o in obj.contacts.all()]
@@ -394,6 +400,9 @@ class ProjectIndex(CelerySearchIndex, indexes.Indexable):
 
     def prepare_title(self, obj):
         return obj.title
+
+    def prepare_elu_accession(self, obj):
+        return obj.elu_accession
 
 
 class DACIndex(CelerySearchIndex, indexes.Indexable):

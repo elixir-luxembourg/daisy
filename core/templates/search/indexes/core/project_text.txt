@@ -1,6 +1,7 @@
 {{object.acronym}}
 {{object.description}}
 {{object.title}}
+{{ object.elu_accession }}
 {% for o in object.local_custodians.all %}{{o}} {% endfor %}
 {% for o in object.publications.all %}{{o}} {% endfor %}
 {% for o in object.funding_sources.all %}{{o}} {% endfor %}
