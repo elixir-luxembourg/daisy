@@ -45,6 +45,11 @@ class Exposure(CoreModel):
     )
 
     is_deprecated = models.BooleanField(default=False)
+    request_pdf_enabled = models.BooleanField(
+        default=False,
+        verbose_name="Attach request as PDF",
+        help_text="Adds a PDF of the request to REMS remarks.",
+    )
     deprecated_at = models.DateTimeField(null=True, blank=True)
     deprecation_reason = models.TextField(
         null=True,

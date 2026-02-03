@@ -15,6 +15,11 @@ class ExposureForm(forms.ModelForm):
             "deprecated_at",
             "deprecation_reason",
         ]
+        widgets = {
+            "request_pdf_enabled": forms.CheckboxInput(
+                attrs={"class": "form-check-input"}
+            )
+        }
 
     def __init__(self, *args, **kwargs):
         dataset = kwargs.pop("dataset", None)
@@ -53,7 +58,7 @@ class ExposureForm(forms.ModelForm):
             (e.id, e) for e in Endpoint.objects.exclude(id__in=endpoint_ids)
         ]
 
-    field_order = ["endpoint", "form_id"]
+    field_order = ["endpoint", "form_id", "request_pdf_enabled"]
 
 
 class ExposureEditForm(forms.ModelForm):
@@ -67,8 +72,13 @@ class ExposureEditForm(forms.ModelForm):
             "deprecated_at",
             "deprecation_reason",
         ]
+        widgets = {
+            "request_pdf_enabled": forms.CheckboxInput(
+                attrs={"class": "form-check-input"}
+            )
+        }
 
-    field_order = ["endpoint", "form_id"]
+    field_order = ["endpoint", "form_id", "request_pdf_enabled"]
 
     def __init__(self, *args, **kwargs):
         dataset = kwargs.pop("dataset", None)

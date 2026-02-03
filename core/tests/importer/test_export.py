@@ -112,6 +112,12 @@ def test_export_datasets(
     a_dataset = factories.DatasetFactory.create(
         title="A test dataset", project=a_project, local_custodians=[rebecca, embury]
     )
+    endpoint = factories.EndpointFactory.create()
+    factories.ExposureFactory.create(
+        dataset=a_dataset,
+        endpoint=endpoint,
+        request_pdf_enabled=True,
+    )
 
     exp = DatasetsExporter(include_unpublished=False)
     dataset_dicts = export_entities(exp)
@@ -124,7 +130,10 @@ def test_export_datasets(
     assert "A test dataset" == dataset_dicts[0]["name"]
     assert "Test_PRJ" == dataset_dicts[0]["project"]
 
-    # TODO add check of more fields
+    exp = DatasetsExporter(include_unpublished=False, endpoint_id=endpoint.id)
+    dataset_dicts = export_entities(exp)
+    assert 1 == len(dataset_dicts)
+    assert dataset_dicts[0]["request_pdf_enabled"] is True
 
     schema = DatasetJSONSchemaValidator()
     assert schema.validate_items(dataset_dicts)
