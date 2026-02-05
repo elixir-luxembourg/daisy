@@ -185,8 +185,8 @@ Defaults work for development; **production requires explicit configuration**.
 | ---------------------- | ---------------------------------------------------------------------- | --------------- | -------------------------------------- |
 | `KEYCLOAK_INTEGRATION` | Enable Keycloak user synchronization                                   | bool            | `False`                                |
 | `KEYCLOAK_URL`         | Keycloak instance URL (required if enabled)                            | str             | Required when enabled                  |
-| `KEYCLOAK_REALM_LOGIN` | Keycloak login realm name                                              | str             | `'End-2-End-Testing'`                  |
-| `KEYCLOAK_REALM_ADMIN` | Keycloak admin realm name                                              | str             | `'End-2-End-Testing'`                  |
+| `KEYCLOAK_REALM_LOGIN` | Keycloak login realm name                                              | str             | `'testing'`                  |
+| `KEYCLOAK_REALM_ADMIN` | Keycloak admin realm name                                              | str             | `'testing'`                  |
 | `KEYCLOAK_USER`        | Keycloak admin username (required if enabled)                          | str             | Required when enabled                  |
 | `KEYCLOAK_PASS`        | Keycloak admin password (required if enabled)                          | str             | Required when enabled                  |
 
