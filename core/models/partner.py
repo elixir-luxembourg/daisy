@@ -144,5 +144,7 @@ class HomeOrganisation:
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
-            cls._instance = Partner.objects.get(acronym=settings.COMPANY)
+            cls._instance = Partner.objects.get_or_create(
+                acronym=settings.COMPANY, defaults={"name": settings.COMPANY}
+            )[0]
         return cls._instance
