@@ -153,7 +153,6 @@ class DatasetIndex(CelerySearchIndex, indexes.Indexable):
     def prepare_local_custodians(self, obj):
         return [u.full_name for u in obj.local_custodians.all()]
 
-
     def get_updated_field(self):
         return "updated"
 
