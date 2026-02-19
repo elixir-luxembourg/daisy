@@ -82,7 +82,7 @@
     <field name="django_id" type="string" indexed="true" stored="true" multiValued="false"/>
     
     <field name="text" type="text_en" indexed="true" stored="true" multiValued="false" />
-    
+
     <field name="pk" type="long" indexed="true" stored="true" multiValued="false" />
     
     <field name="pk_exact" type="long" indexed="true" stored="true" multiValued="false" />
