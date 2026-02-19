@@ -83,10 +83,6 @@
     
     <field name="text" type="text_en" indexed="true" stored="true" multiValued="false" />
 
-    <field name="elu_accession" type="string" indexed="true" stored="true" multiValued="false"/>
-
-    <field name="elu_accession_exact" type="string" indexed="true" stored="true" multiValued="false"/>
-
     <field name="pk" type="long" indexed="true" stored="true" multiValued="false" />
     
     <field name="pk_exact" type="long" indexed="true" stored="true" multiValued="false" />
