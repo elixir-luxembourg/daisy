@@ -38,7 +38,6 @@ def test_create_error_response():
 
 
 def test_protect_api_decorator():
-    """Test the protect_api decorator with different API key types"""
     user = UserFactory.create(first_name="Rebecca", last_name="Kafe")
     user.save()
     user_key = user.api_key
@@ -57,42 +56,33 @@ def test_protect_api_decorator():
 
     factory = RequestFactory()
 
-    # missing key → 401
-    assert dummy_view(factory.get("")).status_code == 401
-
-    # invalid key → 401
-    assert dummy_view(factory.get("", {"API_KEY": "invalid"})).status_code == 401
-
-    # global key via query param and header → 200
     assert dummy_view(factory.get("", {"API_KEY": global_key})).status_code == 200
     assert dummy_view(factory.get("", HTTP_X_API_KEY=global_key)).status_code == 200
 
-    # user key via query param → 200, sets request.api_user
-    assert dummy_view(factory.get("", {"API_KEY": user_key})).status_code == 200
-    assert captured["api_user"] == user
-
-    # user key via header → 200, sets request.api_user
-    assert dummy_view(factory.get("", HTTP_X_API_KEY=user_key)).status_code == 200
-    assert captured["api_user"] == user
-
-    # user key on non-GET → 403 (write requires global key)
-    assert dummy_view(factory.post("", {"API_KEY": user_key})).status_code == 403
-    assert dummy_view(factory.post("", HTTP_X_API_KEY=user_key)).status_code == 403
-
-    # endpoint key via query param and header → 200
     assert dummy_view(factory.get("", {"API_KEY": endpoint.api_key})).status_code == 200
     assert (
         dummy_view(factory.get("", HTTP_X_API_KEY=endpoint.api_key)).status_code == 200
     )
 
-    # write_required: user key always → 403
-    assert dummy_write_view(factory.get("", {"API_KEY": user_key})).status_code == 403
-    assert dummy_write_view(factory.post("", {"API_KEY": user_key})).status_code == 403
+    assert dummy_view(factory.get("")).status_code == 401
+    assert dummy_view(factory.get("", {"API_KEY": "wrong-api-key"})).status_code == 401
 
-    # write_required: global key → 200
+    # user api-key sets request.api_user
+    assert dummy_view(factory.get("", {"API_KEY": user_key})).status_code == 200
+    assert captured["api_user"] == user
+    assert dummy_view(factory.get("", HTTP_X_API_KEY=user_key)).status_code == 200
+    assert captured["api_user"] == user
+
+    # user api-key on non-GET
+    assert dummy_view(factory.post("", {"API_KEY": user_key})).status_code == 403
+    assert dummy_view(factory.post("", HTTP_X_API_KEY=user_key)).status_code == 403
+
+    # write_required decorator requires global api-key
     assert (
         dummy_write_view(factory.post("", {"API_KEY": global_key})).status_code == 200
     )
+    assert dummy_write_view(factory.get("", {"API_KEY": user_key})).status_code == 403
+    assert dummy_write_view(factory.post("", {"API_KEY": user_key})).status_code == 403
 
 
 def test_permissions():
