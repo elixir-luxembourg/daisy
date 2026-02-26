@@ -48,7 +48,7 @@ Export datasets in JSON format.
 - `project_title` - Filter by exact project title
 
 #### GET `/api/contracts`
-Export contracts for published projects.
+Export contracts whose projects have datasets with exposures.
 - `project_id` - Filter by project ID
 
 #### GET `/api/permissions/<user_oidc_id>`
@@ -57,12 +57,12 @@ Get access permissions for a user by OIDC ID.
 ### Integration Endpoints
 
 #### POST `/api/rems`
-REMS webhook endpoint (IP whitelisting required).
+REMS webhook endpoint (IP whitelisting required). **POST only.**
 - Requires `REMS_INTEGRATION_ENABLED=true`
 - IP must be in `REMS_ALLOWED_IP_ADDRESSES`
 
 #### POST `/api/keycloak/force`
-Force Keycloak user synchronization.
+Force Keycloak user synchronization. **POST only.** Requires the global API key.
 
 ## Error Responses
 
@@ -74,7 +74,7 @@ Force Keycloak user synchronization.
 }
 ```
 
-Status codes: `200` (Success), `400` (Bad Request), `403` (Forbidden), `404` (Not Found), `500` (Server Error)
+Status codes: `200` (Success), `400` (Bad Request), `403` (Forbidden), `404` (Not Found), `405` (Method Not Allowed), `500` (Server Error)
 
 ## Examples
 
@@ -86,5 +86,5 @@ curl "https://your-instance/api/datasets?API_KEY=key&project_id=42"
 curl "https://your-instance/api/termsearch/disease?search=cancer&page=1"
 
 # Get projects with specific fields
-curl "https://your-instance/api/projects?API_KEY=key&fields=title,acronym"
+curl "https://your-instance/api/projects?API_KEY=key&fields=name,acronym"
 ```

@@ -43,38 +43,56 @@ def test_protect_api_decorator():
     user.save()
     user_key = user.api_key
     global_key = getattr(settings, "GLOBAL_API_KEY", "test_global_key")
+    endpoint = EndpointFactory()
+    captured = {}
 
     @protect_api()
-    def dummy_protected_view(request):
+    def dummy_view(request):
+        captured["api_user"] = getattr(request, "api_user", None)
         return JsonResponse("Success", safe=False)
 
-    # check if error is returned when API_KEY is missing
-    request = RequestFactory().get("")
-    failed_response = dummy_protected_view(request)
-    assert failed_response.status_code == 401
+    @protect_api(write_required=True)
+    def dummy_write_view(request):
+        return JsonResponse("Success", safe=False)
 
-    # check if view is returned when GLOBAL_API_KEY is valid in GET
-    request = RequestFactory().get("", data={"API_KEY": global_key})
-    response = dummy_protected_view(request)
-    assert response.status_code == 200
+    factory = RequestFactory()
 
-    # check if view is returned when User's API KEY is valid in GET
-    request = RequestFactory().get("", data={"API_KEY": user_key})
-    response = dummy_protected_view(request)
-    assert response.status_code == 200
-    assert hasattr(request, "api_user")
-    assert request.api_user == user
+    # missing key → 401
+    assert dummy_view(factory.get("")).status_code == 401
 
-    # check if an endpoint api key is accepted
-    endpoint = EndpointFactory()
-    request = RequestFactory().get("", data={"API_KEY": endpoint.api_key})
-    response = dummy_protected_view(request)
-    assert response.status_code == 200
+    # invalid key → 401
+    assert dummy_view(factory.get("", {"API_KEY": "invalid"})).status_code == 401
 
-    # check X-API-Key header support
-    request = RequestFactory().get("", HTTP_X_API_KEY=user_key)
-    response = dummy_protected_view(request)
-    assert response.status_code == 200
+    # global key via query param and header → 200
+    assert dummy_view(factory.get("", {"API_KEY": global_key})).status_code == 200
+    assert dummy_view(factory.get("", HTTP_X_API_KEY=global_key)).status_code == 200
+
+    # user key via query param → 200, sets request.api_user
+    assert dummy_view(factory.get("", {"API_KEY": user_key})).status_code == 200
+    assert captured["api_user"] == user
+
+    # user key via header → 200, sets request.api_user
+    assert dummy_view(factory.get("", HTTP_X_API_KEY=user_key)).status_code == 200
+    assert captured["api_user"] == user
+
+    # user key on non-GET → 403 (write requires global key)
+    assert dummy_view(factory.post("", {"API_KEY": user_key})).status_code == 403
+    assert dummy_view(factory.post("", HTTP_X_API_KEY=user_key)).status_code == 403
+
+    # endpoint key via query param and header → 200
+    assert dummy_view(factory.get("", {"API_KEY": endpoint.api_key})).status_code == 200
+    assert (
+        dummy_view(factory.get("", HTTP_X_API_KEY=endpoint.api_key)).status_code == 200
+    )
+
+    # write_required: user key always → 403
+    assert dummy_write_view(factory.get("", {"API_KEY": user_key})).status_code == 403
+    assert dummy_write_view(factory.post("", {"API_KEY": user_key})).status_code == 403
+
+    # write_required: global key → 200
+    assert (
+        dummy_write_view(factory.post("", {"API_KEY": global_key})).status_code == 200
+    )
 
 
 def test_permissions():

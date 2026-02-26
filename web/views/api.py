@@ -7,9 +7,9 @@ from typing import Dict, Optional
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Paginator
-from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Q, Count
+from django.db.models import Count
 from django.contrib.auth.hashers import get_hasher
 from django.contrib.auth.decorators import login_not_required
 from guardian.shortcuts import get_objects_for_user
@@ -76,7 +76,7 @@ def protect_api(write_required=False):
 
             global_api_key = getattr(settings, "GLOBAL_API_KEY", None)
             if global_api_key and key == global_api_key:
-                request.COOKIES["global"] = True
+                request.is_global_api = True
                 return view(request, *args, **kwargs)
 
             if write_required or request.method not in ["GET", "HEAD", "OPTIONS"]:
@@ -90,7 +90,7 @@ def protect_api(write_required=False):
 
             hashed_key = get_hasher("default").encode(key, salt=settings.SECRET_KEY)
             if endpoint := Endpoint.objects.filter(api_key=hashed_key).first():
-                request.COOKIES["endpoint_id"] = endpoint.id
+                request.api_endpoint_id = endpoint.id
                 return view(request, *args, **kwargs)
             return create_error_response("Invalid API key", status=401)
 
@@ -143,7 +143,7 @@ def partners_extended(request):
 @login_not_required
 @csrf_exempt
 def partners(request):
-    if request.GET.get("API_KEY"):
+    if request.GET.get("API_KEY") or request.headers.get("X-API-Key"):
         return partners_extended(request)
 
     partners = Partner.objects.filter(_is_published=True)
@@ -154,6 +154,8 @@ def partners(request):
 def termsearch(request, category):
     search = request.GET.get("search")
     page = request.GET.get("page")
+    if not search or not page:
+        return create_error_response("Missing 'search' or 'page' parameter", status=400)
 
     if category == TermCategory.disease.value:
         matching_terms = DiseaseTerm.objects.filter(label__icontains=search).order_by(
@@ -175,7 +177,7 @@ def termsearch(request, category):
     paginator = Paginator(matching_terms, 25)
 
     if int(page) > paginator.num_pages:
-        return HttpResponseBadRequest("invalid page parameter")
+        return create_error_response("Page number out of range", status=400)
 
     matching_terms_on_page = paginator.get_page(page)
 
@@ -192,8 +194,8 @@ def termsearch(request, category):
 @csrf_exempt
 @protect_api()
 def datasets(request):
-    endpoint_id = request.COOKIES.get("endpoint_id")
-    global_export = request.COOKIES.get("global")
+    endpoint_id = getattr(request, "api_endpoint_id", None)
+    global_export = getattr(request, "is_global_api", False)
     objects = get_filtered_entities(request, "Dataset")
     objects = filter_by_user_permissions(request, objects, "dataset")
     if "project_id" in request.GET:
@@ -218,18 +220,15 @@ def datasets(request):
         )
 
 
-def is_valid_field_in_model(klass_name, field_name):
-    getattr(klass_name, field_name, False)
-
-
 def get_filtered_entities(request, model_name):
+    model_class = getattr(sys.modules["core.models"], model_name)
     filters = {}
     for filter_key in request.GET:
-        if not is_valid_field_in_model(model_name, filter_key):
+        if not getattr(model_class, filter_key, False):
             continue
         filters[filter_key] = request.GET.get(filter_key)
 
-    return getattr(sys.modules["core.models"], model_name).objects.filter(**filters)
+    return model_class.objects.filter(**filters)
 
 
 @login_not_required
@@ -242,15 +241,14 @@ def contracts(request):
     if "project_id" in request.GET:
         project_id = request.GET.get("project_id", "")
         objects = objects.filter(project__id=project_id)
-    object_dicts = []
-    for contract in objects:
-        cd = contract.to_dict()
-        cd["source"] = settings.SERVER_URL
-        object_dicts.append(cd)
-    objects_json_buffer = StringIO()
-    json.dump({"items": object_dicts}, objects_json_buffer, indent=4)
-
     try:
+        object_dicts = []
+        for contract in objects:
+            cd = contract.to_dict()
+            cd["source"] = settings.SERVER_URL
+            object_dicts.append(cd)
+        objects_json_buffer = StringIO()
+        json.dump({"items": object_dicts}, objects_json_buffer, indent=4)
         return HttpResponse(objects_json_buffer.getvalue())
     except Exception as e:
         return create_error_response(
@@ -262,8 +260,8 @@ def contracts(request):
 @csrf_exempt
 @protect_api()
 def projects(request):
-    endpoint_id = request.COOKIES.get("endpoint_id")
-    global_export = request.COOKIES.get("global")
+    endpoint_id = getattr(request, "api_endpoint_id", None)
+    global_export = getattr(request, "is_global_api", False)
     fields = request.GET.get("fields", None)
     objects = get_filtered_entities(request, "Project")
     objects = filter_by_user_permissions(request, objects, "project")
@@ -290,9 +288,11 @@ def projects(request):
 @login_not_required
 @csrf_exempt
 def rems_endpoint(request):
+    if request.method != "POST":
+        return create_error_response("Method not allowed", status=405)
     try:
         if not getattr(settings, "REMS_INTEGRATION_ENABLED", False):
-            raise Warning(f"REMS endpoint called, but it" "s disabled.")
+            raise RuntimeError("REMS endpoint called, but it's disabled.")
 
         ip = get_client_ip(request)
         logger.debug(f"REMS endpoint called from: {ip}...")
@@ -303,10 +303,10 @@ def rems_endpoint(request):
             skip_check_setting = True
 
         if len(allowed_ips) == 0 and not skip_check_setting:
-            raise Warning(f"REMS - the IP whitelist is empty, import failed!")
+            raise RuntimeError("REMS - the IP whitelist is empty, import failed!")
 
         if ip not in allowed_ips and not skip_check_setting:
-            raise Warning(f"REMS - the IP is not in the whitelist, import failed!")
+            raise RuntimeError("REMS - the IP is not in the whitelist, import failed!")
 
         status = True if handle_rems_callback(request) else False
         logger.debug(f"REMS - was import successful?: {status}!")
@@ -314,7 +314,7 @@ def rems_endpoint(request):
             return JsonResponse({"status": "Success"}, status=200)
         else:
             return JsonResponse({"status": "Failure"}, status=500)
-    except (Warning, ImproperlyConfigured) as ex:
+    except (RuntimeError, ImproperlyConfigured) as ex:
         message = f"REMS - something is wrong with the configuration!"
         more = str(ex)
         logger.debug(f"{message} ({more})")
@@ -330,6 +330,8 @@ def rems_endpoint(request):
 @csrf_exempt
 @protect_api(write_required=True)
 def force_keycloak_synchronization(request) -> JsonResponse:
+    if request.method != "POST":
+        return create_error_response("Method not allowed", status=405)
     try:
         logger.debug("Forcing refreshing the account information from Keycloak...")
         synchronizer.synchronize_all()
