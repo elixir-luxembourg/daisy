@@ -1,11 +1,10 @@
 from json import loads
 
-from importlib import reload
-
 from django.conf import settings
-from django.http import JsonResponse, HttpRequest, HttpResponse
+from django.http import JsonResponse
 from django.urls import reverse
 from django.test import RequestFactory
+from guardian.shortcuts import assign_perm
 
 from web.views import api
 
@@ -16,9 +15,12 @@ from test.factories import (
     ExposureFactory,
     ProjectFactory,
     PartnerFactory,
+    CohortFactory,
+    ContractFactory,
 )
-from web.views.api import create_error_response, create_protect_with_api_key_decorator
-from web.views.api import permissions
+from core.constants import Permissions
+from core.models import DiseaseTerm
+from web.views.api import create_error_response, protect_api
 
 
 def test_create_error_response():
@@ -33,59 +35,52 @@ def test_create_error_response():
     assert body.get("more") == "information"
 
 
-# def test_protect_with_api_key(override_global_api_key):  # see conftest.py
-def test_protect_with_api_key():
-    test_global_key = "GLOBAL_API_KEY__as_set_in_tests"
-
+def test_protect_api_decorator():
     user = UserFactory.create(first_name="Rebecca", last_name="Kafe")
     user.save()
     user_key = user.api_key
-
-    def dummy_view(request):
-        return JsonResponse("Success", safe=False)
-
-    protect_with_api_key = create_protect_with_api_key_decorator(test_global_key)
-
-    @protect_with_api_key
-    def dummy_protected_view(request):
-        return JsonResponse("Success", safe=False)
-
-    request = RequestFactory().get("")
-
-    # Check if no error if a view is called without the decorator
-    response = dummy_view(request)
-    assert response.status_code == 200
-
-    # check if error is returned when API_KEY is missing
-    failed_response = dummy_protected_view(request)
-    assert failed_response.status_code == 403
-
-    # check if view is returned when GLOBAL_API_KEY is valid in GET
-    request = RequestFactory().get("", data={"API_KEY": test_global_key})
-    response = dummy_protected_view(request)
-    assert response.status_code == 200
-
-    # check if view is returned when GLOBAL_API_KEY is valid in POST
-    request = RequestFactory().post("", data={"API_KEY": test_global_key})
-    response = dummy_protected_view(request)
-    assert response.status_code == 200
-
-    # check if view is returned when User's API KEY is valid in GET
-    request = RequestFactory().get("", data={"API_KEY": user_key})
-    request.user = user
-    assert response.status_code == 200
-
-    # check if view is returned when User's API KEY is valid in POST
-    request = RequestFactory().post("", data={"API_KEY": user_key})
-    request.user = user
-    response = dummy_protected_view(request)
-    assert response.status_code == 200
-
-    # check if an endpoint api key is accepted
+    global_key = getattr(settings, "GLOBAL_API_KEY", "test_global_key")
     endpoint = EndpointFactory()
-    request = RequestFactory().get("", data={"API_KEY": endpoint.api_key})
-    response = dummy_protected_view(request)
-    assert response.status_code == 200
+    captured = {}
+
+    @protect_api()
+    def dummy_view(request):
+        captured["api_user"] = getattr(request, "api_user", None)
+        return JsonResponse("Success", safe=False)
+
+    @protect_api(write_required=True)
+    def dummy_write_view(request):
+        return JsonResponse("Success", safe=False)
+
+    factory = RequestFactory()
+
+    assert dummy_view(factory.get("", {"API_KEY": global_key})).status_code == 200
+    assert dummy_view(factory.get("", HTTP_X_API_KEY=global_key)).status_code == 200
+
+    assert dummy_view(factory.get("", {"API_KEY": endpoint.api_key})).status_code == 200
+    assert (
+        dummy_view(factory.get("", HTTP_X_API_KEY=endpoint.api_key)).status_code == 200
+    )
+
+    assert dummy_view(factory.get("")).status_code == 401
+    assert dummy_view(factory.get("", {"API_KEY": "wrong-api-key"})).status_code == 401
+
+    # user api-key sets request.api_user
+    assert dummy_view(factory.get("", {"API_KEY": user_key})).status_code == 200
+    assert captured["api_user"] == user
+    assert dummy_view(factory.get("", HTTP_X_API_KEY=user_key)).status_code == 200
+    assert captured["api_user"] == user
+
+    # user api-key on non-GET
+    assert dummy_view(factory.post("", {"API_KEY": user_key})).status_code == 403
+    assert dummy_view(factory.post("", HTTP_X_API_KEY=user_key)).status_code == 403
+
+    # write_required decorator requires global api-key
+    assert (
+        dummy_write_view(factory.post("", {"API_KEY": global_key})).status_code == 200
+    )
+    assert dummy_write_view(factory.get("", {"API_KEY": user_key})).status_code == 403
+    assert dummy_write_view(factory.post("", {"API_KEY": user_key})).status_code == 403
 
 
 def test_permissions():
@@ -96,21 +91,21 @@ def test_permissions():
     key = user.api_key
 
     path = reverse("api_permissions", kwargs={"user_oidc_id": user.oidc_id})
-    request = RequestFactory().get(path)
 
     # Sanity test if the request is done without API KEY
-    failed_response = permissions(request, "definitely_invalid_oidc_id")
-    assert failed_response.status_code == 403
+    request = RequestFactory().get(path)
+    failed_response = api.permissions(request, "definitely_invalid_oidc_id")
+    assert failed_response.status_code == 401
 
     # Attach API KEY
     request = RequestFactory().get(path, {"API_KEY": key})
 
     # If the correct oidc_id is used
-    response = permissions(request, user.oidc_id)
+    response = api.permissions(request, user.oidc_id)
     assert response.status_code == 200
 
     # If invalid oidc_ id is used
-    failed_response = permissions(request, "definitely_invalid_oidc_id")
+    failed_response = api.permissions(request, "definitely_invalid_oidc_id")
     assert failed_response.status_code == 404
 
 
@@ -261,3 +256,168 @@ def test_partners_fields_with_apikey():
 
     assert "name" in partner_dict
     assert "acronym" in partner_dict
+
+
+def test_cohorts_endpoint():
+    CohortFactory(title="Published Cohort", _is_published=True)
+    CohortFactory(title="Unpublished Cohort", _is_published=False)
+
+    request = RequestFactory().get(reverse("api_cohorts"))
+    response = api.cohorts(request)
+    results = loads(response.content).get("results")
+
+    assert response.status_code == 200
+    assert len(results) == 1
+    assert results[0]["name"] == "Published Cohort"
+
+
+def test_users_endpoint():
+    UserFactory(username="testuser1", first_name="Test", last_name="User1")
+    UserFactory(username="testuser2", first_name="Test", last_name="User2")
+
+    request = RequestFactory().get(reverse("api_users"))
+    response = api.users(request)
+    results = loads(response.content).get("results")
+
+    assert response.status_code == 200
+    assert len(results) >= 2
+    assert all("id" in r and "text" in r for r in results)
+
+
+def test_termsearch_endpoint():
+    DiseaseTerm.objects.create(label="Diabetes Mellitus", term_id="TEST:001")
+    DiseaseTerm.objects.create(label="Diabetes Type 2", term_id="TEST:002")
+    DiseaseTerm.objects.create(label="Cancer", term_id="TEST:003")
+
+    path = reverse("api_termsearch", kwargs={"category": "disease"})
+    request = RequestFactory().get(path, {"search": "Diabetes", "page": 1})
+    response = api.termsearch(request, "disease")
+    data = loads(response.content)
+
+    assert response.status_code == 200
+    assert len(data.get("results")) == 2
+    assert all("Diabetes" in r["text"] for r in data["results"])
+    assert "pagination" in data
+    assert "pagination" in data
+
+
+def test_contracts_endpoint():
+    project = ProjectFactory()
+    dataset = DatasetFactory(project=project)
+    ContractFactory(project=project)
+    endpoint = EndpointFactory()
+    ExposureFactory(dataset=dataset, endpoint=endpoint)
+
+    path = reverse("api_contracts")
+    request = RequestFactory().get(path, {"API_KEY": endpoint.api_key})
+    response = api.contracts(request)
+    items = loads(response.content).get("items")
+
+    assert response.status_code == 200
+    assert len(items) >= 1
+    assert items[0]["project_id"] == project.id
+
+
+def test_datasets_user_permission_filtering(permissions):
+    user = UserFactory()
+    dataset1 = DatasetFactory(title="Accessible Dataset")
+    dataset2 = DatasetFactory(title="Inaccessible Dataset")
+
+    assign_perm(f"core.{Permissions.PROTECTED.value}_dataset", user, dataset1)
+
+    endpoint = EndpointFactory()
+    ExposureFactory(dataset=dataset1, endpoint=endpoint)
+    ExposureFactory(dataset=dataset2, endpoint=endpoint)
+
+    path = reverse("api_datasets")
+    request = RequestFactory().get(path, {"API_KEY": user.api_key})
+    response = api.datasets(request)
+    items = loads(response.content).get("items")
+
+    assert response.status_code == 200
+    assert len(items) == 1
+    assert items[0]["name"] == "Accessible Dataset"
+
+
+def test_projects_user_permission_filtering(permissions):
+    user = UserFactory()
+    project1 = ProjectFactory(title="Accessible Project")
+    project2 = ProjectFactory(title="Inaccessible Project")
+    dataset1 = DatasetFactory(project=project1)
+    dataset2 = DatasetFactory(project=project2)
+
+    assign_perm(f"core.{Permissions.PROTECTED.value}_project", user, project1)
+
+    endpoint = EndpointFactory()
+    ExposureFactory(dataset=dataset1, endpoint=endpoint)
+    ExposureFactory(dataset=dataset2, endpoint=endpoint)
+
+    path = reverse("api_projects")
+    request = RequestFactory().get(path, {"API_KEY": user.api_key})
+    response = api.projects(request)
+    items = loads(response.content).get("items")
+
+    assert response.status_code == 200
+    assert len(items) == 1
+    assert items[0]["name"] == "Accessible Project"
+
+
+def test_contracts_user_permission_filtering(permissions):
+    user = UserFactory()
+    project1 = ProjectFactory()
+    project2 = ProjectFactory()
+    dataset1 = DatasetFactory(project=project1)
+    dataset2 = DatasetFactory(project=project2)
+    contract1 = ContractFactory(project=project1)
+    ContractFactory(project=project2)
+
+    assign_perm(f"core.{Permissions.PROTECTED.value}_contract", user, contract1)
+
+    endpoint = EndpointFactory()
+    ExposureFactory(dataset=dataset1, endpoint=endpoint)
+    ExposureFactory(dataset=dataset2, endpoint=endpoint)
+
+    path = reverse("api_contracts")
+    request = RequestFactory().get(path, {"API_KEY": user.api_key})
+    response = api.contracts(request)
+    items = loads(response.content).get("items")
+
+    assert response.status_code == 200
+    assert len(items) == 1
+    assert items[0]["project_id"] == project1.id
+
+
+def test_global_api_key_bypasses_permissions(permissions):
+    global_key = settings.GLOBAL_API_KEY
+    dataset1 = DatasetFactory(title="Dataset 1")
+    dataset2 = DatasetFactory(title="Dataset 2")
+    endpoint = EndpointFactory()
+    ExposureFactory(dataset=dataset1, endpoint=endpoint)
+    ExposureFactory(dataset=dataset2, endpoint=endpoint)
+
+    path = reverse("api_datasets")
+    request = RequestFactory().get(path, {"API_KEY": global_key})
+    response = api.datasets(request)
+    items = loads(response.content).get("items")
+
+    assert response.status_code == 200
+    assert len(items) == 2
+
+
+def test_api_key_required():
+    path = reverse("api_datasets")
+    request = RequestFactory().get(path)
+    response = api.datasets(request)
+
+    assert response.status_code == 401
+    assert "API key required" in loads(response.content).get("description")
+
+
+def test_write_operations_require_global_key():
+    user = UserFactory()
+    path = reverse("api_keycloak_force")
+    request = RequestFactory().post(path, {"API_KEY": user.api_key})
+    response = api.force_keycloak_synchronization(request)
+
+    assert response.status_code == 403
+    assert "global api key" in loads(response.content).get("description", "").lower()
