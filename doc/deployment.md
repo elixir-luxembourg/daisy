@@ -18,9 +18,26 @@ git clone https://github.com/elixir-luxembourg/daisy.git
 cd daisy
 ```
 
-### Environment Variables
+### Environment Configuration
 
-Create a `.env` file in the project root to override default environment variables if necessary. See [.env.template](/.env.template) file for more detail. Additionally, create `elixir_daisy/settings_local.py` file from `elixir_daisy/settings_local.template.py`.
+DAISY loads configuration from `.env.{ENVIRONMENT}` files (default: `.env.development`).
+
+**For production or staging**, generate a secure configuration:
+
+```bash
+./scripts/create_env.sh
+```
+
+Then start services with:
+
+```bash
+# for stage
+ENVIRONMENT=staging docker compose up -d
+# for prod
+ENVIRONMENT=production docker compose up -d
+```
+
+See [administration.md](administration.md#environment-variables-reference) for all available settings.
 
 ## Installation
 
@@ -31,6 +48,7 @@ Copy the Nginx configuration template:
 ```bash
 cp ./docker/nginx/nginx.conf.template ./docker/nginx/nginx.conf
 ```
+
 Customize `nginx.conf` as needed and then start or restart the Nginx service:
 
 ```bash
@@ -53,13 +71,18 @@ Run database migrations:
 docker compose exec web python manage.py migrate
 ```
 
-### Build the Solr Schema
+### Initialize Solr Search Index
 
-Build the Solr schema required for full-text search:
+Solr uses a managed schema (fields are created from the Django search indexes). Ensure Solr is running, then build the index.
 
 ```bash
-docker compose exec web python manage.py build_solr_schema -c /solr/daisy/conf -r daisy -u default
+docker compose up -d solr
+curl -s "http://localhost:8983/solr/admin/cores?action=STATUS&wt=json" | jq .
+curl -s "http://localhost:8983/solr/daisy/schema/fields?wt=json" | jq .
+docker compose exec web python manage.py rebuild_index --noinput
 ```
+
+Replace host/port or drop `| jq .` if `jq` is not available.
 
 ### Compile and Deploy Static Files
 

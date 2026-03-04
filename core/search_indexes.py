@@ -47,7 +47,6 @@ class DataDeclarationIndex(CelerySearchIndex, indexes.Indexable):
     subjects_category = indexes.CharField(indexed=True, stored=True, faceted=True)
     submission_id = indexes.CharField(indexed=True, stored=True, faceted=True)
     title = indexes.CharField(indexed=True, stored=True, faceted=True)
-    title_l = indexes.CharField(indexed=False, stored=True)
     unique_id = indexes.CharField(indexed=True, stored=True, faceted=True)
     autocomplete = indexes.EdgeNgramField()
 
@@ -64,10 +63,6 @@ class DataDeclarationIndex(CelerySearchIndex, indexes.Indexable):
 
     def prepare_title(self, obj):
         return obj.title
-
-    def prepare_title_l(self, obj):
-        if obj.title:
-            return obj.title.lower().strip()
 
     def prepare_deidentification_method(self, obj):
         return obj.deidentification_method.name
@@ -101,16 +96,11 @@ class CohortIndex(CelerySearchIndex, indexes.Indexable):
     pk = indexes.IntegerField(indexed=True, stored=True, faceted=True)
     owners = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
     title = indexes.CharField(indexed=True, stored=True, faceted=True)
-    title_l = indexes.CharField(indexed=False, stored=True)
     institutes = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
     ethics_confirmation = indexes.BooleanField(indexed=True, stored=True, faceted=False)
 
     def prepare_title(self, obj):
         return obj.title
-
-    def prepare_title_l(self, obj):
-        if obj.title:
-            return obj.title.lower().strip()
 
     def prepare_owners(self, obj):
         return [str(i) for i in obj.owners.all()]
@@ -142,16 +132,11 @@ class DatasetIndex(CelerySearchIndex, indexes.Indexable):
     project = indexes.CharField(indexed=True, stored=True, faceted=True)
 
     title = indexes.CharField(indexed=True, stored=True, faceted=True)
-    title_l = indexes.CharField(indexed=False, stored=True)
 
     unique_id = indexes.CharField(indexed=True, stored=True, faceted=True)
 
     def prepare_title(self, obj):
         return obj.title
-
-    def prepare_title_l(self, obj):
-        if obj.title:
-            return obj.title.lower().strip()
 
     def prepare_is_published(self, obj):
         return obj.is_published
@@ -248,11 +233,8 @@ class PartnerIndex(CelerySearchIndex, indexes.Indexable):
 
     text = indexes.CharField(document=True, use_template=True)
     acronym = indexes.CharField(indexed=True, stored=True)
-    acronym_l = indexes.CharField(indexed=False, stored=True)
     address = indexes.CharField(indexed=True, stored=True)
-    address_l = indexes.CharField(indexed=False, stored=True)
     name = indexes.CharField(indexed=True, stored=True)
-    name_l = indexes.CharField(indexed=False, stored=True)
     is_clinical = indexes.BooleanField(indexed=True, stored=True, faceted=True)
     geo_category = indexes.CharField(indexed=True, stored=True, faceted=True)
     sector_category = indexes.CharField(indexed=True, stored=True, faceted=True)
@@ -260,23 +242,11 @@ class PartnerIndex(CelerySearchIndex, indexes.Indexable):
     def prepare_name(self, obj):
         return obj.name
 
-    def prepare_name_l(self, obj):
-        if obj.name:
-            return obj.name.lower().strip()
-
     def prepare_acronym(self, obj):
         return obj.acronym
 
-    def prepare_acronym_l(self, obj):
-        if obj.acronym:
-            return obj.acronym.lower().strip()
-
     def prepare_address(self, obj):
         return obj.address
-
-    def prepare_address_l(self, obj):
-        if obj.address:
-            return obj.address.lower().strip()
 
     def prepare_geo_category(self, obj):
         return obj.geo_category_display
@@ -301,9 +271,6 @@ class ContactIndex(CelerySearchIndex, indexes.Indexable):
     first_name = indexes.CharField(indexed=True, stored=True)
     last_name = indexes.CharField(indexed=True, stored=True)
 
-    first_name_l = indexes.CharField(indexed=False, stored=True)
-    last_name_l = indexes.CharField(indexed=False, stored=True)
-
     partners = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
 
     type = indexes.CharField(indexed=False, stored=True, faceted=True)
@@ -311,16 +278,8 @@ class ContactIndex(CelerySearchIndex, indexes.Indexable):
     def prepare_first_name(self, obj):
         return obj.first_name
 
-    def prepare_first_name_l(self, obj):
-        if obj.first_name:
-            return obj.first_name.lower().strip()
-
     def prepare_last_name(self, obj):
         return obj.last_name
-
-    def prepare_last_name_l(self, obj):
-        if obj.last_name:
-            return obj.last_name.lower().strip()
 
     def prepare_type(self, obj):
         return obj.type
@@ -339,7 +298,6 @@ class ProjectIndex(CelerySearchIndex, indexes.Indexable):
     # needed
     text = indexes.CharField(document=True, use_template=True)
     acronym = indexes.CharField(indexed=True, stored=True, faceted=True)
-    acronym_l = indexes.CharField(indexed=False, stored=True)
     cner_notes = indexes.CharField(indexed=True, stored=True)
     contacts = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
     company_personnel = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
@@ -360,16 +318,7 @@ class ProjectIndex(CelerySearchIndex, indexes.Indexable):
     start_year = indexes.IntegerField(indexed=True, stored=True, faceted=True)
     study_terms = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
     title = indexes.CharField(indexed=True, stored=True, faceted=True)
-    title_l = indexes.CharField(indexed=False, stored=True)
     local_custodians = indexes.MultiValueField(indexed=True, stored=True, faceted=True)
-
-    def prepare_acronym_l(self, obj):
-        if obj.acronym:
-            return obj.acronym.lower().strip()
-
-    def prepare_title_l(self, obj):
-        if obj.title:
-            return obj.title.lower().strip()
 
     def prepare_contacts(self, obj):
         return [str(o) for o in obj.contacts.all()]
@@ -461,10 +410,6 @@ class DACIndex(CelerySearchIndex, indexes.Indexable):
 
     def prepare_title(self, obj):
         return obj.title
-
-    def prepare_title_l(self, obj):
-        if obj.title:
-            return obj.title.lower().strip()
 
     def prepare_local_custodians(self, obj):
         return [u.full_name for u in obj.local_custodians.all()]

@@ -1,6 +1,7 @@
 """
 Module containing constants for the project.
 """
+
 from enum import Enum
 
 

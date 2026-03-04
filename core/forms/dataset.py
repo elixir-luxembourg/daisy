@@ -91,7 +91,7 @@ class DatasetForm(forms.ModelForm):
 
         errors = []
         proj = cleaned_data["project"]
-        if proj:
+        if proj and self.instance.pk:
             project_inconsistency = False
             contracts = self.instance.collect_contracts()
             for contract, obj in contracts:

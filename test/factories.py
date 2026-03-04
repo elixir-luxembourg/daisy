@@ -488,6 +488,7 @@ class ExposureFactory(factory.django.DjangoModelFactory):
     dataset = factory.SubFactory(DatasetFactory)
     form_id = 1
     created_by = factory.SubFactory(UserFactory)
+    request_pdf_enabled = False
 
 
 class DACFactory(factory.django.DjangoModelFactory):

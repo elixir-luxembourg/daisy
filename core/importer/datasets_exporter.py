@@ -75,6 +75,7 @@ class DatasetsExporter:
                         else None
                     )
                     pd["deprecation_notes"] = exposure.deprecation_reason
+                    pd["request_pdf_enabled"] = exposure.request_pdf_enabled
                 dataset_dicts.append(pd)
             except Exception as e:
                 logger.error(f"Export failed for dataset {dataset.title}")

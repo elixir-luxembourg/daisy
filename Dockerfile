@@ -1,24 +1,34 @@
-FROM python:3.9.6-slim
+FROM python:3.12-slim
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
     NODE_VERSION=20 \
     DEBIAN_FRONTEND=noninteractive \
-    DJANGO_SETTINGS_MODULE=elixir_daisy.settings_compose
+    DJANGO_SETTINGS_MODULE=elixir_daisy.settings
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    # LDAP dependencies
     libsasl2-dev \
-    python3-dev \
     libldap2-dev \
     libssl-dev \
+    # Build tools
     build-essential \
+    python3-dev \
+    pkg-config \
+    # Git and utilities
     git \
     wget \
     curl \
     ca-certificates \
     gnupg \
     && rm -rf /var/lib/apt/lists/*
+
+# Install distutils and upgrade pip
+RUN pip install --upgrade pip setuptools
 
 # Install Node.js
 RUN mkdir -p /etc/apt/keyrings \
@@ -30,10 +40,6 @@ RUN mkdir -p /etc/apt/keyrings \
 
 # Create required directories
 RUN mkdir -p /code/log /static && chown -R 1000:1000 /code && chown -R 1000:1000 /static
-
-# Upgrade pip
-RUN pip install --upgrade pip
-
 
 # Install and build npm dependencies
 COPY web/static /code/web/static
@@ -50,7 +56,7 @@ RUN npm ci && npm run build
 WORKDIR /code
 
 # Copy dependency files first to leverage Docker caching
-COPY setup.py /code/
+COPY pyproject.toml /code/
 COPY manage.py /code/
 
 USER root

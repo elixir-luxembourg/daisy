@@ -3,7 +3,7 @@ import unicodedata
 
 from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.http import urlquote
+from urllib.parse import quote
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
@@ -25,7 +25,7 @@ def rfc5987_content_disposition(file_name):
     )
     header = f'attachment; filename="{ascii_name}"'
     if ascii_name != file_name:
-        quoted_name = urlquote(file_name)
+        quoted_name = quote(file_name)
         header += f"; filename*=UTF-8''{quoted_name}"
     return header
 

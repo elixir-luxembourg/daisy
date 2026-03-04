@@ -1,9 +1,9 @@
 from django.shortcuts import render
-from stronghold.decorators import public
+from django.contrib.auth.decorators import login_not_required
 from django.conf import settings
 
 
-@public
+@login_not_required
 def about(request):
     context = {"demo_mode": getattr(settings, "DEMO_MODE", False)}
 

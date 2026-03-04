@@ -3,6 +3,7 @@ model classes based on http://activitystrea.ms/specs/json/1.0/
 
 Notification class does not have any target at the moment.
 """
+
 from datetime import datetime
 
 from django.db import models
@@ -133,9 +134,11 @@ class Notification(models.Model):
             "message": self.message,
             "objectType": self.content_type.model,
             "objectClass": self.content_type.name,
-            "objectDisplayName": self.content_object.display_name()
-            if hasattr(self.content_object, "display_name")
-            else self.content_object.__str__(),
+            "objectDisplayName": (
+                self.content_object.display_name()
+                if hasattr(self.content_object, "display_name")
+                else self.content_object.__str__()
+            ),
             "objectUrl": self.get_absolute_url() or "",
         }
 

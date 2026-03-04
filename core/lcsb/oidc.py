@@ -1,8 +1,8 @@
+import time
 from typing import Dict, List, Optional, Tuple
-
 from django.conf import settings
 from keycloak import KeycloakAdmin
-from keycloak.exceptions import KeycloakGetError
+from keycloak.exceptions import KeycloakGetError, KeycloakAuthenticationError
 
 from core.synchronizers import (
     AccountSynchronizationBackend,
@@ -27,6 +27,8 @@ def get_keycloak_config_from_settings() -> Dict:
         "KEYCLOAK_REALM_ADMIN": getattr(settings, "KEYCLOAK_REALM_ADMIN"),
         "KEYCLOAK_USER": getattr(settings, "KEYCLOAK_USER"),
         "KEYCLOAK_PASS": getattr(settings, "KEYCLOAK_PASS"),
+        "KEYCLOAK_MAX_RETRIES": getattr(settings, "KEYCLOAK_MAX_RETRIES", 3),
+        "KEYCLOAK_RETRY_DELAY": getattr(settings, "KEYCLOAK_RETRY_DELAY", 2),
     }
 
 
@@ -45,6 +47,8 @@ class KeycloakSynchronizationBackend(AccountSynchronizationBackend):
             "KEYCLOAK_PASS",
             "KEYCLOAK_REALM_LOGIN",
             "KEYCLOAK_REALM_ADMIN",
+            "KEYCLOAK_MAX_RETRIES",
+            "KEYCLOAK_RETRY_DELAY",
         ]
         for key in keys:
             if key not in config:
@@ -61,15 +65,28 @@ class KeycloakSynchronizationBackend(AccountSynchronizationBackend):
             self.config = config
 
         self._validate_config(self.config)
-        admin = KeycloakAdmin(
-            server_url=self.config.get("KEYCLOAK_URL"),
-            realm_name=self.config.get("KEYCLOAK_REALM_ADMIN"),
-            user_realm_name=self.config.get("KEYCLOAK_REALM_LOGIN"),
-            username=self.config.get("KEYCLOAK_USER"),
-            password=self.config.get("KEYCLOAK_PASS"),
-            verify=self.config.get("KEYCLOAK_SSL_VERIFY", True),
-        )
-        return admin
+        max_retries = self.config.get("KEYCLOAK_MAX_RETRIES")
+        retry_delay = self.config.get("KEYCLOAK_RETRY_DELAY")
+        for attempt in range(max_retries):
+            try:
+                admin = KeycloakAdmin(
+                    server_url=self.config.get("KEYCLOAK_URL"),
+                    realm_name=self.config.get("KEYCLOAK_REALM_ADMIN"),
+                    user_realm_name=self.config.get("KEYCLOAK_REALM_LOGIN"),
+                    username=self.config.get("KEYCLOAK_USER"),
+                    password=self.config.get("KEYCLOAK_PASS"),
+                    verify=self.config.get("KEYCLOAK_SSL_VERIFY", True),
+                )
+                return admin
+            except KeycloakAuthenticationError as e:
+                if attempt < max_retries - 1:
+                    logger.warning(
+                        f"Keycloak authentication failed (attempt {attempt + 1}/{max_retries}), retrying..."
+                    )
+                    time.sleep(retry_delay)
+                else:
+                    logger.error("Max retries reached for Keycloak authentication.")
+                    raise
 
     def test_connection(self) -> bool:
         try:

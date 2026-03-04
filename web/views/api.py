@@ -1,6 +1,5 @@
 import json
 import sys
-
 from functools import wraps
 from io import StringIO
 from typing import Dict, Optional
@@ -8,12 +7,12 @@ from typing import Dict, Optional
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Paginator
-from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Q, Count
+from django.db.models import Count
 from django.contrib.auth.hashers import get_hasher
-
-from stronghold.decorators import public
+from django.contrib.auth.decorators import login_not_required
+from guardian.shortcuts import get_objects_for_user
 
 from core.importer.datasets_exporter import DatasetsExporter
 from core.importer.projects_exporter import ProjectsExporter
@@ -26,6 +25,7 @@ from core.models import (
     DiseaseTerm,
     Endpoint,
 )
+from core.constants import Permissions
 from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneTerm
 from core.utils import DaisyLogger
 from web.views.utils import get_client_ip, get_user_or_contact_by_oidc_id
@@ -43,52 +43,61 @@ def create_error_response(
     return JsonResponse({**more, **body}, status=status)
 
 
-def create_protect_with_api_key_decorator(global_api_key=None):
-    def protect_with_api_key(view):
-        """
-        Checks if there is a GET or POST parameter that:
-        * contains either GLOBAL_API_KEY from settings
-        * matches one of User's api_key attribute
-        """
+def filter_by_user_permissions(request, queryset, model_name):
+    if getattr(request, "api_user", None):
+        permission = f"core.{Permissions.PROTECTED.value}_{model_name.lower()}"
+        return get_objects_for_user(
+            request.api_user,
+            permission,
+            klass=queryset,
+            use_groups=True,
+            accept_global_perms=True,
+        )
+    return queryset
 
+
+def protect_api(write_required=False):
+    """
+    Checks if there is a GET or POST parameter that:
+    * contains either GLOBAL_API_KEY from settings
+    * matches one of User's api_key attribute
+    """
+
+    def decorator(view):
         @wraps(view)
-        def decorator(request, *args, **kwargs):
-            submitted_keys = [request.GET.get("API_KEY"), request.POST.get("API_KEY")]
-            req_key = submitted_keys[0] or submitted_keys[1]
-            error_message = (
-                "API_KEY missing in POST or GET parameters, or its value is invalid!"
+        def wrapper(request, *args, **kwargs):
+            key = (
+                request.GET.get("API_KEY")
+                or request.POST.get("API_KEY")
+                or request.headers.get("X-API-Key")
             )
-            if global_api_key is not None and global_api_key in submitted_keys:
-                request.COOKIES["global"] = True
+            if not key:
+                return create_error_response("API key required", status=401)
+
+            global_api_key = getattr(settings, "GLOBAL_API_KEY", None)
+            if global_api_key and key == global_api_key:
+                request.is_global_api = True
                 return view(request, *args, **kwargs)
-            elif req_key:
-                # Check the key from GET or POST from USER api_key
-                if User.objects.filter(Q(api_key=req_key)).count() > 0:
-                    return view(request, *args, **kwargs)
-                # Check the key from GET or POST from Endpoint hashed api_key
-                hashed_key = get_hasher("default").encode(
-                    req_key, salt=settings.SECRET_KEY
+
+            if write_required or request.method not in ["GET", "HEAD", "OPTIONS"]:
+                return create_error_response(
+                    "Write operations require global API key", status=403
                 )
-                try:
-                    endpoint = Endpoint.objects.get(api_key=hashed_key)
-                except Endpoint.DoesNotExist:
-                    return create_error_response(
-                        "There is no permitted endpoint with your API_KEY", status=403
-                    )
-                request.COOKIES["endpoint_id"] = endpoint.id
+
+            if user := User.objects.filter(api_key=key).first():
+                request.api_user = user
                 return view(request, *args, **kwargs)
-            else:
-                return create_error_response(error_message, status=403)
 
-        return decorator
+            hashed_key = get_hasher("default").encode(key, salt=settings.SECRET_KEY)
+            if endpoint := Endpoint.objects.filter(api_key=hashed_key).first():
+                request.api_endpoint_id = endpoint.id
+                return view(request, *args, **kwargs)
+            return create_error_response("Invalid API key", status=401)
 
-    return protect_with_api_key
+        return wrapper
 
+    return decorator
 
-_global_api_key = (
-    getattr(settings, "GLOBAL_API_KEY") if hasattr(settings, "GLOBAL_API_KEY") else None
-)
-protect_with_api_key = create_protect_with_api_key_decorator(_global_api_key)
 
 """
 Rapido API method, we should probably use django rest framework if we want to develop API further.
@@ -107,7 +116,7 @@ def users(request):
     )
 
 
-@public
+@login_not_required
 @csrf_exempt
 def cohorts(request):
     return JsonResponse(
@@ -119,23 +128,34 @@ def cohorts(request):
     )
 
 
-@public
-@csrf_exempt
-def partners(request):
+@protect_api()
+def partners_extended(request):
+    fields = request.GET.get("fields", None)
+    partners = Partner.objects.all()
+    if "published" in request.GET:
+        published = request.GET.get("published", "true").lower() == "true"
+        partners = partners.filter(_is_published=published)
     return JsonResponse(
-        {
-            "results": [
-                partner.to_dict()
-                for partner in Partner.objects.filter(_is_published=True)
-            ]
-        }
+        {"results": [partner.to_dict(fields=fields) for partner in partners]}
     )
 
 
-@public
+@login_not_required
+@csrf_exempt
+def partners(request):
+    if request.GET.get("API_KEY") or request.headers.get("X-API-Key"):
+        return partners_extended(request)
+
+    partners = Partner.objects.filter(_is_published=True)
+    return JsonResponse({"results": [partner.to_dict() for partner in partners]})
+
+
+@login_not_required
 def termsearch(request, category):
     search = request.GET.get("search")
     page = request.GET.get("page")
+    if not search or not page:
+        return create_error_response("Missing 'search' or 'page' parameter", status=400)
 
     if category == TermCategory.disease.value:
         matching_terms = DiseaseTerm.objects.filter(label__icontains=search).order_by(
@@ -157,7 +177,7 @@ def termsearch(request, category):
     paginator = Paginator(matching_terms, 25)
 
     if int(page) > paginator.num_pages:
-        return HttpResponseBadRequest("invalid page parameter")
+        return create_error_response("Page number out of range", status=400)
 
     matching_terms_on_page = paginator.get_page(page)
 
@@ -170,13 +190,14 @@ def termsearch(request, category):
     )
 
 
-@public
+@login_not_required
 @csrf_exempt
-@protect_with_api_key
+@protect_api()
 def datasets(request):
-    endpoint_id = request.COOKIES.get("endpoint_id")
-    global_export = request.COOKIES.get("global")
+    endpoint_id = getattr(request, "api_endpoint_id", None)
+    global_export = getattr(request, "is_global_api", False)
     objects = get_filtered_entities(request, "Dataset")
+    objects = filter_by_user_permissions(request, objects, "dataset")
     if "project_id" in request.GET:
         project_id = request.GET.get("project_id", "")
         objects = objects.filter(project__id=project_id)
@@ -184,7 +205,9 @@ def datasets(request):
         project_title = request.GET.get("project_title", "")
         objects = objects.filter(project__title__iexact=project_title)
     exporter = DatasetsExporter(
-        objects=objects, endpoint_id=endpoint_id, include_unpublished=global_export
+        objects=objects,
+        endpoint_id=endpoint_id,
+        include_unpublished=global_export or hasattr(request, "api_user"),
     )
 
     try:
@@ -197,40 +220,35 @@ def datasets(request):
         )
 
 
-def is_valid_field_in_model(klass_name, field_name):
-    getattr(klass_name, field_name, False)
-
-
 def get_filtered_entities(request, model_name):
+    model_class = getattr(sys.modules["core.models"], model_name)
     filters = {}
     for filter_key in request.GET:
-        if not is_valid_field_in_model(model_name, filter_key):
+        if not getattr(model_class, filter_key, False):
             continue
         filters[filter_key] = request.GET.get(filter_key)
 
-    return getattr(sys.modules["core.models"], model_name).objects.filter(**filters)
+    return model_class.objects.filter(**filters)
 
 
-@public
+@login_not_required
 @csrf_exempt
-@protect_with_api_key
+@protect_api()
 def contracts(request):
     objects = get_filtered_entities(request, "Contract")
-    objects = objects.anotate(c=Count("project__datasets__exposures")).filter(
-        project__is_published=True, c__gt=0
-    )
+    objects = objects.annotate(c=Count("project__datasets__exposures")).filter(c__gt=0)
+    objects = filter_by_user_permissions(request, objects, "contract")
     if "project_id" in request.GET:
         project_id = request.GET.get("project_id", "")
         objects = objects.filter(project__id=project_id)
-    object_dicts = []
-    for contract in objects:
-        cd = contract.to_dict()
-        cd["source"] = settings.SERVER_URL
-        object_dicts.append(cd)
-    objects_json_buffer = StringIO()
-    json.dump({"items": object_dicts}, objects_json_buffer, indent=4)
-
     try:
+        object_dicts = []
+        for contract in objects:
+            cd = contract.to_dict()
+            cd["source"] = settings.SERVER_URL
+            object_dicts.append(cd)
+        objects_json_buffer = StringIO()
+        json.dump({"items": object_dicts}, objects_json_buffer, indent=4)
         return HttpResponse(objects_json_buffer.getvalue())
     except Exception as e:
         return create_error_response(
@@ -238,23 +256,27 @@ def contracts(request):
         )
 
 
-@public
+@login_not_required
 @csrf_exempt
-@protect_with_api_key
+@protect_api()
 def projects(request):
-    endpoint_id = request.COOKIES.get("endpoint_id")
-    global_export = request.COOKIES.get("global")
+    endpoint_id = getattr(request, "api_endpoint_id", None)
+    global_export = getattr(request, "is_global_api", False)
+    fields = request.GET.get("fields", None)
     objects = get_filtered_entities(request, "Project")
+    objects = filter_by_user_permissions(request, objects, "project")
     if "project_id" in request.GET:
         project_id = request.GET.get("project_id", "")
         objects = objects.filter(id=project_id)
 
     exporter = ProjectsExporter(
-        objects=objects, endpoint_id=endpoint_id, include_unpublished=global_export
+        objects=objects,
+        endpoint_id=endpoint_id,
+        include_unpublished=global_export or hasattr(request, "api_user"),
     )
 
     try:
-        buffer = exporter.export_to_buffer(StringIO())
+        buffer = exporter.export_to_buffer(StringIO(), fields=fields)
 
         return HttpResponse(buffer.getvalue())
     except Exception as e:
@@ -263,12 +285,14 @@ def projects(request):
         )
 
 
-@public
+@login_not_required
 @csrf_exempt
 def rems_endpoint(request):
+    if request.method != "POST":
+        return create_error_response("Method not allowed", status=405)
     try:
         if not getattr(settings, "REMS_INTEGRATION_ENABLED", False):
-            raise Warning(f"REMS endpoint called, but it" "s disabled.")
+            raise RuntimeError("REMS endpoint called, but it's disabled.")
 
         ip = get_client_ip(request)
         logger.debug(f"REMS endpoint called from: {ip}...")
@@ -279,10 +303,10 @@ def rems_endpoint(request):
             skip_check_setting = True
 
         if len(allowed_ips) == 0 and not skip_check_setting:
-            raise Warning(f"REMS - the IP whitelist is empty, import failed!")
+            raise RuntimeError("REMS - the IP whitelist is empty, import failed!")
 
         if ip not in allowed_ips and not skip_check_setting:
-            raise Warning(f"REMS - the IP is not in the whitelist, import failed!")
+            raise RuntimeError("REMS - the IP is not in the whitelist, import failed!")
 
         status = True if handle_rems_callback(request) else False
         logger.debug(f"REMS - was import successful?: {status}!")
@@ -290,7 +314,7 @@ def rems_endpoint(request):
             return JsonResponse({"status": "Success"}, status=200)
         else:
             return JsonResponse({"status": "Failure"}, status=500)
-    except (Warning, ImproperlyConfigured) as ex:
+    except (RuntimeError, ImproperlyConfigured) as ex:
         message = f"REMS - something is wrong with the configuration!"
         more = str(ex)
         logger.debug(f"{message} ({more})")
@@ -302,10 +326,12 @@ def rems_endpoint(request):
         return create_error_response(message, {"more": more})
 
 
-@public
+@login_not_required
 @csrf_exempt
-@protect_with_api_key
+@protect_api(write_required=True)
 def force_keycloak_synchronization(request) -> JsonResponse:
+    if request.method != "POST":
+        return create_error_response("Method not allowed", status=405)
     try:
         logger.debug("Forcing refreshing the account information from Keycloak...")
         synchronizer.synchronize_all()
@@ -321,9 +347,9 @@ def force_keycloak_synchronization(request) -> JsonResponse:
         )
 
 
-@public
+@login_not_required
 @csrf_exempt
-@protect_with_api_key
+@protect_api()
 def permissions(request, user_oidc_id: str) -> JsonResponse:
     system_daisy_user, created = User.objects.get_or_create(
         username="system::daisy",
