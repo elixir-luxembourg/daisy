@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "elixir-daisy"
-version = "1.10.0"
+version = "1.11.0"
 description = "Elixir-LU DAISY"
 readme = "README.md"
 authors = [
