@@ -419,10 +419,7 @@ if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
     ] + AUTHENTICATION_BACKENDS
     AUTH_LDAP_SERVER_URI = env("AUTH_LDAP_SERVER_URI", default=None)
     ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
-    AUTH_LDAP_BIND_DN = env(
-        "AUTH_LDAP_BIND_DN",
-        default="CN=Normal.User,OU=LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux",
-    )
+    AUTH_LDAP_BIND_DN = env("AUTH_LDAP_BIND_DN", default=None)
     AUTH_LDAP_BIND_PASSWORD = env("AUTH_LDAP_BIND_PASSWORD", default=None)
     ldap_search = [
         LDAPSearch(
@@ -451,18 +448,15 @@ if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
         "email": "mail",
     }
     LDAP_USERS_IMPORT_CLASS = env(
-        "LDAP_USERS_IMPORT_CLASS", default="(objectClass=person)"
+        "LDAP_USERS_IMPORT_CLASS", default="(&(mail=*@uni.lu)(objectClass=person))"
     )
     LDAP_USERS_IMPORT_USERNAME_ATTR = env(
         "LDAP_USERS_IMPORT_USERNAME_ATTR", default="userprincipalname"
     )
-    AUTH_LDAP_USER_DN_TEMPLATE = env(
-        "AUTH_LDAP_USER_DN_TEMPLATE",
-        default="CN=%(user)s,OU=LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux",
-    )
+    AUTH_LDAP_USER_DN_TEMPLATE = env("AUTH_LDAP_USER_DN_TEMPLATE", default="")
     LDAP_USERS_IMPORT_SEARCH_DN = env(
         "LDAP_USERS_IMPORT_SEARCH_DN",
-        default="OU=LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux",
+        default="OU=LCSB,OU=Rectorate,OU=BoG,OU=UNI-Users,DC=uni,DC=lux",
     )
 
 # list of usernames of users that will imported and set as pi when
