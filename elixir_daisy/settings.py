@@ -418,6 +418,7 @@ if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
         "django_auth_ldap.backend.LDAPBackend",
     ] + AUTHENTICATION_BACKENDS
     AUTH_LDAP_SERVER_URI = env("AUTH_LDAP_SERVER_URI", default=None)
+    ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
     AUTH_LDAP_BIND_DN = env(
         "AUTH_LDAP_BIND_DN",
         default="CN=Normal.User,OU=LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux",
