@@ -469,7 +469,7 @@ if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
     LDAP_USERS_IMPORT_USERNAME_ATTR = env(
         "LDAP_USERS_IMPORT_USERNAME_ATTR", default="userprincipalname"
     )
-    AUTH_LDAP_USER_DN_TEMPLATE = env("AUTH_LDAP_USER_DN_TEMPLATE", default="")
+    AUTH_LDAP_USER_DN_TEMPLATE = env("AUTH_LDAP_USER_DN_TEMPLATE", default=None)
 
 # list of usernames of users that will imported and set as pi when
 # import_users is used to bulk create users from an LDAP server
