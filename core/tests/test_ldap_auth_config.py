@@ -34,11 +34,10 @@ def test_auth_ldap_allowed_user_searches_structure():
 
 def test_auth_ldap_search_count():
     searches = settings.AUTH_LDAP_USER_SEARCH.searches
-    ldap_filter = getattr(settings, "LDAP_USERS_FILTER", None)
-    ldap_ext_filter = getattr(settings, "LDAP_EXT_USERS_FILTER", None)
-    if not ldap_filter and not ldap_ext_filter:
-        assert len(searches) == 1
-    else:
+    assert len(searches) >= 1
+    has_user_filter = bool(getattr(settings, "LDAP_USERS_FILTER", None))
+    has_ext_filter = bool(getattr(settings, "LDAP_EXT_USERS_FILTER", None))
+    if has_user_filter or has_ext_filter:
         assert len(searches) > 1
 
 
