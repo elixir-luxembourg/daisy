@@ -5,7 +5,7 @@
 
 Data Information System (DAISY) is a data bookkeeping application designed to help Biomedical Research institutions with their GDPR compliance.
 
-For more information, please refer to the official [Daisy documentation](https://elixir.pages.uni.lu/daisy-doc/).
+For more information, please refer to the official [Daisy documentation](https://elixir-luxembourg.github.io/daisy/).
 
 DAISY was published as an article [DAISY: A Data Information System for accountability under the General Data Protection Regulation](https://doi.org/10.1093/gigascience/giz140) in GigaScience journal.
 
