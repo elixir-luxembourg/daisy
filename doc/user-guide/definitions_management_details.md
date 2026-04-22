@@ -19,9 +19,7 @@ In order to effectively handle data subjects' requests, as per GDPR, it is cruci
 
 The information kept on cohorts can be seen in the associated *Editor Page* seen below. Cohorts are expected to have a *Title* unique to them, and they are  linked to one or more *Cohort Owners*, which are that are Principle Investigators, Clinicians running the study. Cohorts owners are kept as *Contacts* in DAISY. In order to maintain a controlled list of cohorts, the administrator for the DAISY deployment may assign an accession number to the *Cohort*, which would be the unique identifier for this Cohort.
 
-::: centered
 ![Alt](../assets/images/cohort_edit_form.png)
-:::
 
 ## 6.2 Partners
 
@@ -30,9 +28,7 @@ In accordance, when maintaining *Data Declaration's* data source, *Dataset* tran
 
 The information kept on partners can be seen in the associated *Editor Page* seen below.
 
-::: centered
 ![Alt](../assets/images/partner_edit_form.png)
-:::
 
 ## 6.3 Contacts
 
@@ -41,6 +37,4 @@ DAISY keeps the contact details (e.g email address, affiliations) of external co
 
 Standard information is kept on contacts as can be seen in the associated *Editor Page* given below.
 
-::: centered
 ![Alt](../assets/images/contact_edit_form.png)
-:::

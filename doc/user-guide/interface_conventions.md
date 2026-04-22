@@ -13,9 +13,7 @@ DAISY provides search pages for all entities manageable via modules. Currently t
 As an example, the screenshot of the search page for Projects is given below.
 Each search page is headed with the help text containing a brief description. On the left hand side of the page there are search facets and on the right - the search results are displayed.
 
-::: centered
 ![Alt](../assets/images/search_page.png "Search Page for Projects")<small>Search page for Projects</small>
-:::
 
 By default, all entities (in our example - projects) will be listed on the search page. The list can be filtered by either selecting one or more facet from the left hand side or by typing in a keyword into the search box. Note that currently **DAISY search does not support partial matching**. Instead, the entire keyword will be matched in a case insensitive manner.
 
@@ -28,9 +26,7 @@ Depending on the permissions associated with your user type, you may see a **add
 ## 2.2 Entity Details Pages
 Clicking the *DETAILS* button in the search result box takes you to *Details Page*, which contains the information about the chosen entity. An example of details page for *Project* named 'SYSCID' is given below.
 
-::: centered
 ![Alt](../assets/images/details_page.png "Details page of a Project in DAISY")<small>Details page of a Project in DAISY</small>
-:::
 
 You may end up on an *Entity Details Page* through:
 - the *DETAILS* link of a search results in a search page.
@@ -52,9 +48,7 @@ If you have edit permissions for the entity, then at the top right corner of par
 ## 2.3 Entity Editor Pages
 When you click the edit button on the Details Page of an entity, you will be taken to the Editor Page containing a form for entity update.  An example of **editor form** is given below.
 
-::: centered
 ![Alt](../assets/images/editor_form.png "Editor page of a Project")<small>Editor page of a Project</small>
-:::
 
 Each field in the form is be listed with a **name**, a **value** and a **help text**. Names of the fields that are required to have a value, are marked with a red asterisk (e.g. Title).
 
@@ -63,15 +57,11 @@ Editor forms can be saved by pressing **SUBMIT** button at the bottom of the pag
 <!-- ![Alt](../assets/images/validation_error.png)
 <center>Field validation error</center> -->
 
-::: centered
 ![Alt](../assets/images/validation_error.png "Field validation error")<small>Field validation error message</small>
-:::
 
 Upon successful submission of a form, you will be returned to the Entity Details page.
 DAISY may give success and/or warning messages upon the form submission; these will be displayed at the top of the page, as illustrated below.
 
-::: centered
 ![Alt](../assets/images/page_messages.png "Message display in DAISY")<small>Status message displayed in DAISY</small>
-:::
 
 [Back to top](#daisy-interface-conventions)
