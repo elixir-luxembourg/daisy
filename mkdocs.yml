@@ -1,0 +1,44 @@
+site_name: DAISY Documentation
+site_description: Data Information System for GDPR compliance in biomedical research
+site_url: https://elixir.pages.uni.lu/daisy-doc/
+repo_url: https://github.com/elixir-luxembourg/daisy
+repo_name: elixir-luxembourg/daisy
+
+docs_dir: doc
+
+theme:
+  name: material
+  palette:
+    primary: teal
+    accent: teal
+  features:
+    - navigation.tabs
+    - navigation.top
+    - search.highlight
+
+nav:
+  - Home: index.md
+  - Deployment:
+      - Docker Setup: deployment.md
+      - Legacy Deployment: legacy-deployment.md
+  - Operations:
+      - Administration: administration.md
+      - Backup & Restore: backup.md
+      - Updating: update.md
+  - Development:
+      - Development Guide: development.md
+      - API Reference: api.md
+  - User Guide:
+      - Introduction: user-guide/introduction.md
+      - DAISY Overview: user-guide/daisy.md
+      - Interface Conventions: user-guide/interface_conventions.md
+      - Login: user-guide/user_login.md
+      - Legal Basis: user-guide/legal_basis.md
+      - Project Management: user-guide/project_management_details.md
+      - Dataset Management: user-guide/dataset_management_details.md
+      - Contract Management: user-guide/contract_management_details.md
+      - Definitions Management: user-guide/definitions_management_details.md
+      - User Management: user-guide/user_management_details.md
+      - User Groups: user-guide/users_group.md
+      - Auditors Guide: user-guide/auditors.md
+      - Contact: user-guide/contact.md
