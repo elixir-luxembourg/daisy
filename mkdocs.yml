@@ -8,26 +8,42 @@ docs_dir: doc
 
 theme:
   name: material
+  custom_dir: doc/custom_theme
   palette:
-    primary: teal
-    accent: teal
+    - scheme: default
+      primary: custom
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: orange
+      accent: blue
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  logo: logos/ELIXIR_LU.png
+  favicon: logos/favicon.png
   features:
-    - navigation.tabs
     - navigation.top
+    - navigation.footer
+    - navigation.path
     - search.highlight
+  font:
+    text: Lato
+
+extra_css:
+  - css/extra.css
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - toc:
+      permalink: true
 
 nav:
   - Home: index.md
-  - Deployment:
-      - Docker Setup: deployment.md
-      - Legacy Deployment: legacy-deployment.md
-  - Operations:
-      - Administration: administration.md
-      - Backup & Restore: backup.md
-      - Updating: update.md
-  - Development:
-      - Development Guide: development.md
-      - API Reference: api.md
   - User Guide:
       - Introduction: user-guide/introduction.md
       - DAISY Overview: user-guide/daisy.md
@@ -42,3 +58,13 @@ nav:
       - User Groups: user-guide/users_group.md
       - Auditors Guide: user-guide/auditors.md
       - Contact: user-guide/contact.md
+  - Deployment:
+      - Docker Setup: deployment.md
+      - Legacy Deployment: legacy-deployment.md
+  - Operations:
+      - Administration: administration.md
+      - Backup & Restore: backup.md
+      - Updating: update.md
+  - Development:
+      - Development Guide: development.md
+      - API Reference: api.md
