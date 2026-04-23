@@ -1,4 +1,4 @@
-# DAISY Documentation
+<p style="text-align: center;"><img src="logos/daisy_logo_final_blueFont_transparent.png" alt="DAISY" width="300"></p>
 
 **DAISY** (DAta Information SYstem) is an open-source web application that helps biomedical research institutions maintain a register of personal data in accordance with GDPR requirements.
 

@@ -16,3 +16,7 @@
 :root {
   --md-primary-fg-color: #023452;
 }
+
+.md-content__inner:has(img[alt="DAISY"]) h1 {
+  display: none;
+}
