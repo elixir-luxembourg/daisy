@@ -119,33 +119,18 @@ Definitions Management module allows the maintenance of secondary entities, whic
 
 # 3. Different types of DAISY users
 
-Any user with an account can login to DAISY and start creating records.  Users that create a record become the record's *owner* and will be able to change and delete the record at any time.
-In DAISY, a records owner, however, is not the one with the utmost privileges. DAISY provides various types of users accounts, and associated privileges.
+DAISY provides several user groups, each with a different set of permissions. All users can view records; what differs is whether they can edit, delete, access protected elements, and manage other users' access.
 
-<!-- This is the default role assigned to all users. All DAISY users can view all Dataset, Project, Contract and Definitions. The document attachments of records are excluded from this view permission. -->
+- **Standard user** — The default group for all users. Can view any *Project*, *Dataset*, *Contract*, or *Definition*, create new records, and edit or delete records they created or where they are assigned as *Local Custodian*. Cannot access protected elements (e.g. document attachments) or manage permissions.
 
-- **Standard user**
-The default type of user is a standard user. Standard users can:
+- **VIP user** — Assigned to research principal investigators. Has all Standard user access, and additionally — on records where they are *Local Custodian* — can access protected elements and manage other users' permissions on that record.
 
-	- view any *Dataset*, *Project*, *Contract* or *Definition* record in DAISY, including those created by others. The documents attachments on the records are, however, protected, and they are not visible to other standard users.
-	- create records of their own.
-	- edit and delete records of their own.
+- **Data Steward** — Assigned to IT and data management specialists. Has elevated privileges across the entire system: can view, create, edit, and delete any record, access all protected elements, manage permissions on any record, and publish datasets.
 
-- **VIP user**
-The research principle investigators are VIP type users. Whenever a *Dataset*, *Project*, *Contract*  record gets created in DAISY, a VIP user **must be designated** as the record's **Local Custodian**. Records cannot be created without a local custodian.
-In addition to the privileges of the standard user, the VIP Users have the following rights:
+- **Legal user** — Assigned to legal support staff. Can view all records. For *Contract* records specifically, can add, edit, delete, access protected elements, and manage other users' access.
 
-	- view, edit and delete records under his custodianship,
-	- view and manage the document attachments of records under their custodianship,
-	- grant other users permissions on the records under his custodianship.
+- **Auditor** — Assigned to external persons given temporary read access, typically during an audit. Can view all records and access protected elements on *Projects*, *Datasets*, and *Contracts*, but cannot create, edit, delete, or manage permissions.
 
-- **Legal user**
-The users assigned to this group can are allowed to manage *Contract* records. Legal personnel can:
-
-	- add, view, edit and remove any contract.
-	- grant the other users with an access for the contract.
-	- view all records in DAISY and manage their documents attachments.
-
-For more details go to [Users Groups and Permissions](user_management_details.md) (recommended for those administering DAISY deployments).
+For the full permission breakdown including inheritance rules, see [Users Groups and Permissions](user_management_details.md).
 
 [Back to top](#daisy-user-guide)

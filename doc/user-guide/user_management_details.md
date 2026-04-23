@@ -4,10 +4,6 @@ name: "Users Groups and Permissions"
 ---
 
 
-<small>
-[User guide](daisy.md) &raquo; [*3 Different types of DAISY users (**GO BACK to main page**)*](daisy.md#3-different-types-of-daisy-users)
-</small>
-
 # Users Groups and Permissions
 
 DAISY is used by three main categories of end users in a biomedical research institution:
