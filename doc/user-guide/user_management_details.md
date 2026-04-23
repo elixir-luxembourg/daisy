@@ -10,53 +10,151 @@ name: "Users Groups and Permissions"
 
 # Users Groups and Permissions
 
-DAISY is intended to be used mostly by three categories of end users in a biomedical research institutions:
+DAISY is used by three main categories of end users in a biomedical research institution:
 
-  - Research staff (e.g. principle investigators, lab members)
-  - Legal support team
-  - IT and data management specialists
+- Research staff (e.g. principal investigators, lab members)
+- Legal support team
+- IT and data management specialists
 
-Above categories are assigned to particular DAISY **user groups**, which support the control of records access:
+These categories map to DAISY **user groups**, which control what actions a user can perform across the system.
 
-  -  **Standard**
-      This is the default group that users are mainly assigned to. All DAISY users can view all *Dataset*, *Project*, *Contract* and *Definitions* (*Cohorts*, *Partners*, *Contacts*). The document attachments of the records are excluded from this view permission.
+## User Groups
 
-  -  **VIP**
-      The research principle investigators are typically assigned to this group. VIP users have all privileges on the records they own, meaning the records where the user has been appointed as the `Local Custodian`. They also have the right to give permissions to others on these records.
+### Standard
 
-  -  **Legal**
-      This group allows users to manage *Contract* records. Legal personnel will be able to create view and edit contract as well as view all other records in DAISY and manage their document attachments
+The default group assigned to all users. Standard users can:
 
-  - **Auditor**
-      This role would designed to an external person, who is given view-only temporary access to all DAISY records. This is typically happening during an audit scenario.
+- View any *Project*, *Dataset*, *Contract*, and *Definition* (*Cohorts*, *Partners*, *Contacts*).
+- Create new records of any type.
+- Edit and delete records they created.
+- Edit and delete records where they are assigned as *Local Custodian*.
 
-Inside the group a user can be assigned with a specific **role**, which specifies his project's permissions:
+Standard users **cannot** access protected elements (e.g. document attachments) or manage permissions on any record, even records they own.
 
-  - Project's owner
-  - Local Custodian
-  - Regular user
+### VIP
 
-The *back end user* is called *superuser* and is granted with *all* DAISY privileges - to manage the application's content and administer DAISY settings.
+Assigned to research principal investigators. VIP users have all the same base access as Standard users, plus:
 
-DAISY supports fine-grained permission management with the following categories of permissible actions.
-The users permissions are summed up in the below table:
+- Access to protected elements (e.g. document attachments) on records where they are *Local Custodian*.
+- Ability to grant and revoke permissions on records where they are *Local Custodian* (they act as administrator for those records).
 
-<!-- <span style="display:block;text-align:center">![Alt](/img/permissions_table.png){:width="900px"}<small>Users permissions</small></span>
+### Data Steward
 
-| User Category | Administer Permissions | Delete | Edit | View | View  Document Attachments |
-| -------------|:-------------:|:-------------:|:-------------:|:-------------:|:-----|
-| superuser | P<sub>all</sub>, D<sub>all</sub>, C<sub>all</sub>, Def<sub>all</sub> | P<sub>all</sub>, D<sub>all</sub>, C<sub>all</sub>, Def<sub>all</sub>| P<sub>all</sub>, D<sub>all</sub>, C<sub>all</sub>, Def<sub>all</sub>| P<sub>all</sub>, D<sub>all</sub>, C<sub>all</sub>, Def<sub>all</sub> | P<sub>all</sub>, D<sub>all</sub>, C<sub>all</sub>, Def<sub>all</sub>|
-| standard |  | | | P<sub>all</sub>, D<sub>all</sub>, C<sub>all</sub>, Def<sub>all</sub> | |
-| vip | P<sub>own</sub>, D<sub>own</sub> | P<sub>own</sub>, D<sub>own</sub>| P<sub>own</sub>, D<sub>own</sub>| P<sub>all</sub>, D<sub>all</sub>, C<sub>all</sub>, Def<sub>all</sub>  | P<sub>own</sub>, D<sub>own</sub>, C<sub>own</sub> |
-| auditor |  | | |P<sub>all</sub>, D<sub>all</sub>, C<sub>all</sub>, Def<sub>all</sub>| P<sub>all</sub>, D<sub>all</sub>, C<sub>all</sub>, Def<sub>all</sub> |
-| legal | C<sub>all</sub> | C<sub>all</sub> | P<sub>all</sub>, D<sub>all</sub>, C<sub>all</sub>, Def<sub>all</sub> | P<sub>all</sub>, D<sub>all</sub>, C<sub>all</sub>, Def<sub>all</sub> | P<sub>all</sub>, D<sub>all</sub>, C<sub>all</sub>, Def<sub>all</sub> |
+Assigned to IT and data management specialists. Data Stewards have system-wide elevated privileges:
 
- [Back to top](#top)
+- Full permissions (view, create, edit, delete) on all records in the system.
+- Access to protected elements on all records.
+- Ability to manage permissions on all records.
+- Ability to publish datasets and edit controlled-vocabulary metadata.
 
-WHERE PUT THAT ?
-The dependencies between DAISY modules are given below. There are no hard dependencies between Projects, Contracts and Datasets modules. In principle you may start using any of these modules once DAISY is deployed with the pre-packed definitions.
+### Legal
 
-![Alt](../assets/images/dependencies.png "DAISY module dependencies")
+Assigned to legal support staff. Legal users can:
 
-<span style="display:block; text-align:center">![Alt](../img/dependencies.png "DAISY module dependencies")<small>DAISY module dependencies</small></span>
- -->
+- View all records in DAISY.
+- Add, edit, and delete *Contract* records.
+- Access protected elements on *Contract* records.
+- Grant and revoke permissions on *Contract* records.
+
+### Auditor
+
+Assigned to external persons given temporary read access during an audit. Auditors can:
+
+- View all records in DAISY.
+- Access protected elements (e.g. document attachments) on *Projects*, *Datasets*, and *Contracts*.
+
+Auditors **cannot** create, edit, delete, or manage permissions on any record.
+
+### Superuser
+
+The back-end administrator account. Superusers have unrestricted access to all DAISY records and application settings. This account is managed directly by the system administrator.
+
+---
+
+## Permission Types
+
+Beyond the standard view/add permissions, DAISY defines four additional permission types:
+
+| Permission | Description |
+|-----------|-------------|
+| **Edit** | Can modify the properties of a record. |
+| **Delete** | Can delete a record. |
+| **Protected** | Can view and edit protected elements of a record (e.g. document attachments, sensitive fields). |
+| **Admin** | Can grant and revoke permissions on a record for other users. |
+
+These permissions apply at two levels:
+
+- **Group level (global):** Granted to all members of a user group across all records (e.g. Data Stewards have edit permissions everywhere).
+- **Instance level:** Granted to specific users on a specific record (e.g. a VIP user who is Local Custodian of a particular project).
+
+---
+
+## Local Custodian Role
+
+*Local Custodian* is a role that can be assigned on a *Project*, *Dataset*, *Contract*, or *DAC* record. It grants instance-level permissions to the assigned user. The effective permissions depend on the user's group:
+
+| User Group | Local Custodian effect |
+|-----------|------------------------|
+| **Standard** | Gains **edit** and **delete** on that record. |
+| **VIP** | Gains **edit**, **delete**, **protected**, and **admin** on that record. |
+| **Data Steward** | Already has all permissions globally; no change. |
+| **Legal** | Already has full access to contracts; for Projects/Datasets, gains edit and delete. |
+
+---
+
+## Permission Scope: Objects
+
+Permissions are managed on the following primary objects:
+
+| Object | Protected & Admin permissions |
+|--------|-------------------------------|
+| **Project** | Yes |
+| **Dataset** | Yes |
+| **Contract** | Yes |
+| **DAC** (Data Access Committee) | Yes |
+
+Other record types (*DataDeclaration*, *LegalBasis*, *Share*, *DataLocation*, *Document*, *Access*) inherit their permissions from their parent object rather than having independently managed permissions.
+
+---
+
+## Permission Inheritance
+
+DAISY uses permission inheritance so that access granted on a parent record automatically extends to its child records. The inheritance chain is:
+
+```
+Project
+├── Dataset  (inherits from its Project)
+│   ├── DataDeclaration
+│   ├── LegalBasis
+│   ├── Share
+│   ├── DataLocation
+│   └── Access
+└── Contract  (inherits from its Project)
+    └── DAC  (inherits from its Contract)
+
+Document  (inherits from its attached Project, Dataset, or Contract)
+```
+
+**How it works in practice:**
+
+- If a user has **edit** permission on a *Project*, they also have **edit** permission on all *Datasets* and *Contracts* belonging to that project — even without an explicit grant on the dataset or contract.
+- If a user has **edit** on a *Contract*, they also have **edit** on any *DAC* linked to that contract.
+- If a user has **protected** on a *Dataset*, they can access *Documents* attached to that dataset.
+- Sub-entities (*DataDeclaration*, *LegalBasis*, etc.) always follow the permission of their parent *Dataset*.
+
+Instance-level permissions granted directly on a record always take precedence; the parent cascade only applies when no direct grant exists.
+
+---
+
+## Summary Table
+
+| Group | View all records | Edit | Delete | Protected elements | Admin (grant permissions) |
+|-------|:---:|:---:|:---:|:---:|:---:|
+| **Superuser** | All | All | All | All | All |
+| **Data Steward** | All | All | All | All | All |
+| **VIP** (as Local Custodian) | All | Own records | Own records | Own records | Own records |
+| **Standard** (as Local Custodian) | All | Own records | Own records | — | — |
+| **Legal** | All | Contracts | Contracts | Contracts | Contracts |
+| **Auditor** | All | — | — | All | — |
+
+*"Own records" means records where the user is assigned as Local Custodian or is the creator.*
