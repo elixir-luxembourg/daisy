@@ -45,7 +45,6 @@ markdown_extensions:
 nav:
   - Home: index.md
   - User Guide:
-      - Introduction: user-guide/introduction.md
       - DAISY Overview: user-guide/daisy.md
       - Interface Conventions: user-guide/interface_conventions.md
       - Login: user-guide/user_login.md
