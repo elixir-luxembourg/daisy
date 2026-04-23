@@ -4,16 +4,7 @@
 
 [![Build Status](https://github.com/elixir-luxembourg/daisy/actions/workflows/main.yml/badge.svg)](https://github.com/elixir-luxembourg/daisy/actions)
 
-## Overview
-
-DAISY helps research institutions:
-
-- Track datasets and their associated personal data
-- Document legal bases for data processing
-- Manage data access and sharing agreements
-- Generate GDPR-compliant records of processing activities
-
-## Quick Links
+## Operator & developer resources
 
 - [Docker Setup](deployment.md) — deploy DAISY using Docker Compose
 - [Administration](administration.md) — manage users, imports/exports, and services
@@ -26,6 +17,14 @@ DAISY helps research institutions:
 
 Try DAISY on the [demo deployment](https://daisy-demo.elixir-luxembourg.org/).
 
-## Publication
+## License
 
-DAISY was published in GigaScience: [DAISY: A Data Information System for accountability under the General Data Protection Regulation](https://doi.org/10.1093/gigascience/giz140).
+DAISY is licensed under [GNU Affero General Public License v3.0 (AGPL 3.0)](https://www.gnu.org/licenses/agpl-3.0.en.html).
+
+DAISY development is undertaken by [ELIXIR-Luxembourg](https://elixir-luxembourg.org).
+
+## Citation
+
+When using or referring to DAISY, please cite:
+
+> **DAISY: A Data Information System for accountability under the General Data Protection Regulation.** GigaScience, Volume 8, Issue 12, December 2019, [giz140](https://doi.org/10.1093/gigascience/giz140).
