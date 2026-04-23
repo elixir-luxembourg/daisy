@@ -52,11 +52,12 @@ nav:
       - Project Management: user-guide/project_management_details.md
       - Dataset Management: user-guide/dataset_management_details.md
       - Contract Management: user-guide/contract_management_details.md
+      - Data Access Committees: user-guide/dac_management_details.md
       - Definitions Management: user-guide/definitions_management_details.md
       - User Management: user-guide/user_management_details.md
       - User Groups: user-guide/users_group.md
+      - Notifications: user-guide/notifications.md
       - Auditors Guide: user-guide/auditors.md
-      - Contact: user-guide/contact.md
   - Deployment:
       - Docker Setup: deployment.md
       - Legacy Deployment: legacy-deployment.md
@@ -64,6 +65,7 @@ nav:
       - Administration: administration.md
       - Backup & Restore: backup.md
       - Updating: update.md
+  - Integrations: integrations.md
   - Development:
       - Development Guide: development.md
       - API Reference: api.md
