@@ -34,6 +34,6 @@ The users assigned to this group can are allowed to manage *Contract* records. L
 	- grant the other users with an access for the contract.
 	- view all records in DAISY and manage their documents attachments.
 
-	If you are legal user we suggest to read firstly [DAISY at a Glance](#1-daisy-at-a-glance) section and then [Contract Management](#5-contract-management) section.
+	If you are legal user we suggest to read firstly the [DAISY Overview](daisy.md) and then the [Contract Management](contract_management_details.md) section.
 
-For more details go to [Users Groups and Permissions](//manual/user_management_details/) (recommended for DAISY superuser).
+For more details go to [Users Groups and Permissions](user_management_details.md) (recommended for DAISY superuser).

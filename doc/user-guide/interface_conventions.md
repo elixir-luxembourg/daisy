@@ -5,7 +5,7 @@ name: "2 DAISY Interface Conventions"
 
 
 # 2 DAISY Interface Conventions
-The main view of each DAISY module is called [Search Page](#search-pages), where you choose entity you are interested in (or create a new module). You can inspect a particular entity details in [Entity Details Pages](#entity-details-pages) and edit them in [Entity Editor Pages](#entity-editor-pages).
+The main view of each DAISY module is called [Search Page](#21-search-pages), where you choose entity you are interested in (or create a new module). You can inspect a particular entity details in [Entity Details Pages](#22-entity-details-pages) and edit them in [Entity Editor Pages](#23-entity-editor-pages).
 
 ## 2.1 Search Pages
 DAISY provides search pages for all entities manageable via modules. Currently these modules are: *Datasets*, *Projects*, *Contracts* and under *Definitions*: *Cohorts*, *Partners*, *Contacts*. All search pages have similar layout and operational conventions. Search pages are also the only entry point for the functions in a module. When you select a module from the menu bar, you will be taken to the search page for the entity managed by that module.
@@ -19,7 +19,7 @@ By default, all entities (in our example - projects) will be listed on the searc
 
 On the top right section of search results a few attributes are listed. Clicking on these attributes repeatedly will respectively (1) enable the ordering; (2) change order to ascending/descending; (3) disable ordering for the clicked attribute.
 
-Each entity listed in the search results is displayed in a shaded box, containing few of its attributes. In our example these are the project's name and the number of publications. Each result box will also contain a *DETAILS* link, through which you can go to the [Entity Details Page](#entity-details-pages).
+Each entity listed in the search results is displayed in a shaded box, containing few of its attributes. In our example these are the project's name and the number of publications. Each result box will also contain a *DETAILS* link, through which you can go to the [Entity Details Page](#22-entity-details-pages).
 
 Depending on the permissions associated with your user type, you may see a **add button (denoted with a plus sign)** at the bottom right section of the search page. You can add a new entity by clicking the plus button, which will open up an empty editor form for you to fill in.
 
@@ -32,7 +32,7 @@ You may end up on an *Entity Details Page* through:
 - the *DETAILS* link of a search results in a search page.
 - the links on details pages of other (linked) entities in DAISY.
 
-Each Details Page is headed with an **entity overview box** listing some of the entity's attributes (e.g. local custodians, start date) and allows to modify the entity. Depending on users permissions (see [users groups](/manual/users_group)) in the right bottom corner of the overview box you may see:
+Each Details Page is headed with an **entity overview box** listing some of the entity's attributes (e.g. local custodians, start date) and allows to modify the entity. Depending on users permissions (see [users groups](users_group.md)) in the right bottom corner of the overview box you may see:
 - permissions button (denoted with an eye icon),
 - edit entity button (denoted with a pencil icon),
 - remove entity button (denoted with a bin icon).
@@ -64,4 +64,4 @@ DAISY may give success and/or warning messages upon the form submission; these w
 
 ![Alt](../assets/images/page_messages.png "Message display in DAISY")<small>Status message displayed in DAISY</small>
 
-[Back to top](#daisy-interface-conventions)
+[Back to top](#2-daisy-interface-conventions)

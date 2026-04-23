@@ -57,7 +57,7 @@ You may end up on an *Entity Details Page* through:
 * the *DETAILS* link of a search results in a search page.
 * the links on details pages of other (linked) entities in DAISY.
 
-Each Details Page is headed with an **entity overview box** listing some of the entity's attributes (e.g. local custodians, start date) and allows to modify the entity. Depending on users permissions (see [users groups](#different-types-of-daisy-users)) in the right bottom corner of the overview box you may see:
+Each Details Page is headed with an **entity overview box** listing some of the entity's attributes (e.g. local custodians, start date) and allows to modify the entity. Depending on users permissions (see [users groups](#3-different-types-of-daisy-users)) in the right bottom corner of the overview box you may see:
 * permissions button (denoted with an eye icon),
 * edit entity button (denoted with a pencil icon),
 * remove entity button (denoted with a bin icon).
@@ -94,22 +94,22 @@ This section contains a brief description of DAISY functions listed in the appli
 
 ## 2.1 Projects
 Projects Management module allows for the recording of research activities as projects. Documenting projects is critical for GDPR compliance as projects constitute the purpose and the context of use of the personal data.
-Any document supporting the legal and ethical basis for data use can be stored in DAISY (e.g. ethics approvals, consent configurations or subject information sheets). [**Go to Project Management**](/manual/project_management_details/)
+Any document supporting the legal and ethical basis for data use can be stored in DAISY (e.g. ethics approvals, consent configurations or subject information sheets). [**Go to Project Management**](project_management_details.md)
 
 ## 2.2 Datasets
 
 Datasets Management module allows for the recording of personal data held by the institution. The dataset may or may not fall in the context of a particular project. DAISY allows datasets to be defined in a granular way; where - if desired - each data subset, called a *data declaration*, can be listed individually. These declarations may list data from a particular partner, data of a particular cohort or data of a particular type.
-[**Go to Dataset Management**](/manual/dataset_management_details)
+[**Go to Dataset Management**](dataset_management_details.md)
 
 ## 2.3 Contracts
 
 Contracts Management module allows for the recording and storage of legal contracts of various types that have been signed with partner institutes or suppliers. Consortium agreements, data sharing agreements, material transfer agreements are the examples of the contracts.
 
- For GDPR compliance the contracts become useful in case of documenting the received datasets source or transferred datasets target. [**Go to Contracts Management**](/manual/contract_management_details)
+ For GDPR compliance the contracts become useful in case of documenting the received datasets source or transferred datasets target. [**Go to Contracts Management**](contract_management_details.md)
 
 ## 2.4 Definitions
 Definitions Management module allows the maintenance of secondary entities, which are used when defining the contracts, projects or datasets. Users can manage cohorts, partner institutes and contact persons via the definitions module.
-[**Go to Definitions Management**](/manual/definitions_management_details)
+[**Go to Definitions Management**](definitions_management_details.md)
 
 [Back to top](#daisy-user-guide)
 
@@ -139,6 +139,6 @@ The users assigned to this group can are allowed to manage *Contract* records. L
 	- grant the other users with an access for the contract.
 	- view all records in DAISY and manage their documents attachments.
 
-For more details go to [Users Groups and Permissions](/manual/user_management_details/) (recommended for those administering DAISY deployments).
+For more details go to [Users Groups and Permissions](user_management_details.md) (recommended for those administering DAISY deployments).
 
 [Back to top](#daisy-user-guide)

@@ -5,7 +5,7 @@ name: "3 Project Management"
 
 
 <small>
-[User guide](/manual/daisy) &raquo;  [*Projects (**GO BACK to main page**)*](/manual/daisy/#projects)
+[User guide](daisy.md) &raquo;  [*Projects (**GO BACK to main page**)*](daisy.md#21-projects)
 </small>
 
 # 3 Project Management
@@ -58,7 +58,7 @@ When a project is created, it will have no associated datasets. On the project's
 
 ![Alt](../assets/images/project_add_dataset_form.png)
 
-3. Once the dataset is created, you will be taken to the **Dataset's Details Page**, seen below. You can continue working on the data set as described in [section Dataset Management](/manual/dataset_management_details/).
+3. Once the dataset is created, you will be taken to the **Dataset's Details Page**, seen below. You can continue working on the data set as described in [section Dataset Management](dataset_management_details.md).
 
 If you want to go back to the Project that owns this dataset, then you can click the project link in the dataset's overview box, highlighted below.
 
@@ -79,7 +79,7 @@ Remember that one of the custodians needs to be a VIP user. Provide the field va
 
 ![Alt](../assets/images/project_add_contract_form.png)
 
-1. The contract can be viewed by clicking its name in the detail box. (See section [Contract Management](/manual/contract_management_details).) The contract can be removed from a project by clicking on the trash icon that will appear when hovering over the items in the *Contracts* detail box.
+1. The contract can be viewed by clicking its name in the detail box. (See section [Contract Management](contract_management_details.md).) The contract can be removed from a project by clicking on the trash icon that will appear when hovering over the items in the *Contracts* detail box.
 
 ![Alt](../assets/images/project_remove_contract.png)
 
@@ -103,7 +103,7 @@ Personnel can be unlinked from a Project by clicking on the trash icon that will
 
 ### 3.2.4 Manage Project Contacts
 
-A project's *Contacts* refer to those persons that are associated with the project, but these **are not users** of the DAISY system. Under the [*Definitions Management*](/manual/definitions_management_details) module, it is possible to manage *Contacts* and search for them. Management of contacts can be also done directly on *Project's* page via The *Contacts* detail box.
+A project's *Contacts* refer to those persons that are associated with the project, but these **are not users** of the DAISY system. Under the [*Definitions Management*](definitions_management_details.md) module, it is possible to manage *Contacts* and search for them. Management of contacts can be also done directly on *Project's* page via The *Contacts* detail box.
 
 <mark>To add project's contact details:</mark>
 
@@ -192,4 +192,4 @@ By clicking *eye button* in the project overview box, VIP user can enter *Change
 - **Protected**
   Grant the right to access protected information on this project.
 
-[Back to top](#project-management)
+[Back to top](#3-project-management)

@@ -15,7 +15,7 @@ The `backup` service in `docker-compose.yaml` manages backup and restore using t
 
 ### Configuration
 
-All variables can be set in the [environment file](.env.template). These include variables necessary for connection to the database, path to local folder where the backup is created and setup of cron tasks for backup.
+All variables can be set in the `.env.template` environment file. These include variables necessary for connection to the database, path to local folder where the backup is created and setup of cron tasks for backup.
 
 - **Volumes**:
   - `${BACKUP_VOLUME:-../backups}:/backups`

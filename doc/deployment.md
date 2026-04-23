@@ -149,7 +149,7 @@ The application should now be accessible on `https://localhost/`
 
 ## Scheduled Backup with Cron
 
-To ensure the backups are properly set up, please refer to the [Backup manual](backup.md#Scheduled-Backup-with-Cron)
+To ensure the backups are properly set up, please refer to the [Backup manual](backup.md#scheduled-backup-with-cron)
 
 ### Restore Legacy Backup
 

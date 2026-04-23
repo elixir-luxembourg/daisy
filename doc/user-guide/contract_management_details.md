@@ -5,7 +5,7 @@ name: "5 Contract Management"
 
 
 <small>
-[User guide](/manual/daisy) &raquo; [*Contracts (**GO BACK to main page**)*](/manual/daisy/#contracts)
+[User guide](daisy.md) &raquo; [*Contracts (**GO BACK to main page**)*](daisy.md#23-contracts)
 </small>
 
 # 5 Contract Management
@@ -51,5 +51,5 @@ Contracts have multiple signatories. These can be  managed via the *Partners (Si
   <span style="display:block;text-align:left">![Alt](../assets/images/contract_add_partner_result.png)</span>
 
 - Documents
-You may attach PDF, word documents, scans, via the *Documents* detail box. Document management is common throughout DAISY modules. More details in section [Manage Project Documentation](/manual/project_management_details/#325-manage-project-documentation)).
+You may attach PDF, word documents, scans, via the *Documents* detail box. Document management is common throughout DAISY modules. More details in section [Manage Project Documentation](project_management_details.md#325-manage-project-documentation)).
 

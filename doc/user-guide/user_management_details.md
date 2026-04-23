@@ -5,7 +5,7 @@ name: "Users Groups and Permissions"
 
 
 <small>
-[User guide](/manual/daisy/) &raquo; [*3 Different types of DAISY users (**GO BACK to main page**)*](/manual/daisy/#different-types-of-daisy-users)
+[User guide](daisy.md) &raquo; [*3 Different types of DAISY users (**GO BACK to main page**)*](daisy.md#3-different-types-of-daisy-users)
 </small>
 
 # Users Groups and Permissions

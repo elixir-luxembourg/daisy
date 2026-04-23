@@ -5,7 +5,7 @@ name: "4 Dataset Management"
 
 
 <small>
-[User guide](/manual/daisy) &raquo; [*Datasets (**GO BACK to main page**)*](/manual/daisy/#datasets)
+[User guide](daisy.md) &raquo; [*Datasets (**GO BACK to main page**)*](daisy.md#22-datasets)
 </small>
 
 # 4 Dataset Management
@@ -97,7 +97,7 @@ Once created you are advised to edit the declaration to provide further informat
 
 ![Alt](../assets/images/datadec_edit_1.png)
 
-[Back to top](#dataset-management)
+[Back to top](#4-dataset-management)
 
 ## 4.2.2 Manage Dataset Legal basis
 GDPR outlines six legal basis under which data processing is legally permitted ([find out more about the Legal basis](https://gdpr-info.eu/art-6-gdpr/)).
@@ -116,7 +116,7 @@ GDPR outlines six legal basis under which data processing is legally permitted (
 
 ![Alt](../assets/images/dataset_add_legal_bases_result.png)
 
-[Back to top](#dataset-management)
+[Back to top](#4-dataset-management)
 
 ## 4.2.3 Manage Dataset Storages
 
@@ -133,7 +133,7 @@ As per GDPR, the storage of personal data is considered as a `data processing` a
 
 ![Alt](../assets/images/dataset_remove_location.png)
 
-[Back to top](#dataset-management)
+[Back to top](#4-dataset-management)
 
 ## 4.2.4 Manage Dataset Accesses
 
@@ -158,7 +158,7 @@ As discussed above, when data of one project is being accessed in the context of
 
 ![Alt](../assets/images/dataset_access_other_project.png)
 
-[Back to top](#dataset-management)
+[Back to top](#4-dataset-management)
 
 ## 4.2.5 Manage Dataset Transfers
 
@@ -178,13 +178,13 @@ As discussed above, when data of one project is being accessed in the context of
 
 ![Alt](../assets/images/dataset_add_transfer_result.png)
 
-[Back to top](#dataset-management)
+[Back to top](#4-dataset-management)
 
 ## 4.2.6 Appendix for VIP user
 
 By clicking *eye button* in the dataset overview box, VIP user can enter *Change permission* page.
 The management of the dataset's access permissions is alike to project's permissions described in
-[**3.2.7 VIP appendix**](/manual/project_management_details/#327-appendix-for-vip-users).
+[**3.2.7 VIP appendix**](project_management_details.md#327-appendix-for-vip-users).
 
 <!-- This section describes management of the dataset's access permissions. If VIP user (check [users groups here](/manual/#what-are-the-users-groups)) owns a dataset or is its Local Custodian, he can grant other users with permissions for the dataset.
 
@@ -205,4 +205,4 @@ By clicking *eye button* in the dataset overview box, VIP user can enter *Change
 - **Protected**
   Grant the right to access protected information on this dataset. -->
 
-[Back to top](#dataset-management)
+[Back to top](#4-dataset-management)

@@ -5,7 +5,7 @@ name: "6 Definitions Management"
 
 
 <small>
-[User guide](/manual/daisy) &raquo; [*Definitions (**GO BACK to main page**)*](/manual/daisy/#definitions)
+[User guide](daisy.md) &raquo; [*Definitions (**GO BACK to main page**)*](daisy.md#24-definitions)
 </small>
 
 # 6 Definitions Management
