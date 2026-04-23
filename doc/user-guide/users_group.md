@@ -14,6 +14,7 @@ Below we specified the users privileges:
 <!-- This is the default role assigned to all users. All DAISY users can view all Dataset, Project, Contract and Definitions. The document attachments of records are excluded from this view permission. -->
 - **Standard user**
 The default group that users are assigned to. All DAISY standard users can:
+
 	- view any *Dataset*, *Project*, *Contract* or *Definition* (further called *modules* or *records*). The documents attachments of the records are protected, thus excluded from the view permission.
 	- create any module.
 	- edit and delete any module the user has created.
@@ -22,6 +23,7 @@ The default group that users are assigned to. All DAISY standard users can:
 
 - **VIP user**
 The research principle investigators are typically assigned to this group. VIP users have:
+
 	- all privileges (view, add, edit, remove) on the records they own, meaning the records where the user has been appointed as the *Local Custodian* or the projects he created.
 	- view and manage the protected documents attachments of modules he owns.
 	- grant other users with permissions on the datasets and projects he owns (VIP is the project's administrator).
@@ -30,6 +32,7 @@ NOTE: Being a local custodian or owner extends the users permissions in the simi
 
 - **Legal user**
 The users assigned to this group can are allowed to manage *Contract* records. Legal personnel can:
+
 	- add, view, edit and remove any contract.
 	- grant the other users with an access for the contract.
 	- view all records in DAISY and manage their documents attachments.

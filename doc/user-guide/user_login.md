@@ -13,6 +13,7 @@ Upon successful installation of DAISY, go to the web address
 You can also check [DAISY demo deployment](https://daisy-demo.elixir-luxembourg.org/). -->
 
 Based on the authentication configuration made for your deployment, you may log in by:
+
 * the user definitions in an existing LDAP directory, e.g. institutional/uni credentials.
 * the user definitions maintained within the DAISY database.
 

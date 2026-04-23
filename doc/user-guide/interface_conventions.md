@@ -29,10 +29,12 @@ Clicking the *DETAILS* button in the search result box takes you to *Details Pag
 ![Alt](../assets/images/details_page.png "Details page of a Project in DAISY")<small>Details page of a Project in DAISY</small>
 
 You may end up on an *Entity Details Page* through:
+
 - the *DETAILS* link of a search results in a search page.
 - the links on details pages of other (linked) entities in DAISY.
 
 Each Details Page is headed with an **entity overview box** listing some of the entity's attributes (e.g. local custodians, start date) and allows to modify the entity. Depending on users permissions (see [users groups](users_group.md)) in the right bottom corner of the overview box you may see:
+
 - permissions button (denoted with an eye icon),
 - edit entity button (denoted with a pencil icon),
 - remove entity button (denoted with a bin icon).
@@ -42,6 +44,7 @@ Each Details Page is headed with an **entity overview box** listing some of the 
 Beneath the entity overview box there are several information boxes, which display the further details of the entity (e.g. personnel, ethics).
 
 If you have edit permissions for the entity, then at the top right corner of particular detail boxes you will see an **add detail button (denoted with a plus sign)**. Via this button you can do the following:
+
 - create links to other entities e.g.  link contacts with projects.
 - create (inline) detail records to the current entity e.g. one or more publications to a project.
 

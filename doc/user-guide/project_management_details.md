@@ -126,6 +126,7 @@ Contacts can be unlinked from a Project by clicking on the trash icon that will 
 ### 3.2.5 Manage Project Documentation
 
 Document management is done via the *Documents* detail box. You can attach documents to a project record in DAISY. Some examples of the documents are listed below:
+
   - Project Proposal
   - Ethics Approvals
   - Templates of Consent Form

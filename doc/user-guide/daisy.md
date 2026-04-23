@@ -18,6 +18,7 @@ Upon successful installation of DAISY, go to the web address
 You can also check [DAISY demo deployment](https://daisy-demo.elixir-luxembourg.org/). -->
 
 Based on the authentication configuration made for your deployment, you may log in by:
+
 * the user definitions in an existing LDAP directory, e.g. institutional/uni credentials.
 * the user definitions maintained within the DAISY database.
 
@@ -54,10 +55,12 @@ Clicking the *DETAILS* button in the search result box takes you to *Details Pag
 ![Alt](../assets/images/details_page.png "Details page of a Project in DAISY")<small>Details page of a Project in DAISY</small>
 
 You may end up on an *Entity Details Page* through:
+
 * the *DETAILS* link of a search results in a search page.
 * the links on details pages of other (linked) entities in DAISY.
 
 Each Details Page is headed with an **entity overview box** listing some of the entity's attributes (e.g. local custodians, start date) and allows to modify the entity. Depending on users permissions (see [users groups](#3-different-types-of-daisy-users)) in the right bottom corner of the overview box you may see:
+
 * permissions button (denoted with an eye icon),
 * edit entity button (denoted with a pencil icon),
 * remove entity button (denoted with a bin icon).
@@ -65,6 +68,7 @@ Each Details Page is headed with an **entity overview box** listing some of the 
 Beneath the entity overview box there are several information boxes, which display the further details of the entity (e.g. personnel, ethics).
 
 If you have edit permissions for the entity, then at the top right corner of particular detail boxes you will see an **add detail button (denoted with a plus sign)**. Via this button you can do the following:
+
 * create links to other entities e.g.  link contacts with projects.
 * create (inline) detail records to the current entity e.g. one or more publications to a project.
 
@@ -122,6 +126,7 @@ In DAISY, a records owner, however, is not the one with the utmost privileges. D
 
 - **Standard user**
 The default type of user is a standard user. Standard users can:
+
 	- view any *Dataset*, *Project*, *Contract* or *Definition* record in DAISY, including those created by others. The documents attachments on the records are, however, protected, and they are not visible to other standard users.
 	- create records of their own.
 	- edit and delete records of their own.
@@ -129,12 +134,14 @@ The default type of user is a standard user. Standard users can:
 - **VIP user**
 The research principle investigators are VIP type users. Whenever a *Dataset*, *Project*, *Contract*  record gets created in DAISY, a VIP user **must be designated** as the record's **Local Custodian**. Records cannot be created without a local custodian.
 In addition to the privileges of the standard user, the VIP Users have the following rights:
+
 	- view, edit and delete records under his custodianship,
 	- view and manage the document attachments of records under their custodianship,
 	- grant other users permissions on the records under his custodianship.
 
 - **Legal user**
 The users assigned to this group can are allowed to manage *Contract* records. Legal personnel can:
+
 	- add, view, edit and remove any contract.
 	- grant the other users with an access for the contract.
 	- view all records in DAISY and manage their documents attachments.

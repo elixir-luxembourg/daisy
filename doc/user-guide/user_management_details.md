@@ -11,11 +11,13 @@ name: "Users Groups and Permissions"
 # Users Groups and Permissions
 
 DAISY is intended to be used mostly by three categories of end users in a biomedical research institutions:
+
   - Research staff (e.g. principle investigators, lab members)
   - Legal support team
   - IT and data management specialists
 
 Above categories are assigned to particular DAISY **user groups**, which support the control of records access:
+
   -  **Standard**
       This is the default group that users are mainly assigned to. All DAISY users can view all *Dataset*, *Project*, *Contract* and *Definitions* (*Cohorts*, *Partners*, *Contacts*). The document attachments of the records are excluded from this view permission.
 
@@ -29,6 +31,7 @@ Above categories are assigned to particular DAISY **user groups**, which support
       This role would designed to an external person, who is given view-only temporary access to all DAISY records. This is typically happening during an audit scenario.
 
 Inside the group a user can be assigned with a specific **role**, which specifies his project's permissions:
+
   - Project's owner
   - Local Custodian
   - Regular user

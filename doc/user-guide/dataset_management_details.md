@@ -33,6 +33,7 @@ name: "4 Dataset Management"
 ## 4.2 Manage Dataset Details
 
 Dataset entity details box are displayed in dataset page, where you can add, edit or remove following details:
+
 - Data declarations
 - Legal bases
 - Storages
