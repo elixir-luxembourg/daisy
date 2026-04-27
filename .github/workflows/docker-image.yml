@@ -38,11 +38,8 @@ jobs:
           flavor: |
             latest=${{ github.ref == 'refs/heads/master' }}
           tags: |
-            # PR to develop → daisy:pr-42
             type=ref,event=pr
-            # merge to develop → daisy:develop
             type=ref,event=branch
-            # release tag → daisy:v1.2.3
             type=semver,pattern={{version}}
 
       - name: Build and push Docker image
