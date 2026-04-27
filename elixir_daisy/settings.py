@@ -439,23 +439,23 @@ if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
         "LDAP_BASE_DN_WITH_PRINCIPAL_USER", default=None
     )
     ldap_users = env.list("AUTH_LDAP_ALLOWED_USERS", default=[])
-    ldap_filter = env("AUTH_LDAP_FILTER_USERS", default="")
+    LDAP_USERS_FILTER = env("AUTH_LDAP_FILTER_USERS", default="")
     for user_principal_name in ldap_users:
         ldap_search.append(
             LDAPSearch(
                 LDAP_BASE_DN_WITH_PRINCIPAL_USER,
                 ldap.SCOPE_SUBTREE,
-                ldap_filter.format(user_principal_name=user_principal_name),
+                LDAP_USERS_FILTER.format(user_principal_name=user_principal_name),
             )
         )
     ldap_ext_users = env.list("AUTH_LDAP_ALLOWED_USERS_EXT", default=[])
-    ldap_ext_filter = env("AUTH_LDAP_FILTER_USERS_EXT", default="")
+    LDAP_EXT_USERS_FILTER = env("AUTH_LDAP_FILTER_USERS_EXT", default="")
     for user_principal_name in ldap_ext_users:
         ldap_search.append(
             LDAPSearch(
                 LDAP_BASE_DN_WITH_PRINCIPAL_USER,
                 ldap.SCOPE_SUBTREE,
-                ldap_ext_filter.format(user_principal_name=user_principal_name),
+                LDAP_EXT_USERS_FILTER.format(user_principal_name=user_principal_name),
             )
         )
     AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(*ldap_search)

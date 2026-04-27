@@ -31,10 +31,7 @@ DAISY loads configuration from `.env.{ENVIRONMENT}` files (default: `.env.develo
 Then start services with:
 
 ```bash
-# for stage
-ENVIRONMENT=staging docker compose up -d
-# for prod
-ENVIRONMENT=production docker compose up -d
+docker compose up -d
 ```
 
 See [administration.md](administration.md#environment-variables-reference) for all available settings.

@@ -2,6 +2,22 @@
 
 set -euo pipefail
 
+# Prefer DATABASE_URL when it is available, then allow explicit DB_* overrides below.
+if [ -n "${DATABASE_URL:-}" ]; then
+    DB_STRING="${DATABASE_URL#postgres://}"
+    DB_STRING="${DB_STRING#postgresql://}"
+
+    DB_USER_PASS="${DB_STRING%%@*}"
+    DB_USER="${DB_USER_PASS%%:*}"
+    DB_PASSWORD="${DB_USER_PASS#*:}"
+
+    DB_HOST_PORT_DB="${DB_STRING#*@}"
+    DB_HOST_PORT="${DB_HOST_PORT_DB%%/*}"
+    DB_HOST="${DB_HOST_PORT%%:*}"
+    DB_PORT="${DB_HOST_PORT#*:}"
+    DB_NAME="${DB_HOST_PORT_DB#*/}"
+fi
+
 # Configuration
 BACKUP_DIR="${BACKUP_DIR:-../backups}"     # Directory to store backups
 DB_HOST="${DB_HOST:-db}"                   # PostgreSQL host
