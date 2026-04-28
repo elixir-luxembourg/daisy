@@ -48,7 +48,7 @@ nav:
       - DAISY Overview: user-guide/daisy.md
       - Interface Conventions: user-guide/interface_conventions.md
       - Login: user-guide/user_login.md
-      - Legal Basis: user-guide/legal_basis.md
+      - GDPR Compliance: user-guide/gdpr_compliance.md
       - Project Management: user-guide/project_management_details.md
       - Dataset Management: user-guide/dataset_management_details.md
       - Contract Management: user-guide/contract_management_details.md
