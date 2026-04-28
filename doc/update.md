@@ -156,3 +156,6 @@ docker compose up -d
    This automatically loads env file. You can override with `ENV_FILE` if needed.
 
 5. **Remove old settings files**
+
+6. Continue with "Upgrade steps" above (Step 2) to apply migration and index update
+
