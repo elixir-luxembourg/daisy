@@ -111,19 +111,19 @@ Contracts Management module allows for the recording and storage of legal contra
 
  For GDPR compliance the contracts become useful in case of documenting the received datasets source or transferred datasets target. [**Go to Contracts Management**](contract_management_details.md)
 
-## 2.4 Data Access Committees
-
-Data Access Committees (DACs) manage the review and approval of data access requests for datasets. A DAC is always created under a *Contract* (and thus a *Project*) and lists the committee members responsible for evaluating access. Datasets can be assigned to a DAC to indicate which data falls under its governance.
-[**Go to DAC Management**](dac_management_details.md)
-
-## 2.5 Notifications
+## 2.4 Notifications
 
 DAISY automatically notifies local custodians before key dates are reached — project end dates, data retention deadlines, document expiry dates, and expiring access grants. Notifications are delivered in-app and optionally by email. Each user can configure how far in advance they are notified and which channels are active.
 [**Go to Notifications**](notifications.md)
 
-## 2.6 Definitions
-Definitions Management module allows the maintenance of secondary entities which are used when defining contracts, projects or datasets. Users can manage cohorts, partner institutes and contact persons via the definitions module.
+## 2.5 Definitions
+Definitions Management module allows the maintenance of secondary entities which are used when defining contracts, projects or datasets. Users can manage cohorts, partner institutes, contact persons, and data access committees via the definitions module.
 [**Go to Definitions Management**](definitions_management_details.md)
+
+### Data Access Committees
+
+Data Access Committees (DACs) manage the review and approval of data access requests for datasets. A DAC is always created under a *Contract* (and thus a *Project*) and lists the committee members responsible for evaluating access. Datasets can be assigned to a DAC to indicate which data falls under its governance.
+[**Go to DAC Management**](dac_management_details.md)
 
 [Back to top](#daisy-user-guide)
 

@@ -5,12 +5,12 @@ name: "6 Definitions Management"
 
 
 <small>
-[User guide](daisy.md) &raquo; [*Definitions (**GO BACK to main page**)*](daisy.md#24-definitions)
+[User guide](daisy.md) &raquo; [*Definitions (**GO BACK to main page**)*](daisy.md#25-definitions)
 </small>
 
 # 6 Definitions Management
 
-DAISY *Definitions* module allows for the management of *Contacts*, *Cohorts* and *Partners*.
+DAISY *Definitions* module allows for the management of *Contacts*, *Cohorts*, *Partners*, and *Data Access Committees*.
 
 ## 6.1 Cohorts
 Cohort is a study that collects data and/or bio-samples from a group of participants (e.g. longitudinal case-control or family studies). A cohort is linked to the creation of data and is considered its ultimate source.
@@ -38,3 +38,9 @@ DAISY keeps the contact details (e.g email address, affiliations) of external co
 Standard information is kept on contacts as can be seen in the associated *Editor Page* given below.
 
 ![Alt](../assets/images/contact_edit_form.png)
+
+## 6.4 Data Access Committees
+
+A *Data Access Committee* (DAC) is a committee responsible for reviewing and approving data access requests for one or more datasets. DACs are always linked to a *Contract* and governed by designated local custodians.
+
+[**Go to DAC Management**](dac_management_details.md)

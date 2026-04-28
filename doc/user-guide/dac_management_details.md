@@ -1,6 +1,10 @@
+<small>
+[User guide](daisy.md) &raquo; [Definitions](definitions_management_details.md) &raquo; *Data Access Committees*
+</small>
+
 # Data Access Committee (DAC) Management
 
-A *Data Access Committee* (DAC) is a committee responsible for reviewing and approving data access requests for one or more datasets. In DAISY, a DAC is always linked to a *Contract*, which in turn belongs to a *Project*.
+A *Data Access Committee* (DAC) is a committee responsible for reviewing and approving data access requests for one or more datasets. In DAISY, a DAC is always linked to a *Contract*, which in turn belongs to a *Project*. DACs are managed under the **Definitions** module.
 
 DACs are typically used in biomedical research to govern access to sensitive data — the committee reviews requests and decides who may access which datasets under what conditions.
 
@@ -8,7 +12,7 @@ DACs are typically used in biomedical research to govern access to sensitive dat
 
 A DAC can be created in two ways:
 
-- From the **DACs** menu in the navigation bar — click the add button on the DAC search page.
+- From the **Definitions** menu — navigate to the DACs tab and click the add button.
 - From a **Contract detail page** — scroll to the DACs section and click the add button there. The contract is pre-filled.
 
 When creating a DAC you must provide:
