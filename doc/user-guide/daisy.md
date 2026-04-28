@@ -105,6 +105,11 @@ Any document supporting the legal and ethical basis for data use can be stored i
 Datasets Management module allows for the recording of personal data held by the institution. The dataset may or may not fall in the context of a particular project. DAISY allows datasets to be defined in a granular way; where - if desired - each data subset, called a *data declaration*, can be listed individually. These declarations may list data from a particular partner, data of a particular cohort or data of a particular type.
 [**Go to Dataset Management**](dataset_management_details.md)
 
+### Access Management
+
+DAISY records who has access to each dataset, under what conditions, and for how long. Access records are mandatory for GDPR accountability and carry a full audit trail. Access can be granted to internal users or external contacts, scoped to specific storage locations, and set to expire automatically.
+[**Go to Access Management**](access_management.md)
+
 ## 2.3 Contracts
 
 Contracts Management module allows for the recording and storage of legal contracts of various types that have been signed with partner institutes or suppliers. Consortium agreements, data sharing agreements, material transfer agreements are the examples of the contracts.

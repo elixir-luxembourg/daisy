@@ -159,6 +159,8 @@ As discussed above, when data of one project is being accessed in the context of
 
 ![Alt](../assets/images/dataset_access_other_project.png)
 
+For details on access status lifecycle, audit trail, permissions, and API exposure see [Access Management](access_management.md).
+
 [Back to top](#4-dataset-management)
 
 ## 4.2.5 Manage Dataset Transfers
