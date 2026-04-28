@@ -190,6 +190,7 @@ CELERY_TIMEZONE = "Europe/Luxembourg"
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = env("STATIC_URL", default="/static/")
 STATIC_ROOT = env("STATIC_ROOT", default=os.path.join(BASE_DIR, "staticfiles"))
+MEDIA_ROOT = env("MEDIA_ROOT", default="/code/medias/")
 SASS_PROCESSOR_ROOT = env("SASS_PROCESSOR_ROOT", default=STATIC_ROOT)
 
 INTERNAL_IPS = env.list("INTERNAL_IPS", default=["127.0.0.1"])
@@ -439,7 +440,7 @@ if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
         "LDAP_BASE_DN_WITH_PRINCIPAL_USER", default=None
     )
     ldap_users = env.list("AUTH_LDAP_ALLOWED_USERS", default=[])
-    LDAP_USERS_FILTER = env("AUTH_LDAP_FILTER_USERS", default=None)
+    LDAP_USERS_FILTER = env("AUTH_LDAP_FILTER_USERS", default="")
     for user_principal_name in ldap_users:
         ldap_search.append(
             LDAPSearch(
@@ -449,7 +450,7 @@ if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
             )
         )
     ldap_ext_users = env.list("AUTH_LDAP_ALLOWED_USERS_EXT", default=[])
-    LDAP_EXT_USERS_FILTER = env("AUTH_LDAP_FILTER_USERS_EXT", default=None)
+    LDAP_EXT_USERS_FILTER = env("AUTH_LDAP_FILTER_USERS_EXT", default="")
     for user_principal_name in ldap_ext_users:
         ldap_search.append(
             LDAPSearch(
@@ -469,7 +470,7 @@ if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
     LDAP_USERS_IMPORT_USERNAME_ATTR = env(
         "LDAP_USERS_IMPORT_USERNAME_ATTR", default="userprincipalname"
     )
-    AUTH_LDAP_USER_DN_TEMPLATE = env("AUTH_LDAP_USER_DN_TEMPLATE", default="")
+    AUTH_LDAP_USER_DN_TEMPLATE = env("AUTH_LDAP_USER_DN_TEMPLATE", default=None)
 
 # list of usernames of users that will imported and set as pi when
 # import_users is used to bulk create users from an LDAP server

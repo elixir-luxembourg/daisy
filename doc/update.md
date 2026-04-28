@@ -1,5 +1,17 @@
 # Updating the Project
 
+## Docker Compose Setup
+
+All environments use a single `docker-compose.yaml`. The image for `web`, `worker`, and `beat` is set via `APP_IMAGE` in the root `.env`:
+
+| Environment | `APP_IMAGE` | Command |
+|---|---|---|
+| Development | `daisy:local` (default) | `docker compose up --build -d` |
+| Staging | `ghcr.io/elixir-luxembourg/daisy:<pr-tag>` | `docker compose pull && docker compose up -d` |
+| Production | `ghcr.io/elixir-luxembourg/daisy:<release-tag>` | `docker compose pull && docker compose up -d` |
+
+CI builds and pushes images via GitHub Actions — release tags → production image, PRs to `develop` → staging image.
+
 ## Database Backup Before Upgrade
 
 Create a database backup before upgrading:
@@ -16,11 +28,17 @@ docker compose exec backup sh /code/scripts/db.sh backup
     git pull origin master
     ```
 
-2. **Rebuild Docker Images:**
+2. **Update the application image:**
 
-    ```bash
-    docker compose build
-    ```
+    - Development (build locally):
+      ```bash
+      docker compose up --build -d
+      ```
+    - Staging/Production (pull prebuilt image — `APP_IMAGE` must be set in `.env`):
+      ```bash
+      docker compose pull
+      docker compose up -d
+      ```
 
 3. **Apply Database Migrations:**
 
