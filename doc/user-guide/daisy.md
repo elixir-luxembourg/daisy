@@ -110,6 +110,11 @@ Datasets Management module allows for the recording of personal data held by the
 DAISY records who has access to each dataset, under what conditions, and for how long. Access records are mandatory for GDPR accountability and carry a full audit trail. Access can be granted to internal users or external contacts, scoped to specific storage locations, and set to expire automatically.
 [**Go to Access Management**](access_management.md)
 
+### Dataset Publishing
+
+Datasets can be published to external systems — a data catalog or a REMS instance — making them discoverable and enabling data access request workflows. Publishing is managed through *Exposure* records and is restricted to Data Stewards. Each published dataset receives a permanent ELU accession number used as its external identifier.
+[**Go to Dataset Publishing**](exposure_management.md)
+
 ## 2.3 Contracts
 
 Contracts Management module allows for the recording and storage of legal contracts of various types that have been signed with partner institutes or suppliers. Consortium agreements, data sharing agreements, material transfer agreements are the examples of the contracts.
