@@ -33,7 +33,7 @@ You may end up on an *Entity Details Page* through:
 - the *DETAILS* link of a search results in a search page.
 - the links on details pages of other (linked) entities in DAISY.
 
-Each Details Page is headed with an **entity overview box** listing some of the entity's attributes (e.g. local custodians, start date) and allows to modify the entity. Depending on users permissions (see [users groups](users_group.md)) in the right bottom corner of the overview box you may see:
+Each Details Page is headed with an **entity overview box** listing some of the entity's attributes (e.g. local custodians, start date) and allows to modify the entity. Depending on users permissions (see [users groups](user_management_details.md)) in the right bottom corner of the overview box you may see:
 
 - permissions button (denoted with an eye icon),
 - edit entity button (denoted with a pencil icon),

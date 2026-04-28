@@ -6,13 +6,13 @@ name: "Users Groups and Permissions"
 
 # Users Groups and Permissions
 
-DAISY is used by three main categories of end users in a biomedical research institution:
+Access control in DAISY works at two levels.
 
-- Research staff (e.g. principal investigators, lab members)
-- Legal support team
-- IT and data management specialists
+**User groups** are system-wide roles assigned to a user once. They determine what the user can do across the entire DAISY instance — for example, whether they can edit contracts, access protected documents, or only view records.
 
-These categories map to DAISY **user groups**, which control what actions a user can perform across the system.
+**Record-level roles** are assigned on individual records (Projects, Datasets, Contracts, DACs). They grant a user elevated permissions on that specific record, independently of their group. Currently the only record-level role is *Local Custodian*, but additional roles may be introduced in future versions.
+
+These two mechanisms work together: the user group sets a baseline, and record-level roles extend permissions where needed on specific records.
 
 ## User Groups
 
@@ -66,26 +66,9 @@ Auditors **cannot** create, edit, delete, or manage permissions on any record.
 The back-end administrator account. Superusers have unrestricted access to all DAISY records and application settings. This account is managed directly by the system administrator.
 
 ---
+## Record-level roles
 
-## Permission Types
-
-Beyond the standard view/add permissions, DAISY defines four additional permission types:
-
-| Permission | Description |
-|-----------|-------------|
-| **Edit** | Can modify the properties of a record. |
-| **Delete** | Can delete a record. |
-| **Protected** | Can view and edit protected elements of a record (e.g. document attachments, sensitive fields). |
-| **Admin** | Can grant and revoke permissions on a record for other users. |
-
-These permissions apply at two levels:
-
-- **Group level (global):** Granted to all members of a user group across all records (e.g. Data Stewards have edit permissions everywhere).
-- **Instance level:** Granted to specific users on a specific record (e.g. a VIP user who is Local Custodian of a particular project).
-
----
-
-## Local Custodian Role
+### Local Custodian Role
 
 *Local Custodian* is a role that can be assigned on a *Project*, *Dataset*, *Contract*, or *DAC* record. It grants instance-level permissions to the assigned user. The effective permissions depend on the user's group:
 
@@ -98,7 +81,7 @@ These permissions apply at two levels:
 
 ---
 
-## Permission Scope: Objects
+## Permissions
 
 Permissions are managed on the following primary objects:
 
@@ -113,7 +96,7 @@ Other record types (*DataDeclaration*, *LegalBasis*, *Share*, *DataLocation*, *D
 
 ---
 
-## Permission Inheritance
+### Permission Inheritance
 
 DAISY uses permission inheritance so that access granted on a parent record automatically extends to its child records. The inheritance chain is:
 
@@ -142,7 +125,7 @@ Instance-level permissions granted directly on a record always take precedence; 
 
 ---
 
-## Summary Table
+### Summary Table
 
 | Group | View all records | Edit | Delete | Protected elements | Admin (grant permissions) |
 |-------|:---:|:---:|:---:|:---:|:---:|
@@ -154,3 +137,21 @@ Instance-level permissions granted directly on a record always take precedence; 
 | **Auditor** | All | — | — | All | — |
 
 *"Own records" means records where the user is assigned as Local Custodian or is the creator.*
+
+---
+
+## Permission Types
+
+Beyond the standard view/add permissions, DAISY defines four additional permission types:
+
+| Permission | Description |
+|-----------|-------------|
+| **Edit** | Can modify the properties of a record. |
+| **Delete** | Can delete a record. |
+| **Protected** | Can view and edit protected elements of a record (e.g. document attachments, sensitive fields). |
+| **Admin** | Can grant and revoke permissions on a record for other users. |
+
+These permissions apply at two levels:
+
+- **Group level (global):** Granted to all members of a user group across all records (e.g. Data Stewards have edit permissions everywhere).
+- **Instance level:** Granted to specific users on a specific record (e.g. a VIP user who is Local Custodian of a particular project).
