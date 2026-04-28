@@ -10,7 +10,10 @@ Access control in DAISY works at two levels.
 
 **User groups** are system-wide roles assigned to a user once. They determine what the user can do across the entire DAISY instance — for example, whether they can edit contracts, access protected documents, or only view records.
 
-**Record-level roles** are assigned on individual records (Projects, Datasets, Contracts, DACs). They grant a user elevated permissions on that specific record, independently of their group. Currently the only record-level role is *Local Custodian*, but additional roles may be introduced in future versions.
+**Record-level roles** are assigned on individual records (Projects, Datasets, Contracts, DACs). They grant a user elevated permissions on that specific record, independently of their group.
+
+!!! note
+    Currently the only record-level role is *Local Custodian*, but additional roles may be introduced in future versions.
 
 These two mechanisms work together: the user group sets a baseline, and record-level roles extend permissions where needed on specific records.
 

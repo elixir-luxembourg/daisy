@@ -30,9 +30,11 @@ An *Exposure* is the record that connects a specific dataset to a specific endpo
 - who created the exposure and when
 - whether to attach access requests as PDF to REMS remarks
 
-Only one active exposure can exist per dataset–endpoint combination. If a dataset needs to be re-exposed to the same endpoint (e.g. after a form change), the existing exposure must first be deprecated.
+!!! warning
+    Only one active exposure can exist per dataset–endpoint combination. If a dataset needs to be re-exposed to the same endpoint (e.g. after a form change), the existing exposure must first be deprecated.
 
-**Only Data Stewards** can create, edit, or deprecate exposures.
+!!! info "Who can manage exposures"
+    Only **Data Stewards** can create, edit, or deprecate exposures.
 
 ## Publication Status
 
@@ -53,6 +55,9 @@ When a dataset is published for the first time — i.e. when its first exposure 
 - is used as the `${entity_id}` in the endpoint's URL pattern, forming the dataset's public URL in the external catalog
 - is used by the DAISY API to identify datasets in responses to external systems
 - cannot be changed after it is assigned
+
+!!! warning
+    The ELU accession number is permanent. Once assigned it cannot be changed, even if the dataset is later deprecated or re-published.
 
 The accession number is also what links an approved REMS application back to the correct dataset in DAISY.
 
@@ -76,4 +81,5 @@ Dataset created
                                                        [Deprecated]
 ```
 
-A deprecated dataset can be re-published by creating a new exposure. The previous deprecated exposure remains in the record history.
+!!! tip
+    A deprecated dataset can be re-published by creating a new exposure. The previous deprecated exposure remains in the record history.

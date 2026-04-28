@@ -35,9 +35,11 @@ Outbound data transfers are recorded in a **Transfer logbook** attached to the r
 
 Every processing activity must have a documented lawful basis before processing begins. DAISY records the Article 6 type, any Article 9 condition, the personal data categories covered, and a free-text justification.
 
-One lawful basis applies per clearly defined purpose. If a project appears to require multiple bases, this is a signal that it contains multiple processing activities that should be split into separate DAISY Projects.
+!!! tip "One project, one purpose"
+    One lawful basis applies per clearly defined purpose. If a project appears to require multiple bases, this is a signal that it contains multiple processing activities that should be split into separate DAISY Projects.
 
-> **Note:** Legal basis is currently documented at the Dataset level. In a future release it will be moved to the Project level, which more precisely reflects the GDPR principle that the lawful basis is tied to the purpose of processing, not to the data itself.
+!!! note
+    Legal basis is currently documented at the Dataset level. In a future release it will be moved to the Project level, which more precisely reflects the GDPR principle that the lawful basis is tied to the purpose of processing, not to the data itself.
 
 ## Evidence and Accountability
 

@@ -139,7 +139,9 @@ As per GDPR, the storage of personal data is considered as a `data processing` a
 ## 4.2.4 Manage Dataset Accesses
 
 As per GDPR, any access to personal data held in an institution needs to be recorded. The *Accesses detail box* allows you to do this.
-**IMPORTANT NOTE: Before recording access, make sure you have recorded storage locations of data.**
+
+!!! warning
+    Before recording access, make sure you have recorded storage locations of data. Access records are scoped to specific storage locations.
 
 <mark>In order to add a new access record:</mark>
 

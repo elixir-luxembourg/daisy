@@ -20,7 +20,8 @@ Each access record ties together:
 
 ## Remarks are mandatory
 
-Every access record requires a **Remarks** field explaining why access was given and under what conditions. This field is not optional — DAISY will not save an access record without it. When the status of a record changes (e.g. upon termination), the remarks should be updated to reflect the reason.
+!!! warning
+    Every access record requires a **Remarks** field explaining why access was given and under what conditions. DAISY will not save an access record without it. When the status of a record changes (e.g. upon termination), the remarks should be updated to reflect the reason.
 
 ## Access Status
 
@@ -35,7 +36,8 @@ Access records follow a lifecycle tracked by a status field:
 
 Status changes are manual, with one automated exception: when a **Grant expires on** date is set and that date passes, DAISY automatically sets the status to *Terminated* and records "Automatically terminated" in the remarks. This happens as a scheduled task and is reflected in the audit log.
 
-Deleting an access record in DAISY does not physically remove it — it sets the status to *Terminated* instead, preserving the full record for accountability purposes.
+!!! info
+    Deleting an access record in DAISY does not physically remove it — it sets the status to *Terminated* instead, preserving the full record for accountability purposes.
 
 ## Audit Trail
 
