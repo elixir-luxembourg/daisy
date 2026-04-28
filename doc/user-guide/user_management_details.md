@@ -18,7 +18,7 @@ These two mechanisms work together: the user group sets a baseline, and record-l
 
 ### Standard
 
-The default group assigned to all users. Standard users can:
+The default group assigned to all users. This covers most research staff — lab members, PhD students, postdocs, and other collaborators who participate in projects and need to document data, but do not have managerial or institutional oversight responsibilities. Standard users can:
 
 - View any *Project*, *Dataset*, *Contract*, and *Definition* (*Cohorts*, *Partners*, *Contacts*).
 - Create new records of any type.
