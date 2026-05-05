@@ -1,0 +1,71 @@
+site_name: DAISY Documentation
+site_description: Data Information System for GDPR compliance in biomedical research
+site_url: https://elixir-luxembourg.github.io/daisy/
+repo_url: https://github.com/elixir-luxembourg/daisy
+repo_name: elixir-luxembourg/daisy
+
+docs_dir: doc
+
+theme:
+  name: material
+  custom_dir: doc/custom_theme
+  palette:
+    - scheme: default
+      primary: custom
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: orange
+      accent: blue
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  logo: logos/ELIXIR_LU.png
+  favicon: logos/favicon.png
+  features:
+    - navigation.top
+    - navigation.footer
+    - navigation.path
+    - search.highlight
+  font:
+    text: Lato
+
+extra_css:
+  - css/extra.css
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - User Guide:
+      - DAISY Overview: user-guide/daisy.md
+      - Interface Conventions: user-guide/interface_conventions.md
+      - Login: user-guide/user_login.md
+      - Project Management: user-guide/project_management_details.md
+      - Dataset Management: user-guide/dataset_management_details.md
+      - Access Management: user-guide/access_management.md
+      - Dataset Publishing: user-guide/exposure_management.md
+      - Contract Management: user-guide/contract_management_details.md
+      - Definitions Management: user-guide/definitions_management_details.md
+      - Data Access Committees: user-guide/dac_management_details.md
+      - User Management: user-guide/user_management_details.md
+      - Notifications: user-guide/notifications.md
+      - GDPR Compliance: user-guide/gdpr_compliance.md
+  - Deployment:
+      - Docker Setup: deployment.md
+      - Legacy Deployment: legacy-deployment.md
+  - Operations:
+      - Administration: administration.md
+      - Backup & Restore: backup.md
+      - Updating: update.md
+  - Integrations: integrations.md
+  - Development:
+      - Development Guide: development.md
+      - API Reference: api.md
