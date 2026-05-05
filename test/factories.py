@@ -1,5 +1,6 @@
 # configure factories from https://factoryboy.readthedocs.io
 import factory
+import tempfile
 from tempfile import NamedTemporaryFile
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -425,7 +426,9 @@ class AbstractDocumentFactory(factory.django.DjangoModelFactory):
     class Params:
         with_file = factory.Trait(
             content=factory.LazyAttribute(
-                lambda o: NamedTemporaryFile(mode="r+b", dir=".", delete=False).name
+                lambda o: NamedTemporaryFile(
+                    mode="r+b", dir=tempfile.gettempdir(), delete=False
+                ).name
             ),
         )
 

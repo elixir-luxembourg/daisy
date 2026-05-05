@@ -190,6 +190,7 @@ CELERY_TIMEZONE = "Europe/Luxembourg"
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = env("STATIC_URL", default="/static/")
 STATIC_ROOT = env("STATIC_ROOT", default=os.path.join(BASE_DIR, "staticfiles"))
+MEDIA_ROOT = env("MEDIA_ROOT", default="/code/medias/")
 SASS_PROCESSOR_ROOT = env("SASS_PROCESSOR_ROOT", default=STATIC_ROOT)
 
 INTERNAL_IPS = env.list("INTERNAL_IPS", default=["127.0.0.1"])
@@ -418,51 +419,58 @@ if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
         "django_auth_ldap.backend.LDAPBackend",
     ] + AUTHENTICATION_BACKENDS
     AUTH_LDAP_SERVER_URI = env("AUTH_LDAP_SERVER_URI", default=None)
-    AUTH_LDAP_BIND_DN = env(
-        "AUTH_LDAP_BIND_DN",
-        default="CN=Normal.User,OU=LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux",
-    )
+
+    if env.bool("AUTH_LDAP_IGNORE_CERT_ERRORS", default=False):
+        ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
+
+    AUTH_LDAP_BIND_DN = env("AUTH_LDAP_BIND_DN", default=None)
     AUTH_LDAP_BIND_PASSWORD = env("AUTH_LDAP_BIND_PASSWORD", default=None)
+
+    # LDAP search
+    LDAP_USERS_IMPORT_SEARCH_DN = env("LDAP_USERS_IMPORT_SEARCH_DN", default=None)
+    LDAP_USERS_IMPORT_FILTER = env("LDAP_USERS_IMPORT_FILTER", default=None)
     ldap_search = [
         LDAPSearch(
-            "OU=LCSB,OU=Rectorate,OU=BoG,OU=UNI-Users,DC=uni,DC=lux",
+            LDAP_USERS_IMPORT_SEARCH_DN,
             ldap.SCOPE_SUBTREE,
-            "(&(userPrincipalName=%(user)s)(mail=*@uni.lu)(objectClass=person))",
+            LDAP_USERS_IMPORT_FILTER,
         )
     ]
+    LDAP_BASE_DN_WITH_PRINCIPAL_USER = env(
+        "LDAP_BASE_DN_WITH_PRINCIPAL_USER", default=None
+    )
     ldap_users = env.list("AUTH_LDAP_ALLOWED_USERS", default=[])
+    LDAP_USERS_FILTER = env("AUTH_LDAP_FILTER_USERS", default="")
     for user_principal_name in ldap_users:
         ldap_search.append(
             LDAPSearch(
-                "OU=UNI-Users,DC=uni,DC=lux",
+                LDAP_BASE_DN_WITH_PRINCIPAL_USER,
                 ldap.SCOPE_SUBTREE,
-                """(&(userPrincipalName=%(user)s)(mail=*@uni.lu)(objectClass=person)
-                (|
-                (userPrincipalName="""
-                + user_principal_name
-                + """)))""",
+                LDAP_USERS_FILTER.format(user_principal_name=user_principal_name),
+            )
+        )
+    ldap_ext_users = env.list("AUTH_LDAP_ALLOWED_USERS_EXT", default=[])
+    LDAP_EXT_USERS_FILTER = env("AUTH_LDAP_FILTER_USERS_EXT", default="")
+    for user_principal_name in ldap_ext_users:
+        ldap_search.append(
+            LDAPSearch(
+                LDAP_BASE_DN_WITH_PRINCIPAL_USER,
+                ldap.SCOPE_SUBTREE,
+                LDAP_EXT_USERS_FILTER.format(user_principal_name=user_principal_name),
             )
         )
     AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(*ldap_search)
+
     AUTH_LDAP_USER_ATTR_MAP = {
         "first_name": "givenName",
         "last_name": "sn",
         "email": "mail",
     }
-    LDAP_USERS_IMPORT_CLASS = env(
-        "LDAP_USERS_IMPORT_CLASS", default="(objectClass=person)"
-    )
+    LDAP_USERS_IMPORT_CLASS = env("LDAP_USERS_IMPORT_CLASS", default="")
     LDAP_USERS_IMPORT_USERNAME_ATTR = env(
         "LDAP_USERS_IMPORT_USERNAME_ATTR", default="userprincipalname"
     )
-    AUTH_LDAP_USER_DN_TEMPLATE = env(
-        "AUTH_LDAP_USER_DN_TEMPLATE",
-        default="CN=%(user)s,OU=LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux",
-    )
-    LDAP_USERS_IMPORT_SEARCH_DN = env(
-        "LDAP_USERS_IMPORT_SEARCH_DN",
-        default="OU=LCSB,OU=Faculties,OU=UNI-Users,DC=uni,DC=lux",
-    )
+    AUTH_LDAP_USER_DN_TEMPLATE = env("AUTH_LDAP_USER_DN_TEMPLATE", default=None)
 
 # list of usernames of users that will imported and set as pi when
 # import_users is used to bulk create users from an LDAP server

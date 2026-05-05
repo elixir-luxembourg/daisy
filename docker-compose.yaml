@@ -1,20 +1,32 @@
+# Shared config for all application containers (web, worker, beat).
+# Image resolution:
+#   - Development: `docker compose up --build` builds from Dockerfile and
+#     tags the result as daisy:local (the APP_IMAGE default).
+#   - Staging/Production: set APP_IMAGE=ghcr.io/elixir-luxembourg/daisy:<tag>
+#     in the root .env, then `docker compose pull && docker compose up`.
+#     Docker Compose will pull the prebuilt image and ignore the build context.
+x-app: &app
+    image: ${APP_IMAGE:-daisy:local}
+    build: .
+    restart: unless-stopped
+    environment:
+        - ENVIRONMENT=${ENVIRONMENT:-development}
+    env_file:
+        - ${ENV_FILE:-.env.development}
+    networks:
+        - daisy_network
+    user: "1000:1000"
+
 services:
     # Web Application
     web:
-        build: .
-        restart: unless-stopped
+        <<: *app
         expose:
             - "5000"
-        environment:
-            - ENVIRONMENT=${ENVIRONMENT:-development}
-        env_file:
-            - ${ENV_FILE:-.env.development}
         volumes:
             - statics:/static
             - solrdata:/solr
             - medias:/code/medias
-        networks:
-            - daisy_network
         depends_on:
             db:
                 condition: service_healthy
@@ -23,7 +35,6 @@ services:
             mq:
                 condition: service_healthy
         command: gunicorn -w 2 -b :5000 --pid /code/gunicorn.pid elixir_daisy.wsgi
-        user: "1000:1000"  # Run as a non-root user
         healthcheck:
             test: ["CMD-SHELL", "curl --fail http://localhost:5000 || exit 1"]
             interval: 10s
@@ -67,9 +78,6 @@ services:
             interval: 10s
             timeout: 5s
             retries: 5
-        depends_on:
-            web:
-                condition: service_healthy
 
     # Full-Text Search (Solr)
     solr:
@@ -121,17 +129,12 @@ services:
 
     # Task Runner (Celery Worker)
     worker:
-        build: .
-        environment:
-            - ENVIRONMENT=${ENVIRONMENT:-development}
-        env_file:
-            - ${ENV_FILE:-.env.development}
+        <<: *app
         depends_on:
             db:
                 condition: service_healthy
             mq:
                 condition: service_healthy
-        restart: unless-stopped
         volumes:
             - medias:/code/medias
         healthcheck:
@@ -139,18 +142,11 @@ services:
             interval: 10s
             timeout: 5s
             retries: 5
-        networks:
-            - daisy_network
         command: "celery -A elixir_daisy.celery_app worker --loglevel=DEBUG"
-        user: "1000:1000"
 
     # Celery Beat
     beat:
-        build: .
-        environment:
-            - ENVIRONMENT=${ENVIRONMENT:-development}
-        env_file:
-            - ${ENV_FILE:-.env.development}
+        <<: *app
         depends_on:
             db:
                 condition: service_healthy
@@ -161,14 +157,13 @@ services:
             interval: 10s
             timeout: 5s
             retries: 5
-        networks:
-            - daisy_network
         command: "celery -A elixir_daisy beat --loglevel=DEBUG --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler"
-        user: "1000:1000"
 
     # Backup Service
     backup:
         image: alpine:3.20.3
+        env_file:
+            - ${ENV_FILE:-.env.development}
         environment:
             - DB_HOST=db
             - DB_PORT=5432

@@ -2,6 +2,9 @@
 
 This guide provides concise instructions for setting up and running the Daisy project using Docker Compose. It includes commands for managing the Django application and other services within the project.
 
+!!! info
+    For legacy deployment (<1.8.1), please refer to the [Legacy deployment and administration manual](legacy-deployment.md).
+
 ## Prerequisites
 
 - **Docker**
@@ -31,10 +34,7 @@ DAISY loads configuration from `.env.{ENVIRONMENT}` files (default: `.env.develo
 Then start services with:
 
 ```bash
-# for stage
-ENVIRONMENT=staging docker compose up -d
-# for prod
-ENVIRONMENT=production docker compose up -d
+docker compose up -d
 ```
 
 See [administration.md](administration.md#environment-variables-reference) for all available settings.
@@ -149,7 +149,7 @@ The application should now be accessible on `https://localhost/`
 
 ## Scheduled Backup with Cron
 
-To ensure the backups are properly set up, please refer to the [Backup manual](backup.md#Scheduled-Backup-with-Cron)
+To ensure the backups are properly set up, please refer to the [Backup manual](backup.md#scheduled-backup-with-cron)
 
 ### Restore Legacy Backup
 
