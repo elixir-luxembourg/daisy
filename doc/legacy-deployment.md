@@ -135,7 +135,7 @@ sudo systemctl enable gunicorn
 
 We use systemd to create two services, celery_worker to run the worker (notifications, indexation, etc) and celery_beat to run the scheduled tasks.
 
-1) Celery worker
+### Celery worker
 
 As daisy user, create the file /home/daisy/config/celery.conf with the following content:
 
@@ -208,7 +208,7 @@ sudo systemctl enable celery_worker
 sudo systemctl start celery_worker  
 ```
 
-2) Celery beat
+### Celery beat
 
 Create the folder /var/run/celerybeat/ as _root_ user.
 Create file /home/daisy/config/celerybeat.conf as _daisy_ user with the following content:
@@ -552,91 +552,93 @@ If you want to move to the newest release of DAISY, do the following.
 
 1) Stop services, create a database and application backup.
 
-As root user:
+    As root user:
 
-```bash
-systemctl stop gunicorn
-systemctl stop celery_worker
-systemctl stop celery_beat 
-su -c 'PGPASSWORD="<PASSWORD_OF_POSTGRES_USER>" pg_dump daisy --port=5432 --username=daisy --clean > daisy_dump.sql' - daisy 
-tar -cvf /tmp/daisy.tar /home/daisy 
-```
+    ```bash
+    systemctl stop gunicorn
+    systemctl stop celery_worker
+    systemctl stop celery_beat 
+    su -c 'PGPASSWORD="<PASSWORD_OF_POSTGRES_USER>" pg_dump daisy --port=5432 --username=daisy --clean > daisy_dump.sql' - daisy 
+    tar -cvf /tmp/daisy.tar /home/daisy 
+    ```
 
-Once you have have created the tar ball of the application directory and the postgres dump, then you may proceed to update.
+    Once you have have created the tar ball of the application directory and the postgres dump, then you may proceed to update.
 
 2) Get the latest Daisy release.
 
-As daisy user:
+    As daisy user:
 
-```bash
-cd /home/daisy/daisy
-git checkout -- web/static/vendor/package-lock.json
-git checkout master
-git pull
+    ```bash
+    cd /home/daisy/daisy
+    git checkout -- web/static/vendor/package-lock.json
+    git checkout master
+    git pull
 
 
-cd /home/daisy/daisy/web/static/vendor/
-npm ci
-```
+    cd /home/daisy/daisy/web/static/vendor/
+    npm ci
+    ```
 
-As root user:
+    As root user:
 
-```bash
-/usr/local/bin/pip3.9 install -e /home/daisy/daisy --upgrade
-```
+    ```bash
+    /usr/local/bin/pip3.9 install -e /home/daisy/daisy --upgrade
+    ```
 
 3) Update the database and solr schemas, collect static files.
 
-As daisy user:
+    As daisy user:
 
-```bash
-cd /home/daisy/daisy
-python3.9 manage.py migrate && python3.9 manage.py build_solr_schema -c /var/solr/data/daisy/conf/ -r daisy && yes | python3.9 manage.py clear_index && yes "yes" | python3.9 manage.py collectstatic;
-```
+    ```bash
+    cd /home/daisy/daisy
+    python3.9 manage.py migrate && python3.9 manage.py build_solr_schema -c /var/solr/data/daisy/conf/ -r daisy && yes | python3.9 manage.py clear_index && yes "yes" | python3.9 manage.py collectstatic;
+    ```
 
 4) Reload initial data (optional).
 
+    **IMPORTANT NOTE:** The initial data package provides some default values for various lookup lists e.g. data sensitivity classes, document or data types.  If, while using DAISY, you have customized these default lists, please keep in mind that running the ``load_initial_data`` command
+    during update will re-introduce those default values. If this is not desired, then please skip the reloading of initial data step during your update. You manage lookup lists through the application interface.
 
-**IMPORTANT NOTE:** The initial data package provides some default values for various lookup lists e.g. data sensitivity classes, document or data types.  If, while using DAISY, you have customized these default lists, please keep in mind that running the ``load_initial_data`` command
-during update will re-introduce those default values. If this is not desired, then please skip the reloading of initial data step during your update. You manage lookup lists through the application interface.<br/><br/>
+    As daisy user:
 
-As daisy user:
-```bash
-cd /home/daisy/daisy/core/fixtures/
-wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json -O edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json -O hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json -O hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json -O hgnc.json
+    ```bash
+    cd /home/daisy/daisy/core/fixtures/
+    wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/edda.json -O edda.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hpo.json -O hpo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hdo.json -O hdo.json && wget https://git-r3lab.uni.lu/pinar.alper/metadata-tools/raw/master/metadata_tools/resources/hgnc.json -O hgnc.json
 
-cd /home/daisy/daisy
-python3.9 manage.py load_initial_data
-```
-  
-**IMPORTANT NOTE:** This step can take several minutes to complete.
+    cd /home/daisy/daisy
+    python3.9 manage.py load_initial_data
+    ```
 
+    **IMPORTANT NOTE:** This step can take several minutes to complete.
 
 5) Reimport the users (optional).
 
-If LDAP was used to import users, they have to be imported again.
-As daisy user:
-```bash
-python3.9 manage.py import_users
-```
+    If LDAP was used to import users, they have to be imported again.
+
+    As daisy user:
+
+    ```bash
+    python3.9 manage.py import_users
+    ```
 
 6) Rebuild Solr search index.
 
-As daisy user:
- ```bash
- cd /home/daisy/daisy
- python3.9 manage.py rebuild_index
-```
+    As daisy user:
+
+    ```bash
+    cd /home/daisy/daisy
+    python3.9 manage.py rebuild_index
+    ```
 
 7) Restart services.
 
-As root user:
+    As root user:
 
-```bash
-systemctl start gunicorn
-systemctl start celery_worker
-systemctl start celery_beat 
-```
+    ```bash
+    systemctl start gunicorn
+    systemctl start celery_worker
+    systemctl start celery_beat 
+    ```
 # Restoring backup of Daisy
 First, make sure you have successfully backed up your Daisy deployment - see first section of chapter Updating Daisy.
 Your backup .tar file should contain both the dump of Postgresql database and everything from `/home/daisy` directory.

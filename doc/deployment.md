@@ -2,6 +2,9 @@
 
 This guide provides concise instructions for setting up and running the Daisy project using Docker Compose. It includes commands for managing the Django application and other services within the project.
 
+!!! info
+    For legacy deployment (<1.8.1), please refer to the [Legacy deployment and administration manual](legacy-deployment.md).
+
 ## Prerequisites
 
 - **Docker**
