@@ -26,8 +26,6 @@ See also our
 - [Management and administration manual](doc/administration.md) for regular maintenance tasks including starting/stopping the services, import/export of data, inspecting logs and clean up.
 - [Development manual](doc/development.md) for steps to setup the development environment and guidance on how to contribute.
 
-For legacy deployment (<1.8.1), please refer to the [Legacy deployment and administration manual](doc/legacy-deployment.md).
-
 ### Acknowledgement
 
 This work was supported by [ELIXIR Luxembourg](https://elixir-luxembourg.org/).
