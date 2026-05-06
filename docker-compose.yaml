@@ -27,6 +27,7 @@ services:
             - statics:/static
             - solrdata:/solr
             - medias:/code/medias
+            - ./log:/code/log
         depends_on:
             db:
                 condition: service_healthy
@@ -34,7 +35,7 @@ services:
                 condition: service_healthy
             mq:
                 condition: service_healthy
-        command: gunicorn -w 2 -b :5000 --pid /code/gunicorn.pid elixir_daisy.wsgi
+        command: sh -c "gunicorn -w 2 -b :5000 --pid /code/gunicorn.pid --log-level ${GUNICORN_LOGLEVEL:-info} elixir_daisy.wsgi"
         healthcheck:
             test: ["CMD-SHELL", "curl --fail http://localhost:5000 || exit 1"]
             interval: 10s
@@ -137,6 +138,7 @@ services:
                 condition: service_healthy
         volumes:
             - medias:/code/medias
+            - ./log:/code/log
         healthcheck:
             test: [ "CMD-SHELL", "celery -A elixir_daisy.celery_app inspect ping" ]
             interval: 10s
@@ -152,6 +154,8 @@ services:
                 condition: service_healthy
             mq:
                 condition: service_healthy
+        volumes:
+            - ./log:/code/log
         healthcheck:
             test: [ "CMD-SHELL", "celery -A elixir_daisy.celery_app inspect ping" ]
             interval: 10s
