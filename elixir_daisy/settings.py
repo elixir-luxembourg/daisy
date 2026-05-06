@@ -43,6 +43,7 @@ SESSION_COOKIE_SECURE = env.bool(
 )
 CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=(ENVIRONMENT != "local"))
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 LOGIN_REDIRECT_URL = env("LOGIN_REDIRECT_URL", default="dashboard")
 LOGIN_URL = env("LOGIN_URL", default="login")

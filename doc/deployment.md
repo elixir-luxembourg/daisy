@@ -43,6 +43,13 @@ See [administration.md](administration.md#environment-variables-reference) for a
 
 ### Configure Nginx
 
+Choose one of the supported production topologies:
+
+- Container nginx: keep using the `nginx` Compose service.
+- Host nginx + Dockerized app: run nginx on the VM and proxy to the `web` container on `127.0.0.1:5000`.
+
+#### Container nginx
+
 Copy the Nginx configuration template:
 
 ```bash
@@ -53,6 +60,37 @@ Customize `nginx.conf` as needed and then start or restart the Nginx service:
 
 ```bash
 docker compose restart nginx
+```
+
+#### Host nginx + Dockerized app
+
+The Compose file already publishes the Django app on loopback only (`127.0.0.1:5000`), which is suitable for a host nginx reverse proxy.
+
+Copy the dedicated host nginx template to the VM and manage `/etc/nginx/nginx.conf` locally on that VM:
+
+```bash
+sudo cp docker/nginx/nginx.conf.manual /etc/nginx/nginx.conf
+sudo editor /etc/nginx/nginx.conf
+sudo nginx -t
+sudo systemctl enable --now nginx
+```
+
+Replace these values in `/etc/nginx/nginx.conf`:
+
+- `server_name daisy.example.org;`
+- `ssl_certificate /etc/ssl/certs/daisy.example.org.crt;`
+- `ssl_certificate_key /etc/ssl/private/daisy.example.org.key;`
+- `root /opt/daisy/ ;`
+
+This is the recommended production workflow when VM nginx configuration may diverge over time. Keep `docker/nginx/nginx.conf.manual` in the repo as the reference template, but treat `/etc/nginx/nginx.conf` as VM-owned after the initial copy.
+
+Host nginx serves static files directly from `./staticfiles` by default. Keep running `collectstatic` during deploys so the host path stays current.
+
+For this topology, set these application values in your production env file:
+
+```env
+ALLOWED_HOSTS=daisy.example.org
+CSRF_TRUSTED_ORIGINS=https://daisy.example.org
 ```
 
 ### Build and Start Services
