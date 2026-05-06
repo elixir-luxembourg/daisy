@@ -212,7 +212,7 @@ HELPDESK_EMAIL = env("HELPDESK_EMAIL", default="support@example.com")
 
 LOGFILE_MAX_BYTES = env.int("LOGFILE_MAX_BYTES", default=16777216)  # 16MB
 LOG_DIR = env("LOG_DIR", default=os.path.join(BASE_DIR, "log"))
-LOG_LEVEL = env("LOG_LEVEL", default=("DEBUG" if DEBUG else "ERROR"))
+LOG_LEVEL = env("LOG_LEVEL", default=("DEBUG" if DEBUG else "INFO"))
 
 LOGGING = {
     "version": 1,
@@ -234,7 +234,6 @@ LOGGING = {
     "handlers": {
         "console": {
             "level": "DEBUG",
-            "filters": ["require_debug_true"],
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
