@@ -23,6 +23,7 @@ services:
         <<: *app
         environment:
             - GUNICORN_LOGLEVEL=${GUNICORN_LOGLEVEL:-info}
+            - GUNICORN_ACCESS_LOG=${GUNICORN_ACCESS_LOG:-}
         expose:
             - "5000"
         volumes:
@@ -37,7 +38,7 @@ services:
                 condition: service_healthy
             mq:
                 condition: service_healthy
-        command: sh -c "gunicorn -w 2 -b :5000 --pid /code/gunicorn.pid --log-level $$GUNICORN_LOGLEVEL elixir_daisy.wsgi"
+        command: sh -c "gunicorn -w 2 -b :5000 --pid /code/gunicorn.pid --log-level $$GUNICORN_LOGLEVEL $${GUNICORN_ACCESS_LOG:+--access-logfile $$GUNICORN_ACCESS_LOG} elixir_daisy.wsgi"
         healthcheck:
             test: ["CMD-SHELL", "curl --fail http://localhost:5000 || exit 1"]
             interval: 10s
