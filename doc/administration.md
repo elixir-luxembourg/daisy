@@ -210,6 +210,45 @@ Defaults work for development; **production requires explicit configuration**.
 
 See `.env.example` for a complete list of all available configuration options.
 
+#### Docker Compose Variables
+
+These variables control infrastructure-level behaviour and must be set in the **root `.env`** file (next to `docker-compose.yaml`). They are **not** read from `.env.development` / `.env.production`.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| `APP_IMAGE` | Docker image for `web`, `worker`, and `beat` | `daisy:local` |
+| `ENV_FILE` | Application env file passed to containers | `.env.development` |
+| `LOG_VOLUME` | Named volume or host path mounted at `/code/log`. Use a host path (e.g. `./log`) for direct file access; requires correct ownership. | `logs` (named volume) |
+| `BACKUP_VOLUME` | Storage location for backups | `../backups` |
+
+`GUNICORN_LOGLEVEL` and `GUNICORN_ACCESS_LOG` can be set in either the root `.env` or the application env file (e.g. `.env.production`):
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| `GUNICORN_LOGLEVEL` | Gunicorn log verbosity (`debug`, `info`, `warning`, `error`, `critical`) | `info` |
+| `GUNICORN_ACCESS_LOG` | Gunicorn access log destination: `/code/log/gunicorn-access.log` (file), `-` (stdout), or unset (disabled) | `/dev/null` |
+
+**Example root `.env` for production:**
+
+```bash
+APP_IMAGE=ghcr.io/elixir-luxembourg/daisy:1.x.y
+ENV_FILE=.env.production
+LOG_VOLUME=/opt/daisy/log
+```
+
+**Example `.env.production` entries for logging:**
+
+```bash
+GUNICORN_LOGLEVEL=warning
+GUNICORN_ACCESS_LOG=/code/log/gunicorn-access.log
+```
+
+!!! note
+    When using a host path for `LOG_VOLUME`, the directory must be writable by the container user (UID 1000 by default):
+    ```bash
+    sudo chown -R 1000:1000 /opt/daisy/log
+    ```
+
 ---
 
 ## Additional Tips
@@ -255,13 +294,41 @@ See `.env.example` for a complete list of all available configuration options.
 
 ### View Service Logs
 
-View logs for a specific service:
+View logs streamed to stdout/stderr (gunicorn startup, errors) for a specific service:
 
 ```bash
 docker compose logs -f <service_name>
 ```
 
 Replace `<service_name>` with `web`, `db`, `worker`, etc.
+
+### Application Log Files
+
+Django application logs are written to `/code/log/` inside the `web` container, which is backed by the `LOG_VOLUME` (a named Docker volume by default).
+
+**While containers are running:**
+
+```bash
+docker compose exec web tail -f /code/log/daisy.log
+```
+
+**After `docker compose down`** (named volume persists):
+
+```bash
+docker run --rm -v daisy_logs:/code/log alpine cat /code/log/daisy.log
+```
+
+To find the exact volume name:
+
+```bash
+docker volume ls | grep logs
+```
+
+**Using a host bind mount** (set `LOG_VOLUME=./log` in root `.env`):
+
+```bash
+cat ./log/daisy.log
+```
 
 ### Check Container Status
 
