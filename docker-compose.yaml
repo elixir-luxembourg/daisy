@@ -129,36 +129,36 @@ services:
         profiles: ["debug"]
 
     # Task Runner (Celery Worker)
-    # worker:
-    #     <<: *app
-    #     depends_on:
-    #         db:
-    #             condition: service_healthy
-    #         mq:
-    #             condition: service_healthy
-    #     volumes:
-    #         - medias:/code/medias
-    #     healthcheck:
-    #         test: [ "CMD-SHELL", "celery -A elixir_daisy.celery_app inspect ping" ]
-    #         interval: 10s
-    #         timeout: 5s
-    #         retries: 5
-    #     command: "celery -A elixir_daisy.celery_app worker --loglevel=DEBUG"
+    worker:
+        <<: *app
+        depends_on:
+            db:
+                condition: service_healthy
+            mq:
+                condition: service_healthy
+        volumes:
+            - medias:/code/medias
+        healthcheck:
+            test: [ "CMD-SHELL", "celery -A elixir_daisy.celery_app inspect ping" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        command: "celery -A elixir_daisy.celery_app worker --loglevel=DEBUG"
 
     # Celery Beat
-    # beat:
-    #     <<: *app
-    #     depends_on:
-    #         db:
-    #             condition: service_healthy
-    #         mq:
-    #             condition: service_healthy
-    #     healthcheck:
-    #         test: [ "CMD-SHELL", "celery -A elixir_daisy.celery_app inspect ping" ]
-    #         interval: 10s
-    #         timeout: 5s
-    #         retries: 5
-    #     command: "celery -A elixir_daisy beat --loglevel=DEBUG --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    beat:
+        <<: *app
+        depends_on:
+            db:
+                condition: service_healthy
+            mq:
+                condition: service_healthy
+        healthcheck:
+            test: [ "CMD-SHELL", "celery -A elixir_daisy.celery_app inspect ping" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        command: "celery -A elixir_daisy beat --loglevel=DEBUG --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler"
 
     # Backup Service
     backup:
