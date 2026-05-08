@@ -21,9 +21,6 @@ services:
     # Web Application
     web:
         <<: *app
-        environment:
-            - GUNICORN_LOGLEVEL=${GUNICORN_LOGLEVEL:-info}
-            - GUNICORN_ACCESS_LOG=${GUNICORN_ACCESS_LOG:-/dev/null}
         expose:
             - "5000"
         volumes:
@@ -38,7 +35,7 @@ services:
                 condition: service_healthy
             mq:
                 condition: service_healthy
-        command: sh -c "gunicorn -w 2 -b :5000 --pid /code/gunicorn.pid --log-level $$GUNICORN_LOGLEVEL --access-logfile $$GUNICORN_ACCESS_LOG elixir_daisy.wsgi"
+        command: sh -c "gunicorn -w 2 -b :5000 --pid /code/gunicorn.pid --log-level $${GUNICORN_LOGLEVEL:-info} --access-logfile $${GUNICORN_ACCESS_LOG:-/dev/null} elixir_daisy.wsgi"
         healthcheck:
             test: ["CMD-SHELL", "curl --fail http://localhost:5000 || exit 1"]
             interval: 10s
@@ -132,36 +129,36 @@ services:
         profiles: ["debug"]
 
     # Task Runner (Celery Worker)
-    worker:
-        <<: *app
-        depends_on:
-            db:
-                condition: service_healthy
-            mq:
-                condition: service_healthy
-        volumes:
-            - medias:/code/medias
-        healthcheck:
-            test: [ "CMD-SHELL", "celery -A elixir_daisy.celery_app inspect ping" ]
-            interval: 10s
-            timeout: 5s
-            retries: 5
-        command: "celery -A elixir_daisy.celery_app worker --loglevel=DEBUG"
+    # worker:
+    #     <<: *app
+    #     depends_on:
+    #         db:
+    #             condition: service_healthy
+    #         mq:
+    #             condition: service_healthy
+    #     volumes:
+    #         - medias:/code/medias
+    #     healthcheck:
+    #         test: [ "CMD-SHELL", "celery -A elixir_daisy.celery_app inspect ping" ]
+    #         interval: 10s
+    #         timeout: 5s
+    #         retries: 5
+    #     command: "celery -A elixir_daisy.celery_app worker --loglevel=DEBUG"
 
     # Celery Beat
-    beat:
-        <<: *app
-        depends_on:
-            db:
-                condition: service_healthy
-            mq:
-                condition: service_healthy
-        healthcheck:
-            test: [ "CMD-SHELL", "celery -A elixir_daisy.celery_app inspect ping" ]
-            interval: 10s
-            timeout: 5s
-            retries: 5
-        command: "celery -A elixir_daisy beat --loglevel=DEBUG --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    # beat:
+    #     <<: *app
+    #     depends_on:
+    #         db:
+    #             condition: service_healthy
+    #         mq:
+    #             condition: service_healthy
+    #     healthcheck:
+    #         test: [ "CMD-SHELL", "celery -A elixir_daisy.celery_app inspect ping" ]
+    #         interval: 10s
+    #         timeout: 5s
+    #         retries: 5
+    #     command: "celery -A elixir_daisy beat --loglevel=DEBUG --pidfile= --scheduler django_celery_beat.schedulers:DatabaseScheduler"
 
     # Backup Service
     backup:

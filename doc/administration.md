@@ -233,7 +233,7 @@ These variables control infrastructure-level behaviour and must be set in the **
 ```bash
 APP_IMAGE=ghcr.io/elixir-luxembourg/daisy:1.x.y
 ENV_FILE=.env.production
-LOG_VOLUME=/opt/daisy/log
+LOG_VOLUME=./log
 ```
 
 **Example `.env.production` entries for logging:**
