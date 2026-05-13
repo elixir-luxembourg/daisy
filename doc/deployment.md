@@ -69,8 +69,8 @@ The Compose file already publishes the Django app on loopback only (`127.0.0.1:5
 Copy the dedicated host nginx template to the VM and manage `/etc/nginx/nginx.conf` locally on that VM:
 
 ```bash
-sudo cp docker/nginx/nginx.conf.manual /etc/nginx/nginx.conf
-sudo editor /etc/nginx/nginx.conf
+sudo cp /home/daisy/daisy/docker/nginx/nginx.conf.manual /etc/nginx/nginx.conf
+sudo vi /etc/nginx/nginx.conf
 sudo nginx -t
 sudo systemctl enable --now nginx
 ```
@@ -80,11 +80,10 @@ Replace these values in `/etc/nginx/nginx.conf`:
 - `server_name daisy.example.org;`
 - `ssl_certificate /etc/ssl/certs/daisy.example.org.crt;`
 - `ssl_certificate_key /etc/ssl/private/daisy.example.org.key;`
-- `root /opt/daisy/ ;`
 
 This is the recommended production workflow when VM nginx configuration may diverge over time. Keep `docker/nginx/nginx.conf.manual` in the repo as the reference template, but treat `/etc/nginx/nginx.conf` as VM-owned after the initial copy.
 
-Host nginx serves static files directly from `./staticfiles` by default. Keep running `collectstatic` during deploys so the host path stays current.
+Host nginx proxies all application requests to the Django container in this topology. Static files are served by Django/Gunicorn via WhiteNoise, so keep running `collectstatic` during deploys before restarting the `web` container.
 
 For this topology, set these application values in your production env file:
 

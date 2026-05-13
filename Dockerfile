@@ -72,3 +72,4 @@ RUN python manage.py collectstatic --noinput
 
 USER root
 RUN rm -rf /code/web/static
+RUN chmod +x /code/entrypoint.sh
