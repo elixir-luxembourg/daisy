@@ -36,7 +36,6 @@ services:
                 condition: service_healthy
             mq:
                 condition: service_healthy
-        entrypoint: ["/code/entrypoint.sh"]
         command: gunicorn -w 2 -b :5000 --pid /code/gunicorn.pid elixir_daisy.wsgi
         healthcheck:
             test: ["CMD-SHELL", "curl --fail http://localhost:5000 || exit 1"]
