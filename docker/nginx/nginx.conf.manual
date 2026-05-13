@@ -103,7 +103,7 @@ http {
                 alias /home/daisy/medias/;
             }
             location /static/ {
-                alias /home/daisy/staticfiles/;
+                alias /var/www/daisy/staticfiles/;
             }
 
             location / {

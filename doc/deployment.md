@@ -64,28 +64,26 @@ docker compose restart nginx
 
 #### Host nginx + Dockerized app
 
-The Compose file already publishes the Django app on loopback only (`127.0.0.1:5000`), which is suitable for a host nginx reverse proxy.
+The app is published on loopback only (`127.0.0.1:5000`). Host nginx proxies requests to it and serves static files directly from a bind-mounted host directory (`./staticfiles`). The `web` container populates that directory automatically via `collectstatic` on every startup.
 
-Copy the dedicated host nginx template to the VM and manage `/etc/nginx/nginx.conf` locally on that VM:
+**One-time setup on the VM:**
 
 ```bash
+# Create staticfiles dir on local filesystem with correct SELinux context.
+# Must be done before starting the stack so files written by Docker inherit the context.
+sudo mkdir -p /var/www/daisy/staticfiles
+sudo chown -R 1000:1000 /var/www/daisy/staticfiles
+sudo chcon -Rt httpd_sys_content_t /var/www/daisy/staticfiles
+sudo semanage fcontext -a -t httpd_sys_content_t "/var/www/daisy/staticfiles(/.*)?"
+
+# Install and configure nginx
+sudo dnf install nginx -y
 sudo cp /home/daisy/daisy/docker/nginx/nginx.conf.manual /etc/nginx/nginx.conf
-sudo vi /etc/nginx/nginx.conf
-sudo nginx -t
-sudo systemctl enable --now nginx
+sudo vi /etc/nginx/nginx.conf   # set server_name and ssl_certificate paths
+sudo nginx -t && sudo systemctl enable --now nginx
 ```
 
-Replace these values in `/etc/nginx/nginx.conf`:
-
-- `server_name daisy.example.org;`
-- `ssl_certificate /etc/ssl/certs/daisy.example.org.crt;`
-- `ssl_certificate_key /etc/ssl/private/daisy.example.org.key;`
-
-This is the recommended production workflow when VM nginx configuration may diverge over time. Keep `docker/nginx/nginx.conf.manual` in the repo as the reference template, but treat `/etc/nginx/nginx.conf` as VM-owned after the initial copy.
-
-Host nginx proxies all application requests to the Django container in this topology. Static files are served by Django/Gunicorn via WhiteNoise, so keep running `collectstatic` during deploys before restarting the `web` container.
-
-For this topology, set these application values in your production env file:
+Set these in your production env file:
 
 ```env
 ALLOWED_HOSTS=daisy.example.org

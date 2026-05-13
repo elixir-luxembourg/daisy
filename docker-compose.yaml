@@ -26,7 +26,7 @@ services:
         ports:
             - "127.0.0.1:5000:5000"  # host nginx only; not exposed publicly
         volumes:
-            - ./staticfiles:/code/staticfiles
+            - /var/www/daisy/staticfiles:/code/staticfiles
             - solrdata:/solr
             - medias:/code/medias
         depends_on:
