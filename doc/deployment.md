@@ -62,6 +62,8 @@ Customize `nginx.conf` as needed and then start or restart the Nginx service:
 docker compose restart nginx
 ```
 
+> **Note:** The container nginx config uses `server web:5000` (Docker internal DNS) to reach the app — not `server 127.0.0.1:5000`. From inside a container, `127.0.0.1` is the container's own loopback, not the host's. Using `web:5000` is reliable across all Docker setups.
+
 #### Host nginx + Dockerized app
 
 The app is published on loopback only (`127.0.0.1:5000`). Host nginx proxies requests to it and serves static files directly from a bind-mounted host directory. Daisy uses `STATICFILES_DIR` from your `.env` (default: `./staticfiles`) and the `web` container populates that directory via `collectstatic` on startup.
@@ -83,13 +85,34 @@ sudo vi /etc/nginx/nginx.conf   # set server_name and ssl_certificate paths
 sudo nginx -t && sudo systemctl enable --now nginx
 ```
 
-Set these in your production env file:
+Set these in your production env file **and** in the project-root `.env`:
 
 ```env
 ALLOWED_HOSTS=daisy.example.org
 CSRF_TRUSTED_ORIGINS=https://daisy.example.org
 STATICFILES_DIR=/var/www/daisy/staticfiles
 ```
+
+> **Note:** `STATICFILES_DIR` must be in the project-root `.env`.
+
+#### Switching between nginx topologies
+
+**From host nginx → container nginx:**
+
+```bash
+sudo systemctl stop nginx
+sudo systemctl disable nginx
+docker compose --profile nginx up -d
+```
+
+**From container nginx → host nginx:**
+
+```bash
+docker compose stop nginx
+sudo systemctl enable --now nginx
+```
+
+> Do not use `--build` when switching if images are already up to date — it is not needed and will try to pull base images.
 
 ### Build and Start Services
 
