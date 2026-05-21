@@ -16,7 +16,11 @@ git pull
 
 # Update APP_IMAGE in .env
 if [ -f .env ]; then
-    sed -i.bak "s|^APP_IMAGE=.*|APP_IMAGE=${APP_IMAGE}|g" .env && rm .env.bak
+    if grep -q '^APP_IMAGE=' .env; then
+        sed -i.bak "s|^APP_IMAGE=.*|APP_IMAGE=${APP_IMAGE}|g" .env && rm .env.bak
+    else
+        echo "" >> .env && echo "APP_IMAGE=${APP_IMAGE}" >> .env
+    fi
 else
     echo "APP_IMAGE=${APP_IMAGE}" > .env
 fi
@@ -24,7 +28,7 @@ fi
 docker compose pull web worker beat
 
 docker compose up -d --no-deps web worker beat
-docker compose run --rm --no-deps web python manage.py migrate
+docker compose exec web python manage.py migrate
 docker compose exec web python manage.py collectstatic --noinput
 docker compose exec web python manage.py rebuild_index --noinput
 docker compose exec web python manage.py import_users \
