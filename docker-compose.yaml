@@ -23,8 +23,10 @@ services:
         <<: *app
         expose:
             - "5000"
+        ports:
+            - "127.0.0.1:5000:5000"  # host nginx only; not exposed publicly
         volumes:
-            - statics:/static
+            - ${STATICFILES_DIR:-./staticfiles}:/code/staticfiles
             - solrdata:/solr
             - medias:/code/medias
         depends_on:
@@ -61,12 +63,13 @@ services:
             timeout: 5s
             retries: 5
 
-    # Web Server Frontend (Nginx)
+    # Web Server Frontend (Nginx) — opt-in via: docker compose --profile nginx up
     nginx:
         build: ./docker/nginx
         restart: unless-stopped
+        profiles: ["nginx"]
         volumes:
-            - statics:/public/static:ro
+            - ${STATICFILES_DIR:-./staticfiles}:/public/static:ro
             - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
         ports:
             - "80:80"
@@ -194,7 +197,6 @@ services:
 
 volumes:
     pgdata:
-    statics:
     solrdata:
     backups:
     medias:
