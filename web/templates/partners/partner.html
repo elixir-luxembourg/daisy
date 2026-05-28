@@ -1,14 +1,15 @@
 {% extends 'layout.html' %}
 
+{% block title %}{{ partner }} | DAISY{% endblock %}
 {% block content_title %}{{ partner }}{% endblock %}
 
 {% block content %}
-{% with fab="inline-flex h-10 w-10 items-center justify-center text-gray-700 rounded-full border border-gray-300 bg-white shadow hover:bg-gray-50" title2="flex items-center gap-2 text-2xl font-light" %}
+{% with fab="inline-flex items-center justify-center h-10 w-10 text-gray-700 bg-white rounded-full border border-gray-300 shadow hover:bg-gray-50" title2="flex items-center gap-2 text-2xl font-light" %}
     <div class="relative mt-4 p-8 rounded bg-gray-50">
         {% if partner.is_published %}
-            <span class="absolute top-4 left-4 inline-flex items-center px-3 py-1 text-xs font-medium text-white rounded-full bg-green-600">Published</span>
+            <span class="absolute top-4 left-4 inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-green-600 rounded-full">Published</span>
         {% else %}
-            <span class="absolute top-4 left-4 inline-flex items-center px-3 py-1 text-xs font-medium text-white rounded-full bg-gray-500">Not Published</span>
+            <span class="absolute top-4 left-4 inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-gray-500 rounded-full">Not Published</span>
         {% endif %}
         <span class="text-gray-500">Partner</span>
         <h1 class="text-4xl font-light">{{ partner }}</h1>
@@ -58,12 +59,12 @@
                 {% endif %}
             {% endif %}
             {% if can_edit %}
-                <a class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-blue-900 shadow hover:bg-blue-800"
+                <a class="inline-flex items-center justify-center h-10 w-10 text-white bg-blue-900 rounded-full shadow hover:bg-blue-800"
                    title="Edit partner"
                    href="{% url 'partner_edit' pk=partner.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
                 {% if not partner.is_published %}
                     <a id="deletepartner"
-                       class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-red-600 shadow hover:bg-red-700"
+                       class="inline-flex items-center justify-center h-10 w-10 text-white bg-red-900 rounded-full shadow hover:bg-red-800"
                        title="Delete partner"
                        data-toggle="modal" data-target="#modal"
                        data-ajax-url="{% url 'partner_delete' partner.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>

@@ -6,18 +6,18 @@
                     <li>Published: {{ dataset.is_published | yesno }}</li>
                     <li>Datatypes:
                         {% for datatype in dataset.data_types %}
-                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium text-gray-800 rounded-full bg-gray-200">{{ datatype }}</span>
+                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium text-gray-800 bg-gray-200 rounded-full">{{ datatype }}</span>
                         {% endfor %}
                     </li>
                     {% if dataset.local_custodians %}
                         <li>Local custodians:
                             {% for local_custodian in dataset.local_custodians %}
-                                <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium text-white rounded-full bg-blue-900">{{ local_custodian }}</span>
+                                <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium text-white bg-blue-900 rounded-full">{{ local_custodian }}</span>
                             {% endfor %}
                         </li>
                     {% endif %}
                 </ul>
-                <a href="{% url 'dataset' pk=dataset.pk %}" class="inline-flex items-center mt-3 px-4 py-2 text-sm font-medium text-white rounded bg-blue-900 hover:bg-blue-800">Details</a>
+                <a href="{% url 'dataset' pk=dataset.pk %}" class="inline-flex items-center mt-3 px-4 py-2 text-sm font-medium text-white bg-blue-900 rounded hover:bg-blue-800">Details</a>
             </div>
         </div>
     {% empty %}

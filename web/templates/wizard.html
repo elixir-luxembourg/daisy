@@ -1,6 +1,8 @@
 {% extends 'layout.html' %}
 {% load i18n %}
 
+{% block title %}Wizard | DAISY{% endblock %}
+
 {% block head_end %}
     {{ wizard.form.media }}
 {% endblock %}
@@ -14,7 +16,7 @@
                 <h2 class="text-2xl font-light">Wizard steps</h2>
                 <ul class="mt-2 space-y-1">
                     {% for step in wizard.steps.all %}
-                        <li><a href="{% url wizard.url_name step %}" class="block px-3 py-2 rounded hover:bg-gray-50 {% if wizard.steps.current == step %}bg-blue-900 font-semibold text-white hover:bg-blue-800{% endif %}">{{step}}</a></li>
+                        <li><a href="{% url wizard.url_name step %}" class="block px-3 py-2 rounded hover:bg-gray-50 {% if wizard.steps.current == step %}font-semibold text-white bg-blue-900 hover:bg-blue-800{% endif %}">{{step}}</a></li>
                     {% endfor %}
                 </ul>
             </div>
@@ -43,7 +45,7 @@
             </table>
         </form>
         <hr class="my-4 border-gray-200"/>
-        <a href="{% url wizard.url_name|slice:':-5' %}?reset=true{% if querystring %}&{{querystring}}{% endif %}" class="float-right inline-flex items-center px-4 py-2 text-white rounded bg-red-600 hover:bg-red-700">reset wizard</a>
+        <a href="{% url wizard.url_name|slice:':-5' %}?reset=true{% if querystring %}&{{querystring}}{% endif %}" class="float-right inline-flex items-center px-4 py-2 text-white bg-red-900 rounded hover:bg-red-800">Reset wizard</a>
     </div>
 </div>
 {% endblock %}

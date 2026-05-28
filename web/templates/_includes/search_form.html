@@ -24,11 +24,13 @@
             <div class="mt-2 rounded shadow-sm">
                 <div class="flex items-center gap-2 p-3 bg-white rounded">
                     <i data-lucide="search" class="h-5 w-5 shrink-0 text-gray-500"></i>
-                    <input id="query_edit" type="text" class="flex-1 px-2 text-sm bg-white border-0 focus:outline-none focus:ring-0" autocomplete="off" name="query" value="{{ query }}" placeholder="Search for {{ title }}">
+                    <input id="query_edit" type="text" class="flex-1 px-2 text-sm bg-white border-0 focus:outline-none focus:ring-0" autocomplete="off" name="query" value="{{ query }}" aria-label="Search for {{ title }}" placeholder="Search for {{ title }}">
                     {% if query %}
-                    <i data-lucide="x" class="reset-form-button h-5 w-5 shrink-0 cursor-pointer text-gray-500" data-resets="query_edit" data-submits="yes"></i>
+                    <button type="button" class="reset-form-button shrink-0 text-gray-500 hover:text-blue-900" data-resets="query_edit" data-submits="yes" aria-label="Clear search">
+                        <i data-lucide="x" class="h-5 w-5"></i>
+                    </button>
                     {% endif %}
-                    <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded bg-blue-900 hover:bg-blue-800">Search</button>
+                    <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-900 rounded hover:bg-blue-800">Search</button>
                 </div>
             </div>
         </form>
@@ -49,5 +51,4 @@
 <script>
     const importDataUrl = `/import_data/{{ search_url }}/`;
 </script>
-<script defer src="{% static 'js/daisy.js' %}"></script>
 <script defer src="{% static 'js/importer.js' %}"></script>

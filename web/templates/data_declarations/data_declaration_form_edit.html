@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% load widget_tweaks %}
 
-{% block title %}Data Declaration - Edit - {{ data_declaration.title }}{% endblock %}
+{% block title %}Edit {{ data_declaration.title }} | DAISY{% endblock %}
 {% block content %}
     <div class="mt-4 p-8 rounded bg-gray-50">
         <h1 class="text-4xl font-light">{% block content_title %}Data declaration "<strong>{{ data_declaration.title }}</strong>"{% endblock %}</h1>
@@ -85,7 +85,7 @@
                                                 {% include '_includes/field.html' with field=condition_form.use_class_note %}
                                                 {% include '_includes/field.html' with field=condition_form.notes %}
                                             </td>
-                                            <td></td>{% comment %}<!-- Needed an empty column to prevent jquery formset from placing the remove below the row   --> {% endcomment %}
+                                            <td></td>{% comment %} Empty column so jquery formset doesn't place the remove control below the row {% endcomment %}
                                     </tr>
                                     {% endfor %}
                                     </tbody>
@@ -94,7 +94,7 @@
                         </div>
                     </fieldset>
 
-                    <button type="submit" class="mt-4 inline-flex items-center px-4 py-2 text-white rounded bg-blue-900 hover:bg-blue-800">SUBMIT</button>
+                    <button type="submit" class="mt-4 inline-flex items-center px-4 py-2 text-white bg-blue-900 rounded hover:bg-blue-800">SUBMIT</button>
                 </form>
             </div>
         </div>

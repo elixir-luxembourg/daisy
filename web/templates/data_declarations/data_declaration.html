@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
 
-{% block title %}{{ object }}{% endblock %}
+{% block title %}{{ object }} | DAISY{% endblock %}
 
 {% block content %}
-{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white rounded-full bg-blue-900" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" %}
+{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-blue-900 rounded-full" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" %}
     <div class="relative mt-4 p-8 rounded bg-gray-50">
         <h1 class="text-4xl font-light">{{ object.title }}</h1>
         <div class="grid gap-6 md:grid-cols-2">
@@ -88,7 +88,7 @@
         </div>
         <div class="absolute top-4 right-4 flex gap-2">
             {% if can_edit %}
-                <a class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-blue-900 shadow hover:bg-blue-800" href="{% url 'data_declaration_edit' pk=object.id %}" title="Edit data declaration"><i data-lucide="pencil" class="h-5 w-5"></i></a>
+                <a class="inline-flex items-center justify-center h-10 w-10 text-white bg-blue-900 rounded-full shadow hover:bg-blue-800" href="{% url 'data_declaration_edit' pk=object.id %}" title="Edit data declaration"><i data-lucide="pencil" class="h-5 w-5"></i></a>
             {% endif %}
         </div>
     </div>

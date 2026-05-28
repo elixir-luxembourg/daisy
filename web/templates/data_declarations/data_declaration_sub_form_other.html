@@ -5,14 +5,14 @@
         {{ field.label_tag }}
         {% if form.is_bound %}
             {% if field.errors %}
-                {% render_field field class+="block w-full rounded border border-red-500 px-3 py-2" %}
+                {% render_field field class+="block w-full rounded border border-red-700 px-3 py-2" %}
                 {% for error in field.errors %}
-                    <div class="mt-1 text-sm text-red-600">
+                    <div class="mt-1 text-sm text-red-700">
                         {{ error }}
                     </div>
                 {% endfor %}
             {% else %}
-                {% render_field field class+="block w-full rounded border border-green-500 px-3 py-2" %}
+                {% render_field field class+="block w-full rounded border border-green-600 px-3 py-2" %}
             {% endif %}
         {% else %}
             {% render_field field class+="block w-full rounded border border-gray-300 px-3 py-2" %}
@@ -26,7 +26,7 @@
 <script type="text/javascript">
     function content_check() {
         setTimeout(function () {
-            var content = $("textarea[name='comment']").val();
+            const content = $("textarea[name='comment']").val();
             if (content !== "") {
                 $("button[type='submit']").removeAttr('disabled');
             } else {
@@ -37,7 +37,7 @@
     }
 
     $(document).ready(function () {
-        var textarea = $("textarea[name='comment']");
+        const textarea = $("textarea[name='comment']");
         textarea.on('input', content_check)
     });
 </script>

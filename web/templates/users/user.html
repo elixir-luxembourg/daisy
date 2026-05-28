@@ -1,12 +1,13 @@
 {% extends 'layout.html' %}
 
+{% block title %}{{ user }} | DAISY{% endblock %}
 {% block content_title %}{{ user }}{% endblock %}
 
 {% block content %}
-{% with fabblue="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-blue-900 shadow hover:bg-blue-800" %}
+{% with fabblue="inline-flex items-center justify-center h-10 w-10 text-white bg-blue-900 rounded-full shadow hover:bg-blue-800" %}
     <div class="relative mt-4 p-8 rounded bg-gray-50">
         {% if user.source %}
-            <span class="absolute top-4 left-4 inline-flex items-center px-3 py-1 text-xs font-medium text-white rounded-full bg-gray-500">{{ user.source }}</span>
+            <span class="absolute top-4 left-4 inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-gray-500 rounded-full">{{ user.source }}</span>
         {% endif %}
         <span class="text-gray-500">User</span>
         <h1 class="text-4xl font-light">{{ user }}</h1>
@@ -33,7 +34,7 @@
         <div class="absolute top-4 right-4 flex gap-2">
             {% if can_edit %}
                 {% if user.source == manual_source %}
-                    <a id="deleteuser" class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-red-600 shadow hover:bg-red-700"
+                    <a id="deleteuser" class="inline-flex items-center justify-center h-10 w-10 text-white bg-red-900 rounded-full shadow hover:bg-red-800"
                        title="Delete"
                        data-toggle="modal" data-target="#modal"
                        data-ajax-url="{% url 'user_delete' user.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>
@@ -45,7 +46,7 @@
     </div>
 
     <div class="mt-4 p-8 rounded bg-gray-50">
-        <h3 class="text-2xl font-light">User Permissions</h3>
+        <h2 class="text-2xl font-light">User Permissions</h2>
         {% if dataset_perms %}
             {% include '_includes/permission_table.html' with obj_name='Dataset' obj_perms_const=ds_perms_const obj_perms=dataset_perms %}
         {% endif %}

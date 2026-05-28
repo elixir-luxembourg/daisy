@@ -7,20 +7,20 @@
     {% elif field.field.widget.input_type == 'radio' %}
         {% include '_includes/radio.html' %}
     {% else %}
-        <strong class="block mb-1 text-sm font-medium text-gray-700">{{ field.label_tag }}</strong>
+        <div class="block mb-1 text-sm font-medium text-gray-700">{{ field.label_tag }}</div>
         {% if form.is_bound %}
             {% if field.errors %}
-                {% render_field field class+=base class+="border-red-500 focus:border-red-500 focus:ring-red-500" %}
+                {% render_field field class+=base class+="border-red-700 focus:border-red-700 focus:ring-red-700" %}
                 {% for error in field.errors %}
-                    <div class="mt-1 text-sm text-red-600">
+                    <div class="mt-1 text-sm text-red-700">
                         {{ error }}
                     </div>
                 {% endfor %}
             {% else %}
-                {% render_field field class+=base class+="border-green-500 focus:border-green-500 focus:ring-green-500" %}
+                {% render_field field class+=base class+="border-green-600 focus:border-green-600 focus:ring-green-600" %}
             {% endif %}
         {% else %}
-            {% render_field field class+=base class+="border-gray-300 focus:border-blue-500 focus:ring-blue-500" %}
+            {% render_field field class+=base class+="border-gray-300 focus:border-blue-700 focus:ring-blue-700" %}
         {% endif %}
     {% endif %}
 

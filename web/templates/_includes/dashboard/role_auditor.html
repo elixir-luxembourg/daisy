@@ -1,0 +1,150 @@
+{% load daisy_utils %}
+<section class="grid grid-cols-1 gap-10 pt-10 pb-16 lg:grid-cols-12 lg:gap-10">
+    <div class="lg:col-span-8">
+        {% if notifications_enabled %}
+        <div class="flex items-baseline justify-between pb-3 border-b border-gray-300">
+            <h2 class="text-2xl font-medium text-blue-950">Upcoming key dates</h2>
+            <a href="{% url 'notifications' %}" class="text-sm text-blue-950 hover:underline">All notifications →</a>
+        </div>
+        {% if deadlines %}
+        <div class="grid grid-cols-[6rem_7.5rem_1fr] items-baseline gap-4 pt-3 pb-2 text-xs font-medium tracking-widest text-gray-500">
+            <span>Date</span>
+            <span>Event</span>
+            <span>Detail</span>
+        </div>
+        <ul data-paginate="deadlines" data-page-size="{{ page_size }}">
+            {% for n in deadlines %}
+            <li class="border-b border-gray-200" data-paginate-item {% if forloop.counter > page_size %}hidden{% endif %}>
+                <a href="{% if n.content_object %}{{ n.content_object.get_absolute_url }}{% else %}#{% endif %}" class="grid grid-cols-[6rem_7.5rem_1fr] items-baseline gap-4 py-3 hover:bg-gray-50">
+                    <time datetime="{{ n.on|date:'c' }}" class="font-mono text-sm text-blue-950">{{ n.on|date:"d/m/Y" }}</time>
+                    <span class="whitespace-nowrap text-xs uppercase tracking-widest text-gray-500">{{ n.verb.name|un_underscore }}</span>
+                    <span class="text-blue-950 truncate min-w-0">{{ n.message }}</span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% if deadlines|length > page_size %}{% include '_includes/paginate_controls.html' with key='deadlines' %}{% endif %}
+        {% else %}
+        <p class="mt-6 text-gray-600">No upcoming deadlines within your notice window. <a href="{% url 'notifications_settings' %}" class="text-blue-950 hover:underline">Adjust your notice window →</a></p>
+        {% endif %}
+        {% endif %}
+
+        <div class="mt-12">
+            <div class="flex items-baseline justify-between pb-3 border-b border-gray-300">
+                <h2 class="text-2xl font-medium text-blue-950">Recently updated datasets</h2>
+                <a href="{% url 'datasets' %}" class="text-sm text-blue-950 hover:underline">All datasets →</a>
+            </div>
+            {% if recent_datasets %}
+            <div class="flex items-baseline justify-between gap-4 pt-3 pb-2 text-xs font-medium tracking-widest text-gray-500">
+                <span>Title</span>
+                <span>Updated</span>
+            </div>
+            <ul data-paginate="recent_datasets" data-page-size="{{ page_size }}">
+                {% for o in recent_datasets %}
+                <li class="border-b border-gray-200" data-paginate-item {% if forloop.counter > page_size %}hidden{% endif %}>
+                    <a href="{% url 'dataset' pk=o.id %}" class="group flex items-baseline justify-between gap-4 py-3">
+                        <span class="text-blue-950 truncate group-hover:underline">{{ o }}</span>
+                        <time datetime="{{ o.updated|date:'c' }}" class="shrink-0 font-mono text-xs text-gray-500">{{ o.updated|date:"d/m/Y" }}</time>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% if recent_datasets|length > page_size %}{% include '_includes/paginate_controls.html' with key='recent_datasets' %}{% endif %}
+            {% else %}
+            <p class="mt-6 text-gray-600">No datasets recorded yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="mt-12">
+            <div class="flex items-baseline justify-between pb-3 border-b border-gray-300">
+                <h2 class="text-2xl font-medium text-blue-950">Recently updated projects</h2>
+                <a href="{% url 'projects' %}" class="text-sm text-blue-950 hover:underline">All projects →</a>
+            </div>
+            {% if recent_projects %}
+            <div class="flex items-baseline justify-between gap-4 pt-3 pb-2 text-xs font-medium tracking-widest text-gray-500">
+                <span>Title</span>
+                <span>Updated</span>
+            </div>
+            <ul data-paginate="recent_projects" data-page-size="{{ page_size }}">
+                {% for o in recent_projects %}
+                <li class="border-b border-gray-200" data-paginate-item {% if forloop.counter > page_size %}hidden{% endif %}>
+                    <a href="{% url 'project' pk=o.id %}" class="group flex items-baseline justify-between gap-4 py-3">
+                        <span class="text-blue-950 truncate group-hover:underline">{{ o }}</span>
+                        <time datetime="{{ o.updated|date:'c' }}" class="shrink-0 font-mono text-xs text-gray-500">{{ o.updated|date:"d/m/Y" }}</time>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% if recent_projects|length > page_size %}{% include '_includes/paginate_controls.html' with key='recent_projects' %}{% endif %}
+            {% else %}
+            <p class="mt-6 text-gray-600">No projects recorded yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="mt-12">
+            <div class="flex items-baseline justify-between pb-3 border-b border-gray-300">
+                <h2 class="text-2xl font-medium text-blue-950">Recently updated contracts</h2>
+                <a href="{% url 'contracts' %}" class="text-sm text-blue-950 hover:underline">All contracts →</a>
+            </div>
+            {% if recent_contracts %}
+            <div class="flex items-baseline justify-between gap-4 pt-3 pb-2 text-xs font-medium tracking-widest text-gray-500">
+                <span>Title</span>
+                <span>Updated</span>
+            </div>
+            <ul data-paginate="recent_contracts" data-page-size="{{ page_size }}">
+                {% for o in recent_contracts %}
+                <li class="border-b border-gray-200" data-paginate-item {% if forloop.counter > page_size %}hidden{% endif %}>
+                    <a href="{% url 'contract' pk=o.id %}" class="group flex items-baseline justify-between gap-4 py-3">
+                        <span class="text-blue-950 truncate group-hover:underline">{{ o }}</span>
+                        <time datetime="{{ o.updated|date:'c' }}" class="shrink-0 font-mono text-xs text-gray-500">{{ o.updated|date:"d/m/Y" }}</time>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% if recent_contracts|length > page_size %}{% include '_includes/paginate_controls.html' with key='recent_contracts' %}{% endif %}
+            {% else %}
+            <p class="mt-6 text-gray-600">No contracts recorded yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="mt-12">
+            <div class="flex items-baseline justify-between pb-3 border-b border-gray-300">
+                <h2 class="text-2xl font-medium text-blue-950">Access expiring soon</h2>
+            </div>
+            {% if expiring_accesses %}
+            <div class="grid grid-cols-[6rem_10rem_minmax(0,1fr)] items-baseline gap-4 pt-3 pb-2 text-xs font-medium tracking-widest text-gray-500">
+                <span>Expires</span>
+                <span>Grantee</span>
+                <span>Dataset</span>
+            </div>
+            <ul data-paginate="expiring_accesses" data-page-size="{{ page_size }}">
+                {% for a in expiring_accesses %}
+                <li class="border-b border-gray-200" data-paginate-item {% if forloop.counter > page_size %}hidden{% endif %}>
+                    <a href="{{ a.dataset.get_absolute_url }}" class="grid grid-cols-[6rem_10rem_minmax(0,1fr)] items-baseline gap-4 py-3 hover:bg-gray-50">
+                        <time datetime="{{ a.grant_expires_on|date:'c' }}" class="font-mono text-sm text-blue-950">{{ a.grant_expires_on|date:"d/m/Y" }}</time>
+                        <span class="text-blue-950 truncate min-w-0">{{ a.user|default:a.contact }}</span>
+                        <span class="text-gray-600 truncate min-w-0">{{ a.dataset.title }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% if expiring_accesses|length > page_size %}{% include '_includes/paginate_controls.html' with key='expiring_accesses' %}{% endif %}
+            {% else %}
+            <p class="mt-6 text-gray-600">No access grants expiring in the next 30 days.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <aside class="lg:col-span-4 lg:border-l lg:border-gray-300 lg:pl-8">
+        <p class="pb-3 border-b border-gray-300 text-xs font-medium uppercase tracking-widest text-gray-500">Oversight</p>
+        <ul>
+            <li class="border-b border-gray-200">
+                <a href="{% url 'history' %}" class="flex items-center gap-3 py-3 text-blue-950 hover:underline">
+                    <i data-lucide="scroll-text" class="h-4 w-4"></i>View audit log
+                </a>
+            </li>
+        </ul>
+
+        <p class="mt-10 pt-6 border-t border-gray-200 text-xs leading-relaxed text-gray-500">As an auditor you have read access to protected fields, documents, and the full change history.</p>
+    </aside>
+</section>

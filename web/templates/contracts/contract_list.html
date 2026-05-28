@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}Contracts{% endblock %}
+{% block title %}Contracts | DAISY{% endblock %}
 
 {% block content %}
     <div class="mt-4 p-8 rounded bg-gray-50">
@@ -19,7 +19,7 @@
                         {% endif %}
                         <li class="flex items-center"><strong>Partner:</strong> {{ contract.partner.name }}</li>
                     </ul>
-                    <a href="{% url 'contract' pk=contract.id %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded bg-blue-900 hover:bg-blue-800">Details</a>
+                    <a href="{% url 'contract' pk=contract.id %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-900 rounded hover:bg-blue-800">Details</a>
                 </div>
             </div>
         {% empty %}
@@ -30,5 +30,5 @@
 
 
 {% block floating-buttons %}
-    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'contract_add' %}" title="Add contract"><i data-lucide="plus" class="h-6 w-6"></i></a>
+    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'contract_add' %}" title="Add contract" aria-label="Add contract"><i data-lucide="plus" class="h-6 w-6"></i></a>
 {% endblock %}

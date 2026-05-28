@@ -9,6 +9,9 @@
 
     {% include '_includes/tailwind_setup.html' %}
 
+    <link rel="stylesheet" href="{% static 'vendor/node_modules/select2/dist/css/select2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/select2-theme.css' %}">
+
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favico/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favico/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favico/favicon-16x16.png' %}">
@@ -16,7 +19,7 @@
     <link rel="manifest" href="{% static 'images/favico/site.webmanifest' %}">
 
     {% block head_end %}{% endblock %}
-    <title>DAISY</title>
+    <title>{% block title %}DAISY{% endblock %}</title>
 </head>
 <body class="flex flex-col min-h-screen">
 
@@ -29,7 +32,7 @@
     {% if messages %}
     <div class="mx-auto mt-3 flex max-w-7xl flex-col gap-2 px-4 sm:px-6 lg:px-8">
         {% for message in messages %}
-        <div role="alert" class="flex items-start gap-3 rounded border p-4 shadow-sm
+        <div role="alert" class="flex items-start gap-3 p-4 rounded border shadow-sm
             {% if message.tags == 'success' %}border-green-200 bg-green-50 text-green-900
             {% elif message.tags == 'error' or message.tags == 'danger' %}border-red-200 bg-red-50 text-red-900
             {% elif message.tags == 'warning' %}border-yellow-200 bg-yellow-50 text-yellow-900
@@ -56,11 +59,11 @@
     {% endblock %}
 </main>
 
-<div id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" hidden class="fixed inset-0 z-50 items-center justify-center bg-blue-950/40">
-    <div role="document" class="mx-4 w-full max-w-2xl rounded bg-white shadow-lg">
+    <div id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" hidden class="fixed inset-0 z-50 items-center justify-center bg-blue-950/40">
+    <div role="document" class="mx-4 w-full max-w-2xl bg-white rounded shadow-lg">
         <div class="flex items-baseline justify-between gap-4 px-6 py-4 border-b border-gray-200">
-            <h5 id="modalLabel" class="text-lg font-medium text-blue-950"></h5>
-            <button type="button" onclick="document.getElementById('modal').setAttribute('hidden', '')" aria-label="Close" class="text-gray-500 hover:text-blue-950">
+            <h5 id="modalLabel" class="modal-title text-lg font-medium text-blue-950"></h5>
+            <button type="button" data-modal-close aria-label="Close" class="text-gray-500 hover:text-blue-950">
                 <i data-lucide="x" class="h-5 w-5"></i>
             </button>
         </div>
@@ -71,8 +74,6 @@
 {% block footer %}{% include 'footer.html' %}{% endblock %}
 
     <script src="{% static 'vendor/node_modules/jquery/dist/jquery.min.js' %}"></script>
-    <script src="{% static 'vendor/node_modules/moment/min/moment-with-locales.min.js' %}"></script>
-    <script src="{% static 'vendor/node_modules/jquery-ui-dist/jquery-ui.js' %}"></script>
     <script src="{% static 'vendor/node_modules/select2/dist/js/select2.full.min.js' %}"></script>
     <script src="{% static 'vendor/node_modules/js-cookie/src/js.cookie.js' %}"></script>
 

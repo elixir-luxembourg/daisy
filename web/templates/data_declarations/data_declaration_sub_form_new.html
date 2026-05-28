@@ -5,14 +5,14 @@
     {{ form.partner.label_tag }}
     {% if form.is_bound %}
         {% if form.partner.errors %}
-            {% render_field form.partner class+="block w-full rounded border border-red-500 px-3 py-2" %}
+            {% render_field form.partner class+="block w-full rounded border border-red-700 px-3 py-2" %}
             {% for error in form.partner.errors %}
-                <div class="mt-1 text-sm text-red-600">
+                <div class="mt-1 text-sm text-red-700">
                     {{ error }}
                 </div>
             {% endfor %}
         {% else %}
-            {% render_field form.partner class+="block w-full rounded border border-green-500 px-3 py-2" %}
+            {% render_field form.partner class+="block w-full rounded border border-green-600 px-3 py-2" %}
         {% endif %}
     {% else %}
         {% render_field form.partner class+="block w-full rounded border border-gray-300 px-3 py-2" %}
@@ -49,8 +49,8 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $("select[name='partner']").change(function () {
-            var partnerId = this.value;
-            var contractTbody = $("#contractTbody");
+            const partnerId = this.value;
+            const contractTbody = $("#contractTbody");
             contractTbody.load('{% url 'data_declarations_get_contracts' %}?partner_id=' + partnerId + '&dataset_id={{ dataset.id }}', function () {
             });
         });

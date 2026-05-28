@@ -1,5 +1,7 @@
 {% extends 'layout.html' %}
 
+{% block title %}About | DAISY{% endblock %}
+
 {% block content %}
 <section class="pt-12 pb-20">
     <div class="flex items-baseline justify-between gap-6 pb-6 border-b border-gray-300">
@@ -51,9 +53,9 @@
         <table class="w-full mt-6 text-sm">
             <thead>
                 <tr class="text-left text-xs font-medium tracking-widest text-gray-500 border-b border-gray-300">
-                    <th class="py-2 pr-6 font-medium">Username</th>
-                    <th class="py-2 pr-6 font-medium">Password</th>
-                    <th class="py-2 font-medium">Role</th>
+                    <th scope="col" class="py-2 pr-6 font-medium">Username</th>
+                    <th scope="col" class="py-2 pr-6 font-medium">Password</th>
+                    <th scope="col" class="py-2 font-medium">Role</th>
                 </tr>
             </thead>
             <tbody>

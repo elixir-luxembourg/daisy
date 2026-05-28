@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}Users{% endblock %}
+{% block title %}Users | DAISY{% endblock %}
 
 {% block content %}
     <div class="mt-4 p-8 rounded bg-gray-50">
@@ -10,10 +10,10 @@
     <table id="users_table" class="display w-full text-sm" style="width:100%">
         <thead>
             <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Source</th>
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Source</th>
             </tr>
         </thead>
         <tbody>
@@ -35,5 +35,5 @@
 {% endblock %}
 
 {% block floating-buttons %}
-    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'users_add' %}" title="Add user"><i data-lucide="plus" class="h-6 w-6"></i></a>
+    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'users_add' %}" title="Add user" aria-label="Add user"><i data-lucide="plus" class="h-6 w-6"></i></a>
 {% endblock %}

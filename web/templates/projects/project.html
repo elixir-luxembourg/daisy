@@ -1,11 +1,11 @@
 {% extends 'layout.html' %}
 
-{% block title %}{{ project.acronym }}{% endblock %}
+{% block title %}{{ project.acronym }} | DAISY{% endblock %}
 
 {% block head_end %}{{ document_form.media }}{% endblock %}
 
 {% block content %}
-{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white rounded-full bg-blue-900" badge2="inline-flex items-center px-3 py-1 text-xs font-medium text-gray-700 rounded-full bg-gray-200" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" add="inline-flex h-9 w-9 items-center justify-center text-white rounded-full bg-blue-900 hover:bg-blue-800" addsum="inline-flex h-9 w-9 items-center justify-center text-white rounded-full bg-blue-900 hover:bg-blue-800 cursor-pointer list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 mt-2 hidden w-56 rounded border border-gray-200 bg-white shadow-lg group-open:block" item="block w-full px-4 py-2 text-left text-sm hover:bg-gray-50" title2="flex items-center gap-2 text-2xl font-light" %}
+{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-blue-900 rounded-full" badge2="inline-flex items-center px-3 py-1 text-xs font-medium text-gray-700 bg-gray-200 rounded-full" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" add="inline-flex items-center justify-center h-9 w-9 text-white bg-blue-900 rounded-full hover:bg-blue-800" addsum="inline-flex items-center justify-center h-9 w-9 text-white bg-blue-900 rounded-full cursor-pointer list-none hover:bg-blue-800 [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 hidden mt-2 w-56 bg-white rounded border border-gray-200 shadow-lg group-open:block" item="block px-4 py-2 w-full text-left text-sm hover:bg-gray-50" title2="flex items-center gap-2 text-2xl font-light" %}
     <div class="relative mt-4 p-8 rounded bg-gray-50">
         <span class="text-gray-500">Project</span>
         <h1 class="text-4xl font-light">{{ project.acronym }}</h1>
@@ -81,7 +81,7 @@
                    href="{% url 'project_edit' pk=project.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
                 {% if not project.is_published %}
                     <a id="deleteproject"
-                       class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-red-600 shadow hover:bg-red-700"
+                       class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-red-900 shadow hover:bg-red-800"
                        title="Delete project"
                        data-toggle="modal"
                        data-target="#modal"
@@ -92,7 +92,7 @@
     </div>
 
     {% if project.description %}
-        <div class="mt-4 rounded border border-l-4 border-gray-200 border-l-blue-900 bg-white shadow-sm">
+        <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="text-2xl font-light">Lay Summary</h2>
                 <blockquote>{{ project.description|linebreaks }}</blockquote>
@@ -198,7 +198,7 @@
                 </div>
             {% else %}
                 {% if can_edit %}
-                    <p class="mt-4 text-center text-red-600"><br/><em>Project is empty!</em></p>
+                    <p class="mt-4 text-center text-red-700"><br/><em>Project is empty!</em></p>
                     <div class="mt-2 flex items-center justify-center gap-2 text-gray-500"><p>Click here to create a dataset</p><i data-lucide="arrow-right" class="h-5 w-5"></i></div>
                 {% endif %}
             {% endif %}

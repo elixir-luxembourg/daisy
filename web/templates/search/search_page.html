@@ -1,7 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}Search page{% endblock %}
-{% block containerclass %}container{% endblock %}
+{% block title %}{{ title }} | DAISY{% endblock %}
 
 
 {% block content %}
@@ -25,7 +24,7 @@
         </div>
 
         <div id="sidebar-responsive-left" class="order-6 col-span-12 mt-4 md:hidden">
-            <h1 class="text-4xl font-light">Filter the results</h1>
+            <h2 class="text-4xl font-light">Filter the results</h2>
             {% include '_includes/facets_sidebar.html' with facets=facets url=search_url %}
         </div>
     </div>
@@ -33,10 +32,10 @@
 
 
 {% block floating-buttons %}
-    <a class="float-right inline-flex h-12 w-12 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url add_url %}{% if reset %}?reset=true{% endif %}">
+    <a class="float-right inline-flex h-12 w-12 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url add_url %}{% if reset %}?reset=true{% endif %}" aria-label="Add new {{ title|lower }}">
         <i data-lucide="plus" class="h-6 w-6"></i>
     </a>
-    <a class="float-right inline-flex h-12 w-12 items-center justify-center text-gray-700 rounded-full border border-gray-300 bg-white shadow-lg hover:bg-gray-50 md:hidden" href="#sidebar-responsive-left">
+    <a class="float-right inline-flex h-12 w-12 items-center justify-center text-gray-700 rounded-full border border-gray-300 bg-white shadow-lg hover:bg-gray-50 md:hidden" href="#sidebar-responsive-left" aria-label="Filter the results">
         <i data-lucide="arrow-down-wide-narrow" class="h-6 w-6"></i>
     </a>
 {% endblock %}

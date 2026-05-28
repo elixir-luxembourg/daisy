@@ -1,4 +1,4 @@
-{% with badge="ml-1 mb-1 inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full bg-gray-200 text-gray-800" %}
+{% with badge="inline-flex items-center ml-1 mb-1 px-2.5 py-0.5 text-xs font-medium text-gray-800 bg-gray-200 rounded-full" %}
 {% for cohort in data.cohorts %}
     <div class="mb-4">
         <div class="rounded border border-gray-200 bg-white shadow-sm">
@@ -18,7 +18,7 @@
                             "unknown"
                         {% endfor %}</li>
                         <li class="flex items-center"><strong>Ethics Confirmation:</strong> {% if cohort.ethics_confirmation %}
-                            <i data-lucide="check" class="ml-1 h-5 w-5 text-green-600"></i>
+                            <i data-lucide="check" class="ml-1 h-5 w-5 text-green-600"></i><span class="sr-only">Confirmed</span>
                         {% else %}
                             "missing"
                         {% endif %}

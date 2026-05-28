@@ -1,4 +1,4 @@
-{% with badge="ml-1 inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full bg-gray-200 text-gray-800" %}
+{% with badge="inline-flex items-center ml-1 px-2.5 py-0.5 text-xs font-medium text-gray-800 bg-gray-200 rounded-full" %}
 {% for partner in data.partners %}
     <div class="mb-4">
         <div class="rounded border border-gray-200 bg-white shadow-sm">
@@ -7,7 +7,7 @@
                     <a href="{% url 'partner' pk=partner.pk %}" class="inline-flex items-center gap-1 text-blue-700 hover:underline">
                       {{ partner.name }} {% if partner.acronym %}({{ partner.acronym }}){% endif %}
                       {% if partner.is_clinical %}
-                        <i data-lucide="hospital" class="h-5 w-5"></i>
+                        <i data-lucide="hospital" class="h-5 w-5"></i><span class="sr-only">Clinical</span>
                       {% endif %}
                     </a>
                 </h2>

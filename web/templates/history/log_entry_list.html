@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 
-{% block title %}Access logs of access {{ request.args.pk }}{% endblock %}
+{% block title %}History | DAISY{% endblock %}
 
 {% block content %}
     <details open class="group">
@@ -14,9 +14,9 @@
         <form class="w-full rounded border border-gray-200 bg-white">
             <div class="flex flex-wrap p-4">
                 <div class="m-1 w-1/4 grow p-4">
-                    <h6>Log author</h6>
+                    <label for="filter-user" class="block">Log author</label>
                     <div class="bg-white">
-                        <select class="block w-full rounded border border-gray-300 px-3 py-2" name="user">
+                        <select id="filter-user" class="block px-3 py-2 w-full rounded border border-gray-300" name="user">
                             <option value="none" selected disabled hidden>
                                 Choose a user...
                             </option>
@@ -27,9 +27,9 @@
                     </div>
                 </div>
                 <div class="m-1 w-1/4 grow p-4">
-                    <h6>Action performed</h6>
+                    <label for="filter-action" class="block">Action performed</label>
                     <div class="bg-white">
-                        <select class="block w-full rounded border border-gray-300 px-3 py-2" name="action">
+                        <select id="filter-action" class="block px-3 py-2 w-full rounded border border-gray-300" name="action">
                             <option value="none" selected hidden disabled>
                                 Choose an action...
                             </option>
@@ -42,22 +42,22 @@
                     </div>
                 </div>
                 <div class="m-1 w-1/4 grow p-4">
-                    <h6>Date range</h6>
+                    <span class="block">Date range</span>
                     <div class="flex flex-col bg-white">
                         <div class="inline-flex items-center justify-around">
-                            <span>Start date</span>
-                            <input id="log_entry_start_date" type="text" class="datepicker w-1/2 rounded border border-gray-300 px-3 py-2" name="start_date" value="{{ start_date }}" />
+                            <label for="log_entry_start_date">Start date</label>
+                            <input id="log_entry_start_date" type="date" class="datepicker px-3 py-2 w-1/2 rounded border border-gray-300" name="start_date" value="{{ start_date }}" />
                         </div>
                         <div class="inline-flex items-center justify-around">
-                            <span>End date</span>
-                            <input id="log_entry_end_date" type="text" class="datepicker w-1/2 rounded border border-gray-300 px-3 py-2" name="end_date" value="{{ end_date }}"/>
+                            <label for="log_entry_end_date">End date</label>
+                            <input id="log_entry_end_date" type="date" class="datepicker px-3 py-2 w-1/2 rounded border border-gray-300" name="end_date" value="{{ end_date }}"/>
                         </div>
                     </div>
                 </div>
                 <div class="m-1 w-1/4 grow-0 p-4">
-                    <h6>Model</h6>
+                    <label for="model-select" class="block">Model</label>
                     <div class="bg-white">
-                        <select id="model-select" class="block w-full rounded border border-gray-300 px-3 py-2" name="entity_name">
+                        <select id="model-select" class="block px-3 py-2 w-full rounded border border-gray-300" name="entity_name">
                             <option value="none" selected hidden disabled>Choose a model...</option>
                             {% for model in models_list %}
                                 <option value="{{ model }}">{{ model | title }}</option>
@@ -66,9 +66,9 @@
                     </div>
                 </div>
                 <div id="model-fields-filter" class="m-1 hidden w-1/4 grow-0 p-4">
-                    <h6>Model fields</h6>
+                    <label for="filter-entity-attr" class="block">Model fields</label>
                     <div class="bg-white">
-                        <select class="block w-full rounded border border-gray-300 px-3 py-2" name="entity_attr">
+                        <select id="filter-entity-attr" class="block px-3 py-2 w-full rounded border border-gray-300" name="entity_attr">
                             <option value="none" selected hidden disabled>Choose a field...</option>
                             {% for attr in model_attributes %}
                                 <option value="{{ attr }}">{{ attr | title }}</option>
@@ -86,7 +86,7 @@
                     {% endif %}
                 {% endif %}
             </div>
-            <button class="m-4 inline-flex items-center px-4 py-2 text-white rounded bg-blue-900 hover:bg-blue-800" type="submit" action="{% url 'history' %}">Filter</button>
+            <button class="inline-flex items-center m-4 px-4 py-2 text-white bg-blue-900 rounded hover:bg-blue-800" type="submit" action="{% url 'history' %}">Filter</button>
         </form>
     </details>
     <div class="mr-auto">

@@ -5,15 +5,15 @@
             {% csrf_token %}
             <div class="mt-2">
                 <strong>{{ form.file.label_tag }}</strong>
-                <input type="file" name="{{ form.file.name }}" class="block w-full rounded border border-gray-300 px-3 py-2" required
+                <input type="file" name="{{ form.file.name }}" class="block px-3 py-2 w-full rounded border border-gray-300" required
                        id="{{ form.file.id_for_label }}" accept=".json">
                 {% if form.file.errors %}
-                    <div class="text-red-600">
+                    <div class="text-red-700">
                         {{ form.file.errors|striptags }}
                     </div>
                 {% endif %}
             </div>
-            <button id="ajaxSubmitButton" type="button" class="mt-4 inline-flex w-full items-center justify-center px-4 py-2 text-white rounded bg-blue-900 hover:bg-blue-800">Submit</button>
+            <button id="ajaxSubmitButton" type="button" class="inline-flex items-center justify-center mt-4 px-4 py-2 w-full text-white bg-blue-900 rounded hover:bg-blue-800">Submit</button>
         </form>
     {% else %}
         <div>

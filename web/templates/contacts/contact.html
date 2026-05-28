@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
 
-{% block title %}{{ contact.full_name }}{% endblock %}
+{% block title %}{{ contact.full_name }} | DAISY{% endblock %}
 
 {% block content %}
-{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white rounded-full bg-blue-900" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" title2="text-2xl font-light" %}
+{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-blue-900 rounded-full" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" title2="text-2xl font-light" %}
     <div class="relative mt-4 p-8 rounded bg-gray-50">
         <span class="text-gray-500">Contact</span>
         <h1 class="text-4xl font-light">{{ contact.full_name }}</h1>
@@ -38,11 +38,11 @@
             </div>
         </div>
         <div class="absolute top-4 right-4 flex gap-2">
-            <a class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-blue-900 shadow hover:bg-blue-800"
+            <a class="inline-flex items-center justify-center h-10 w-10 text-white bg-blue-900 rounded-full shadow hover:bg-blue-800"
                title="Edit contact"
                href="{% url 'contact_edit' pk=contact.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
             <a id="deletecontact"
-               class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-red-600 shadow hover:bg-red-700"
+               class="inline-flex items-center justify-center h-10 w-10 text-white bg-red-900 rounded-full shadow hover:bg-red-800"
                title="Delete contact"
                data-toggle="modal" data-target="#modal"
                data-ajax-url="{% url 'contact_delete' contact.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>
@@ -70,7 +70,7 @@
                                 <tr class="odd:bg-gray-50">
                                     <td class="{{ td }}"><a href="{% url 'contract' pk=partner_role.contract.id %}" class="inline-flex items-center px-3 py-1 text-sm font-medium text-blue-900 rounded border border-blue-900 hover:bg-blue-50">Go to contract</a></td>
                                     <td class="{{ td }}">{{ partner_role.partner.name }}</td>
-                                    <td class="{{ td }}"><strong alt="{{ partner_role.contract.project.title|truncatechars:75 }}">{{ partner_role.contract.project.acronym }}</strong></td>
+                                    <td class="{{ td }}"><strong title="{{ partner_role.contract.project.title|truncatechars:75 }}">{{ partner_role.contract.project.acronym }}</strong></td>
                                     <td class="{{ td }}">
                                         {% for custodian in partner_role.contract.local_custodians.all %}
                                             {{ custodian|truncatechars:100 }}

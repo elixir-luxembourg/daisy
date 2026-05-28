@@ -9,7 +9,7 @@
                 <ul class="py-1 text-left">
                     {% if project.project_web_page %}<li>Web: {{ project.project_web_page }}</li>{% endif %}
                     <li class="flex items-center">
-                        <strong>Publications:</strong> <span class="ml-1 inline-flex items-center px-2.5 py-0.5 text-xs font-medium text-white rounded-full bg-sky-600">{{ project.publications|length }}</span>
+                        <strong>Publications:</strong> <span class="inline-flex items-center ml-1 px-2.5 py-0.5 text-xs font-medium text-blue-900 bg-sky-200 rounded-full">{{ project.publications|length }}</span>
                     </li>
                 </ul>
                 <a href="{% url 'project' pk=project.pk %}" class="mt-2 inline-flex items-center px-4 py-2 text-gray-700 rounded border border-gray-300 hover:bg-gray-50">Details &raquo;</a>

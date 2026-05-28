@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}Projects{% endblock %}
+{% block title %}Projects | DAISY{% endblock %}
 
 {% block content %}
     <div class="mt-4 p-8 rounded bg-gray-50">
@@ -11,7 +11,7 @@
             <div class="card-item m-2 rounded border border-gray-200 bg-white shadow-sm">
                 <div class="p-4">
                     <h2 class="mb-2 text-xl font-semibold">{{ project }}</h2>
-                    <a href="{% url 'project' pk=project.id %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded bg-blue-900 hover:bg-blue-800">Details</a>
+                    <a href="{% url 'project' pk=project.id %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-900 rounded hover:bg-blue-800">Details</a>
                 </div>
             </div>
         {% empty %}
@@ -22,5 +22,5 @@
 
 
 {% block floating-buttons %}
-    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'project_add' %}" title="Add project"><i data-lucide="plus" class="h-6 w-6"></i></a>
+    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'project_add' %}" title="Add project" aria-label="Add project"><i data-lucide="plus" class="h-6 w-6"></i></a>
 {% endblock %}

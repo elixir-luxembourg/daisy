@@ -2,14 +2,14 @@
                 <table class="w-full text-sm">
                     <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-3 py-2 text-left font-semibold" style="max-width: 200px; overflow: auto">Document Type</th>
-                        <th class="px-3 py-2 text-left font-semibold" style="max-width: 200px; min-width:120px; overflow: auto">Expiry</th>
-                        <th class="px-3 py-2 text-left font-semibold">Notes</th>
-                        <th class="px-3 py-2 text-left font-semibold" style="max-width: 400px; overflow: auto">File</th>
-                        <th class="px-3 py-2 text-left font-semibold" style="max-width: 200px; overflow: auto"><small>Size</small></th>
+                        <th scope="col" class="px-3 py-2 text-left font-semibold" style="max-width: 200px; overflow: auto">Document Type</th>
+                        <th scope="col" class="px-3 py-2 text-left font-semibold" style="max-width: 200px; min-width:120px; overflow: auto">Expiry</th>
+                        <th scope="col" class="px-3 py-2 text-left font-semibold">Notes</th>
+                        <th scope="col" class="px-3 py-2 text-left font-semibold" style="max-width: 400px; overflow: auto">File</th>
+                        <th scope="col" class="px-3 py-2 text-left font-semibold" style="max-width: 200px; overflow: auto"><small>Size</small></th>
 
                         {% if can_edit %}
-                            <th id="document-action-head" class="px-3 py-2 text-left font-semibold" style="width:7em">Actions</th>
+                            <th scope="col" id="document-action-head" class="px-3 py-2 text-left font-semibold" style="width:7em">Actions</th>
                         {% endif %}
                     </tr>
                     </thead>
@@ -23,7 +23,7 @@
                             <td class="px-3 py-2 border-t border-gray-200"><small>{{ file.size | filesizeformat  }}</small></td>
                             {% if can_edit %}
                                 <td id="document-action" class="px-3 py-2 border-t border-gray-200">
-                                    <a data-toggle="modal" id="btnupdate" class="jsBtn clickable inline-flex"
+                                    <button type="button" data-toggle="modal" id="btnupdate" class="jsBtn clickable inline-flex p-0 text-blue-700 bg-transparent border-0 hover:text-blue-900"
                                        data-target="#modal"
                                        data-modal-title="Update document"
                                        data-post-mode="true"
@@ -33,13 +33,15 @@
                                            data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"
                                        {% endif %}
                                        data-ajax-url="{% url "document_edit" pk=file.id %}"
-                                       title="Update document">
+                                       aria-label="Update document" title="Update document">
                                         <i data-lucide="pencil" class="h-5 w-5"></i>
-                                    </a>
-                                    <i title="Delete document" data-lucide="trash-2" class="clickable inline-flex h-5 w-5 text-red-600" data-method="delete"
-                                       data-confirmation = "delete"
+                                    </button>
+                                    <button type="button" aria-label="Delete document" title="Delete document" class="clickable inline-flex p-0 text-red-700 bg-transparent border-0 hover:text-red-900" data-method="delete"
+                                       data-confirmation="delete"
                                        data-parent-to-remove="tr"
-                                       data-url="{% url 'document_delete' pk=file.id  %}"></i>
+                                       data-url="{% url 'document_delete' pk=file.id  %}">
+                                        <i data-lucide="trash-2" class="h-5 w-5"></i>
+                                    </button>
                                 </td>
                             {% endif %}
                         </tr>

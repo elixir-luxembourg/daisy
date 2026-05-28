@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
 
-{% block title %}{{ dac.title }}{% endblock %}
+{% block title %}{{ dac.title }} | DAISY{% endblock %}
 
 {% block content %}
-{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white rounded-full bg-blue-900" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" add="inline-flex h-9 w-9 items-center justify-center text-white rounded-full bg-blue-900 hover:bg-blue-800" delc="h-5 w-5 cursor-pointer text-red-600" title2="text-2xl font-light" %}
+{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-blue-900 rounded-full" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" add="inline-flex items-center justify-center h-9 w-9 text-white bg-blue-900 rounded-full hover:bg-blue-800" delc="h-5 w-5 cursor-pointer text-red-700" title2="text-2xl font-light" %}
     <div class="relative mt-4 p-8 rounded bg-gray-50">
         <span class="text-gray-500">Data Access Committee (DAC)</span>
         <h1 class="text-4xl font-light">{{ dac.title }}</h1>
@@ -37,7 +37,7 @@
         </div>
         <div class="absolute top-4 right-4 flex gap-2">
             {% if can_edit %}
-                <a class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-blue-900 shadow hover:bg-blue-800"
+                <a class="inline-flex items-center justify-center h-10 w-10 text-white bg-blue-900 rounded-full shadow hover:bg-blue-800"
                    title="Edit DAC"
                    href="{% url 'dac_edit' pk=dac.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
             {% endif %}
@@ -89,7 +89,7 @@
                                 <td class="{{ td }}">{{ member.remark }}</td>
                                 {% if can_edit %}
                                     <td class="{{ td }}" id="document-action">
-                                        <i title="Delete document" class="{{ delc }}" data-lucide="trash-2" data-method="delete"
+                                        <i title="Delete member" class="{{ delc }}" data-lucide="trash-2" data-method="delete"
                                            data-confirmation="delete"
                                            data-parent-to-remove="tr"
                                            data-url="{% url 'remove_member_from_dac' dac_pk=dac.id member_pk=member.id %}"></i>

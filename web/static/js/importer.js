@@ -1,30 +1,26 @@
 $(document).ready(function () {
-    // Show the modal when the button is clicked
-    $('#importModalButton').click(function () {
-        document.getElementById('importModal').showModal();
+    const importModal = document.getElementById("importModal");
+    if (!importModal || typeof importDataUrl === "undefined") {
+        return;
+    }
+
+    $("#importModalButton").click(function () {
+        importModal.showModal();
         fetchForm();
     });
 
-    $('#importModalClose').click(function () {
-        document.getElementById('importModal').close();
+    $("#importModalClose").click(function () {
+        importModal.close();
     });
 
-    // Fetch the form via AJAX
     function fetchForm() {
         $.get(importDataUrl, function (data) {
             $("#importForm").html(data.form_html);
-            // Initially disable the submit button
             $("#ajaxSubmitButton").prop("disabled", true);
-            // Monitor changes on the file input
             $("#id_file").on("change", function () {
-                // If file input has a file, enable the submit button
-                if ($(this).val()) {
-                    $("#ajaxSubmitButton").prop("disabled", false);
-                } else {
-                    $("#ajaxSubmitButton").prop("disabled", true);
-                }
+                $("#ajaxSubmitButton").prop("disabled", !$(this).val());
             });
-            $('#ajaxSubmitButton').on('click', function () {
+            $("#ajaxSubmitButton").on("click", function () {
                 submitForm();
             });
         });
@@ -32,10 +28,14 @@ $(document).ready(function () {
 });
 
 function submitForm() {
-    const formData = new FormData($('#importForm form')[0]);
+    const form = $("#importForm form")[0];
+    if (!form) {
+        return;
+    }
+    const formData = new FormData(form);
     $.ajax({
         url: importDataUrl,
-        type: 'POST',
+        type: "POST",
         data: formData,
         cache: false,
         contentType: false,

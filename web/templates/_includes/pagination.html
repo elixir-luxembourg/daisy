@@ -1,9 +1,9 @@
 <nav aria-label="Page navigation">
-{% with link="inline-flex items-center justify-center px-3 py-2 text-sm rounded border border-gray-300 hover:bg-gray-50" active="inline-flex items-center justify-center px-3 py-2 text-sm font-semibold text-white rounded border border-blue-900 bg-blue-900" %}
+{% with link="inline-flex items-center justify-center px-3 py-2 text-sm rounded border border-gray-300 hover:bg-gray-50" active="inline-flex items-center justify-center px-3 py-2 text-sm font-semibold text-white bg-blue-900 rounded border border-blue-900" %}
     <ul class="flex justify-center gap-1">
         {% if page_object.has_previous %}
             <li>
-                <a class="{{ link }}" href="{{url}}?page=1" aria-label="Previous">
+                <a class="{{ link }}" href="{{url}}?page=1" aria-label="First page">
                 <span aria-hidden="true">&laquo;</span>
                 <span class="sr-only">begin</span>
                 </a>
@@ -22,7 +22,7 @@
 
         {% if page_object.has_next %}
             <li>
-                <a class="{{ link }}" href="{{url}}?page={{ page_object.paginator.num_pages }}" aria-label="Next">
+                <a class="{{ link }}" href="{{url}}?page={{ page_object.paginator.num_pages }}" aria-label="Last page">
                     <span aria-hidden="true">&raquo;</span>
                     <span class="sr-only">end</span>
                 </a>

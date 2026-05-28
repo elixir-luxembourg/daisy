@@ -96,17 +96,16 @@ def _search_objects(query, filters, facets, model_object, order_by=None):
 
 def filter_empty_facets(facets):
     """
-    Filter facets that are empty or that all terms have 0 results.
+    Drop zero-count terms but keep every configured facet category, even when it
+    ends up with no terms. Empty categories survive as [] so the sidebar keeps a
+    stable set of filters and can render an empty state instead of disappearing.
     facets: the facets_counts() result from the search result
     """
     fields = facets.get("fields", {})
-    filtered = {}
-    for item, values in fields.items():
-        for term, count in values:
-            if count > 0:
-                filtered[item] = values
-                break
-    facets["fields"] = filtered
+    facets["fields"] = {
+        item: [(term, count) for term, count in values if count > 0]
+        for item, values in fields.items()
+    }
     return facets
 
 

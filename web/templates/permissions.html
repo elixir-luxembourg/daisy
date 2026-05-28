@@ -1,6 +1,8 @@
 {% extends 'layout.html' %}
 {% load static %}
 
+{% block title %}Change permissions | DAISY{% endblock %}
+
 {% block content %}
     <div class="mt-4 p-8 rounded bg-gray-50">
         <h1 class="text-4xl font-light">Change permissions on {{ selection }} {{ object.title }}</h1>
@@ -69,10 +71,10 @@
 
 {% block floating-buttons %}
     {% if selection == 'project' %}
-        <a class="float-right inline-flex h-12 w-12 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'project' pk=object.id %}"><i data-lucide="arrow-left" class="h-6 w-6"></i>
+        <a class="float-right inline-flex items-center justify-center h-12 w-12 text-white bg-blue-900 rounded-full shadow-lg hover:bg-blue-800" href="{% url 'project' pk=object.id %}" title="Back to project" aria-label="Back to project"><i data-lucide="arrow-left" class="h-6 w-6"></i>
         </a>
     {% elif selection == 'dataset' %}
-        <a class="float-right inline-flex h-12 w-12 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'dataset' pk=object.id %}"><i data-lucide="arrow-left" class="h-6 w-6"></i>
+        <a class="float-right inline-flex items-center justify-center h-12 w-12 text-white bg-blue-900 rounded-full shadow-lg hover:bg-blue-800" href="{% url 'dataset' pk=object.id %}" title="Back to dataset" aria-label="Back to dataset"><i data-lucide="arrow-left" class="h-6 w-6"></i>
         </a>
     {% endif %}
 {% endblock %}
@@ -83,25 +85,23 @@
 
     <script type='text/javascript'>
         $(document).ready(function () {
-            // initialize dynamic formset
             $('#formset tbody tr').formset({
-                prefix: 'form',                  // The form prefix for your django formset
-                formTemplate: null,              // The jQuery selection cloned to generate new form instances
-                addText: '<i data-lucide="plus" class="h-5 w-5"></i>',          // Text for the add link
-                deleteText: '<i data-lucide="trash-2" class="h-5 w-5"></i>',            // Text for the delete link
-                addCssClass: 'add-row',          // CSS class applied to the add link
-                deleteCssClass: 'delete-row',    // CSS class applied to the delete link
-                formCssClass: 'dynamic-form',    // CSS class applied to each form in a formset
-                extraClasses: [],                // Additional CSS classes, which will be applied to each form in turn
-                keepFieldValues: '',             // jQuery selector for fields whose values should be kept when the form is cloned
+                prefix: 'form',
+                formTemplate: null,
+                addText: '<i data-lucide="plus" class="h-5 w-5"></i>',
+                deleteText: '<i data-lucide="trash-2" class="h-5 w-5"></i>',
+                addCssClass: 'add-row inline-flex items-center gap-1 mt-3 text-sm font-medium text-blue-900 hover:text-blue-700',
+                deleteCssClass: 'delete-row inline-flex text-red-700 hover:text-red-800 cursor-pointer',
+                formCssClass: 'dynamic-form',
+                extraClasses: [],
+                keepFieldValues: '',
                 added: function (dom) {
                     $(dom).find('select').select2({width: '100%',});
                     lucide.createIcons();
-                },                     // Function called each time a new form is added
-                removed: null                    // Function called each time a form is deleted
+                },
+                removed: null
             });
             lucide.createIcons();
-            // make select nicer
             var select2 = $('#form-container select').select2({
                 width: '100%',
             });

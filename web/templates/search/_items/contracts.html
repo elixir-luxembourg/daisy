@@ -6,7 +6,7 @@
                     <a href="{% url 'contract' pk=contract.pk %}" class="text-blue-700 hover:underline">{{ contract.partners | join:", " }}{% if contract.project %}<small class="text-base text-gray-500"> - "{{ contract.project }}"</small>{% endif %}</a>
                 </h2>
                 <ul class="py-1 text-left">
-                    <li class="flex items-center"><strong>Project:</strong> <span class="ml-1 inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full bg-gray-200 text-gray-800">{{ contract.project }}</span></li>
+                    <li class="flex items-center"><strong>Project:</strong> <span class="inline-flex items-center ml-1 px-2.5 py-0.5 text-xs font-medium text-gray-800 bg-gray-200 rounded-full">{{ contract.project }}</span></li>
                     {% if contract.partners_roles %}
                         <li class="flex items-center"><strong>Partners roles: </strong>{{ contract.partners_roles | join:", " }}</li>
                     {% endif %}

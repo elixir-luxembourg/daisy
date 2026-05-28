@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}Documents{% endblock %}
+{% block title %}Documents | DAISY{% endblock %}
 
 {% block content %}
     <div class="mt-4 p-8 rounded bg-gray-50">
@@ -8,7 +8,6 @@
     </div>
 
     {%  if document_list %}
-    <div>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <caption class="py-2 text-left text-gray-500">List of documents</caption>
@@ -37,11 +36,10 @@
     {% else %}
         <p>No documents yet</p>
     {%  endif %}
-    </div>
 
 {% endblock %}
 
 
 {% block floating-buttons %}
-    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'document_add' %}" title="Add document"><i data-lucide="plus" class="h-6 w-6"></i></a>
+    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'document_add' %}" title="Add document" aria-label="Add document"><i data-lucide="plus" class="h-6 w-6"></i></a>
 {% endblock %}

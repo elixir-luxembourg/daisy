@@ -1,10 +1,11 @@
 {% extends 'layout.html' %}
 
+{% block title %}{{ contract }} | DAISY{% endblock %}
 {% block content_title %}{{ contract }}{% endblock %}
 {% block head_end %}{{ document_form.media }}{% endblock %}
 
 {% block content %}
-{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white rounded-full bg-blue-900" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" add="inline-flex h-9 w-9 items-center justify-center text-white rounded-full bg-blue-900 hover:bg-blue-800" addsum="inline-flex h-9 w-9 items-center justify-center text-white rounded-full bg-blue-900 hover:bg-blue-800 cursor-pointer list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 mt-2 hidden w-56 rounded border border-gray-200 bg-white shadow-lg group-open:block" item="block w-full px-4 py-2 text-left text-sm hover:bg-gray-50" editc="h-5 w-5 cursor-pointer text-blue-700" delc="h-5 w-5 cursor-pointer text-red-600" title2="flex items-center gap-2 text-2xl font-light" %}
+{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-blue-900 rounded-full" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" add="inline-flex items-center justify-center h-9 w-9 text-white bg-blue-900 rounded-full hover:bg-blue-800" addsum="inline-flex items-center justify-center h-9 w-9 text-white bg-blue-900 rounded-full hover:bg-blue-800 cursor-pointer list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 mt-2 hidden w-56 bg-white rounded border border-gray-200 shadow-lg group-open:block" item="block w-full px-4 py-2 text-left text-sm hover:bg-gray-50" editc="h-5 w-5 cursor-pointer text-blue-700" delc="h-5 w-5 cursor-pointer text-red-700" title2="flex items-center gap-2 text-2xl font-light" %}
     <div class="relative mt-4 p-8 rounded bg-gray-50">
         <span class="text-gray-500">Contract</span>
         <h1 class="text-4xl font-light">{{ contract }}</h1>
@@ -32,12 +33,12 @@
         </div>
         <div class="absolute top-4 right-4 flex gap-2">
             {% if can_edit %}
-                <a class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-blue-900 shadow hover:bg-blue-800"
+                <a class="inline-flex items-center justify-center h-10 w-10 text-white bg-blue-900 rounded-full shadow hover:bg-blue-800"
                    title="Edit contract"
                    href="{% url 'contract_edit' pk=contract.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
                 {% if not contract.is_published %}
                     <a id="deletecontract"
-                       class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-red-600 shadow hover:bg-red-700"
+                       class="inline-flex items-center justify-center h-10 w-10 text-white bg-red-900 rounded-full shadow hover:bg-red-800"
                        title="Delete contract"
                        data-toggle="modal" data-target="#modal"
                        data-ajax-url="{% url 'contract_delete' pk=contract.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>

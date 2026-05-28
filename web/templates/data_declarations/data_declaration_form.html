@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}Data declaration - Add{% endblock %}
+{% block title %}Add data declaration | DAISY{% endblock %}
 
 {% block content %}
     <div class="mt-4 p-8 rounded bg-gray-50">
@@ -19,14 +19,16 @@
 {% block js %}
     <script>$(document).ready(function () {
         $('input[type=radio][name="type"]').change(function () {
-            var value = this.value;
-            var form = $("#declaration-form-host form");
-            var submit_button = form.find("button[type='submit']");
+            const value = this.value;
+            const form = $("#declaration-form-host form");
+            const submit_button = form.find("button[type='submit']");
             $("#sub-form").remove();
-            var sub_form = $("<div id='sub-form'>");
+            const sub_form = $("<div id='sub-form'>");
             submit_button.before(sub_form);
             sub_form.load('{% url 'data_declarations_add_sub_form' %}?declaration_type=' + value + '&dataset_id={{ dataset.id }}', function () {
-                sub_form.find('select').select2();
+                if ($.fn.select2) {
+                    sub_form.find('select').select2();
+                }
 
             });
 

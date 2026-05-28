@@ -1,0 +1,164 @@
+{% load daisy_utils %}
+<section class="grid grid-cols-1 gap-10 pt-10 pb-16 lg:grid-cols-12 lg:gap-10">
+    <div class="lg:col-span-8">
+        {% if notifications_enabled %}
+        <div class="flex items-baseline justify-between pb-3 border-b border-gray-300">
+            <h2 class="text-2xl font-medium text-blue-950">Upcoming key dates</h2>
+            <a href="{% url 'notifications' %}" class="text-sm text-blue-950 hover:underline">All notifications →</a>
+        </div>
+        {% if deadlines %}
+        <div class="grid grid-cols-[6rem_7.5rem_1fr] items-baseline gap-4 pt-3 pb-2 text-xs font-medium tracking-widest text-gray-500">
+            <span>Date</span>
+            <span>Event</span>
+            <span>Detail</span>
+        </div>
+        <ul data-paginate="deadlines" data-page-size="{{ page_size }}">
+            {% for n in deadlines %}
+            <li class="border-b border-gray-200" data-paginate-item {% if forloop.counter > page_size %}hidden{% endif %}>
+                <a href="{% if n.content_object %}{{ n.content_object.get_absolute_url }}{% else %}#{% endif %}" class="grid grid-cols-[6rem_7.5rem_1fr] items-baseline gap-4 py-3 hover:bg-gray-50">
+                    <time datetime="{{ n.on|date:'c' }}" class="font-mono text-sm text-blue-950">{{ n.on|date:"d/m/Y" }}</time>
+                    <span class="whitespace-nowrap text-xs uppercase tracking-widest text-gray-500">{{ n.verb.name|un_underscore }}</span>
+                    <span class="text-blue-950 truncate min-w-0">{{ n.message }}</span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% if deadlines|length > page_size %}{% include '_includes/paginate_controls.html' with key='deadlines' %}{% endif %}
+        {% else %}
+        <p class="mt-6 text-gray-600">No upcoming deadlines within your notice window. <a href="{% url 'notifications_settings' %}" class="text-blue-950 hover:underline">Adjust your notice window →</a></p>
+        {% endif %}
+        {% endif %}
+
+        <div class="mt-12">
+            <div class="flex items-baseline justify-between pb-3 border-b border-gray-300">
+                <h2 class="text-2xl font-medium text-blue-950">Datasets under your custody</h2>
+                <a href="{% url 'datasets' %}" class="text-sm text-blue-950 hover:underline">All datasets →</a>
+            </div>
+            {% if datasets %}
+            <div class="flex items-baseline justify-between gap-4 pt-3 pb-2 text-xs font-medium tracking-widest text-gray-500">
+                <span>Title</span>
+                <span>Updated</span>
+            </div>
+            <ul data-paginate="datasets" data-page-size="{{ page_size }}">
+                {% for o in datasets %}
+                <li class="border-b border-gray-200" data-paginate-item {% if forloop.counter > page_size %}hidden{% endif %}>
+                    <a href="{% url 'dataset' pk=o.id %}" class="group flex items-baseline justify-between gap-4 py-3">
+                        <span class="text-blue-950 truncate group-hover:underline">{{ o }}</span>
+                        <time datetime="{{ o.updated|date:'c' }}" class="shrink-0 font-mono text-xs text-gray-500">{{ o.updated|date:"d/m/Y" }}</time>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% if datasets|length > page_size %}{% include '_includes/paginate_controls.html' with key='datasets' %}{% endif %}
+            {% else %}
+            <p class="mt-6 text-gray-600">No datasets list you as custodian. <a href="{% url 'dataset_wizard' %}?reset=true" class="text-blue-950 hover:underline">Start one with the wizard →</a></p>
+            {% endif %}
+        </div>
+
+        <div class="mt-12">
+            <div class="flex items-baseline justify-between pb-3 border-b border-gray-300">
+                <h2 class="text-2xl font-medium text-blue-950">Your projects</h2>
+                <a href="{% url 'projects' %}" class="text-sm text-blue-950 hover:underline">All projects →</a>
+            </div>
+            {% if projects %}
+            <div class="flex items-baseline justify-between gap-4 pt-3 pb-2 text-xs font-medium tracking-widest text-gray-500">
+                <span>Title</span>
+                <span>Updated</span>
+            </div>
+            <ul data-paginate="projects" data-page-size="{{ page_size }}">
+                {% for o in projects %}
+                <li class="border-b border-gray-200" data-paginate-item {% if forloop.counter > page_size %}hidden{% endif %}>
+                    <a href="{% url 'project' pk=o.id %}" class="group flex items-baseline justify-between gap-4 py-3">
+                        <span class="text-blue-950 truncate group-hover:underline">{{ o }}</span>
+                        <time datetime="{{ o.updated|date:'c' }}" class="shrink-0 font-mono text-xs text-gray-500">{{ o.updated|date:"d/m/Y" }}</time>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% if projects|length > page_size %}{% include '_includes/paginate_controls.html' with key='projects' %}{% endif %}
+            {% else %}
+            <p class="mt-6 text-gray-600">No projects list you yet. <a href="{% url 'project_add' %}" class="text-blue-950 hover:underline">Create one →</a></p>
+            {% endif %}
+        </div>
+
+        <div class="mt-12">
+            <div class="flex items-baseline justify-between pb-3 border-b border-gray-300">
+                <h2 class="text-2xl font-medium text-blue-950">Contracts under your custody</h2>
+                <a href="{% url 'contracts' %}" class="text-sm text-blue-950 hover:underline">All contracts →</a>
+            </div>
+            {% if contracts %}
+            <div class="flex items-baseline justify-between gap-4 pt-3 pb-2 text-xs font-medium tracking-widest text-gray-500">
+                <span>Title</span>
+                <span>Updated</span>
+            </div>
+            <ul data-paginate="contracts" data-page-size="{{ page_size }}">
+                {% for o in contracts %}
+                <li class="border-b border-gray-200" data-paginate-item {% if forloop.counter > page_size %}hidden{% endif %}>
+                    <a href="{% url 'contract' pk=o.id %}" class="group flex items-baseline justify-between gap-4 py-3">
+                        <span class="text-blue-950 truncate group-hover:underline">{{ o }}</span>
+                        <time datetime="{{ o.updated|date:'c' }}" class="shrink-0 font-mono text-xs text-gray-500">{{ o.updated|date:"d/m/Y" }}</time>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% if contracts|length > page_size %}{% include '_includes/paginate_controls.html' with key='contracts' %}{% endif %}
+            {% else %}
+            <p class="mt-6 text-gray-600">No contracts list you as custodian. <a href="{% url 'contract_add' %}" class="text-blue-950 hover:underline">Add one →</a></p>
+            {% endif %}
+        </div>
+
+        <div class="mt-12">
+            <div class="flex items-baseline justify-between pb-3 border-b border-gray-300">
+                <h2 class="text-2xl font-medium text-blue-950">Access on your datasets</h2>
+            </div>
+            {% if accesses %}
+            <div class="grid grid-cols-[6rem_10rem_minmax(0,1fr)] items-baseline gap-4 pt-3 pb-2 text-xs font-medium tracking-widest text-gray-500">
+                <span>Expires</span>
+                <span>Grantee</span>
+                <span>Dataset</span>
+            </div>
+            <ul data-paginate="accesses" data-page-size="{{ page_size }}">
+                {% for a in accesses %}
+                <li class="border-b border-gray-200" data-paginate-item {% if forloop.counter > page_size %}hidden{% endif %}>
+                    <a href="{{ a.dataset.get_absolute_url }}" class="grid grid-cols-[6rem_10rem_minmax(0,1fr)] items-baseline gap-4 py-3 hover:bg-gray-50">
+                        {% if a.grant_expires_on %}
+                        <time datetime="{{ a.grant_expires_on|date:'c' }}" class="font-mono text-sm text-blue-950">{{ a.grant_expires_on|date:"d/m/Y" }}</time>
+                        {% else %}
+                        <span class="font-mono text-xs uppercase tracking-widest text-gray-500">open</span>
+                        {% endif %}
+                        <span class="text-blue-950 truncate min-w-0">{{ a.user|default:a.contact }}</span>
+                        <span class="text-gray-600 truncate min-w-0">{{ a.dataset.title }}</span>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% if accesses|length > page_size %}{% include '_includes/paginate_controls.html' with key='accesses' %}{% endif %}
+            {% else %}
+            <p class="mt-6 text-gray-600">No active grants on your datasets.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <aside class="lg:col-span-4 lg:border-l lg:border-gray-300 lg:pl-8">
+        <p class="pb-3 border-b border-gray-300 text-xs font-medium uppercase tracking-widest text-gray-500">Add a record</p>
+        <ul>
+            <li class="border-b border-gray-200">
+                <a href="{% url 'dataset_wizard' %}?reset=true" class="flex items-center gap-3 py-3 text-blue-950 hover:underline">
+                    <i data-lucide="plus" class="h-4 w-4"></i>New dataset
+                </a>
+            </li>
+            <li class="border-b border-gray-200">
+                <a href="{% url 'project_add' %}" class="flex items-center gap-3 py-3 text-blue-950 hover:underline">
+                    <i data-lucide="plus" class="h-4 w-4"></i>New project
+                </a>
+            </li>
+            <li class="border-b border-gray-200">
+                <a href="{% url 'contract_add' %}" class="flex items-center gap-3 py-3 text-blue-950 hover:underline">
+                    <i data-lucide="plus" class="h-4 w-4"></i>New contract
+                </a>
+            </li>
+        </ul>
+
+        <p class="mt-10 pt-6 border-t border-gray-200 text-xs leading-relaxed text-gray-500">Read the <a href="https://elixir.pages.uni.lu/daisy-doc/" class="text-blue-950 hover:underline">User Guide</a> for help with records, access, and notifications.</p>
+    </aside>
+</section>

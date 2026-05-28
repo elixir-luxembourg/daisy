@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}Contacts{% endblock %}
+{% block title %}Contacts | DAISY{% endblock %}
 
 {% block content %}
     <div class="mt-4 p-8 rounded bg-gray-50">
@@ -30,7 +30,7 @@
                             <li>
                                 <strong>Affiliations: </strong>
                                 {% for partner in contact.partners.all %}
-                                    <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium text-white rounded-full bg-blue-900">{{ partner.name }}</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium text-white bg-blue-900 rounded-full">{{ partner.name }}</span>
                                 {% endfor %}
                             </li>
                         {% endif %}
@@ -40,16 +40,16 @@
                                 {{ contact.phone }}
                             </li>{% endif %}
                     </ul>
-                    <a href="{% url 'contact' pk=contact.id %}" class="inline-flex items-center mt-3 px-4 py-2 text-sm font-medium text-white rounded bg-blue-900 hover:bg-blue-800">Details</a>
+                    <a href="{% url 'contact' pk=contact.id %}" class="inline-flex items-center mt-3 px-4 py-2 text-sm font-medium text-white bg-blue-900 rounded hover:bg-blue-800">Details</a>
                 </div>
             </div>
         {% empty %}
-            <p>No partners yet</p>
+            <p>No contacts yet</p>
         {% endfor %}
     </div>
 {% endblock %}
 
 
 {% block floating-buttons %}
-    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'contact_add' %}" title="Add contact"><i data-lucide="plus" class="h-6 w-6"></i></a>
+    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'contact_add' %}" title="Add contact" aria-label="Add contact"><i data-lucide="plus" class="h-6 w-6"></i></a>
 {% endblock %}

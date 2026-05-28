@@ -1,7 +1,8 @@
 {% load widget_tweaks %}
 
 {% for error in form.non_field_errors %}
-    <div role="alert" class="flex items-start gap-3 mb-3 p-4 text-yellow-900 rounded border border-yellow-200 bg-yellow-50 shadow-sm">
+    <div role="alert" class="flex items-start gap-3 mb-3 p-4 text-red-900 bg-red-50 rounded border border-red-200 shadow-sm">
+        <i data-lucide="circle-x" class="h-5 w-5 shrink-0"></i>
         <div class="flex-1">{{ error }}</div>
         <button type="button" onclick="this.closest('[role=alert]').remove()" aria-label="Close" class="text-xl leading-none">&times;</button>
     </div>

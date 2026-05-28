@@ -7,11 +7,11 @@
                 </h2>
                 <ul class="py-1 text-left">
                     <li class="flex items-center">
-                      <strong>Role:</strong> <span class="ml-1 inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full bg-gray-200 text-gray-800">{{ contact.type }}</span>
+                      <strong>Role:</strong> <span class="inline-flex items-center ml-1 px-2.5 py-0.5 text-xs font-medium text-gray-800 bg-gray-200 rounded-full">{{ contact.type }}</span>
                     </li>
                     <li class="flex flex-wrap items-center"><strong>Affiliation(s):</strong>
                         {% for partner in contact.partners %}
-                            <span class="ml-1 mb-1 inline-flex items-center px-2.5 py-0.5 text-xs font-medium text-white rounded-full bg-blue-900">{{ partner }}</span>
+                            <span class="inline-flex items-center ml-1 mb-1 px-2.5 py-0.5 text-xs font-medium text-white bg-blue-900 rounded-full">{{ partner }}</span>
 
                         {% empty %}
                             -

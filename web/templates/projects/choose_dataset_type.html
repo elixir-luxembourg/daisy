@@ -1,13 +1,13 @@
 {% extends 'layout.html' %}
 
 
-{% block title %}Dataset - choose type{% endblock %}
+{% block title %}Choose dataset type | DAISY{% endblock %}
 
 {% block content %}
     <div class="mt-4 p-8 rounded bg-gray-50">
         <h1 class="text-4xl font-light">{% block content_title %}Choose a dataset type{% endblock %}</h1>
     </div>
-    <div class="flex flex-wrap gap-4">
+    <div class="mt-4 flex flex-wrap gap-4">
         {% for type in types %}
             <a class="mb-4 w-full rounded border border-gray-200 bg-white shadow-sm hover:bg-gray-50 md:w-5/12"
                href="{% url 'project_dataset_wizard' pk=project.pk %}">

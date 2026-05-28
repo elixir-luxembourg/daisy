@@ -1,6 +1,6 @@
 {% extends 'layout.html' %}
 
-{% block title %}Publications{% endblock %}
+{% block title %}Publications | DAISY{% endblock %}
 
 {% block content %}
     <div class="mt-4 p-8 rounded bg-gray-50">
@@ -39,5 +39,5 @@
 
 
 {% block floating-buttons %}
-    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'publication_add' %}" title="Add publication"><i data-lucide="plus" class="h-6 w-6"></i></a>
+    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'publication_add' %}" title="Add publication" aria-label="Add publication"><i data-lucide="plus" class="h-6 w-6"></i></a>
 {% endblock %}

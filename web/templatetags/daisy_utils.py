@@ -6,6 +6,7 @@ from typing import Union
 from django.template.base import Node
 from django.template.defaulttags import register
 from django.urls import reverse
+from django.utils.html import format_html
 
 from core.models import Dataset, Project, Contract
 
@@ -138,14 +139,23 @@ class FacetLinkNode(Node):
             + query_dict.urlencode(safe="/&:")
         )
 
-        # set icon to use (icon change if facet is present or not)
-        icon = "radio_button_unchecked"
-        clazz = ""
+        # facets are multi-select: each click toggles one value, several can stay active
+        icon = "square"
+        text_class = "text-gray-700"
         if is_present:
-            icon = "radio_button_checked"
-            clazz = "active"
+            icon = "square-check"
+            text_class = "font-semibold text-blue-950"
 
-        return f'<li class="{clazz} mt-1"><a href="{url}"><i class="material-icons">{icon}</i><span>{current_facet[0]} ({current_facet[1]})</span></a></li>'
+        return format_html(
+            '<li><a href="{}" class="flex items-center gap-2 py-1 text-sm {} hover:text-blue-950">'
+            '<i data-lucide="{}" class="h-4 w-4 shrink-0"></i>'
+            '<span>{} <span class="text-gray-400">({})</span></span></a></li>',
+            url,
+            text_class,
+            icon,
+            current_facet[0],
+            current_facet[1],
+        )
 
 
 @register.tag
@@ -195,13 +205,13 @@ class OrderLinkNode(Node):
         # and update display and query parameters accordingly
 
         if is_present > -1:
-            icon = "arrow_drop_up"
+            icon = "arrow-up"
             order_by.pop(is_present)
             if not sorting_desc:
-                icon = "arrow_drop_down"
+                icon = "arrow-down"
                 order_by.append(f"-{field_name}")
         else:
-            icon = "sort"
+            icon = "arrow-up-down"
             order_by.append(field_name)
 
         query_dict.setlist("order_by", order_by)
@@ -220,7 +230,25 @@ class OrderLinkNode(Node):
             + query_dict.urlencode(safe="/&:")
         )
 
-        return f'<a href="{url}" class="mr-1 mb-1"><button type="button" class="btn btn-secondary btn-sm"><i class="material-icons mr-1 align-middle">{icon}</i><span class="align-middle">{field_title}</span></button></a>'
+        if icon == "arrow-up-down":
+            cls = (
+                "inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium "
+                "text-gray-700 rounded border border-gray-300 hover:bg-gray-50"
+            )
+        else:
+            cls = (
+                "inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium "
+                "text-blue-900 bg-blue-50 rounded border border-blue-900 hover:bg-blue-100"
+            )
+
+        return format_html(
+            '<a href="{}" class="{}"><i data-lucide="{}" class="h-4 w-4"></i>'
+            "<span>{}</span></a>",
+            url,
+            cls,
+            icon,
+            field_title,
+        )
 
 
 @register.tag
