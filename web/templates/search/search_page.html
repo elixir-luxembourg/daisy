@@ -5,30 +5,27 @@
 
 
 {% block content %}
-    <div class="card bg-light text-dark my-4 mb-5">
-        <div class="card-body">
-            <div class="card-title">
-                <h1 class="display-4"><i class="material-icons text-secondary">info</i> {{ title }}</h1>
+    <div class="my-4 mb-8 rounded border border-gray-200 bg-gray-50 text-gray-900">
+        <div class="p-4">
+            <div>
+                <h1 class="flex items-center gap-2 text-4xl font-light"><i data-lucide="info" class="h-7 w-7 text-gray-500"></i> {{ title }}</h1>
             </div>
             <p>{{ help_text }}</p>
             <p>Use the categories on the left or the search box below to locate {{ title | lower }}. In order to create add a new one, use the button at bottom-right corner.</p>
         </div>
     </div>
-    <div class="row">
-        <!-- Desktop sidebar - hidden on small screens -->
-        <div id="sidebar-left" class="d-none d-md-block col-md-5 col-lg-5 col-xl-4 order-2">
+    <div class="grid grid-cols-12 gap-6">
+        <div id="sidebar-left" class="order-2 hidden md:col-span-5 md:block xl:col-span-4">
             {% include '_includes/facets_sidebar.html' with facets=facets url=search_url %}
         </div>
-        
-        <!-- Main content area -->
-        <div class="col-12 col-md-7 col-lg-7 col-xl-8 order-4">
+
+        <div class="order-4 col-span-12 md:col-span-7 xl:col-span-8">
             {% include '_includes/search_form.html' with title=title query=query url=search_url order_by_fields=order_by_fields %}
             {% include results_template_name with data=data %}
         </div>
-        
-        <!-- Mobile sidebar - shown only on small screens -->
-        <div id="sidebar-responsive-left" class="d-md-none col-12 order-6 mt-4">
-            <h1 class="display-4">Filter the results</h1>
+
+        <div id="sidebar-responsive-left" class="order-6 col-span-12 mt-4 md:hidden">
+            <h1 class="text-4xl font-light">Filter the results</h1>
             {% include '_includes/facets_sidebar.html' with facets=facets url=search_url %}
         </div>
     </div>
@@ -36,10 +33,10 @@
 
 
 {% block floating-buttons %}
-     <a class="btn btn-primary bmd-btn-fab float-right" href="{% url add_url %}{% if reset %}?reset=true{% endif %}">
-        <i class="material-icons">add</i>
+    <a class="float-right inline-flex h-12 w-12 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url add_url %}{% if reset %}?reset=true{% endif %}">
+        <i data-lucide="plus" class="h-6 w-6"></i>
     </a>
-    <a class="btn btn-secondary bmd-btn-fab d-md-none float-right" href="#sidebar-responsive-left">
-        <i class="material-icons">sort</i>
+    <a class="float-right inline-flex h-12 w-12 items-center justify-center text-gray-700 rounded-full border border-gray-300 bg-white shadow-lg hover:bg-gray-50 md:hidden" href="#sidebar-responsive-left">
+        <i data-lucide="arrow-down-wide-narrow" class="h-6 w-6"></i>
     </a>
 {% endblock %}

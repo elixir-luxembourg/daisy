@@ -1,8 +1,12 @@
 $(document).ready(function () {
     // Show the modal when the button is clicked
     $('#importModalButton').click(function () {
-        $('#importModal').modal('show');
+        document.getElementById('importModal').showModal();
         fetchForm();
+    });
+
+    $('#importModalClose').click(function () {
+        document.getElementById('importModal').close();
     });
 
     // Fetch the form via AJAX

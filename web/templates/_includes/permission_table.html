@@ -1,9 +1,9 @@
-<table id="permissions" class="table">
-    <thead class="thead-light">
+<table id="permissions" class="w-full text-sm">
+    <thead class="bg-gray-50">
         <tr>
-            <th scope="col" class="col-sm-1"><h3>{{ obj_name }}</h3></th>
+            <th scope="col" class="px-3 py-2 text-left"><h3 class="text-lg font-semibold">{{ obj_name }}</h3></th>
             {% for perm in perms_const %}
-            <th scope="col" class="col-sm-1 text-center">{{ perm.name }}</th>
+            <th scope="col" class="px-3 py-2 text-center font-semibold">{{ perm.name }}</th>
             {% endfor %}
         </tr>
     </thead>
@@ -11,17 +11,17 @@
         {% for key, value in obj_perms.items %}
             <tr>
             {% if obj_name == 'Dataset' %}
-                <td><a href="{% url 'dataset' pk=key.id %}">{{ key }}</a></td>
+                <td class="px-3 py-2 border-t border-gray-200"><a class="text-blue-700 hover:underline" href="{% url 'dataset' pk=key.id %}">{{ key }}</a></td>
             {% elif obj_name == 'Project' %}
-                <td><a href="{% url 'project' pk=key.id %}">{{ key }}</a></td>
+                <td class="px-3 py-2 border-t border-gray-200"><a class="text-blue-700 hover:underline" href="{% url 'project' pk=key.id %}">{{ key }}</a></td>
             {% elif obj_name == 'User' %}
-                <td><a href="{% url 'user' pk=key.id %}">{{ key }}</a></td>
+                <td class="px-3 py-2 border-t border-gray-200"><a class="text-blue-700 hover:underline" href="{% url 'user' pk=key.id %}">{{ key }}</a></td>
             {% endif %}
             {% for perm in obj_perms_const %}
                 {% if perm in value %}
-                    <td class="text-center"><input type="checkbox" disabled checked></td>
+                    <td class="px-3 py-2 text-center border-t border-gray-200"><input type="checkbox" disabled checked></td>
                 {% else %}
-                    <td class="text-center"><input type="checkbox" disabled unchecked></td>
+                    <td class="px-3 py-2 text-center border-t border-gray-200"><input type="checkbox" disabled unchecked></td>
                 {% endif %}
             {% endfor %}
         {% endfor %}

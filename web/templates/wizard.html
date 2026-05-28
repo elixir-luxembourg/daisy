@@ -7,41 +7,43 @@
 
 {% block content %}
 
-<div class="row">
-    <div class="card col-3">
-        <div class="card-body">
-            <ul class="timeline">
-                <h2 class="card-title">Wizard steps</h2>
-                {% for step in wizard.steps.all %}
-                    <li class="card-text timeline-step {% if wizard.steps.current == step %}timeline-current{% endif %}"><a href="{% url wizard.url_name step %}">{{step}}</a></li>
-                {% endfor %}
-            </ul>
+<div class="grid grid-cols-12 gap-6">
+    <div class="col-span-12 md:col-span-3">
+        <div class="rounded border border-gray-200 bg-white shadow-sm">
+            <div class="p-4">
+                <h2 class="text-2xl font-light">Wizard steps</h2>
+                <ul class="mt-2 space-y-1">
+                    {% for step in wizard.steps.all %}
+                        <li><a href="{% url wizard.url_name step %}" class="block px-3 py-2 rounded hover:bg-gray-50 {% if wizard.steps.current == step %}bg-blue-900 font-semibold text-white hover:bg-blue-800{% endif %}">{{step}}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
-    <div class="col-9">
-        <form action="" method="post" class="form col-md-12 nice-selects">{% csrf_token %}
-            <table>
+    <div class="col-span-12 md:col-span-9">
+        <form action="" method="post" class="nice-selects">{% csrf_token %}
+            <table class="w-full">
                 {{ wizard.management_form }}
                     {% if wizard.form.forms %}
                         {{ wizard.form.management_form }}
                         {% for form in wizard.form.forms %}
-                            <div class="jumbotron mt-4">
-                                <h1 class="display-4">{{form.Meta.heading}}</h1>
-                                <p class="text-muted">{{form.Meta.heading_help}}</p>
+                            <div class="mt-4 p-8 rounded bg-gray-50">
+                                <h1 class="text-4xl font-light">{{form.Meta.heading}}</h1>
+                                <p class="text-gray-500">{{form.Meta.heading_help}}</p>
                             </div>
                             {% include '_includes/forms.html' with form=form %}
                         {% endfor %}
                     {% else %}
-                        <div class="jumbotron mt-4">
-                            <h1 class="display-4">{{form.Meta.heading}}</h1>
-                            <p class="text-muted">{{form.Meta.heading_help}}</p>
+                        <div class="mt-4 p-8 rounded bg-gray-50">
+                            <h1 class="text-4xl font-light">{{form.Meta.heading}}</h1>
+                            <p class="text-gray-500">{{form.Meta.heading_help}}</p>
                         </div>
                         {% include '_includes/forms.html' with form=wizard.form wizard_url_name=wizard.url_name %}
                     {% endif %}
             </table>
         </form>
-        <hr/>
-        <a href="{% url wizard.url_name|slice:':-5' %}?reset=true{% if querystring %}&{{querystring}}{% endif %}" class="btn btn-danger btn-raised float-right">reset wizard</a>
+        <hr class="my-4 border-gray-200"/>
+        <a href="{% url wizard.url_name|slice:':-5' %}?reset=true{% if querystring %}&{{querystring}}{% endif %}" class="float-right inline-flex items-center px-4 py-2 text-white rounded bg-red-600 hover:bg-red-700">reset wizard</a>
     </div>
 </div>
 {% endblock %}

@@ -1,53 +1,43 @@
 {% load static daisy_utils %}
     {# Header Section #}
-    <div class="row align-items-center mb-4">
-        <div class="col-md-6">
-            <h1 class="h3 fw-bold text-gray-900 mb-0">
+    <div class="flex flex-wrap items-center justify-between mb-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">
                 Browse {{title}}
             </h1>
         </div>
-        <div class="col-md-6 d-flex justify-content-end">
+        <div class="flex items-center justify-end gap-2">
             {% if request.user.is_authenticated and request.user|has_group:"daisy-data-steward" %}
                 {% if search_url == 'projects' or search_url == 'datasets' or search_url == 'partners' %}
-                    <button id="importModalButton" type="button" class="btn btn-secondary btn-outline float-right mx-2">
+                    <button id="importModalButton" type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-900 rounded border border-blue-900 hover:bg-blue-50">
                         Import
                     </button>
                 {% include 'importer/import_modal.html' %}
                 {% endif %}
-                <a class="btn btn-secondary btn-outline float-right" href="export?{% if filters %}filters={{ filters }}&{% endif %}{% if order_by %}order_by={{ order_by | default:'' }}&{% endif %}{% if query %}query={{ query | default:'' }}{% endif %}">Save the results as xlsx</a>
+                <a class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-900 rounded border border-blue-900 hover:bg-blue-50" href="export?{% if filters %}filters={{ filters }}&{% endif %}{% if order_by %}order_by={{ order_by | default:'' }}&{% endif %}{% if query %}query={{ query | default:'' }}{% endif %}">Save the results as xlsx</a>
             {% endif %}
         </div>
     </div>
-<div class="row mb-4">
-    <div class="col-lg-12 col-md-12">
-        <form method="get" action="{% url url %}" class="w-100">
-            <div class="search-container shadow-sm rounded mt-2">
-                <div class="input-group p-3 bg-white rounded align-items-center">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text bg-white border-0">
-                            <i class="material-icons align-middle">search</i>
-                        </span>
-                    </div>
-                    <input id="query_edit" type="text" class="form-control bg-white border-0 pl-2 ml-2" autocomplete="off" name="query" value="{{ query }}" placeholder="Search for {{ title }}">
+<div class="mb-4">
+    <div class="w-full">
+        <form method="get" action="{% url url %}" class="w-full">
+            <div class="mt-2 rounded shadow-sm">
+                <div class="flex items-center gap-2 p-3 bg-white rounded">
+                    <i data-lucide="search" class="h-5 w-5 shrink-0 text-gray-500"></i>
+                    <input id="query_edit" type="text" class="flex-1 px-2 text-sm bg-white border-0 focus:outline-none focus:ring-0" autocomplete="off" name="query" value="{{ query }}" placeholder="Search for {{ title }}">
                     {% if query %}
-                    <div class="input-group-append">
-                        <span class="input-group-text bg-white border-0 mx-1">
-                            <i class="material-icons align-middle close reset-form-button" data-resets="query_edit" data-submits="yes">close</i>
-                        </span>
-                    </div>
+                    <i data-lucide="x" class="reset-form-button h-5 w-5 shrink-0 cursor-pointer text-gray-500" data-resets="query_edit" data-submits="yes"></i>
                     {% endif %}
-                    <div class="input-group-append">
-                        <button type="submit" class="btn btn-primary px-4 d-flex align-items-center">Search</button>
-                    </div>
+                    <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded bg-blue-900 hover:bg-blue-800">Search</button>
                 </div>
             </div>
         </form>
     </div>
 
-    <div class="col-lg-12 col-md-12 mt-3 mb-n4">
+    <div class="mt-3">
         {% if order_by_fields %}
-        <div class="d-flex justify-content-end">
-            <div class="btn-group btn-group-sm" role="group">
+        <div class="flex justify-end">
+            <div class="inline-flex gap-1" role="group">
                 {% for field in order_by_fields %}
                     {% orderbylink search_url field %}
                 {% endfor %}

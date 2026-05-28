@@ -3,118 +3,101 @@
 {% block title %}{{ contact.full_name }}{% endblock %}
 
 {% block content %}
-    <div class="row mt-4">
-        <div class="jumbotron col">
-            <span style="color: #8D8F8F;">Contact</span>
-            <h1>{{ contact.full_name }}</h1>
-            <div class="row">
-                <div class="col">
-                    <dl>
-                        <dt>First name</dt>
-                        <dd>{{ contact.first_name }}</dd>
-                        <dt>Last name</dt>
-                        <dd>{{ contact.last_name }}</dd>
-                        <dt>Affiliations</dt>
-                        {% if contact.partners %}
-                            <dd>{% for partner in contact.partners.all %}
-                                <span class="badge badge-pill badge-primary">{{ partner.name }}</span>
+{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white rounded-full bg-blue-900" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" title2="text-2xl font-light" %}
+    <div class="relative mt-4 p-8 rounded bg-gray-50">
+        <span class="text-gray-500">Contact</span>
+        <h1 class="text-4xl font-light">{{ contact.full_name }}</h1>
+        <div class="grid gap-6 md:grid-cols-2">
+            <div>
+                <dl>
+                    <dt class="font-semibold">First name</dt>
+                    <dd>{{ contact.first_name }}</dd>
+                    <dt class="font-semibold">Last name</dt>
+                    <dd>{{ contact.last_name }}</dd>
+                    <dt class="font-semibold">Affiliations</dt>
+                    {% if contact.partners %}
+                        <dd class="flex flex-wrap gap-1">
+                            {% for partner in contact.partners.all %}
+                                <span class="{{ badge }}">{{ partner.name }}</span>
                             {% endfor %}
-                            </dd>
-                        {% endif %}
-                        <dt>Type</dt>
-                        <dd>{{ contact.type }} </dd>
-                    </dl>
-                </div>
-
-                <div class="col">
-                    <dl>
-                        <dt>Email</dt>
-                        <dd><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></dd>
-                        <dt>Address</dt>
-                        <dd>{{ contact.address | default:'-' }}</dd>
-                        <dt>Phone</dt>
-                        <dd>{{ contact.phone  | default:'-' }}</dd>
-                    </dl>
-
-                </div>
-
-                <div class="floating-buttons-absolute">
-                    <a class="btn btn-primary bmd-btn-fab float-right"
-                       title="Edit contact"
-                       href="{% url 'contact_edit' pk=contact.id %}"><i
-                            class="material-icons">edit</i>
-                    </a>
-                    <a  id="deletecontact" class="btn btn-danger bmd-btn-fab float-right red"
-                            title="Delete contact"
-                            data-toggle="modal" data-target="#modal"
-                            data-ajax-url="{% url 'contact_delete' contact.id %}">
-                                <i class="material-icons">delete</i>
-                            </a>
-
-                 </div>
+                        </dd>
+                    {% endif %}
+                    <dt class="font-semibold">Type</dt>
+                    <dd>{{ contact.type }}</dd>
+                </dl>
+            </div>
+            <div>
+                <dl>
+                    <dt class="font-semibold">Email</dt>
+                    <dd><a class="text-blue-700 hover:underline" href="mailto:{{ contact.email }}">{{ contact.email }}</a></dd>
+                    <dt class="font-semibold">Address</dt>
+                    <dd>{{ contact.address|default:'-' }}</dd>
+                    <dt class="font-semibold">Phone</dt>
+                    <dd>{{ contact.phone|default:'-' }}</dd>
+                </dl>
             </div>
         </div>
+        <div class="absolute top-4 right-4 flex gap-2">
+            <a class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-blue-900 shadow hover:bg-blue-800"
+               title="Edit contact"
+               href="{% url 'contact_edit' pk=contact.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
+            <a id="deletecontact"
+               class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-red-600 shadow hover:bg-red-700"
+               title="Delete contact"
+               data-toggle="modal" data-target="#modal"
+               data-ajax-url="{% url 'contact_delete' contact.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>
+        </div>
     </div>
-    <div class="row mt-4">
-        {#    Contracts    #}
-        {% if contact.partners_roles.all %}
-            <div class="card ml-0 col-md-12">
-                <div class="card-body">
-                    <h2 class="card-title">Contracts with this contact</h2>
-                    <div class="card-text">
-                        <table class="table table-condensed">
+
+    {#    Contracts    #}
+    {% if contact.partners_roles.all %}
+        <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+            <div class="p-4">
+                <h2 class="{{ title2 }}">Contracts with this contact</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50">
                             <tr>
-                                <th>Contract</th>
-                                <th>Partner</th>
-                                <th>Project</th>
-                                <th>Local custodians</th>
-                                <th>Remarks</th>
+                                <th scope="col" class="{{ th }}">Contract</th>
+                                <th scope="col" class="{{ th }}">Partner</th>
+                                <th scope="col" class="{{ th }}">Project</th>
+                                <th scope="col" class="{{ th }}">Local custodians</th>
+                                <th scope="col" class="{{ th }}">Remarks</th>
                             </tr>
-                            <tbody>
-                                {% for partner_role in contact.partners_roles.all %}
-                                <tr>
-                                    <td>
-                                        <a href="{% url 'contract' pk=partner_role.contract.id %}" class="btn btn-outline btn-primary">Go to contract</a>
-                                    </td>
-                                    <td>
-                                        {{ partner_role.partner.name }}
-                                    </td>
-                                    <td>
-                                        <strong alt="{{ partner_role.contract.project.title|truncatechars:75 }}">{{ partner_role.contract.project.acronym }}</strong>
-                                    </td>
-                                    <td>
+                        </thead>
+                        <tbody>
+                            {% for partner_role in contact.partners_roles.all %}
+                                <tr class="odd:bg-gray-50">
+                                    <td class="{{ td }}"><a href="{% url 'contract' pk=partner_role.contract.id %}" class="inline-flex items-center px-3 py-1 text-sm font-medium text-blue-900 rounded border border-blue-900 hover:bg-blue-50">Go to contract</a></td>
+                                    <td class="{{ td }}">{{ partner_role.partner.name }}</td>
+                                    <td class="{{ td }}"><strong alt="{{ partner_role.contract.project.title|truncatechars:75 }}">{{ partner_role.contract.project.acronym }}</strong></td>
+                                    <td class="{{ td }}">
                                         {% for custodian in partner_role.contract.local_custodians.all %}
                                             {{ custodian|truncatechars:100 }}
                                         {% endfor %}
                                     </td>
-                                    <td>
-                                        {{ partner_role.contract.comments }}
-                                    </td>
+                                    <td class="{{ td }}">{{ partner_role.contract.comments }}</td>
                                 </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        {% endif %}
-    </div>
+        </div>
+    {% endif %}
 
     {#    DACs   #}
-    <div class="row card-deck mt-4">
-        <div class="card ml-0 mr-0 col-md-12">
-            {% if dacs %}
-            <div class="card-body">
-                <h2 class="card-title">DACs the contact is member of</h2>
-                <ul class="card-text list-unstyled text-left py-1">
+    {% if dacs %}
+        <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+            <div class="p-4">
+                <h2 class="{{ title2 }}">DACs the contact is member of</h2>
+                <ul class="py-1 text-left">
                     {% for dac in dacs %}
-                    <li>
-                        <a href="{% url 'dac' pk=dac.id %}">{{ dac.title }}</a>
-                    </li>
+                        <li><a class="text-blue-700 hover:underline" href="{% url 'dac' pk=dac.id %}">{{ dac.title }}</a></li>
                     {% endfor %}
                 </ul>
             </div>
-            {% endif %}
         </div>
-    </div>
+    {% endif %}
+{% endwith %}
 {% endblock %}

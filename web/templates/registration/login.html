@@ -3,29 +3,26 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-    <div class="jumbotron mt-4">
-        <h1 class="display-4">Login</h1>
+    <div class="mt-4 p-8 rounded bg-gray-50">
+        <h1 class="mb-4 text-4xl font-light">Login</h1>
         {% comment %}
         <div class="alert alert-info" role="alert">
             This is a demo deployment, sample credentials that can be used for login are described <a href="{% url 'about' %}">here</a>.
         </div>
         {% endcomment %}
 
-        <!-- Traditional Login Form -->
         {% include '_includes/forms.html' with submit_label="Login" %}
 
-        <!-- OIDC Login Option -->
         {% if oidc_enabled %}
         <div class="mb-4">
-            <div class="text-center mt-3 mb-3">
-                <span class="text-muted">— or —</span>
+            <div class="mt-3 mb-3 text-center">
+                <span class="text-gray-500">— or —</span>
             </div>
-            <a href="{% url 'oidc_login' %}" class="btn btn-primary btn-lg btn-block">
-                <i class="fas fa-sign-in-alt"></i> Login with University account
+            <a href="{% url 'oidc_login' %}" class="inline-flex items-center justify-center gap-2 px-4 py-3 w-full text-base font-medium text-white rounded bg-blue-900 hover:bg-blue-800">
+                <i data-lucide="log-in" class="h-5 w-5"></i> Login with University account
             </a>
         </div>
         {% endif %}
 
     </div>
 {% endblock %}
-

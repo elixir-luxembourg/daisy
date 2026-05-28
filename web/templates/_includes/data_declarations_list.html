@@ -1,17 +1,17 @@
 {% if entity.data_declarations.all %}
-    <table class="card-text table table-striped">
-        <thead>
+    <table class="w-full text-sm">
+        <thead class="bg-gray-50">
         <tr>
-            <th>Title</th>
-            <th>Dataset</th>
+            <th class="px-3 py-2 text-left font-semibold">Title</th>
+            <th class="px-3 py-2 text-left font-semibold">Dataset</th>
         </tr>
         </thead>
         <tbody>
         {% for data_declaration in entity.data_declarations.all %}
-            <tr>
-                <td>{{ data_declaration.title }}</td>
-                <td>
-                    <a href="{% url 'dataset' pk=data_declaration.dataset.id %}">
+            <tr class="odd:bg-gray-50">
+                <td class="px-3 py-2 border-t border-gray-200">{{ data_declaration.title }}</td>
+                <td class="px-3 py-2 border-t border-gray-200">
+                    <a class="text-blue-700 hover:underline" href="{% url 'dataset' pk=data_declaration.dataset.id %}">
                         {{ data_declaration.dataset }}</a>
                 </td>
             </tr>

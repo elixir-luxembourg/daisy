@@ -1,11 +1,11 @@
 {% for field in facets.fields %}
     {% with values=facets.fields|get_item:field %}
         {% if values %}
-            <div class="card my-2">
-                <div class="card-body">
-                    <h4 class="card-title">
+            <div class="my-2 rounded border border-gray-200 bg-white shadow-sm">
+                <div class="p-4">
+                    <h4 class="mb-2 text-base font-semibold text-gray-900">
                             {{ field|title|un_underscore }}</h4>
-                    <ul class="facets card-text list-unstyled">
+                    <ul class="facets flex flex-col gap-1 list-none">
                         {% for facet in values %}
                             {% if facet.1 > 0 %}
                                 {% facetlink url field facet %}

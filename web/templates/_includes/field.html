@@ -1,30 +1,31 @@
 {% load widget_tweaks %}
 
-<div class="form-group {% if field.field.required %}required{% endif %}">
+{% with base="block w-full px-3 py-2 text-sm rounded border focus:ring-1 focus:outline-none" %}
+<div class="mb-4">
     {% if field.field.widget.input_type == 'checkbox' %}
         {% include '_includes/checkbox.html' %}
     {% elif field.field.widget.input_type == 'radio' %}
         {% include '_includes/radio.html' %}
     {% else %}
-        <strong>{{ field.label_tag }}</strong>
+        <strong class="block mb-1 text-sm font-medium text-gray-700">{{ field.label_tag }}</strong>
         {% if form.is_bound %}
             {% if field.errors %}
-                {% render_field field class+="form-control is-invalid" %}
+                {% render_field field class+=base class+="border-red-500 focus:border-red-500 focus:ring-red-500" %}
                 {% for error in field.errors %}
-                    <div class="invalid-feedback">
+                    <div class="mt-1 text-sm text-red-600">
                         {{ error }}
                     </div>
                 {% endfor %}
             {% else %}
-                {% render_field field class+="form-control is-valid" %}
+                {% render_field field class+=base class+="border-green-500 focus:border-green-500 focus:ring-green-500" %}
             {% endif %}
         {% else %}
-
-            {% render_field field class+="form-control" %}
+            {% render_field field class+=base class+="border-gray-300 focus:border-blue-500 focus:ring-blue-500" %}
         {% endif %}
     {% endif %}
 
     {% if field.help_text %}
-        <div class="text-muted small">{{ field.help_text }}</div>
+        <div class="mt-1 text-sm text-gray-500">{{ field.help_text }}</div>
     {% endif %}
 </div>
+{% endwith %}

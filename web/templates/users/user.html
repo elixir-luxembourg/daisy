@@ -3,76 +3,55 @@
 {% block content_title %}{{ user }}{% endblock %}
 
 {% block content %}
-<div class="row mt-4">
-    <div class="jumbotron col">
+{% with fabblue="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-blue-900 shadow hover:bg-blue-800" %}
+    <div class="relative mt-4 p-8 rounded bg-gray-50">
         {% if user.source %}
-        <div class="ribbon ribbon-orange"><span>{{ user.source }}</span></div>
+            <span class="absolute top-4 left-4 inline-flex items-center px-3 py-1 text-xs font-medium text-white rounded-full bg-gray-500">{{ user.source }}</span>
         {% endif %}
-        <span style="color: #8D8F8F;">User</span>
-        <h1>{{ user }}</h1>
-        <div class="row">
-            <div class="col">
+        <span class="text-gray-500">User</span>
+        <h1 class="text-4xl font-light">{{ user }}</h1>
+        <div class="grid gap-6 md:grid-cols-2">
+            <div>
                 <dl>
-                    <dt>First Name</dt>
-                    <dd>{{ user.first_name | default:'unknown' }}</dd>
-                    <dt>Last Name</dt>
-                    <dd>{{ user.last_name | default:'-' }}</dd>
-                    <dt>Email Address</dt>
-                    <dd>{{ user.email | default:'unknown' }}</dd>
-
+                    <dt class="font-semibold">First Name</dt>
+                    <dd>{{ user.first_name|default:'unknown' }}</dd>
+                    <dt class="font-semibold">Last Name</dt>
+                    <dd>{{ user.last_name|default:'-' }}</dd>
+                    <dt class="font-semibold">Email Address</dt>
+                    <dd>{{ user.email|default:'unknown' }}</dd>
                 </dl>
             </div>
-            <div class="col">
+            <div>
                 <dl>
-                    <dt>Is active</dt>
-                    <dd>{{ user.is_active | yesno}}</dd>
-                    <dt>User groups</dt>
-                    <dd>{{ user.groups.all | join:", " | default:'-' }}</dd>
+                    <dt class="font-semibold">Is active</dt>
+                    <dd>{{ user.is_active|yesno }}</dd>
+                    <dt class="font-semibold">User groups</dt>
+                    <dd>{{ user.groups.all|join:", "|default:'-' }}</dd>
                 </dl>
-            </div>
-            <div class="floating-buttons-absolute">
-                {% if can_edit %}
-                {% if user.source == manual_source %}
-                <a id="deleteuser" class="btn btn-danger bmd-btn-fab float-right red"
-                   title="Delete"
-                   data-toggle="modal" data-target="#modal"
-                   data-ajax-url="{% url 'user_delete' user.id %}">
-                    <i class="material-icons">delete</i>
-                </a>
-
-                {% endif %}
-                <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'user_edit' pk=user.id %}"><i
-                        class="material-icons">edit</i>
-                </a>
-
-                {% endif %}
-                <a class="btn btn-primary bmd-btn-fab float-right"
-                   href="{% url 'history' %}?user={{ user.pk }}"
-                   title="See user actions"
-                >
-                    <i class="material-icons">history</i>
-                </a>
-
             </div>
         </div>
+        <div class="absolute top-4 right-4 flex gap-2">
+            {% if can_edit %}
+                {% if user.source == manual_source %}
+                    <a id="deleteuser" class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-red-600 shadow hover:bg-red-700"
+                       title="Delete"
+                       data-toggle="modal" data-target="#modal"
+                       data-ajax-url="{% url 'user_delete' user.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>
+                {% endif %}
+                <a class="{{ fabblue }}" href="{% url 'user_edit' pk=user.id %}" title="Edit user"><i data-lucide="pencil" class="h-5 w-5"></i></a>
+            {% endif %}
+            <a class="{{ fabblue }}" href="{% url 'history' %}?user={{ user.pk }}" title="See user actions"><i data-lucide="history" class="h-5 w-5"></i></a>
+        </div>
     </div>
-</div>
-<div class="row mt-4">
-    <div class="jumbotron col">
-        <h3>User Permissions</h3>
-            <div class="card-body">
-                <div class="row">
-                    {% if dataset_perms %}
-                    {% include '_includes/permission_table.html' with obj_name='Dataset' obj_perms_const=ds_perms_const obj_perms=dataset_perms %}
-                    {% endif %}
-                </div>
-                <div class="row">
-                    {% if project_perms %}
-                    {% include '_includes/permission_table.html' with obj_name='Project' obj_perms_const=pj_perms_const obj_perms=project_perms %}
-                    {% endif %}
-                </div>
-            </div>
-        
+
+    <div class="mt-4 p-8 rounded bg-gray-50">
+        <h3 class="text-2xl font-light">User Permissions</h3>
+        {% if dataset_perms %}
+            {% include '_includes/permission_table.html' with obj_name='Dataset' obj_perms_const=ds_perms_const obj_perms=dataset_perms %}
+        {% endif %}
+        {% if project_perms %}
+            {% include '_includes/permission_table.html' with obj_name='Project' obj_perms_const=pj_perms_const obj_perms=project_perms %}
+        {% endif %}
     </div>
-</div>
-        {% endblock %}
+{% endwith %}
+{% endblock %}

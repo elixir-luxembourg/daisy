@@ -1,29 +1,29 @@
+{% with badge="ml-1 inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full bg-gray-200 text-gray-800" %}
 {% for partner in data.partners %}
-    <div class="row">
-        <div class="col-12 mb-4">
-            <div class="card card-item">
-                <div class="card-body">
-                    <h2 class="card-title">
-                        <a href="{% url 'partner' pk=partner.pk %}">
-                          {{ partner.name }} {% if partner.acronym %}({{ partner.acronym }}){% endif %}
-                          {% if partner.is_clinical %}
-                            <i class="material-icons align-middle">local_hospital</i>
-                          {% endif %}
-                        </a>
-                    </h2>
-                    <ul class="card-text list-unstyled text-left py-1">
-                            <li class="d-flex align-items-center"><strong>Geo-Category:</strong>
-                                <span class="badge badge-pill badge-secondary ml-1">{{ partner.geo_category }}</span>
-                            </li>
-                            <li class="d-flex align-items-center"><strong>Sector:</strong>
-                                <span class="badge badge-pill badge-secondary ml-1">{{ partner.sector_category }}</span>
-                            </li>
-                    </ul>
-                    <a href="{% url 'partner' pk=partner.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
-                </div>
+    <div class="mb-4">
+        <div class="rounded border border-gray-200 bg-white shadow-sm">
+            <div class="p-4">
+                <h2 class="text-2xl font-light">
+                    <a href="{% url 'partner' pk=partner.pk %}" class="inline-flex items-center gap-1 text-blue-700 hover:underline">
+                      {{ partner.name }} {% if partner.acronym %}({{ partner.acronym }}){% endif %}
+                      {% if partner.is_clinical %}
+                        <i data-lucide="hospital" class="h-5 w-5"></i>
+                      {% endif %}
+                    </a>
+                </h2>
+                <ul class="py-1 text-left">
+                        <li class="flex items-center"><strong>Geo-Category:</strong>
+                            <span class="{{ badge }}">{{ partner.geo_category }}</span>
+                        </li>
+                        <li class="flex items-center"><strong>Sector:</strong>
+                            <span class="{{ badge }}">{{ partner.sector_category }}</span>
+                        </li>
+                </ul>
+                <a href="{% url 'partner' pk=partner.pk %}" class="mt-2 inline-flex items-center px-4 py-2 text-gray-700 rounded border border-gray-300 hover:bg-gray-50">Details &raquo;</a>
             </div>
         </div>
     </div>
 {% empty %}
     {% include "search/_items/no_results.html" %}
 {% endfor %}
+{% endwith %}

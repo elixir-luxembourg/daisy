@@ -2,89 +2,77 @@
 {% load static %}
 
 {% block content %}
-    <div class="row mt-4">
-        <div class="jumbotron col">
-            <h1 class="display-4">Change permissions on {{ selection }} {{ object.title }}</h1>
-        </div>
+    <div class="mt-4 p-8 rounded bg-gray-50">
+        <h1 class="text-4xl font-light">Change permissions on {{ selection }} {{ object.title }}</h1>
     </div>
 
-    <div class="row mt-4">
-        <div class="card col">
-            <div class="card-body">
-                <h2 class="card-title">Local custodians</h2>
-                <div id="form-container" class="card-text">
-                    <ul>
-                        {% for user in local_custodians %}
-                            <li>{{user}} {% if user in local_vips %}<span class="badge badge-success">VIP</span>{% endif %}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            <div class="card-footer">
-                You can change the local custodians on the <a href="{% url edit_url object.id %}">{{selection}} edit page</a>.
+    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+        <div class="p-4">
+            <h2 class="text-2xl font-light">Local custodians</h2>
+            <div id="form-container" class="mt-2">
+                <ul>
+                    {% for user in local_custodians %}
+                        <li>{{user}} {% if user in local_vips %}<span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium text-white rounded-full bg-green-600">VIP</span>{% endif %}</li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
+        <div class="p-4 text-sm text-gray-600 border-t border-gray-200 bg-gray-50">
+            You can change the local custodians on the <a href="{% url edit_url object.id %}" class="text-blue-700 hover:underline">{{selection}} edit page</a>.
+        </div>
     </div>
-    <div class="row mt-4">
-        <div class="card col">
-            <div class="card-body">
-                <h2 class="card-title">Edit Permissions of {{ selection }} {{ object.title }}</h2>
-                <div id="form-container" class="card-text">
-                    {% include '_includes/permission_form.html' %}
-                </div>
+    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+        <div class="p-4">
+            <h2 class="text-2xl font-light">Edit Permissions of {{ selection }} {{ object.title }}</h2>
+            <div id="form-container" class="mt-2">
+                {% include '_includes/permission_form.html' %}
             </div>
         </div>
     </div>
     {% if inherited_permissions %}
-    <div class="row mt-4">
-        <div class="card col">
-            <div class="card-body">
-                <h2 class="card-title">View Inherited Permissions from project <a href="{% url 'project' pk=object.project.id %}">{{ object.project }}</a></h2>
-                <div class="card-text md-1">
-                    {% include '_includes/permission_table.html' with obj_name='User' obj_perms_const=pj_perms_const obj_perms=inherited_permissions %}
-                </div>
+    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+        <div class="p-4">
+            <h2 class="text-2xl font-light">View Inherited Permissions from project <a href="{% url 'project' pk=object.project.id %}" class="text-blue-700 hover:underline">{{ object.project }}</a></h2>
+            <div class="mt-2">
+                {% include '_includes/permission_table.html' with obj_name='User' obj_perms_const=pj_perms_const obj_perms=inherited_permissions %}
             </div>
-            <div class="card-footer">
-                You can change the permissions on the <a href="{% url 'permission_project' pk=object.project.id %}">project permission edit page</a>.
-            </div>
+        </div>
+        <div class="p-4 text-sm text-gray-600 border-t border-gray-200 bg-gray-50">
+            You can change the permissions on the <a href="{% url 'permission_project' pk=object.project.id %}" class="text-blue-700 hover:underline">project permission edit page</a>.
         </div>
     </div>
     {% endif %}
-    <div class="row mt-4">
-            <div class="card col">
-                <div class="card-body">
-                    <h2 class="card-title">Permissions</h2>
-                    <div id="form-container" class="card-text">
-                        <dl>
-                            <dt>Admin</dt>
-                            <dd>Grant the right to change permissions on this {{selection}}.</dd>
-                            <dt>Delete</dt>
-                            <dd>Grant the right to delete this {{selection}}.</dd>
-                            <dt>Edit</dt>
-                            <dd>Grant the right to edit this {{selection}}.</dd>
-                            <dt>Protected</dt>
-                            <dd>Grant the right to access protected information on this {{selection}}.</dd>
-                        </dl>
-                    </div>
-                    <h2 class="card-title">Additional notes</h2>
-                    <p>
-                        <b>Admin</b>, <b>Delete</b>, <b>Edit</b> and <b>View</b> permissions are automatically granted for local custodians.
-                    </p>
-                </div>
+    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+        <div class="p-4">
+            <h2 class="text-2xl font-light">Permissions</h2>
+            <div id="form-container" class="mt-2">
+                <dl>
+                    <dt>Admin</dt>
+                    <dd>Grant the right to change permissions on this {{selection}}.</dd>
+                    <dt>Delete</dt>
+                    <dd>Grant the right to delete this {{selection}}.</dd>
+                    <dt>Edit</dt>
+                    <dd>Grant the right to edit this {{selection}}.</dd>
+                    <dt>Protected</dt>
+                    <dd>Grant the right to access protected information on this {{selection}}.</dd>
+                </dl>
             </div>
+            <h2 class="text-2xl font-light">Additional notes</h2>
+            <p>
+                <b>Admin</b>, <b>Delete</b>, <b>Edit</b> and <b>View</b> permissions are automatically granted for local custodians.
+            </p>
         </div>
+    </div>
 
 
 {% endblock content %}
 
 {% block floating-buttons %}
     {% if selection == 'project' %}
-        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'project' pk=object.id %}"><i
-                class="material-icons">arrow_back</i>
+        <a class="float-right inline-flex h-12 w-12 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'project' pk=object.id %}"><i data-lucide="arrow-left" class="h-6 w-6"></i>
         </a>
     {% elif selection == 'dataset' %}
-        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'dataset' pk=object.id %}"><i
-                class="material-icons">arrow_back</i>
+        <a class="float-right inline-flex h-12 w-12 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'dataset' pk=object.id %}"><i data-lucide="arrow-left" class="h-6 w-6"></i>
         </a>
     {% endif %}
 {% endblock %}
@@ -99,24 +87,26 @@
             $('#formset tbody tr').formset({
                 prefix: 'form',                  // The form prefix for your django formset
                 formTemplate: null,              // The jQuery selection cloned to generate new form instances
-                addText: '<i class="material-icons">add</i>',          // Text for the add link
-                deleteText: '<i class="material-icons">delete</i>',            // Text for the delete link
+                addText: '<i data-lucide="plus" class="h-5 w-5"></i>',          // Text for the add link
+                deleteText: '<i data-lucide="trash-2" class="h-5 w-5"></i>',            // Text for the delete link
                 addCssClass: 'add-row',          // CSS class applied to the add link
-                deleteCssClass: 'fas fa-trash',    // CSS class applied to the delete link
+                deleteCssClass: 'delete-row',    // CSS class applied to the delete link
                 formCssClass: 'dynamic-form',    // CSS class applied to each form in a formset
                 extraClasses: [],                // Additional CSS classes, which will be applied to each form in turn
                 keepFieldValues: '',             // jQuery selector for fields whose values should be kept when the form is cloned
                 added: function (dom) {
                     $(dom).find('select').select2({width: '100%',});
+                    lucide.createIcons();
                 },                     // Function called each time a new form is added
                 removed: null                    // Function called each time a form is deleted
             });
+            lucide.createIcons();
             // make select nicer
             var select2 = $('#form-container select').select2({
                 width: '100%',
             });
             $('#users thead th:last').html(" ");
-            $('#permissions tr:first').append('<th scope="col" class="col-sm-1"></th>')
+            $('#permissions tr:first').append('<th scope="col" class="w-8"></th>')
         });
 
     </script>

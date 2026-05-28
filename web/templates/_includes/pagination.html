@@ -1,8 +1,9 @@
 <nav aria-label="Page navigation">
-    <ul class="pagination justify-content-center">
+{% with link="inline-flex items-center justify-center px-3 py-2 text-sm rounded border border-gray-300 hover:bg-gray-50" active="inline-flex items-center justify-center px-3 py-2 text-sm font-semibold text-white rounded border border-blue-900 bg-blue-900" %}
+    <ul class="flex justify-center gap-1">
         {% if page_object.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="{{url}}?page=1" aria-label="Previous">
+            <li>
+                <a class="{{ link }}" href="{{url}}?page=1" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
                 <span class="sr-only">begin</span>
                 </a>
@@ -11,21 +12,22 @@
 
         {% for n in page_object.paginator.page_range %}
             {% if page_object.number == n %}
-            <li class="page-item active">
-                <span class="page-link">{{ n }}<span class="sr-only">(current)</span></span>
+            <li>
+                <span class="{{ active }}">{{ n }}<span class="sr-only">(current)</span></span>
             </li>
             {% elif n > page_object.number|add:'-3' and n < page_object.number|add:'3' %}
-            <li class="page-item"><a class="page-link" href="{{url}}?page={{ n }}">{{ n }}</a></li>
+            <li><a class="{{ link }}" href="{{url}}?page={{ n }}">{{ n }}</a></li>
             {% endif %}
         {% endfor %}
 
         {% if page_object.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="{{url}}?page={{ page_object.paginator.num_pages }}" aria-label="Next">
+            <li>
+                <a class="{{ link }}" href="{{url}}?page={{ page_object.paginator.num_pages }}" aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                     <span class="sr-only">end</span>
                 </a>
             </li>
         {% endif %}
     </ul>
+{% endwith %}
 </nav>

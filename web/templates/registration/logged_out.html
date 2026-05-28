@@ -3,10 +3,10 @@
 {% block title %}Logged out{% endblock %}
 
 {% block content %}
-    <div class="jumbotron">
-        <h1 class="display-4">Logged out</h1>
+    <div class="mt-4 p-8 rounded bg-gray-50">
+        <h1 class="mb-4 text-4xl font-light">Logged out</h1>
         <p>You have been successfully disconnected.</p>
 
-        <p><a href="{% url 'dashboard' %}">Go to the homepage</a></p>
+        <p><a class="text-blue-700 hover:underline" href="{% url 'dashboard' %}">Go to the homepage</a></p>
     </div>
 {% endblock %}

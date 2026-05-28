@@ -3,132 +3,105 @@
 {% block content_title %}{{ partner }}{% endblock %}
 
 {% block content %}
-    <div class="row mt-4">
-        <div class="jumbotron col">
-            {%  if partner.is_published %}
-                <div class="ribbon ribbon-green"><span>Published</span></div>
-            {% else %}
-                <div class="ribbon ribbon-orange"><span>Not Published</span></div>
-            {% endif %}
-            <span style="color: #8D8F8F;">Partner</span>
-            <h1>{{ partner }}</h1>
-            <div class="row">
-                <div class="col">
-                    <dl>
-                        <dt>Name</dt>
-                        <dd>{{ partner.name}}</dd>
-                        <dt>Acronym</dt>
-                        <dd>{{ partner.acronym}}</dd>
-                        <dt>Address</dt>
-                        <dd>{{ partner.address | default:'-' }}</dd>
-                        <dt>Country</dt>
-                        <dd>{{ partner.country.name | default:'-' }}</dd>
-                    </dl>
-
-                </div>
-                <div class="col">
-                    <dl>
-                        <dt>Is clinical?</dt>
-                        {% if  partner.is_clinical %}
-                            <dd>YES</dd>
-                        {% else %}
-                            <dd>NO</dd>
-                        {% endif %}
-                        <dt>Geographic category</dt>
-                        <dd>{{ partner.geo_category }}</dd>
-                        <dt>Sector category</dt>
-                        <dd>{{ partner.sector_category }}</dd>
-                        <dt>Accession number</dt>
-                        <dd>{{ partner.elu_accession | default:'-'  }}</dd>
-                    </dl>
-                </div>
-                <div class="floating-buttons-absolute">
-                    {% if request.user.is_superuser %}
-                        <a  href="{% url 'admin:core_partner_change' partner.pk %}" 
-                            id="partner-admin" 
-                            title="See in django admin"  
-                            class="btn btn-default bmd-btn-fab float-right">
-                                <i class="material-icons">build</i>
-                        </a>
-                    {% endif %}
-                    {% if request.user.can_publish %}
-                        {% if not partner.is_published %}
-                            <a id="publish"
-                               class="btn btn-default bmd-btn-fab float-right"
-                               href="{% url 'partner_publish' pk=partner.id %}">
-                                <i class="material-icons">publish</i>
-                            </a>
-                        {% else %}
-                            <a id="unpublish"
-                               data-confirm="Are you sure to unpublish the partner? The changes won't be propagated to other systems!"
-                               class="btn btn-default bmd-btn-fab float-right"
-                               href="{% url 'partner_unpublish' pk=partner.id %}">
-                                <i class="material-icons">undo</i>
-                            </a>
-                        {% endif %}
-                    {% endif %}
-                    {% if can_edit %}
-                        <a class="btn btn-primary bmd-btn-fab float-right"
-                           title="Edit partner"
-                           href="{% url 'partner_edit' pk=partner.id %}"><i
-                                class="material-icons">edit</i>
-                        </a>
-                        {% if not partner.is_published %}
-                            <a  id="deletepartner" class="btn btn-danger bmd-btn-fab float-right red"
-                            title="Delete partner"
-                            data-toggle="modal" data-target="#modal"
-                            data-ajax-url="{% url 'partner_delete' partner.id %}">
-                                <i class="material-icons">delete</i>
-
-                            </a>
-                        {% endif %}
-
-
-                    {% endif %}
-
-                </div>
+{% with fab="inline-flex h-10 w-10 items-center justify-center text-gray-700 rounded-full border border-gray-300 bg-white shadow hover:bg-gray-50" title2="flex items-center gap-2 text-2xl font-light" %}
+    <div class="relative mt-4 p-8 rounded bg-gray-50">
+        {% if partner.is_published %}
+            <span class="absolute top-4 left-4 inline-flex items-center px-3 py-1 text-xs font-medium text-white rounded-full bg-green-600">Published</span>
+        {% else %}
+            <span class="absolute top-4 left-4 inline-flex items-center px-3 py-1 text-xs font-medium text-white rounded-full bg-gray-500">Not Published</span>
+        {% endif %}
+        <span class="text-gray-500">Partner</span>
+        <h1 class="text-4xl font-light">{{ partner }}</h1>
+        <div class="grid gap-6 md:grid-cols-2">
+            <div>
+                <dl>
+                    <dt class="font-semibold">Name</dt>
+                    <dd>{{ partner.name }}</dd>
+                    <dt class="font-semibold">Acronym</dt>
+                    <dd>{{ partner.acronym }}</dd>
+                    <dt class="font-semibold">Address</dt>
+                    <dd>{{ partner.address|default:'-' }}</dd>
+                    <dt class="font-semibold">Country</dt>
+                    <dd>{{ partner.country.name|default:'-' }}</dd>
+                </dl>
+            </div>
+            <div>
+                <dl>
+                    <dt class="font-semibold">Is clinical?</dt>
+                    {% if partner.is_clinical %}<dd>YES</dd>{% else %}<dd>NO</dd>{% endif %}
+                    <dt class="font-semibold">Geographic category</dt>
+                    <dd>{{ partner.geo_category }}</dd>
+                    <dt class="font-semibold">Sector category</dt>
+                    <dd>{{ partner.sector_category }}</dd>
+                    <dt class="font-semibold">Accession number</dt>
+                    <dd>{{ partner.elu_accession|default:'-' }}</dd>
+                </dl>
             </div>
         </div>
+        <div class="absolute top-4 right-4 flex gap-2">
+            {% if request.user.is_superuser %}
+                <a href="{% url 'admin:core_partner_change' partner.pk %}"
+                   id="partner-admin"
+                   title="See in django admin"
+                   class="{{ fab }}"><i data-lucide="wrench" class="h-5 w-5"></i></a>
+            {% endif %}
+            {% if request.user.can_publish %}
+                {% if not partner.is_published %}
+                    <a id="publish"
+                       class="{{ fab }}"
+                       href="{% url 'partner_publish' pk=partner.id %}"><i data-lucide="upload" class="h-5 w-5"></i></a>
+                {% else %}
+                    <a id="unpublish"
+                       data-confirm="Are you sure to unpublish the partner? The changes won't be propagated to other systems!"
+                       class="{{ fab }}"
+                       href="{% url 'partner_unpublish' pk=partner.id %}"><i data-lucide="undo-2" class="h-5 w-5"></i></a>
+                {% endif %}
+            {% endif %}
+            {% if can_edit %}
+                <a class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-blue-900 shadow hover:bg-blue-800"
+                   title="Edit partner"
+                   href="{% url 'partner_edit' pk=partner.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
+                {% if not partner.is_published %}
+                    <a id="deletepartner"
+                       class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-red-600 shadow hover:bg-red-700"
+                       title="Delete partner"
+                       data-toggle="modal" data-target="#modal"
+                       data-ajax-url="{% url 'partner_delete' partner.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>
+                {% endif %}
+            {% endif %}
+        </div>
     </div>
-    <div class="row card-deck mt-4">
-        {#    Contacts    #}
-        <div class="card ml-0 col-md-6">
-            <div class="card-body">
-                <h2 class="card-title"><span><i class="material-icons">contact_page</i></span> Contacts at this partner</h2>
-                <ul class="card-text list-group">
-                    {% for contact in partner.contacts.all %}
-                        <li class="list-group-item">
-                            <i class="material-icons">perm_contact_calendar</i><strong>{{ contact.full_name }}</strong>
-                        </li>
-                    {% endfor %}
 
+    <div class="mt-4 grid gap-4 md:grid-cols-2">
+        {#    Contacts    #}
+        <div class="rounded border border-gray-200 bg-white shadow-sm">
+            <div class="p-4">
+                <h2 class="{{ title2 }}"><i data-lucide="contact" class="h-6 w-6"></i> Contacts at this partner</h2>
+                <ul class="mt-2 divide-y divide-gray-200 rounded border border-gray-200">
+                    {% for contact in partner.contacts.all %}
+                        <li class="flex items-center gap-2 px-3 py-2"><i data-lucide="contact-round" class="h-5 w-5"></i><strong>{{ contact.full_name }}</strong></li>
+                    {% endfor %}
                 </ul>
             </div>
         </div>
         {#    Contracts    #}
-        <div class="card mr-0 col-md-6">
-            <div class="card-body">
-                <h2 class="card-title"><span><i class="material-icons">handshake</i></span> Contracts with this partner</h2>
-                <ul class="card-text list-group">
+        <div class="rounded border border-gray-200 bg-white shadow-sm">
+            <div class="p-4">
+                <h2 class="{{ title2 }}"><i data-lucide="handshake" class="h-6 w-6"></i> Contracts with this partner</h2>
+                <ul class="mt-2 flex flex-col gap-2">
                     {% for collab in partner.contracts.all %}
-                        <li class="list-group-item">
-                            <ul style="border:2px solid #a1a1a1;">
-                                <li class="list-group-item">
-                                    <i class="material-icons">link</i><a
-                                        href="{% url 'contract' pk=collab.id %}"><strong>{{ collab.project|truncatechars:100 }}</strong></a>
-                                </li>
-                                <li class="list-group-item">
-                                    {% for custodian in collab.local_custodians.all %}
-                                        {{ custodian|truncatechars:100 }}
-                                    {% endfor %}
-                                </li>
-                            </ul>
+                        <li class="rounded border border-gray-200">
+                            <div class="flex items-center gap-2 px-3 py-2 border-b border-gray-200"><i data-lucide="link" class="h-5 w-5"></i><a class="text-blue-700 hover:underline" href="{% url 'contract' pk=collab.id %}"><strong>{{ collab.project|truncatechars:100 }}</strong></a></div>
+                            <div class="px-3 py-2">
+                                {% for custodian in collab.local_custodians.all %}
+                                    {{ custodian|truncatechars:100 }}
+                                {% endfor %}
+                            </div>
                         </li>
                     {% endfor %}
-
                 </ul>
             </div>
         </div>
     </div>
+{% endwith %}
 {% endblock %}
-

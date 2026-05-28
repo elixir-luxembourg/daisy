@@ -1,15 +1,13 @@
 {% extends "layout.html" %}
 
-<link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" />
-
 {% block title %}Users{% endblock %}
 
 {% block content %}
-    <div class="jumbotron mt-4">
-        <h1 class="display-4">Users</h1>
+    <div class="mt-4 p-8 rounded bg-gray-50">
+        <h1 class="text-4xl font-light">Users</h1>
     </div>
 
-    <table id="users_table" class="display table  table-hover" style="width:100%">
+    <table id="users_table" class="display w-full text-sm" style="width:100%">
         <thead>
             <tr>
                 <th>First Name</th>
@@ -22,8 +20,8 @@
             {% for user in user_list %}
                 {% if user.first_name and user.last_name %}
                 <tr>
-                    <td><a href="{% url 'user' user.id %}" >{{ user.first_name }} </a></td>
-                    <td><a href="{% url 'user' user.id %}" >{{ user.last_name }}</a></td>
+                    <td><a class="text-blue-700 hover:underline" href="{% url 'user' user.id %}" >{{ user.first_name }} </a></td>
+                    <td><a class="text-blue-700 hover:underline" href="{% url 'user' user.id %}" >{{ user.last_name }}</a></td>
                     <td>{{ user.email }}</td>
 
                         <td>{% if user.source %}{{ user.source }}{% else %} {% endif %} </td>
@@ -37,7 +35,5 @@
 {% endblock %}
 
 {% block floating-buttons %}
-    <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'users_add' %}"><i
-            class="material-icons">add</i>
-    </a>
+    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'users_add' %}" title="Add user"><i data-lucide="plus" class="h-6 w-6"></i></a>
 {% endblock %}

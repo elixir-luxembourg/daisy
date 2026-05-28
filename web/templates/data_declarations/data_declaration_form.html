@@ -3,13 +3,13 @@
 {% block title %}Data declaration - Add{% endblock %}
 
 {% block content %}
-    <div class="jumbotron mt-4">
-        <h1 class="display-4">{% block content_title %}Data declaration{% endblock %}</h1>
+    <div class="mt-4 p-8 rounded bg-gray-50">
+        <h1 class="text-4xl font-light">{% block content_title %}Data declaration{% endblock %}</h1>
     </div>
-    <div class="card">
-        <div class="card-body">
-            <h2 class="card-title">{% block card_title %}Add data declaration{% endblock %}</h2>
-            <div class="card-text">
+    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+        <div class="p-4">
+            <h2 class="text-2xl font-light">{% block card_title %}Add data declaration{% endblock %}</h2>
+            <div class="mt-2" id="declaration-form-host">
                 {% include '_includes/forms.html' with submit_disabled=True half=False %}
             </div>
         </div>
@@ -20,7 +20,7 @@
     <script>$(document).ready(function () {
         $('input[type=radio][name="type"]').change(function () {
             var value = this.value;
-            var form = $(".card-text form");
+            var form = $("#declaration-form-host form");
             var submit_button = form.find("button[type='submit']");
             $("#sub-form").remove();
             var sub_form = $("<div id='sub-form'>");

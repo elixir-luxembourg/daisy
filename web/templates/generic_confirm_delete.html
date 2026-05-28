@@ -1,7 +1,9 @@
-<h2 class="card-title">Confirm</h2>
+<h2 class="text-xl font-semibold">Confirm</h2>
 <form method="post" action="{% url   action_url  id %}">{% csrf_token %}
     <p>Proceed with deletion of  "{{ object }}"?</p>
-    <button type="submit"
-            class="btn btn-primary btn-raised">Proceed</button>
-    <a href="{{ cancel_button }}" class="btn btn-secondary btn-raised float-right">Cancel</a>
+    <div class="flex items-center justify-between gap-2 mt-3">
+        <button type="submit"
+                class="inline-flex items-center px-4 py-2 text-sm font-medium text-white rounded bg-blue-900 hover:bg-blue-800">Proceed</button>
+        <a href="{{ cancel_button }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-900 rounded border border-blue-900 hover:bg-blue-50">Cancel</a>
+    </div>
 </form>

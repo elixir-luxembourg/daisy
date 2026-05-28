@@ -4,13 +4,13 @@
 {% block title %}Project {{project.title}} | create contract{% endblock %}
 
 {% block content %}
-    <div class="jumbotron mt-4">
-        <h1 class="display-4">{% block content_title %}Project{% endblock %}</h1>
+    <div class="mt-4 p-8 rounded bg-gray-50">
+        <h1 class="text-4xl font-light">{% block content_title %}Project{% endblock %}</h1>
     </div>
-    <div class="card">
-        <div class="card-body">
-            <h2 class="card-title">{% block card_title %}Create contract{% endblock %}</h2>
-            <div class="card-text">
+    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+        <div class="p-4">
+            <h2 class="text-2xl font-light">{% block card_title %}Create contract{% endblock %}</h2>
+            <div class="mt-2">
                 {% include '_includes/forms.html' %}
             </div>
         </div>
