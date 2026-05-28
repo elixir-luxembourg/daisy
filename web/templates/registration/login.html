@@ -2,22 +2,31 @@
 
 {% block title %}Login | DAISY{% endblock %}
 
-{% block content %}
-    <div class="mt-4 p-8 rounded bg-gray-50">
-        <h1 class="mb-4 text-4xl font-light">Login</h1>
+{% block container %}
+<div class="flex items-center justify-center px-4 py-12 min-h-full sm:px-6">
+    <div class="w-full max-w-md">
+        <div class="mb-8 text-center">
+            <span class="text-4xl font-display font-semibold tracking-tight text-blue-950">DAISY</span>
+            <p class="mt-1 text-sm text-gray-500">Data Information System</p>
+        </div>
 
-        {% include '_includes/forms.html' with submit_label="Login" %}
+        <div class="p-8 bg-white rounded border border-gray-200 shadow-sm">
+            <h1 class="mb-1 text-xl font-semibold text-blue-950">Log in</h1>
+            <p class="mb-6 text-sm text-gray-500">Enter your credentials to access your account.</p>
 
-        {% if oidc_enabled %}
-        <div class="mb-4">
-            <div class="mt-3 mb-3 text-center">
-                <span class="text-gray-500">— or —</span>
+            {% include '_includes/forms.html' with submit_label="Login" %}
+
+            {% if oidc_enabled %}
+            <div class="flex items-center gap-3 my-6" aria-hidden="true">
+                <span class="flex-1 h-px bg-gray-200"></span>
+                <span class="text-xs font-medium uppercase tracking-wide text-gray-400">or</span>
+                <span class="flex-1 h-px bg-gray-200"></span>
             </div>
-            <a href="{% url 'oidc_login' %}" class="inline-flex items-center justify-center gap-2 px-4 py-3 w-full text-base font-medium text-white rounded bg-blue-900 hover:bg-blue-800">
+            <a href="{% url 'oidc_login' %}" class="inline-flex items-center justify-center gap-2 px-4 py-3 w-full text-sm font-medium text-blue-900 rounded border border-blue-900 transition-colors hover:bg-blue-50">
                 <i data-lucide="log-in" class="h-5 w-5"></i> Login with University account
             </a>
+            {% endif %}
         </div>
-        {% endif %}
-
     </div>
+</div>
 {% endblock %}
