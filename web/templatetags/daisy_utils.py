@@ -142,19 +142,22 @@ class FacetLinkNode(Node):
         # facets are multi-select: each click toggles one value, several can stay active
         icon = "square"
         text_class = "text-gray-700"
+        state_label = ""
         if is_present:
             icon = "square-check"
             text_class = "font-semibold text-blue-950"
+            state_label = format_html('<span class="sr-only">, selected</span>')
 
         return format_html(
-            '<li><a href="{}" class="flex items-center gap-2 py-1 text-sm {} hover:text-blue-950">'
-            '<i data-lucide="{}" class="h-4 w-4 shrink-0"></i>'
-            '<span>{} <span class="text-gray-400">({})</span></span></a></li>',
+            '<li><a href="{}" class="flex items-center gap-2 -mx-2 px-2 min-h-9 text-sm {} rounded hover:bg-gray-50 hover:text-blue-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-900">'
+            '<i data-lucide="{}" class="h-4 w-4 shrink-0" aria-hidden="true"></i>'
+            '<span>{} <span class="text-gray-500">({})</span>{}</span></a></li>',
             url,
             text_class,
             icon,
             current_facet[0],
             current_facet[1],
+            state_label,
         )
 
 

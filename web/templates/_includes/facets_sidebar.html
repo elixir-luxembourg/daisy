@@ -2,14 +2,14 @@
     {% with values=facets.fields|get_item:field %}
         <div class="my-2 rounded border border-gray-200 bg-white shadow-sm">
             <div class="p-4">
-                <h4 class="mb-2 text-base font-semibold text-gray-900">
-                        {{ field|title|un_underscore }}</h4>
+                <h3 class="mb-2 text-base font-semibold text-gray-900">
+                        {{ field|title|un_underscore }}</h3>
                 <ul class="facets flex flex-col gap-1 list-none">
                     {% for facet in values %}
                         {% facetlink url field facet %}
                     {% empty %}
                         <li class="flex items-center gap-2 py-1 text-sm text-gray-500">
-                            <i data-lucide="filter-x" class="h-4 w-4 shrink-0 text-gray-400"></i>
+                            <i data-lucide="filter-x" class="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true"></i>
                             <span>No values match the current results.</span>
                         </li>
                     {% endfor %}

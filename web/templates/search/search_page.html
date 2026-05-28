@@ -4,17 +4,18 @@
 
 
 {% block content %}
-    <div class="my-4 mb-8 rounded border border-gray-200 bg-gray-50 text-gray-900">
+    <div class="mt-4 mb-8 text-gray-900 bg-gray-50 rounded border border-gray-200">
         <div class="p-4">
             <div>
-                <h1 class="flex items-center gap-2 text-4xl font-light"><i data-lucide="info" class="h-7 w-7 text-gray-500"></i> {{ title }}</h1>
+                <h1 class="flex items-center gap-2 text-4xl font-light"><i data-lucide="info" class="h-7 w-7 text-gray-500" aria-hidden="true"></i> {{ title }}</h1>
             </div>
-            <p>{{ help_text }}</p>
-            <p>Use the categories on the left or the search box below to locate {{ title | lower }}. In order to create add a new one, use the button at bottom-right corner.</p>
+            <p class="max-w-prose">{{ help_text }}</p>
+            <p class="max-w-prose">Use the filters or the search box below to locate {{ title|lower }}. To add a new one, use the Add button.</p>
         </div>
     </div>
     <div class="grid grid-cols-12 gap-6">
         <div id="sidebar-left" class="order-2 hidden md:col-span-5 md:block xl:col-span-4">
+            <h2 class="sr-only">Filter the results</h2>
             {% include '_includes/facets_sidebar.html' with facets=facets url=search_url %}
         </div>
 
@@ -24,7 +25,7 @@
         </div>
 
         <div id="sidebar-responsive-left" class="order-6 col-span-12 mt-4 md:hidden">
-            <h2 class="text-4xl font-light">Filter the results</h2>
+            <h2 class="mb-2 text-xl font-semibold text-gray-900">Filter the results</h2>
             {% include '_includes/facets_sidebar.html' with facets=facets url=search_url %}
         </div>
     </div>
@@ -32,10 +33,10 @@
 
 
 {% block floating-buttons %}
-    <a class="float-right inline-flex h-12 w-12 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url add_url %}{% if reset %}?reset=true{% endif %}" aria-label="Add new {{ title|lower }}">
-        <i data-lucide="plus" class="h-6 w-6"></i>
+    <a class="float-right inline-flex items-center justify-center h-12 w-12 text-white bg-blue-900 rounded-full shadow-lg hover:bg-blue-800" href="{% url add_url %}{% if reset %}?reset=true{% endif %}" aria-label="Add new {{ title|lower }}">
+        <i data-lucide="plus" class="h-6 w-6" aria-hidden="true"></i>
     </a>
-    <a class="float-right inline-flex h-12 w-12 items-center justify-center text-gray-700 rounded-full border border-gray-300 bg-white shadow-lg hover:bg-gray-50 md:hidden" href="#sidebar-responsive-left" aria-label="Filter the results">
-        <i data-lucide="arrow-down-wide-narrow" class="h-6 w-6"></i>
+    <a class="float-right inline-flex items-center justify-center h-12 w-12 text-gray-700 bg-white rounded-full border border-gray-300 shadow-lg hover:bg-gray-50 md:hidden" href="#sidebar-responsive-left" aria-label="Filter the results">
+        <i data-lucide="arrow-down-wide-narrow" class="h-6 w-6" aria-hidden="true"></i>
     </a>
 {% endblock %}
