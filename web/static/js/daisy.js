@@ -1,6 +1,3 @@
-$.fn.select2.defaults.set("theme", "bootstrap");
-
-
 function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -150,7 +147,6 @@ $(document).ready(function () {
         modal.find('.modal-title').text(title);
         modal.find('.modal-body').load(url, function () {
 
-            modal.bootstrapMaterialDesign();
             initDatepickers(modal.find('.datepicker'));
             initDatetimepickers(modal.find('.datetimepicker'));
             initFormsets(modal.find('.formset-row'));

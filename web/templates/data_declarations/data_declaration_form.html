@@ -27,7 +27,6 @@
             submit_button.before(sub_form);
             sub_form.load('{% url 'data_declarations_add_sub_form' %}?declaration_type=' + value + '&dataset_id={{ dataset.id }}', function () {
                 sub_form.find('select').select2();
-                sub_form.bootstrapMaterialDesign();
 
             });
 

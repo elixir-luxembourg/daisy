@@ -50,7 +50,6 @@
             var partnerId = this.value;
             var contractTbody = $("#contractTbody");
             contractTbody.load('{% url 'data_declarations_get_contracts' %}?partner_id=' + partnerId + '&dataset_id={{ dataset.id }}', function () {
-                contractTbody.find("input").bootstrapMaterialDesign();
             });
         });
         $("input[name='contract']").change(function () {

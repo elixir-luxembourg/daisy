@@ -1,0 +1,144 @@
+{% load static %}
+
+<link rel="preload" href="{% static 'fonts/barlow-400.woff2' %}" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="{% static 'fonts/barlow-500.woff2' %}" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="{% static 'fonts/barlow-600.woff2' %}" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="{% static 'fonts/barlow-condensed-600.woff2' %}" as="font" type="font/woff2" crossorigin />
+
+<link href="{% static 'vendor/datatables/css/dataTables.tailwindcss.min.css' %}" rel="stylesheet"/>
+
+<script src="{% static 'vendor/tailwindcss/browser.js' %}"></script>
+<script defer src="{% static 'vendor/datatables/js/dataTables.min.js' %}"></script>
+<script defer src="{% static 'vendor/datatables/js/dataTables.tailwindcss.min.js' %}"></script>
+<script defer src="{% static 'vendor/lucide/lucide.min.js' %}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+    });
+</script>
+<style type="text/tailwindcss">
+    @theme static {
+        --font-sans:
+          "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        --font-body:
+          "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        --font-display: "Barlow Condensed", "Arial Black", Arial, sans-serif;
+        --font-mono:
+          ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+          monospace;
+
+        --color-blue-*: initial;
+        --color-blue-950: #142f3f;
+        --color-blue-900: #1e3446;
+        --color-blue-800: #354859;
+        --color-blue-700: #4b5d6b;
+        --color-blue-600: #62717e;
+        --color-blue-500: #788590;
+        --color-blue-400: #8f9aa3;
+        --color-blue-300: #a5aeb5;
+        --color-blue-200: #bcc2c8;
+        --color-blue-100: #d2d6da;
+        --color-blue-50: #e9ebed;
+
+        --color-red-*: initial;
+        --color-red-950: #e13c2e;
+        --color-red-900: #e13c2e;
+        --color-red-800: #e45043;
+        --color-red-700: #e76358;
+        --color-red-600: #ea776d;
+        --color-red-500: #ed8a82;
+        --color-red-400: #f09e97;
+        --color-red-300: #f3b1ab;
+        --color-red-200: #f6c5c0;
+        --color-red-100: #f9d8d5;
+        --color-red-50: #fcecea;
+
+        --color-sky-*: initial;
+        --color-sky-950: #afdef6;
+        --color-sky-900: #afdef6;
+        --color-sky-800: #afdef6;
+        --color-sky-700: #c7e8f9;
+        --color-sky-600: #c7e8f9;
+        --color-sky-500: #c7e8f9;
+        --color-sky-400: #d7effb;
+        --color-sky-300: #d7effb;
+        --color-sky-200: #e7f5fc;
+        --color-sky-100: #e7f5fc;
+        --color-sky-50: #e7f5fc;
+      }
+
+      @layer base {
+        button:not(:disabled),
+        [type="button"]:not(:disabled),
+        [type="submit"]:not(:disabled),
+        [type="reset"]:not(:disabled),
+        [role="button"]:not(:disabled),
+        summary {
+          cursor: pointer;
+        }
+        button:disabled,
+        [type="button"]:disabled,
+        [type="submit"]:disabled,
+        [type="reset"]:disabled {
+          cursor: not-allowed;
+        }
+      }
+
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("{% static 'fonts/barlow-400.woff2' %}") format("woff2");
+      }
+
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url("{% static 'fonts/barlow-500.woff2' %}") format("woff2");
+      }
+
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: url("{% static 'fonts/barlow-600.woff2' %}") format("woff2");
+      }
+
+      @font-face {
+        font-family: "Barlow";
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url("{% static 'fonts/barlow-700.woff2' %}") format("woff2");
+      }
+
+      @font-face {
+        font-family: "Barlow Condensed";
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url("{% static 'fonts/barlow-condensed-400.woff2' %}") format("woff2");
+      }
+
+      @font-face {
+        font-family: "Barlow Condensed";
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url("{% static 'fonts/barlow-condensed-500.woff2' %}") format("woff2");
+      }
+
+      @font-face {
+        font-family: "Barlow Condensed";
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: url("{% static 'fonts/barlow-condensed-600.woff2' %}") format("woff2");
+      }
+</style>

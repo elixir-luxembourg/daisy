@@ -1,102 +1,79 @@
 {% load static %}
-<nav class="navbar navbar-dark navbar-expand-md bg-primary">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/"><img src="{% static "images/daisy-logo-new.png" %}"
-                                              height="auto"></a>
-        {% if instance_label %}
-        <span class="badge bg-light text-dark mr-4">{{ instance_label }}</span>
-        {% endif %}
+{% with current=request.resolver_match.url_name|default:'' link="block px-3 py-2 font-medium text-white/85 rounded hover:bg-white/10 hover:text-white" active="block px-3 py-2 font-semibold text-white bg-white/10 rounded" item="block px-4 py-2 text-sm text-white/85 hover:bg-white/10 hover:text-white" %}
+<nav class="bg-blue-900 text-white/85">
+    <div class="relative mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+        <a href="/" class="flex items-center gap-3 text-white">
+            <img src="{% static 'images/UNI_Logo_LCSB_white.svg' %}" alt="DAISY" class="h-8 w-auto">
+            {% if instance_label %}<span class="px-2 py-0.5 text-xs font-semibold uppercase tracking-wide bg-white/10 rounded">{{ instance_label }}</span>{% endif %}
+        </a>
 
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
-                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item {% if request.resolver_match.url_name == "dashboard" %}active{% endif %}">
-                    <a class="nav-link" href="/">Home{% if request.resolver_match.url_name == "dashboard" %}
-                        <span class="sr-only">(current)</span>{% endif %}</a>
-                </li>
-                <li class="nav-item {% if request.resolver_match.url_name == "about" %}active{% endif %}">
-                    <a class="nav-link" href="{% url 'about' %}">About{% if request.resolver_match.url_name == "about" %}
-                        <span class="sr-only">(current)</span>{% endif %}</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if "dataset" in request.resolver_match.url_name %}active{% endif %}"
-                       href="{% url 'datasets' %}">Datasets{% if 'dataset' in request.resolver_match.url_name %}
-                        <span class="sr-only">(current)</span>{% endif %}</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if "project" in request.resolver_match.url_name %}active{% endif %}"
-                       href="{% url 'projects' %}">Projects{% if 'project' in request.resolver_match.url_name %}
-                        <span class="sr-only">(current)</span>{% endif %}</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if "contract" in request.resolver_match.url_name %}active{% endif %}"
-                       href="{% url 'contracts' %}">Contracts
-                        {% if 'contract' in request.resolver_match.url_name %}
-                            <span class="sr-only">(current)</span>{% endif %}</a>
-                </li>
+        <div id="navbar-collapse" class="absolute inset-x-0 top-16 z-40 hidden border-b border-white/10 bg-blue-900 lg:static lg:flex lg:flex-1 lg:items-center lg:justify-between lg:border-0">
+            <ul class="flex flex-col px-4 py-3 text-sm lg:ml-6 lg:flex-row lg:items-center lg:gap-1 lg:p-0">
+                <li><a href="/" class="{% if current == 'dashboard' %}{{ active }}{% else %}{{ link }}{% endif %}">Home</a></li>
+                <li><a href="{% url 'about' %}" class="{% if current == 'about' %}{{ active }}{% else %}{{ link }}{% endif %}">About</a></li>
+                <li><a href="{% url 'datasets' %}" class="{% if 'dataset' in current %}{{ active }}{% else %}{{ link }}{% endif %}">Datasets</a></li>
+                <li><a href="{% url 'projects' %}" class="{% if 'project' in current %}{{ active }}{% else %}{{ link }}{% endif %}">Projects</a></li>
+                <li><a href="{% url 'contracts' %}" class="{% if 'contract' in current %}{{ active }}{% else %}{{ link }}{% endif %}">Contracts</a></li>
                 {% if request.user.is_authenticated %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle {% if "definition" in request.resolver_match.url_name %}active{% endif %}"
-                       href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                       id="definitionsDropdown">Definitions</a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="{% url 'cohorts' %}">Cohorts</a>
-                        <a class="dropdown-item" href="{% url 'partners' %}">Partners</a>
-                        <a class="dropdown-item" href="{% url 'contacts' %}">Contacts</a>
-                        <a class="dropdown-item" href="{% url 'dacs' %}">DACs</a>
-
-                    </div>
+                <li class="lg:relative">
+                    <details class="group">
+                        <summary class="flex cursor-pointer list-none items-center gap-1 {% if current in 'cohorts partners contacts dacs' %}{{ active }}{% else %}{{ link }}{% endif %}">
+                            Definitions
+                            <i data-lucide="chevron-down" class="h-4 w-4 transition-transform group-open:rotate-180"></i>
+                        </summary>
+                        <ul class="lg:absolute lg:left-0 lg:z-50 lg:mt-1 lg:min-w-48 lg:rounded lg:border lg:border-white/10 lg:bg-blue-900 lg:py-1 lg:shadow-lg">
+                            <li><a href="{% url 'cohorts' %}" class="{{ item }}">Cohorts</a></li>
+                            <li><a href="{% url 'partners' %}" class="{{ item }}">Partners</a></li>
+                            <li><a href="{% url 'contacts' %}" class="{{ item }}">Contacts</a></li>
+                            <li><a href="{% url 'dacs' %}" class="{{ item }}">DACs</a></li>
+                        </ul>
+                    </details>
                 </li>
-               {% endif %}
+                {% endif %}
             </ul>
-            {% if request.user.is_authenticated %}
-                <ul class="navbar-nav">
+
+            <ul class="flex flex-col border-t border-white/10 px-4 py-3 text-sm lg:flex-row lg:items-center lg:gap-1 lg:border-0 lg:p-0">
+                {% if request.user.is_authenticated %}
                     {% if notifications_enabled %}
-                        <li class="nav-item {% if request.resolver_match.url_name == "notifications" %}active{% endif %}">
-                            <a id="notifications-bell"
-                               href="{% url 'notifications' %}"
-                               class="nav-link"
-                               data-ajax-url="{% url 'api_notif_number' %}"
-                            >
-                                <span id="notifications-badge" class="badge badge-danger position-absolute"></span>
-                                <i class="material-icons">notifications</i>
-                                {% if request.resolver_match.url_name == "notifications" %}<span class="sr-only">(current)</span>{% endif %}</a>
-                        </li>
-                    {% endif %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {{ request.user.get_full_name  }}
+                    <li>
+                        <a id="notifications-bell" href="{% url 'notifications' %}" data-ajax-url="{% url 'api_notif_number' %}"
+                           class="relative flex items-center gap-2 px-3 py-2 rounded {% if current == 'notifications' %}font-semibold text-white bg-white/10{% else %}font-medium text-white/85 hover:bg-white/10 hover:text-white{% endif %}">
+                            <i data-lucide="bell" class="h-5 w-5"></i>
+                            <span id="notifications-badge" class="inline-flex min-w-5 items-center justify-center px-1 text-xs font-semibold text-white bg-red-900 rounded-full empty:hidden lg:absolute lg:-right-1 lg:-top-1"></span>
                         </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                            {#                            <a class="dropdown-item" href="#">my datasets</a>#}
-                            {% if notifications_enabled %}
-                                <a class="dropdown-item" href="{% url 'notifications_settings' %}">notifications settings</a>
-                                {% if request.user.is_notifications_admin %}
-                                    <a class="dropdown-item" href="{% url 'notifications_admin' %}">admin notifications</a>
-                                {% endif %}
-                            {% endif %}
-                            {% if request.user.is_superuser %}
-                                <a class="dropdown-item" href="{% url 'users' %}">manage users</a>
-                                <a class="dropdown-item" href="{% url 'admin:index' %}">django-admin</a>
-                            {% endif %}
-                            {% if request.user.source.name == 'MANUAL' %}
-                                <a class="dropdown-item" href="{% url 'users_change_password'%}">change password</a>
-                             {% endif %}
-                            <a class="dropdown-item" href="{% url 'logout' %}">logout</a>
-                        </div>
                     </li>
-                </ul>
-            {% else %}
-                <ul class="navbar-nav">
-                    <li class="nav-item "><a
-                            class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}"
-                            href="{% url 'login' %}">Login</a></li>
-                </ul>
-            {% endif %}
+                    {% endif %}
+                    <li class="lg:relative">
+                        <details class="group">
+                            <summary class="flex cursor-pointer list-none items-center gap-1 {{ link }}">
+                                {{ request.user.get_full_name }}
+                                <i data-lucide="chevron-down" class="h-4 w-4 transition-transform group-open:rotate-180"></i>
+                            </summary>
+                            <ul class="lg:absolute lg:right-0 lg:z-50 lg:mt-1 lg:min-w-56 lg:rounded lg:border lg:border-white/10 lg:bg-blue-900 lg:py-1 lg:shadow-lg">
+                                {% if notifications_enabled %}
+                                <li><a href="{% url 'notifications_settings' %}" class="{{ item }}">notifications settings</a></li>
+                                    {% if request.user.is_notifications_admin %}<li><a href="{% url 'notifications_admin' %}" class="{{ item }}">admin notifications</a></li>{% endif %}
+                                {% endif %}
+                                {% if request.user.is_superuser %}
+                                <li><a href="{% url 'users' %}" class="{{ item }}">manage users</a></li>
+                                <li><a href="{% url 'admin:index' %}" class="{{ item }}">django-admin</a></li>
+                                {% endif %}
+                                {% if request.user.source.name == 'MANUAL' %}<li><a href="{% url 'users_change_password' %}" class="{{ item }}">change password</a></li>{% endif %}
+                                <li><a href="{% url 'logout' %}" class="{{ item }}">logout</a></li>
+                            </ul>
+                        </details>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'login' %}" class="{% if current == 'login' %}{{ active }}{% else %}{{ link }}{% endif %}">Login</a></li>
+                {% endif %}
+            </ul>
         </div>
+
+        <button type="button" aria-label="Toggle navigation" aria-controls="navbar-collapse" aria-expanded="false"
+                onclick="var n=document.getElementById('navbar-collapse'),h=n.classList.toggle('hidden');this.setAttribute('aria-expanded',!h)"
+                class="inline-flex items-center justify-center p-2 text-white rounded hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 lg:hidden">
+            <i data-lucide="menu" class="h-5 w-5"></i>
+        </button>
     </div>
 </nav>
+{% endwith %}

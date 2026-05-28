@@ -28,7 +28,6 @@ $(document).ready(function () {
             const forms_url = dataDeclarationsAddSubFormUrl + '?declaration_type=' + declaration_type + '&dataset_id=' + dataset_id;
             sub_form.load(forms_url, function () {
                     sub_form.find('select').select2();
-                    sub_form.bootstrapMaterialDesign();
                 }
             )
             ;
