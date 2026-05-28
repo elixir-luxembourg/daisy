@@ -36,7 +36,7 @@
             {% if message.tags == 'success' %}border-green-200 bg-green-50 text-green-900
             {% elif message.tags == 'error' or message.tags == 'danger' %}border-red-200 bg-red-50 text-red-900
             {% elif message.tags == 'warning' %}border-yellow-200 bg-yellow-50 text-yellow-900
-            {% else %}border-sky-200 bg-sky-50 text-sky-900{% endif %}">
+            {% else %}border-sky-600 bg-sky-50 text-blue-900{% endif %}">
             <i data-lucide="{% if message.tags == 'success' %}circle-check{% elif message.tags == 'error' or message.tags == 'danger' %}circle-x{% elif message.tags == 'warning' %}triangle-alert{% else %}info{% endif %}" class="h-5 w-5 shrink-0"></i>
             <div class="flex-1">
                 <div class="font-semibold">{{ message.tags|title }}</div>

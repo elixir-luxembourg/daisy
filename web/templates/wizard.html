@@ -23,7 +23,7 @@
         </div>
     </div>
     <div class="col-span-12 md:col-span-9">
-        <form action="" method="post" class="nice-selects">{% csrf_token %}
+        <form action="" method="post" novalidate class="nice-selects">{% csrf_token %}
             <table class="w-full">
                 {{ wizard.management_form }}
                     {% if wizard.form.forms %}

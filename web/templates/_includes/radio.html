@@ -1,8 +1,8 @@
-<fieldset>
-    <legend class="block mb-1 text-sm font-medium text-gray-700">{{ field.label }}:</legend>
-    <div class="flex flex-col gap-1">
+<fieldset class="accent-blue-900">
+    <legend class="block mb-2 text-sm font-medium text-gray-900">{{ field.label }}</legend>
+    <div class="flex flex-col gap-1.5">
         {% for choice in field %}
-            <label class="flex items-center gap-2 text-sm text-gray-700">
+            <label class="flex items-center gap-2 text-sm text-gray-900">
                 {{ choice.tag }}
                 {{ choice.choice_label }}
             </label>
