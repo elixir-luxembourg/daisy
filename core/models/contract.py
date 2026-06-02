@@ -169,7 +169,12 @@ class Contract(CoreModel):
 
     def short_name(self):
         partners_list = (
-            ", ".join([p.name for p in self.partners.all()]) or "Undefined partner(s)"
+            ", ".join(
+                role.partner.name
+                for role in self.partners_roles.all()
+                if role.partner_id
+            )
+            or "Undefined partner(s)"
         )
         if self.project:
             project_name = (

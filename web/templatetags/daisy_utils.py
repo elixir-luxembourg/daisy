@@ -19,6 +19,15 @@ def get_item(dictionary, key):
     return dictionary.get(key, "")
 
 
+@register.simple_tag(takes_context=True)
+def clear_filters_url(context, url_name):
+    """Search url with all facet filters removed, preserving query and sort."""
+    query_dict = context["request"].GET.copy()
+    query_dict.pop("filters", None)
+    encoded = query_dict.urlencode(safe="/&:")
+    return reverse(url_name) + ("?" + encoded if encoded else "")
+
+
 @register.filter
 def un_underscore(item):
     """

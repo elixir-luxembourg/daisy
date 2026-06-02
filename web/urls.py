@@ -54,7 +54,7 @@ from web.views.dacs import (
     remove_member_from_dac,
     pick_dataset_for_dac,
 )
-from web.views.dashboard import dashboard
+from web.views.dashboard import dashboard, landing
 from web.views.data_declarations import (
     DatadeclarationDetailView,
     DatadeclarationEditView,
@@ -120,6 +120,7 @@ project_dataset_wizard_view = DatasetWizardView.as_view(
 web_urls = [
     # Single pages
     path("", dashboard, name="dashboard"),
+    path("landing/", landing, name="landing"),
     path("about", about, name="about"),
     path("profile", profile.ProfileEditView.as_view(), name="profile"),
     # API urls
