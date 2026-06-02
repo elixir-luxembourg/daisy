@@ -1,30 +1,28 @@
 {% load widget_tweaks %}
 
-<div class="form-group {% if field.field.required %}required{% endif %}">
+{% with base="block w-full px-3 py-2 text-sm text-gray-900 rounded-md bg-white outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2" errid=field.id_for_label|add:"-error" %}
+<div class="mb-4">
     {% if field.field.widget.input_type == 'checkbox' %}
         {% include '_includes/checkbox.html' %}
     {% elif field.field.widget.input_type == 'radio' %}
         {% include '_includes/radio.html' %}
     {% else %}
-        <strong>{{ field.label_tag }}</strong>
-        {% if form.is_bound %}
-            {% if field.errors %}
-                {% render_field field class+="form-control is-invalid" %}
-                {% for error in field.errors %}
-                    <div class="invalid-feedback">
-                        {{ error }}
-                    </div>
-                {% endfor %}
-            {% else %}
-                {% render_field field class+="form-control is-valid" %}
-            {% endif %}
+        <label for="{{ field.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900">{{ field.label }}{% if field.field.required %} <span class="text-red-600">*</span>{% endif %}</label>
+        {% if form.is_bound and field.errors %}
+            <div class="grid grid-cols-1">
+                {% render_field field class+=base class+="col-start-1 row-start-1 pr-10 text-red-900 outline-red-300 placeholder:text-red-300 focus:outline-red-600" aria-invalid="true" aria-describedby=errid %}
+                <i data-lucide="circle-alert" class="pointer-events-none col-start-1 row-start-1 mr-3 h-5 w-5 self-center justify-self-end text-red-500" aria-hidden="true"></i>
+            </div>
+            <div id="{{ errid }}" role="alert" class="mt-2 text-sm text-red-600">
+                {% for error in field.errors %}{{ error }}{% endfor %}
+            </div>
         {% else %}
-
-            {% render_field field class+="form-control" %}
+            {% render_field field class+=base class+="outline-gray-300 focus:outline-blue-900" %}
         {% endif %}
     {% endif %}
 
     {% if field.help_text %}
-        <div class="text-muted small">{{ field.help_text }}</div>
+        <p class="mt-2 text-sm text-gray-500">{{ field.help_text }}</p>
     {% endif %}
 </div>
+{% endwith %}

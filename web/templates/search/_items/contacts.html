@@ -1,26 +1,24 @@
 {% for contact in data.contacts %}
-    <div class="row">
-        <div class="col-12 mb-4">
-            <div class="card card-item">
-                <div class="card-body">
-                    <h2 class="card-title">
-                        <a href="{% url 'contact' pk=contact.pk %}">{{ contact.first_name }} {{ contact.last_name }}</a>
-                    </h2>
-                    <ul class="card-text list-unstyled text-left py-1">
-                        <li class="d-flex align-items-center">
-                          <strong>Role:</strong> <span class="badge badge-pill badge-secondary ml-1">{{ contact.type }}</span>
-                        </li>
-                        <li class="d-flex align-items-center flex-wrap"><strong>Affiliation(s):</strong>
-                            {% for partner in contact.partners %}
-                                <span class="badge badge-pill badge-primary ml-1 mb-1">{{ partner }}</span>
+    <div class="mb-4">
+        <div class="rounded border border-gray-200 bg-white shadow-sm">
+            <div class="p-4">
+                <h2 class="text-2xl font-light">
+                    <a href="{% url 'contact' pk=contact.pk %}" class="text-blue-700 hover:underline">{{ contact.first_name }} {{ contact.last_name }}</a>
+                </h2>
+                <ul class="py-1 text-left">
+                    <li class="flex items-center">
+                      <strong>Role:</strong> <span class="inline-flex items-center ml-1 px-2.5 py-0.5 text-xs font-medium text-gray-800 bg-gray-200 rounded-full">{{ contact.type }}</span>
+                    </li>
+                    <li class="flex flex-wrap items-center"><strong>Affiliation(s):</strong>
+                        {% for partner in contact.partners %}
+                            <span class="inline-flex items-center ml-1 mb-1 px-2.5 py-0.5 text-xs font-medium text-white bg-blue-900 rounded-full">{{ partner }}</span>
 
-                            {% empty %}
-                                -
-                            {% endfor %}
-                        </li>
-                    </ul>
-                    <a href="{% url 'contact' pk=contact.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
-                </div>
+                        {% empty %}
+                            -
+                        {% endfor %}
+                    </li>
+                </ul>
+                <a href="{% url 'contact' pk=contact.pk %}" class="mt-2 inline-flex items-center px-4 py-2 text-gray-700 rounded border border-gray-300 hover:bg-gray-50">Details &raquo;</a>
             </div>
         </div>
     </div>

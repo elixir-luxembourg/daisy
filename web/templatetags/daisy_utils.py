@@ -6,6 +6,7 @@ from typing import Union
 from django.template.base import Node
 from django.template.defaulttags import register
 from django.urls import reverse
+from django.utils.html import format_html
 
 from core.models import Dataset, Project, Contract
 
@@ -16,6 +17,15 @@ def get_item(dictionary, key):
     Get a specific key from dictionnary.
     """
     return dictionary.get(key, "")
+
+
+@register.simple_tag(takes_context=True)
+def clear_filters_url(context, url_name):
+    """Search url with all facet filters removed, preserving query and sort."""
+    query_dict = context["request"].GET.copy()
+    query_dict.pop("filters", None)
+    encoded = query_dict.urlencode(safe="/&:")
+    return reverse(url_name) + ("?" + encoded if encoded else "")
 
 
 @register.filter
@@ -138,14 +148,26 @@ class FacetLinkNode(Node):
             + query_dict.urlencode(safe="/&:")
         )
 
-        # set icon to use (icon change if facet is present or not)
-        icon = "radio_button_unchecked"
-        clazz = ""
+        # facets are multi-select: each click toggles one value, several can stay active
+        icon = "square"
+        text_class = "text-gray-700"
+        state_label = ""
         if is_present:
-            icon = "radio_button_checked"
-            clazz = "active"
+            icon = "square-check"
+            text_class = "font-semibold text-blue-950"
+            state_label = format_html('<span class="sr-only">, selected</span>')
 
-        return f'<li class="{clazz} mt-1"><a href="{url}"><i class="material-icons">{icon}</i><span>{current_facet[0]} ({current_facet[1]})</span></a></li>'
+        return format_html(
+            '<li><a href="{}" class="flex items-center gap-2 -mx-2 px-2 min-h-9 text-sm {} rounded hover:bg-gray-50 hover:text-blue-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-900">'
+            '<i data-lucide="{}" class="h-4 w-4 shrink-0" aria-hidden="true"></i>'
+            '<span>{} <span class="text-gray-500">({})</span>{}</span></a></li>',
+            url,
+            text_class,
+            icon,
+            current_facet[0],
+            current_facet[1],
+            state_label,
+        )
 
 
 @register.tag
@@ -195,13 +217,13 @@ class OrderLinkNode(Node):
         # and update display and query parameters accordingly
 
         if is_present > -1:
-            icon = "arrow_drop_up"
+            icon = "arrow-up"
             order_by.pop(is_present)
             if not sorting_desc:
-                icon = "arrow_drop_down"
+                icon = "arrow-down"
                 order_by.append(f"-{field_name}")
         else:
-            icon = "sort"
+            icon = "arrow-up-down"
             order_by.append(field_name)
 
         query_dict.setlist("order_by", order_by)
@@ -220,7 +242,25 @@ class OrderLinkNode(Node):
             + query_dict.urlencode(safe="/&:")
         )
 
-        return f'<a href="{url}" class="mr-1 mb-1"><button type="button" class="btn btn-secondary btn-sm"><i class="material-icons mr-1 align-middle">{icon}</i><span class="align-middle">{field_title}</span></button></a>'
+        if icon == "arrow-up-down":
+            cls = (
+                "inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium "
+                "text-gray-700 rounded border border-gray-300 hover:bg-gray-50"
+            )
+        else:
+            cls = (
+                "inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium "
+                "text-blue-900 bg-blue-50 rounded border border-blue-900 hover:bg-blue-100"
+            )
+
+        return format_html(
+            '<a href="{}" class="{}"><i data-lucide="{}" class="h-4 w-4"></i>'
+            "<span>{}</span></a>",
+            url,
+            cls,
+            icon,
+            field_title,
+        )
 
 
 @register.tag

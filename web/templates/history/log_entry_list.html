@@ -1,79 +1,57 @@
 {% extends 'layout.html' %}
 
 
-{% block title %}Access logs of access {{ request.args.pk }}{% endblock %}
+{% block title %}History | DAISY{% endblock %}
 
 {% block content %}
-    <div class="card bg-light text-dark mt-4 mb-4">
-        <div class="card-body">
-            <div class="card-title">
-                <h1 class="display-4">
-                    <i id="filtersAccordion" class="material-icons text-secondary clickable" data-toggle="collapse" data-target="#logFilters" aria-expanded="true" aria-controls="logFilters">search</i></button>
-                    History
-                </h1>
-            </div>
-        </div>
-    </div>
-    <div id="logFilters" class="collapse show" aria-labelledby="logFiltersHeader" data-parent="filtersAccordion">
-        <form class="card w-100">
-            {# include '_includes/facets_sidebar.html' with facets=facets url=search_url #}
-            <div class="d-flex flex-wrap p-4">
-                <div class="card-body m-1 w-25 flex-grow-1">
-                    <h6>Log author</h6>
-                    <div class="form-group bg-white border-0">
-                        <select class="form-control" name="user">
-                            <option value="none" selected disabled hidden>
-                                Choose a user...
-                            </option>
-                            {% for user in users_list %}
-                                <option value="{{ user.pk }}">{{ user.full_name | title }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+    <details open class="group">
+        <summary class="mt-4 mb-4 p-4 rounded bg-gray-50 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+            <h1 class="flex items-center gap-2 text-4xl font-light">
+                <i data-lucide="search" class="h-7 w-7 text-gray-500"></i>
+                History
+            </h1>
+        </summary>
+        <form class="w-full rounded border border-gray-200 bg-white">
+            <div class="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div>
+                    <label for="filter-user" class="mb-1 block text-sm font-medium text-gray-700">Log author</label>
+                    <select id="filter-user" class="block px-3 py-2 w-full text-sm rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none" name="user">
+                        <option value="none" selected disabled hidden>Choose a user...</option>
+                        {% for user in users_list %}
+                            <option value="{{ user.pk }}">{{ user.full_name | title }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div class="card-body m-1 w-25 flex-grow-1">
-                    <h6>Action performed</h6>
-                    <div class="form-group bg-white border-0">
-                        <select class="form-control" name="action">
-                            <option value="none" selected hidden disabled>
-                                Choose an action...
-                            </option>
-                            {% for action in log_actions %}
-                                <option value="{{ action.0 }}" >
-                                    {{ action.1 | title }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                <div>
+                    <label for="filter-action" class="mb-1 block text-sm font-medium text-gray-700">Action performed</label>
+                    <select id="filter-action" class="block px-3 py-2 w-full text-sm rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none" name="action">
+                        <option value="none" selected hidden disabled>Choose an action...</option>
+                        {% for action in log_actions %}
+                            <option value="{{ action.0 }}">{{ action.1 | title }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div class="card-body m-1 w-25 flex-grow-1">
-                    <h6>Date range</h6>
-                    <div class="d-flex flex-column form-group border-0 bg-white">
-                        <div class="d-inline-flex align-items-center justify-content-around">
-                            <span>Start date</span>
-                            <input id="log_entry_start_date" type="text" class="datepicker form-control w-50" name="start_date" value="{{ start_date }}" />
-                        </div>
-                        <div class="d-inline-flex align-items-center justify-content-around">
-                            <span>End date</span>
-                            <input id="log_entry_end_date" type="text" class="datepicker form-control w-50" name="end_date" value="{{ end_date }}"/>
-                        </div>
-                    </div>
+                <div>
+                    <label for="model-select" class="mb-1 block text-sm font-medium text-gray-700">Model</label>
+                    <select id="model-select" class="block px-3 py-2 w-full text-sm rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none" name="entity_name">
+                        <option value="none" selected hidden disabled>Choose a model...</option>
+                        {% for model in models_list %}
+                            <option value="{{ model }}">{{ model | title }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div class="card-body m-1 w-25 flex-grow-0">
-                    <h6>Model</h6>
-                    <div class="form-group bg-white border-0">
-                        <select id="model-select" class="form-control" name="entity_name">
-                            <option value="none" selected hidden disabled>Choose a model...</option>
-                            {% for model in models_list %}
-                                <option value="{{ model }}">{{ model | title }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                <div>
+                    <label for="log_entry_start_date" class="mb-1 block text-sm font-medium text-gray-700">Start date</label>
+                    <input id="log_entry_start_date" type="date" class="datepicker block px-3 py-2 w-full text-sm rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none" name="start_date" value="{{ start_date }}" />
                 </div>
-                <div id="model-fields-filter" class="card-body m-1 w-25 flex-grow-0 d-none">
-                    <h6>Model fields</h6>
-                    <div class="form-group bg-white border-0">
-                        <select class="form-control" name="entity_attr">
+                <div>
+                    <label for="log_entry_end_date" class="mb-1 block text-sm font-medium text-gray-700">End date</label>
+                    <input id="log_entry_end_date" type="date" class="datepicker block px-3 py-2 w-full text-sm rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none" name="end_date" value="{{ end_date }}" />
+                </div>
+                <div id="model-fields-filter" class="hidden">
+                    <label for="filter-entity-attr" class="mb-1 block text-sm font-medium text-gray-700">Model fields</label>
+                    <div>
+                        <select id="filter-entity-attr" class="block px-3 py-2 w-full text-sm rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none" name="entity_attr">
                             <option value="none" selected hidden disabled>Choose a field...</option>
                             {% for attr in model_attributes %}
                                 <option value="{{ attr }}">{{ attr | title }}</option>
@@ -91,46 +69,38 @@
                     {% endif %}
                 {% endif %}
             </div>
-            <button class="btn" type="submit" action="{% url 'history' %}">Filter</button>
-        </form>
-    </div>
-    <div class="row mr-auto">
-        <div class="card-rows w-100 ml-3">
-            {% for object in object_list %}
-            <div class="card mb-2">
-                <div class="card-body p-2 pt-3">
-                    <div id="{{ object.log.pk }}"
-                         class="card-subtitle mb-0 text-muted d-flex justify-content-between clickable table-toggle"
-                         data-toggle="collapse"
-                         data-target="#changesTable{{object.log.pk}}"
-                         aria-expanded="true"
-                         aria-controls="changesTable{{object.log.pk}}"
-                    >
-                        <span>{{ object.log.actor }} {{ object.action.1 }}d {{ object.log.content_type.model }} #{{ object.log.object_id }} on {{ object.log.timestamp }}</span>
-                        <i id="expand-arrow-{{ object.log.pk }}" class="material-icons hidden">expand_less</i>
-                    </div>
-                    <div class="accordion collapse" id="changesTable{{object.log.pk}}" aria-labelledby="changesTable{{object.log.pk}}" data-parent="tableTogle{{object.log.pk}}">
-                        <table class="table-striped table table-sm">
-                        <thead>
-                            <tr>
-                                <th>Attribute</th>
-                                <th>Original value</th>
-                                <th>New value</th>
-                            </tr>
-                        </thead>
-                        {% for key, value in object.log.changes_display_dict.items %}
-                            <tr>
-                                <td>{{ key }}</td>
-                                <td>"{{ value.0|default:"None" }}"</td>
-                                <td>"{{ value.1|default:"None" }}"</td>
-                            </tr>
-                        {% endfor %}
-                    </table>
-                    </div>
-                </div>
+            <div class="flex justify-end px-4 pb-4">
+                <button class="inline-flex items-center px-4 py-2 text-white bg-blue-900 rounded hover:bg-blue-800" type="submit">Filter</button>
             </div>
+        </form>
+    </details>
+    <div class="mt-4 w-full">
+            {% for object in object_list %}
+            <details class="group mb-2 rounded border border-gray-200 bg-white shadow-sm">
+                <summary class="flex items-center justify-between p-2 pt-3 text-gray-500 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                    <span>{{ object.log.actor }} {{ object.action.1 }}d {{ object.log.content_type.model }} #{{ object.log.object_id }} on {{ object.log.timestamp }}</span>
+                    <i data-lucide="chevron-down" class="h-5 w-5 transition-transform group-open:rotate-180"></i>
+                </summary>
+                <div class="overflow-x-auto p-2">
+                    <table class="w-full text-sm">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-3 py-2 text-left font-semibold">Attribute</th>
+                            <th class="px-3 py-2 text-left font-semibold">Original value</th>
+                            <th class="px-3 py-2 text-left font-semibold">New value</th>
+                        </tr>
+                    </thead>
+                    {% for key, value in object.log.changes_display_dict.items %}
+                        <tr class="odd:bg-gray-50">
+                            <td class="px-3 py-2">{{ key }}</td>
+                            <td class="px-3 py-2">"{{ value.0|default:"None" }}"</td>
+                            <td class="px-3 py-2">"{{ value.1|default:"None" }}"</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                </div>
+            </details>
             {% endfor %}
-        </div>
     </div>
 {% endblock %}
 
@@ -155,21 +125,9 @@
                 }
                 modelFieldSelect.children("option").remove();
                 modelFieldSelect.append(newOptions);
-                modelFieldFilter.hasClass('d-none') && modelFieldFilter.toggleClass('d-none');
+                modelFieldFilter.hasClass('hidden') && modelFieldFilter.toggleClass('hidden');
             }
         }
-
-        // Making the accordion status button toggable
-        $('.table-toggle').click(
-            function () {
-                const collapsingTable = $(`#changesTable${this.id}`);
-                if (collapsingTable.hasClass('collapsing')) {
-                    return;
-                }
-                const expandIcon = $(`#expand-arrow-${this.id}`)
-                expandIcon.toggleClass("hidden") && expandIcon.hasClass("hidden") ? expandIcon.text("expand_less") : expandIcon.text("expand_more");
-            }
-        );
 
         // Building the list of fields for a given model when selected in the model filter
         modelSelect.change( () => buildModelFieldsOptions() );

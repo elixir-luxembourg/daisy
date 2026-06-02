@@ -1,56 +1,67 @@
 {% extends 'layout.html' %}
 {% load static %}
+
+{% block title %}Dataset wizard | DAISY{% endblock %}
+
 {% block head_end %}
     {{ wizard.form.media }}
-    <link rel="stylesheet" href="{% static 'css/dataset_wizard.css' %}">
 {% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="mt-3 py-0 pt-3 w-100">
-            <ul class="step-wizard-list shadow-sm">
+    <div>
+        <div class="mt-3 w-full overflow-x-auto pt-3">
+            <ol class="flex px-2.5 py-5 rounded bg-white shadow-sm">
                 {% for step, step_verbose_name, skipped in steps_verbose_data %}
-                    <li class="step-wizard-item {% if wizard.steps.current == step %}current-item{% endif %}">
-                        <span class="progress-count {% if skipped %}skipped{% endif %}">{{ forloop.counter }}</span>
-                        <span class="progress-label">{{ step_verbose_name }}</span>
+                    <li class="relative flex flex-col items-center px-5 min-w-44 flex-1 text-center">
+                        {% if not forloop.first %}
+                            <span class="absolute left-0 top-5 z-0 h-0.5 w-full -translate-x-1/2 {% if skipped %}bg-gray-500{% else %}bg-blue-900{% endif %}" aria-hidden="true"></span>
+                        {% endif %}
+                        {% if forloop.counter0 < wizard.steps.step0 %}
+                            <span class="relative z-10 flex items-center justify-center h-10 w-10 text-white {% if skipped %}bg-gray-500{% else %}bg-blue-900{% endif %} rounded-full">
+                                <i data-lucide="check" class="h-5 w-5" aria-hidden="true"></i>
+                            </span>
+                            <span class="mt-2 text-sm font-semibold text-gray-900">{{ step_verbose_name }}</span>
+                        {% elif forloop.counter0 == wizard.steps.step0 %}
+                            <span class="relative z-10 flex items-center justify-center h-10 w-10 text-sm font-semibold text-blue-900 bg-white rounded-full border-2 border-blue-900" aria-current="step">{{ forloop.counter }}</span>
+                            <span class="mt-2 text-sm font-semibold text-gray-900">{{ step_verbose_name }}</span>
+                        {% else %}
+                            <span class="relative z-10 flex items-center justify-center h-10 w-10">
+                                <span class="h-2.5 w-2.5 {% if skipped %}bg-gray-500{% else %}bg-blue-900{% endif %} rounded-full"></span>
+                            </span>
+                            <span class="mt-2 text-sm font-semibold text-gray-500">{{ step_verbose_name }}</span>
+                        {% endif %}
                     </li>
                 {% endfor %}
-            </ul>
+            </ol>
         </div>
 
-        <div class="col-md-12 card">
-            <form action="" method="post" class="form col-md-12 nice-selects" id="wizard-form">
+        <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+            <form action="" method="post" novalidate class="nice-selects p-6" id="wizard-form">
                 {% csrf_token %}
-                <table>
-                    {{ wizard.management_form }}
+                {{ wizard.management_form }}
                     {% if wizard.form.forms %}
-                        <!-- If wizard.form.forms is not empty or evaluates to True -->
                         {{ wizard.form.management_form }}
                         {% for form in wizard.form.forms %}
-                            <!-- Display form information -->
-                            <div class="jumbotron mt-2 p-4">
-                                <h1 class="display-4">{{ form.Meta.heading }}</h1>
-                                <p class="text-muted">{{ form.Meta.heading_help }}</p>
+                            <div class="mt-2 p-4 rounded bg-gray-50">
+                                <h2 class="text-4xl font-light">{{ form.Meta.heading }}</h2>
+                                <p class="text-gray-500">{{ form.Meta.heading_help }}</p>
                             </div>
                             {% include '_includes/forms.html' with form=form %}
                         {% endfor %}
                     {% else %}
-                        <!-- If wizard.form.forms is empty or evaluates to False -->
-                        <!-- Display form information -->
-                        <div class="mt-2 p-0">
-                            <div class="d-flex justify-content-between mt-3">
-                                <h1 class="display-4">{{ form.Meta.heading }}</h1>
+                        <div class="mt-2">
+                            <div class="mt-3 flex justify-between">
+                                <h1 class="text-4xl font-light">{{ form.Meta.heading }}</h1>
                                 {% if wizard.steps.step0 != 0 %}
-                                    <a type="button" id="skipButton" class="btn btn-secondary float-left text-secondary">
-                                        Skip <i class="material-icons" style="vertical-align: bottom;">skip_next</i>
-                                    </a>
+                                    <button type="button" id="skipButton" class="inline-flex items-center gap-1 px-4 py-2 text-gray-700 rounded border border-gray-300 hover:bg-gray-50">
+                                        Skip <i data-lucide="skip-forward" class="h-5 w-5"></i>
+                                    </button>
                                 {% endif %}
                             </div>
-                            <p class="text-muted">{{ form.Meta.heading_help }}</p>
+                            <p class="text-gray-500">{{ form.Meta.heading_help }}</p>
                         </div>
                         {% include '_includes/forms.html' with form=wizard.form %}
                     {% endif %}
-                </table>
             </form>
         </div>
     </div>

@@ -1,15 +1,15 @@
 {% extends 'layout.html' %}
 
-{% block title %}DAC - Add{% endblock %}
+{% block title %}Add DAC | DAISY{% endblock %}
 
 {% block content %}
-    <div class="jumbotron mt-4 {% block jumbotron_class %}{% endblock %}">
-        <h1 class="display-4">{% block content_title %}DACs{% endblock %}</h1>
+    <div class="mt-4 p-8 rounded bg-gray-50 {% block jumbotron_class %}{% endblock %}">
+        <h1 class="text-4xl font-light">{% block content_title %}DACs{% endblock %}</h1>
     </div>
-    <div class="card">
-        <div class="card-body">
-            <h2 class="card-title">{% block card_title %}Add DAC{% endblock %}</h2>
-            <div class="card-text">
+    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+        <div class="p-4">
+            <h2 class="text-2xl font-light">{% block card_title %}Add DAC{% endblock %}</h2>
+            <div class="mt-2">
                 {% include '_includes/forms.html' %}
             </div>
         </div>
@@ -19,13 +19,13 @@
 {% block js %}
     <script>
         $('#id_projects').change(function() {
-            var projectId = $(this).val();
-            url = '/ajax/contracts';
+            const projectId = $(this).val();
+            let url = '/ajax/contracts';
             if (projectId) {
                 url += '?projectId=' + projectId;
             }
             $.get(url, function(data) {
-                var $contract = $('#id_contract');
+                const $contract = $('#id_contract');
                 $contract.empty();
                 if (!data.contracts || data.contracts.length === 0) {
                     $contract.append($('<option>', {value: '', text: 'No contracts available'}));

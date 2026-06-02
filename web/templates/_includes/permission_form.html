@@ -1,45 +1,40 @@
 {% load widget_tweaks %}
 
 {% for error in form.non_field_errors %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        {{ error }}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
+    <div role="alert" class="flex items-start gap-3 mb-3 p-4 text-red-900 bg-red-50 rounded border border-red-200 shadow-sm">
+        <i data-lucide="circle-x" class="h-5 w-5 shrink-0"></i>
+        <div class="flex-1">{{ error }}</div>
+        <button type="button" onclick="this.closest('[role=alert]').remove()" aria-label="Close" class="text-xl leading-none">&times;</button>
     </div>
 {% endfor %}
-<form id="formset" class="form md-1" method="post" novalidate>
+<form id="formset" class="nice-selects" method="post" novalidate>
     {% csrf_token %}
 
     {{ formset.non_form_errors.as_ul }}
 
     {{ formset.management_form }}
 
-
-    <table id="users" class="table">
-        <thead class="thead-light">
+    <table id="users" class="w-full text-sm">
+        <thead class="bg-gray-50">
             <tr>
                 {% for field in formset.empty_form.visible_fields %}
                     {% if forloop.first %}
-                    <th scope="col" class="col-sm-1"><h3>{{ field.label|capfirst }}</h3></th>
+                    <th scope="col" class="px-3 py-2 text-left"><h3 class="text-lg font-semibold">{{ field.label|capfirst }}</h3></th>
                     {% else %}
-                    <th scope="col" class="col-sm-1 text-center">{{ field.label }}</th>
+                    <th scope="col" class="px-3 py-2 text-center font-semibold">{{ field.label }}</th>
                     {% endif %}
                 {% endfor %}
             </tr>
         </thead>
 
         <tbody>
-            <!-- no permissions already, must put an empty form -->
             {% if formset.total_form_count == 0 %}
-                <!-- hidden fields -->
                 {% for hidden_field in formset.empty_form.hidden_fields %}
                     {{ hidden_field }}
                 {% endfor %}
-                <!-- body -->
                 <tr>
                     {% for field in formset.empty_form.visible_fields %}
-                        <td class="text-center">
+                        <td class="px-3 py-2 text-center border-t border-gray-200">
                             {{ field.errors.as_ul }}
                             {{ field }}
                         </td>
@@ -48,14 +43,12 @@
             {% endif %}
 
             {% for form in formset %}
-                <!-- hidden fields -->
                 {% for hidden_field in form.hidden_fields %}
                     {{ hidden_field }}
                 {% endfor %}
-                <!-- body -->
                 <tr>
                     {% for field in form.visible_fields %}
-                        <td class="text-center">
+                        <td class="px-3 py-2 text-center border-t border-gray-200">
                             {{ field.errors.as_ul }}
                             {{ field }}
                         </td>
@@ -65,7 +58,7 @@
         </tbody>
     </table>
 
-    <div class="">
-        <button type="submit" class="btn btn-primary btn-raised">{{ submit_label | default:"Submit" }}</button>
+    <div class="mt-3">
+        <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-900 rounded hover:bg-blue-800">{{ submit_label | default:"Submit" }}</button>
     </div>
 </form>

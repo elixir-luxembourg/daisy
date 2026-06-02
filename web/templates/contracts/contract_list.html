@@ -1,25 +1,25 @@
 {% extends 'layout.html' %}
 
-{% block title %}Contracts{% endblock %}
+{% block title %}Contracts | DAISY{% endblock %}
 
 {% block content %}
-    <div class="jumbotron mt-4">
-        <h1 class="display-4">Contracts</h1>
+    <div class="mt-4 p-8 rounded bg-gray-50">
+        <h1 class="text-4xl font-light">Contracts</h1>
     </div>
-    <div class="d-flex flex-wrap w-100">
+    <div class="flex flex-wrap w-full">
         {% for contract  in  contract_list %}
-            <div class="card card-item m-2">
-                <div class="card-body">
-                    <h2 class="card-title">
+            <div class="card-item m-2 rounded border border-gray-200 bg-white shadow-sm">
+                <div class="p-4">
+                    <h2 class="mb-2 text-xl font-semibold">
                         <strong>{{ contract }}</strong>
                     </h2>
-                    <ul class="card-text list-unstyled text-left py-1">
+                    <ul class="flex flex-col gap-1 py-1 text-left list-none">
                         {% if contract.contact %}
-                            <li class="d-flex align-items-center"><strong>PI:</strong> {{ contract.contact.full_name }}</li>
+                            <li class="flex items-center"><strong>PI:</strong> {{ contract.contact.full_name }}</li>
                         {% endif %}
-                        <li class="d-flex align-items-center"><strong>Partner:</strong> {{ contract.partner.name }}</li>
+                        <li class="flex items-center"><strong>Partner:</strong> {{ contract.partner.name }}</li>
                     </ul>
-                    <a href="{% url 'contract' pk=contract.id %}" class="btn btn-primary">Details</a>
+                    <a href="{% url 'contract' pk=contract.id %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-900 rounded hover:bg-blue-800">Details</a>
                 </div>
             </div>
         {% empty %}
@@ -30,7 +30,5 @@
 
 
 {% block floating-buttons %}
-    <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'contract_add' %}"><i
-            class="material-icons">add</i>
-    </a>
+    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'contract_add' %}" title="Add contract" aria-label="Add contract"><i data-lucide="plus" class="h-6 w-6"></i></a>
 {% endblock %}

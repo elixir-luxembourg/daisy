@@ -1,92 +1,91 @@
 {% extends 'layout.html' %}
 {% load widget_tweaks %}
 
-{% block title %}Data Declaration - Edit - {{ data_declaration.title }}{% endblock %}
+{% block title %}Edit {{ data_declaration.title }} | DAISY{% endblock %}
 {% block content %}
-    <div class="jumbotron mt-4">
-        <h1 class="display-4">{% block content_title %}Data declaration "<strong>{{ data_declaration.title }}</strong>"{% endblock %}</h1>
+    <div class="mt-4 p-8 rounded bg-gray-50">
+        <h1 class="text-4xl font-light">{% block content_title %}Data declaration "<strong>{{ data_declaration.title }}</strong>"{% endblock %}</h1>
     </div>
-    <div class="card">
-        <div class="card-body">
-            <h2 class="card-title">{% block card_title %}Edit Data Declaration{% endblock %}</h2>
-            <div class="card-text">
-                <form id="data-declaration-edit-form" class="form col-md-12 nice-selects" method="post" action="{{ submit_url }}"
+    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+        <div class="p-4">
+            <h2 class="text-2xl font-light">{% block card_title %}Edit Data Declaration{% endblock %}</h2>
+            <div class="mt-2">
+                <form id="data-declaration-edit-form" class="nice-selects" method="post" action="{{ submit_url }}"
                       novalidate>
                     {% csrf_token %}
                     {% include '_includes/field.html' with field=form.title %}
-                    <fieldset>
-                        <legend>Data Source</legend>
-                        <div class="row">
-                            <div class="col">
+                    <fieldset class="mt-4">
+                        <legend class="text-lg font-semibold">Data Source</legend>
+                        <div class="grid gap-6 md:grid-cols-2">
+                            <div>
                                 {% include '_includes/field.html' with field=form.partner %}
                                 {% include '_includes/field.html' with field=form.contract %}
                                 {% include '_includes/field.html' with field=form.data_declarations_parents %}
                             </div>
-                            <div class="col">
+                            <div>
                                 {% include '_includes/field.html' with field=form.cohorts %}
                                 {% include '_includes/field.html' with field=form.comments %}
                             </div>
                         </div>
                     </fieldset>
-                    <fieldset>
-                        <legend>Data types</legend>
-                        <div class="row">
-                            <div class="col">
+                    <fieldset class="mt-4">
+                        <legend class="text-lg font-semibold">Data types</legend>
+                        <div class="grid gap-6 md:grid-cols-2">
+                            <div>
                                 {% include '_includes/field.html' with field=form.data_types_received %}
                                 {% include '_includes/field.html' with field=form.data_types_generated %}
                             </div>
-                            <div class="col">
+                            <div>
                                 {% include '_includes/field.html' with field=form.data_types_notes %}
-
                             </div>
                         </div>
                     </fieldset>
-                    <fieldset>
-                        <legend>Subjects</legend>
-                        <div class="row">
-                            <div class="col">
+                    <fieldset class="mt-4">
+                        <legend class="text-lg font-semibold">Subjects</legend>
+                        <div class="grid gap-6 md:grid-cols-2">
+                            <div>
                                 {% include '_includes/field.html' with field=form.has_special_subjects %}
                                 {% include '_includes/field.html' with field=form.subjects_category %}
                                 {% include '_includes/field.html' with field=form.consent_status %}
                             </div>
-                            <div class="col">
+                            <div>
                                 {% include '_includes/field.html' with field=form.special_subjects_description %}
                                 {% include '_includes/field.html' with field=form.deidentification_method %}
                             </div>
                         </div>
                     </fieldset>
-                    <fieldset>
-                        <legend>Use Conditions</legend>
-                        <div class="row">
-                            <div class="col">
+                    <fieldset class="mt-4">
+                        <legend class="text-lg font-semibold">Use Conditions</legend>
+                        <div class="grid gap-6 md:grid-cols-2">
+                            <div>
                                 {% include '_includes/field.html' with field=form.end_of_storage_duration %}
                                 {% include '_includes/field.html' with field=form.embargo_date %}
                             </div>
-                            <div class="col">
+                            <div>
                                 {% include '_includes/field.html' with field=form.storage_duration_criteria %}
                             </div>
                         </div>
-                        <div class="row">
-                        </div>
-                        <div class="form-group row">
+                        <div class="mt-4">
                             {{ condition_formset.management_form }}
-                            <div class="col">
-                                <table class="table  table-condensed">
-                                    <tr>
-                                        <th colspan="3">Other Conditions</th>
-                                    </tr>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th colspan="3" class="px-3 py-2 text-left font-semibold">Other Conditions</th>
+                                        </tr>
+                                    </thead>
                                     <tbody>
                                     {% for condition_form in condition_formset.forms %}
-                                    <tr class="formset-row">
-                                            <td>
+                                    <tr class="formset-row border-t border-gray-200">
+                                            <td class="px-3 py-2 align-top">
                                                 {% include '_includes/field.html' with field=condition_form.condition_class %}
                                                 {% include '_includes/field.html' with field=condition_form.use_condition_rule %}
                                             </td>
-                                            <td> 
+                                            <td class="px-3 py-2 align-top">
                                                 {% include '_includes/field.html' with field=condition_form.use_class_note %}
                                                 {% include '_includes/field.html' with field=condition_form.notes %}
                                             </td>
-                                            <td></td>{% comment %}<!-- Needed an empty column to prevent jquery formset from placing the remove below the row   --> {% endcomment %}
+                                            <td></td>{% comment %} Empty column so jquery formset doesn't place the remove control below the row {% endcomment %}
                                     </tr>
                                     {% endfor %}
                                     </tbody>
@@ -95,7 +94,7 @@
                         </div>
                     </fieldset>
 
-                    <button type="submit" class="mt-4 btn btn-primary btn-raised">SUBMIT</button>
+                    <button type="submit" class="mt-4 inline-flex items-center px-4 py-2 text-white bg-blue-900 rounded hover:bg-blue-800">SUBMIT</button>
                 </form>
             </div>
         </div>

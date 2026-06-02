@@ -1,6 +1,6 @@
-<div class="checkbox">
-    <label>
-        <input type="checkbox" id="{{ field.id_for_label }}" name="{{ field.html_name }}"
-               {% if field.value %}checked{% endif %}> {{ field.label }}
-    </label>
+<div class="flex items-center gap-2">
+    <input type="checkbox" id="{{ field.id_for_label }}" name="{{ field.html_name }}"
+           {% if field.value %}checked{% endif %}
+           class="size-4 accent-blue-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900">
+    <label for="{{ field.id_for_label }}" class="text-sm text-gray-900">{{ field.label }}</label>
 </div>

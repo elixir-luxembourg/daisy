@@ -1,10 +1,8 @@
 {% if entity.comments %}
-    <div class="row">
-        <div class="border-left border-3 border-default card col mt-4">
-            <div class="card-body">
-                <h2 class="card-title">Other comments</h2>
-                <blockquote>{{ entity.comments }}</blockquote>
-            </div>
+    <div class="mt-4 bg-white rounded border border-gray-200 shadow-sm">
+        <div class="p-4">
+            <h2 class="mb-2 text-xl font-semibold">Other comments</h2>
+            <blockquote class="text-gray-700">{{ entity.comments }}</blockquote>
         </div>
     </div>
 {% endif %}

@@ -1,31 +1,31 @@
 {% extends 'layout.html' %}
 
-{% block title %}Publications{% endblock %}
+{% block title %}Publications | DAISY{% endblock %}
 
 {% block content %}
-    <div class="jumbotron mt-4">
-        <h1 class="display-4">Publications</h1>
+    <div class="mt-4 p-8 rounded bg-gray-50">
+        <h1 class="text-4xl font-light">Publications</h1>
     </div>
 
     {%  if publication_list %}
-        <div class="table table-responsive-lg">
-            <table>
-                <caption>List of publications</caption>
-                <thead>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <caption class="py-2 text-left text-gray-500">List of publications</caption>
+                <thead class="bg-gray-50">
                     <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">Citation string</th>
-                      <th scope="col">DOI</th>
-                      <th scope="col">Edit</th>
+                      <th scope="col" class="px-3 py-2 text-left font-semibold">#</th>
+                      <th scope="col" class="px-3 py-2 text-left font-semibold">Citation string</th>
+                      <th scope="col" class="px-3 py-2 text-left font-semibold">DOI</th>
+                      <th scope="col" class="px-3 py-2 text-left font-semibold">Edit</th>
                     </tr>
                   </thead>
                 <tbody>
                     {% for publication in publication_list %}
-                        <tr>
-                            <th scope="row">{{  forloop.counter }}</th>
-                            <td>{{ publication.citation }}</td>
-                            <td>{% if publication.doi %}{{ publication.doi }}{% else %}-{% endif %}</td>
-                            <td><a class="btn btn-raised btn-secondary btn-sm" href="{%  url 'publication_edit' publication.id %}">Edit</a></td>
+                        <tr class="odd:bg-gray-50">
+                            <th scope="row" class="px-3 py-2 text-left border-t border-gray-200">{{  forloop.counter }}</th>
+                            <td class="px-3 py-2 border-t border-gray-200">{{ publication.citation }}</td>
+                            <td class="px-3 py-2 border-t border-gray-200">{% if publication.doi %}{{ publication.doi }}{% else %}-{% endif %}</td>
+                            <td class="px-3 py-2 border-t border-gray-200"><a class="inline-flex items-center px-3 py-1 text-sm font-medium text-blue-900 rounded border border-blue-900 hover:bg-blue-50" href="{%  url 'publication_edit' publication.id %}">Edit</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -39,7 +39,5 @@
 
 
 {% block floating-buttons %}
-    <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'publication_add' %}"><i
-            class="material-icons">add</i>
-    </a>
+    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'publication_add' %}" title="Add publication" aria-label="Add publication"><i data-lucide="plus" class="h-6 w-6"></i></a>
 {% endblock %}

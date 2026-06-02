@@ -1,25 +1,25 @@
 {% load widget_tweaks %}
 
-<div class="mb-5">
+<div class="mb-8">
     {% with field=form.query %}
-        <div class="col-md-12 form-group required" style="width: 100%">
+        <div class="w-full">
             {{ field.label_tag }}
             {% if form.is_bound %}
                 {% if field.errors %}
-                    {% render_field field class+="col-md-12 form-control is-invalid" %}
+                    {% render_field field class+="block w-full rounded border border-red-700 px-3 py-2" %}
                     {% for error in field.errors %}
-                        <div class="invalid-feedback">
+                        <div class="mt-1 text-sm text-red-700">
                             {{ error }}
                         </div>
                     {% endfor %}
                 {% else %}
-                    {% render_field field class+="col-md-12 form-control is-valid" %}
+                    {% render_field field class+="block w-full rounded border border-green-600 px-3 py-2" %}
                 {% endif %}
             {% else %}
-                {% render_field field class+="col-md-12 form-control" %}
+                {% render_field field class+="block w-full rounded border border-gray-300 px-3 py-2" %}
             {% endif %}
             {% if field.help_text %}
-                <small class="form-text text-muted">{{ field.help_text }}</small>
+                <small class="text-sm text-gray-500">{{ field.help_text }}</small>
             {% endif %}
         </div>
     {% endwith %}
@@ -28,8 +28,11 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-        var emptyOption = $('<option></option');
-        var selectQuery = $("select[name='query']");
+        const emptyOption = $('<option></option');
+        const selectQuery = $("select[name='query']");
+        if (!$.fn.select2) {
+            return;
+        }
         selectQuery.prepend(emptyOption).select2({
             placeholder: "try searching by cohort, project, PI name.",
             ajax: {
@@ -38,7 +41,7 @@
                 processResults: function (response) {
                     return {
                         "results": $.map(response.results, function (data) {
-                            var parts = [];
+                            const parts = [];
                             parts.push('Project: ' + data.project);
                             parts.push('title: ' + data.title);
                             if (data.cohorts !== null) {
@@ -48,7 +51,7 @@
                             if (data.data_types !== null) {
                                 parts.push('datatype(s): ' + data.data_types.join(", "));
                             }
-                            var text = parts.join(", ");
+                            const text = parts.join(", ");
 
                             return {
                                 id: data.id,

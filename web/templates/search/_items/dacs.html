@@ -1,22 +1,20 @@
 {% for dac in data.dacs %}
-    <div class="row">
-        <div class="col-12 mb-4">
-            <div class="card card-item">
-                <div class="card-body">
-                    <h2 class="card-title">
-                      <a href="{% url 'dac' pk=dac.pk %}">{{ dac.title }}</a>
-                    </h2>
-                    <ul class="card-text list-unstyled text-left py-1">
-                        {% if dac.local_custodians %}
-                            <li><strong>Local custodians:</strong>
-                                {% for local_custodian in dac.local_custodians %}
-                                    <span class="badge badge-pill badge-primary ml-1 mb-1">{{ local_custodian }}</span>
-                                {% endfor %}
-                            </li>
-                        {% endif %}
-                    </ul>
-                    <a href="{% url 'dac' pk=dac.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
-                </div>
+    <div class="mb-4">
+        <div class="rounded border border-gray-200 bg-white shadow-sm">
+            <div class="p-4">
+                <h2 class="text-2xl font-light">
+                  <a href="{% url 'dac' pk=dac.pk %}" class="text-blue-700 hover:underline">{{ dac.title }}</a>
+                </h2>
+                <ul class="py-1 text-left">
+                    {% if dac.local_custodians %}
+                        <li><strong>Local custodians:</strong>
+                            {% for local_custodian in dac.local_custodians %}
+                                <span class="inline-flex items-center ml-1 mb-1 px-2.5 py-0.5 text-xs font-medium text-white bg-blue-900 rounded-full">{{ local_custodian }}</span>
+                            {% endfor %}
+                        </li>
+                    {% endif %}
+                </ul>
+                <a href="{% url 'dac' pk=dac.pk %}" class="mt-2 inline-flex items-center px-4 py-2 text-gray-700 rounded border border-gray-300 hover:bg-gray-50">Details &raquo;</a>
             </div>
         </div>
     </div>

@@ -1,17 +1,17 @@
 {% extends 'layout.html' %}
 
-{% block title %}Partners{% endblock %}
+{% block title %}Partners | DAISY{% endblock %}
 
 {% block content %}
-    <div class="jumbotron mt-4">
-        <h1 class="display-4">Partners</h1>
+    <div class="mt-4 p-8 rounded bg-gray-50">
+        <h1 class="text-4xl font-light">Partners</h1>
     </div>
-    <div class="card-columns">
+    <div class="gap-4 columns-1 md:columns-2 lg:columns-3">
         {% for partner in partner_list %}
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="card-title">{{ partner.acronym }}</h2>
-                    <ul class="card-text">
+            <div class="mb-4 break-inside-avoid rounded border border-gray-200 bg-white shadow-sm">
+                <div class="p-4">
+                    <h2 class="mb-2 text-xl font-semibold">{{ partner.acronym }}</h2>
+                    <ul class="flex flex-col gap-1">
                         <li>
                             <strong>Name: </strong>
                             {{  partner.name }}
@@ -31,7 +31,5 @@
 
 
 {% block floating-buttons %}
-    <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'partners_add' %}"><i
-            class="material-icons">add</i>
-    </a>
+    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'partners_add' %}" title="Add partner" aria-label="Add partner"><i data-lucide="plus" class="h-6 w-6"></i></a>
 {% endblock %}

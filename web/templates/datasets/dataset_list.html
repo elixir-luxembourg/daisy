@@ -1,25 +1,23 @@
 {% for dataset in data.datasets %}
-        <div class="row">
-            <div class="col-md-9 mb-4 card-item card">
-                <div class="card-body">
-                    <h2 class="card-title">{{ dataset.title }}</h2>
-                    <ul class="card-text">
-                        <li>Published: {{ dataset.is_published | yesno }}</li>
-                        <li>Datatypes:
-                            {% for datatype in dataset.data_types %}
-                                <span class="badge badge-pill badge-secondary">{{ datatype }}</span>
+        <div class="card-item mb-4 w-full rounded border border-gray-200 bg-white shadow-sm md:w-3/4">
+            <div class="p-4">
+                <h2 class="mb-2 text-xl font-semibold">{{ dataset.title }}</h2>
+                <ul class="flex flex-col gap-1">
+                    <li>Published: {{ dataset.is_published | yesno }}</li>
+                    <li>Datatypes:
+                        {% for datatype in dataset.data_types %}
+                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium text-gray-800 bg-gray-200 rounded-full">{{ datatype }}</span>
+                        {% endfor %}
+                    </li>
+                    {% if dataset.local_custodians %}
+                        <li>Local custodians:
+                            {% for local_custodian in dataset.local_custodians %}
+                                <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium text-white bg-blue-900 rounded-full">{{ local_custodian }}</span>
                             {% endfor %}
                         </li>
-                        {% if dataset.local_custodians %}
-                            <li>Local custodians:
-                                {% for local_custodian in dataset.local_custodians %}
-                                    <span class="badge badge-pill badge-primary">{{ local_custodian }}</span>
-                                {% endfor %}
-                            </li>
-                        {% endif %}
-                    </ul>
-                    <a href="{% url 'dataset' pk=dataset.pk %}" class="btn btn-primary">Details</a>
-                </div>
+                    {% endif %}
+                </ul>
+                <a href="{% url 'dataset' pk=dataset.pk %}" class="inline-flex items-center mt-3 px-4 py-2 text-sm font-medium text-white bg-blue-900 rounded hover:bg-blue-800">Details</a>
             </div>
         </div>
     {% empty %}

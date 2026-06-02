@@ -1,18 +1,17 @@
 {% load static %}
-<footer class="mt-auto pb-3 py-5">
-    <div class="container">
-        <p class="text-muted credit" style="text-align:center">Powered by:   &nbsp;&nbsp;
-            <a href="https://www.uni.lu" class="mx-2">
-                <img src="{% static 'images/Uni-LU.svg' %}" alt="uni-lu logo" height="40px"/>
-            </a>
-            <a href="https://www.uni.lu/lcsb" class="mx-2">
-                <img src="{% static 'images/LCSB-logo.svg' %}" alt="lcsb logo" height="40px"/>
-            </a>
-            <a href="https://www.elixir-luxembourg.org" class="mx-2">
-                <img src="{% static 'images/ELIXIR_LU_WB.svg' %}" alt="elixir luxembourg logo" height="40px"/>
-            </a>
-        </p>
+<footer class="mt-12 border-t border-gray-200">
+    <div class="flex flex-col gap-4 mx-auto max-w-7xl px-4 py-6 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+        <div class="flex items-center gap-5">
+            <a href="https://www.uni.lu/lcsb-en/" aria-label="LCSB"><img src="{% static 'images/UNI_Logo_LCSB.svg' %}" alt="LCSB" class="h-7"></a>
+            <a href="https://www.elixir-luxembourg.org" aria-label="ELIXIR Luxembourg"><img src="{% static 'images/ELIXIR_LU_WB.svg' %}" alt="ELIXIR Luxembourg" class="h-7"></a>
+        </div>
+        {% with footerlink="text-gray-600 hover:text-blue-700 hover:underline" %}
+        <div class="flex flex-wrap items-baseline gap-x-5 gap-y-2">
+            <span class="font-medium text-blue-950">DAISY{% if app_version %} <span class="font-mono text-gray-500">v{{ app_version }}</span>{% endif %}</span>
+            <a href="https://elixir.pages.uni.lu/daisy-doc/" class="{{ footerlink }}">Documentation</a>
+            <a href="https://github.com/elixir-luxembourg/daisy" class="{{ footerlink }}">Source</a>
+            <a href="https://github.com/elixir-luxembourg/daisy/issues" class="{{ footerlink }}">Report an issue</a>
+        </div>
+        {% endwith %}
     </div>
-<!--<small></small>Copyright © Université du Luxembourg 2019. All rights reserved.</small>-->
-<!-- Grid row-->
 </footer>

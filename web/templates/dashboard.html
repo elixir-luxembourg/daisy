@@ -1,99 +1,73 @@
 {% extends 'layout.html' %}
-
 {% load static %}
 
-
 {% block content %}
-    <div class="row mt-4">
-       <div class="col">
-        <div class="jumbotron" style='background: url("{% static 'images/banner.png' %}"); background-repeat: no-repeat; background-size: contain;'>
-            <span class="badge badge-pill badge-light">Version {{ app_version }}</span>
+<section class="pt-8 pb-16">
+    <div class="relative min-h-40 overflow-hidden rounded border border-gray-200 bg-gray-50">
+        <div class="absolute inset-0 bg-left bg-no-repeat opacity-90" style="background-image: url('{% static 'images/banner.png' %}'); background-size: contain;"></div>
+        <div class="relative flex min-h-40 items-start p-5">
+            <span class="inline-flex rounded-full border border-gray-200 bg-white/90 px-3 py-1 text-xs font-medium text-blue-950">Version {{ app_version }}</span>
         </div>
-       </div>
     </div>
-    <div class="row mt-4">
-        <div class="col">
-            {% url 'dataset_wizard' as base_url %}
-            {% with dataset_add_url=base_url|add:"?reset=true" %}
-            {% include '_includes/card_list.html' with list=last_datasets list_title='My datasets' url_name='dataset' add_new_link=dataset_add_url icon_name='assessment'  %}
-            {% endwith %}
-        </div>
-        <div class="col">
-            {% url 'project_add' as project_add_url %}
-            {% include '_includes/card_list.html' with list=last_projects list_title='My projects' url_name='project' add_new_link=project_add_url icon_name='assessment'  %}
-        </div>
-        <div class="col">
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="card-title"><span><i class="material-icons">help_outline</i></span> Help</h2>
-                    <p>Please use the links at the top of the page to browse or submit 
-                        information about Projects, Datasets or other entities.</p>
-                    <p>
-                        For more information, refer to the <strong><a href="https://elixir.pages.uni.lu/daisy-doc/">User Guide</a></strong>
-                    </p>
-                </div>
+
+    <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <section aria-labelledby="my-datasets-title">
+            <div class="flex items-center justify-between gap-4 border-b border-gray-300 pb-3">
+                <h2 id="my-datasets-title" class="flex items-center gap-2 text-xl font-medium text-blue-950">
+                    <i data-lucide="database" class="h-5 w-5"></i>
+                    My datasets
+                </h2>
+                {% url 'dataset_wizard' as dataset_wizard_url %}
+                <a href="{{ dataset_wizard_url }}?reset=true" class="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-blue-950 hover:underline">
+                    <i data-lucide="plus" class="h-4 w-4"></i>
+                    Add new
+                </a>
             </div>
-        </div>
-        {% comment %}
-        <div class="col">
-            {% include '_includes/card_list.html' with list=recently_published_datasets list_title='Recently published datasets' url_name='dataset' %}
-        </div>
-        <div class="col">
-            {% include '_includes/card_list.html' with list=last_granted_accesses list_title='Last granted accesses' url_name='access' %}
-        </div>
-        {% endcomment %}
+            <ul>
+                {% for object in last_datasets %}
+                <li class="border-b border-gray-200">
+                    <a href="{% url 'dataset' pk=object.id %}" class="block py-3 font-medium text-blue-950 hover:underline">{{ object }}</a>
+                </li>
+                {% empty %}
+                <li class="border-b border-gray-200 py-3 text-sm text-gray-600">No entries yet</li>
+                {% endfor %}
+            </ul>
+        </section>
 
-        {% comment %}
-        <div class="col-5">
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="card-title">Quick search</h2>
-
-                    <form class="form-inline" method="get" action="{% url 'projects' %}">
-                        <div class="form-group">
-                            <label for="query" class="bmd-label-floating">
-                                &nbsp;<i class="material-icons">search</i> Look for projects
-                            </label>
-                            <input type='text' class="form-control border border-top-0 bg-white" name='query' value='{{ query }}'/>
-                            <button type="submit" class="btn btn-primary">Search</button>
-                        </div>
-                    </form>
-
-                    <form class="form-inline" method="get" action="{% url 'datasets' %}">
-                        <div class="form-group">
-                            <label for="query" class="bmd-label-floating">
-                                &nbsp;<i class="material-icons">search</i> Look for datasets
-                            </label>
-                            <input type='text' class="form-control border border-top-0 bg-white" name='query' value='{{ query }}'/>
-                            <button type="submit" class="btn btn-primary">Search</button>
-                        </div>
-                    </form>
-                </div>
+        <section aria-labelledby="my-projects-title">
+            <div class="flex items-center justify-between gap-4 border-b border-gray-300 pb-3">
+                <h2 id="my-projects-title" class="flex items-center gap-2 text-xl font-medium text-blue-950">
+                    <i data-lucide="folder-kanban" class="h-5 w-5"></i>
+                    My projects
+                </h2>
+                <a href="{% url 'project_add' %}" class="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-blue-950 hover:underline">
+                    <i data-lucide="plus" class="h-4 w-4"></i>
+                    Add new
+                </a>
             </div>
+            <ul>
+                {% for object in last_projects %}
+                <li class="border-b border-gray-200">
+                    <a href="{% url 'project' pk=object.id %}" class="block py-3 font-medium text-blue-950 hover:underline">{{ object }}</a>
+                </li>
+                {% empty %}
+                <li class="border-b border-gray-200 py-3 text-sm text-gray-600">No entries yet</li>
+                {% endfor %}
+            </ul>
+        </section>
 
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h2 class="card-title">Latest notifications</h2> 
- 
-                    {% if notifications %}
-                        <ul>
-                        {% for n in notifications %}
-                            <li>
-                                <strong>{{n.verb}}</strong>: <a href="{{n.get_absolute_url}}">{{n.content_object}}</a>
-                            </li>
-                        </tr>
-                        {% endfor %}
-                        </ul>
-
-                        <p>
-                            <a href="{% url 'notifications' %}">See all notifications</a>
-                        </p>
-                    {% else %}
-                        <strong>No notifications</strong>
-                    {% endif %}
-                </div>
+        <section aria-labelledby="help-title">
+            <div class="border-b border-gray-300 pb-3">
+                <h2 id="help-title" class="flex items-center gap-2 text-xl font-medium text-blue-950">
+                    <i data-lucide="circle-help" class="h-5 w-5"></i>
+                    Help
+                </h2>
             </div>
-        </div>
-        {% endcomment %}
+            <div class="space-y-4 py-3 text-sm leading-6 text-gray-700">
+                <p>Please use the links at the top of the page to browse or submit information about Projects, Datasets or other entities.</p>
+                <p>For more information, refer to the <strong><a href="https://elixir.pages.uni.lu/daisy-doc/" class="text-blue-950 hover:underline">User Guide</a></strong></p>
+            </div>
+        </section>
     </div>
+</section>
 {% endblock content %}

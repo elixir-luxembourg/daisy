@@ -1,20 +1,18 @@
 {% extends 'layout.html' %}
 
-{% block title %}Contact - Add{% endblock %}
+{% block title %}Add contact | DAISY{% endblock %}
 
 {% block content %}
-    <div class="jumbotron mt-4 {% block jumbotron_class %}{% endblock %}">
-        <h1 class="display-4">{% block content_title %}Contacts{% endblock %}</h1>
+    <div class="mt-4 p-8 rounded bg-gray-50 {% block jumbotron_class %}{% endblock %}">
+        <h1 class="text-4xl font-light">{% block content_title %}Contacts{% endblock %}</h1>
     </div>
-    <div class="card">
-        <div class="card-body">
-            <h2 class="card-title">{% block card_title %}Add a new contact{% endblock %}</h2>
-            <div class="card-text">
+    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+        <div class="p-4">
+            <h2 class="text-2xl font-light">{% block card_title %}Add a new contact{% endblock %}</h2>
+            <div class="mt-2">
                 {% url 'contacts' as go_back_link %}
                 {% include '_includes/forms.html' with cancel_button=go_back_link %}
             </div>
         </div>
     </div>
-
-
 {% endblock %}

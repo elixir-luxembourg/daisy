@@ -1,30 +1,29 @@
-                <h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>
-                <table class="table table-striped">
-                    <thead>
+                <h2 class="flex items-center gap-2 text-xl font-semibold"><i data-lucide="file-text" class="h-5 w-5"></i> Documents</h2>
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50">
                     <tr>
-                        <th style="max-width: 200px; overflow: auto">Document Type</th>
-                        <th style="max-width: 200px; min-width:120px; overflow: auto">Expiry</th>
-                        <th>Notes</th>
-                        <th style="max-width: 400px; overflow: auto">File</th>
-                        <th style="max-width: 200px; overflow: auto"><small>Size<small></th>
-                        
-                        
+                        <th scope="col" class="px-3 py-2 text-left font-semibold" style="max-width: 200px; overflow: auto">Document Type</th>
+                        <th scope="col" class="px-3 py-2 text-left font-semibold" style="max-width: 200px; min-width:120px; overflow: auto">Expiry</th>
+                        <th scope="col" class="px-3 py-2 text-left font-semibold">Notes</th>
+                        <th scope="col" class="px-3 py-2 text-left font-semibold" style="max-width: 400px; overflow: auto">File</th>
+                        <th scope="col" class="px-3 py-2 text-left font-semibold" style="max-width: 200px; overflow: auto"><small>Size</small></th>
+
                         {% if can_edit %}
-                            <th id="document-action-head" style="width:7em">Actions</th>
+                            <th scope="col" id="document-action-head" class="px-3 py-2 text-left font-semibold" style="width:7em">Actions</th>
                         {% endif %}
                     </tr>
                     </thead>
                     <tbody>
                     {% for file in datafiles %}
-                        <tr>
-                            <td style="max-width: 200px; overflow: auto"><span class="col-xs-4 text-center">{{ file.get_domain_type_display }}</span></td>
-                            <td style="max-width: 200px; overflow: auto"><span class="col-xs-4 text-center">{{ file.expiry_date | default:'-' }}</span></td>
-                            <td><span class="col-xs-4 text-center">{{ file.content_notes | default:'-' }}</span>
-                            <td style="max-width: 400px; overflow: auto"><a href="{% url 'document_download' pk=file.id %}">{{ file.shortname}}</a></td>
-                            <td><small><span class="col-xs-4 text-center">{{ file.size | filesizeformat  }}</span></small></td>
+                        <tr class="odd:bg-gray-50">
+                            <td class="px-3 py-2 border-t border-gray-200" style="max-width: 200px; overflow: auto">{{ file.get_domain_type_display }}</td>
+                            <td class="px-3 py-2 border-t border-gray-200" style="max-width: 200px; overflow: auto">{{ file.expiry_date | default:'-' }}</td>
+                            <td class="px-3 py-2 border-t border-gray-200">{{ file.content_notes | default:'-' }}</td>
+                            <td class="px-3 py-2 border-t border-gray-200" style="max-width: 400px; overflow: auto"><a class="text-blue-700 hover:underline" href="{% url 'document_download' pk=file.id %}">{{ file.shortname}}</a></td>
+                            <td class="px-3 py-2 border-t border-gray-200"><small>{{ file.size | filesizeformat  }}</small></td>
                             {% if can_edit %}
-                                <td id="document-action">
-                                    <a data-toggle="modal" id="btnupdate" class="jsBtn clickable"
+                                <td id="document-action" class="px-3 py-2 border-t border-gray-200">
+                                    <button type="button" data-toggle="modal" id="btnupdate" class="jsBtn clickable inline-flex p-0 text-blue-700 bg-transparent border-0 hover:text-blue-900"
                                        data-target="#modal"
                                        data-modal-title="Update document"
                                        data-post-mode="true"
@@ -34,13 +33,15 @@
                                            data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"
                                        {% endif %}
                                        data-ajax-url="{% url "document_edit" pk=file.id %}"
-                                       title="Update document">
-                                        <i class="material-icons">edit</i>
-                                    </a>
-                                    <i title="Delete document" class="material-icons red clickable" data-method="delete"
-                                       data-confirmation = "delete"
+                                       aria-label="Update document" title="Update document">
+                                        <i data-lucide="pencil" class="h-5 w-5"></i>
+                                    </button>
+                                    <button type="button" aria-label="Delete document" title="Delete document" class="clickable inline-flex p-0 text-red-700 bg-transparent border-0 hover:text-red-900" data-method="delete"
+                                       data-confirmation="delete"
                                        data-parent-to-remove="tr"
-                                       data-url="{% url 'document_delete' pk=file.id  %}">delete_forever</i>
+                                       data-url="{% url 'document_delete' pk=file.id  %}">
+                                        <i data-lucide="trash-2" class="h-5 w-5"></i>
+                                    </button>
                                 </td>
                             {% endif %}
                         </tr>
