@@ -16,7 +16,6 @@ from test.factories import (
 from core.constants import Permissions
 from core.models.user import User
 from core.models.dataset import Dataset
-from core.forms import DatasetForm
 
 from .utils import (
     check_response_status,
@@ -229,9 +228,10 @@ def test_dataset_views_scientific_metadata_field(
     :param client: The Django test client
     :param expected_result: Whether the field should be rendered
     """
-    field_node = DatasetForm(keep_metadata_field=True)[
-        "scientific_metadata"
-    ].label_tag()
+    field_node = (
+        '<label for="id_scientific_metadata" class="block mb-2 text-sm font-medium '
+        'text-gray-900">Additional scientific metadata (in JSON format)</label>'
+    )
     user = UserFactory(groups=[group()])
     login_test_user(client, user)
 

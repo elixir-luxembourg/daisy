@@ -98,24 +98,33 @@ def test_contract_view_protected_documents(permissions, group):
     response = client.get(url, follow=True)
 
     if user.is_part_of(VIPGroup()):
-        assert b'<div class="row mt-4" id="documents-card">' not in response.content
         assert (
-            b'<h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>'
+            b'<div class="mt-4 rounded border border-gray-200 bg-white shadow-sm" id="documents-card">'
+            not in response.content
+        )
+        assert (
+            b'<h2 class="flex items-center gap-2 text-xl font-semibold"><i data-lucide="file-text" class="h-5 w-5"></i> Documents</h2>'
             not in response.content
         )
 
         contract.local_custodians.set([user])
         response = client.get(url, follow=True)
-        assert b'<div class="row mt-4" id="documents-card">' in response.content
         assert (
-            b'<h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>'
+            b'<div class="mt-4 rounded border border-gray-200 bg-white shadow-sm" id="documents-card">'
+            in response.content
+        )
+        assert (
+            b'<h2 class="flex items-center gap-2 text-xl font-semibold"><i data-lucide="file-text" class="h-5 w-5"></i> Documents</h2>'
             in response.content
         )
 
     else:
-        assert b'<div class="row mt-4" id="documents-card">' in response.content
         assert (
-            b'<h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>'
+            b'<div class="mt-4 rounded border border-gray-200 bg-white shadow-sm" id="documents-card">'
+            in response.content
+        )
+        assert (
+            b'<h2 class="flex items-center gap-2 text-xl font-semibold"><i data-lucide="file-text" class="h-5 w-5"></i> Documents</h2>'
             in response.content
         )
 
@@ -137,37 +146,46 @@ def test_contract_edit_protected_documents(permissions, group):
 
     if user.is_part_of(DataStewardGroup(), LegalGroup()):
         assert (
-            b'<div class="ml-1 float-right btn-group" id="add-contract-document">'
+            b'<div class="flex justify-end" id="add-contract-document">'
             in response.content
         )
         assert (
-            b'<th id="document-action-head" style="width:7em">Actions</th>'
+            b'<th scope="col" id="document-action-head" class="px-3 py-2 text-left font-semibold" style="width:7em">Actions</th>'
             in response.content
         )
-        assert b'<td id="document-action">' in response.content
+        assert (
+            b'<td id="document-action" class="px-3 py-2 border-t border-gray-200">'
+            in response.content
+        )
     else:
         assert (
-            b'<div class="ml-1 float-right btn-group" id="add-contract-document">'
+            b'<div class="flex justify-end" id="add-contract-document">'
             not in response.content
         )
         assert (
-            b'<th id="document-action-head" style="width:7em">Actions</th>'
+            b'<th scope="col" id="document-action-head" class="px-3 py-2 text-left font-semibold" style="width:7em">Actions</th>'
             not in response.content
         )
-        assert b'<td id="document-action">' not in response.content
+        assert (
+            b'<td id="document-action" class="px-3 py-2 border-t border-gray-200">'
+            not in response.content
+        )
 
     if user.is_part_of(VIPGroup()):
         contract.local_custodians.set([user])
         response = client.get(url, follow=True)
         assert (
-            b'<div class="ml-1 float-right btn-group" id="add-contract-document">'
+            b'<div class="flex justify-end" id="add-contract-document">'
             in response.content
         )
         assert (
-            b'<th id="document-action-head" style="width:7em">Actions</th>'
+            b'<th scope="col" id="document-action-head" class="px-3 py-2 text-left font-semibold" style="width:7em">Actions</th>'
             in response.content
         )
-        assert b'<td id="document-action">' in response.content
+        assert (
+            b'<td id="document-action" class="px-3 py-2 border-t border-gray-200">'
+            in response.content
+        )
 
     os.remove(document.content.name)
 
