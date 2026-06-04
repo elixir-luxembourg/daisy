@@ -29,6 +29,7 @@ services:
             - ${STATICFILES_DIR:-./staticfiles}:/code/staticfiles
             - solrdata:/solr
             - medias:/code/medias
+            - ${LOG_VOLUME:-logs}:/code/log
         depends_on:
             db:
                 condition: service_healthy
@@ -36,7 +37,7 @@ services:
                 condition: service_healthy
             mq:
                 condition: service_healthy
-        command: gunicorn -w 2 -b :5000 --pid /code/gunicorn.pid elixir_daisy.wsgi
+        command: sh -c "gunicorn -w 2 -b :5000 --pid /code/gunicorn.pid --log-level $${GUNICORN_LOGLEVEL:-info} --access-logfile $${GUNICORN_ACCESS_LOG:-/dev/null} elixir_daisy.wsgi"
         healthcheck:
             test: ["CMD-SHELL", "curl --fail http://localhost:5000 || exit 1"]
             interval: 10s
@@ -200,6 +201,7 @@ volumes:
     solrdata:
     backups:
     medias:
+    logs:
 
 networks:
     daisy_network:
