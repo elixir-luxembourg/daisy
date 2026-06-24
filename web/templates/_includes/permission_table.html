@@ -11,11 +11,11 @@
         {% for key, value in obj_perms.items %}
             <tr>
             {% if obj_name == 'Dataset' %}
-                <th scope="row" class="px-3 py-2 text-left font-normal border-t border-gray-200"><a class="text-blue-700 hover:underline" href="{% url 'dataset' pk=key.id %}">{{ key }}</a></th>
+                <th scope="row" class="px-3 py-2 text-left font-normal border-t border-gray-200"><a class="text-primary-700 hover:underline" href="{% url 'dataset' pk=key.id %}">{{ key }}</a></th>
             {% elif obj_name == 'Project' %}
-                <th scope="row" class="px-3 py-2 text-left font-normal border-t border-gray-200"><a class="text-blue-700 hover:underline" href="{% url 'project' pk=key.id %}">{{ key }}</a></th>
+                <th scope="row" class="px-3 py-2 text-left font-normal border-t border-gray-200"><a class="text-primary-700 hover:underline" href="{% url 'project' pk=key.id %}">{{ key }}</a></th>
             {% elif obj_name == 'User' %}
-                <th scope="row" class="px-3 py-2 text-left font-normal border-t border-gray-200"><a class="text-blue-700 hover:underline" href="{% url 'user' pk=key.id %}">{{ key }}</a></th>
+                <th scope="row" class="px-3 py-2 text-left font-normal border-t border-gray-200"><a class="text-primary-700 hover:underline" href="{% url 'user' pk=key.id %}">{{ key }}</a></th>
             {% endif %}
             {% for perm in obj_perms_const %}
                 {% if perm in value %}

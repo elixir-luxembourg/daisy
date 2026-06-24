@@ -26,7 +26,7 @@
                         In practice it usually means, that there's a temporary error in the application. <strong>Can you reload the page (hit the refresh button), please?</strong>
                     </p>
                     <p>
-                        If the error persists after refreshing the page, please <a class="text-blue-700 hover:underline" href="mailto:{{ helpdesk_email }}?subject=DAISY+error">contact us</a> about it.
+                        If the error persists after refreshing the page, please <a class="text-primary-700 hover:underline" href="mailto:{{ helpdesk_email }}?subject=DAISY+error">contact us</a> about it.
                     </p>
                 {% elif reason == "csrf" %}
                     <h2 class="text-2xl font-semibold">The CSRF validation failed.</h2>
@@ -34,12 +34,12 @@
                         In practice it usually means, that filling the form took you slightly too long time (more than an hour). <strong>Go back and try to fill the form once again, please.</strong>
                     </p>
                     <p>
-                        If you see this page in effect of clicking on any link you received from someone via mail or any other message, please <a class="text-blue-700 hover:underline" href="mailto:{{ helpdesk_email }}?subject=DAISY+error">let us know</a>.
+                        If you see this page in effect of clicking on any link you received from someone via mail or any other message, please <a class="text-primary-700 hover:underline" href="mailto:{{ helpdesk_email }}?subject=DAISY+error">let us know</a>.
                     </p>
                 {% elif reason == "500" %}
                     <h2 class="text-2xl font-semibold">The application has encountered an error.</h2>
                     <p>
-                        It might have happened because of the data you entered. If you'd like, you can <a class="text-blue-700 hover:underline" href="mailto:{{ helpdesk_email }}?subject=DAISY+error">let us know</a>.
+                        It might have happened because of the data you entered. If you'd like, you can <a class="text-primary-700 hover:underline" href="mailto:{{ helpdesk_email }}?subject=DAISY+error">let us know</a>.
                     </p>
                 {% elif reason == "403" %}
                     <h2 class="text-2xl font-semibold">The page you requested is restricted, and your user cannot access the resource.</h2>
@@ -54,10 +54,10 @@
                     <div>
                       <h2 class="mt-0 text-lg font-semibold">You might want to:</h2>
                       <ul class="list-disc pl-5">
-                        <li>go <a class="text-blue-700 hover:underline" href="#" onclick="window.history.back()">back</a></li>
-                        <li>go to <a class="text-blue-700 hover:underline" href="{% url 'dashboard' %}">the index page</a></li>
+                        <li>go <a class="text-primary-700 hover:underline" href="#" onclick="window.history.back()">back</a></li>
+                        <li>go to <a class="text-primary-700 hover:underline" href="{% url 'dashboard' %}">the index page</a></li>
                         {% if user.is_authenticated %}
-                        <li>go to <a class="text-blue-700 hover:underline" href="{% url 'login' %}">the login page</a></li>
+                        <li>go to <a class="text-primary-700 hover:underline" href="{% url 'login' %}">the login page</a></li>
                         {% endif %}
                       </ul>
                     </div>

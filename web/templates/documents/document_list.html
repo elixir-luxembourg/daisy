@@ -27,7 +27,7 @@
                             <td class="px-3 py-2 border-t border-gray-200">{{ document.name }}</td>
                             <td class="px-3 py-2 border-t border-gray-200">{% if document.type %}{{ document.type }}{% else %}-{% endif %}</td>
                             <td class="px-3 py-2 border-t border-gray-200">{% if document.location %}{{ document.location }}{% else %}-{% endif %}</td>
-                            <td class="px-3 py-2 border-t border-gray-200"><a class="inline-flex items-center px-3 py-1 text-sm font-medium text-blue-900 rounded border border-blue-900 hover:bg-blue-50" href="{%  url 'document_edit' document.id %}">Edit</a></td>
+                            <td class="px-3 py-2 border-t border-gray-200"><a class="inline-flex items-center px-3 py-1 text-sm font-medium text-primary-900 rounded border border-primary-900 hover:bg-primary-50" href="{%  url 'document_edit' document.id %}">Edit</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -41,5 +41,5 @@
 
 
 {% block floating-buttons %}
-    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'document_add' %}" title="Add document" aria-label="Add document"><i data-lucide="plus" class="h-6 w-6"></i></a>
+    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-primary-900 shadow-lg hover:bg-primary-800" href="{% url 'document_add' %}" title="Add document" aria-label="Add document"><i data-lucide="plus" class="h-6 w-6"></i></a>
 {% endblock %}

@@ -59,12 +59,12 @@
                 {% endif %}
             {% endif %}
             {% if can_edit %}
-                <a class="inline-flex items-center justify-center h-10 w-10 text-white bg-blue-900 rounded-full shadow hover:bg-blue-800"
+                <a class="inline-flex items-center justify-center h-10 w-10 text-white bg-primary-900 rounded-full shadow hover:bg-primary-800"
                    title="Edit partner"
                    href="{% url 'partner_edit' pk=partner.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
                 {% if not partner.is_published %}
                     <a id="deletepartner"
-                       class="inline-flex items-center justify-center h-10 w-10 text-white bg-red-900 rounded-full shadow hover:bg-red-800"
+                       class="inline-flex items-center justify-center h-10 w-10 text-white bg-danger-900 rounded-full shadow hover:bg-danger-800"
                        title="Delete partner"
                        data-toggle="modal" data-target="#modal"
                        data-ajax-url="{% url 'partner_delete' partner.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>
@@ -92,7 +92,7 @@
                 <ul class="mt-2 flex flex-col gap-2">
                     {% for collab in partner.contracts.all %}
                         <li class="rounded border border-gray-200">
-                            <div class="flex items-center gap-2 px-3 py-2 border-b border-gray-200"><i data-lucide="link" class="h-5 w-5"></i><a class="text-blue-700 hover:underline" href="{% url 'contract' pk=collab.id %}"><strong>{{ collab.project|truncatechars:100 }}</strong></a></div>
+                            <div class="flex items-center gap-2 px-3 py-2 border-b border-gray-200"><i data-lucide="link" class="h-5 w-5"></i><a class="text-primary-700 hover:underline" href="{% url 'contract' pk=collab.id %}"><strong>{{ collab.project|truncatechars:100 }}</strong></a></div>
                             <div class="px-3 py-2">
                                 {% for custodian in collab.local_custodians.all %}
                                     {{ custodian|truncatechars:100 }}

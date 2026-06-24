@@ -3,7 +3,7 @@
 {% block title %}{{ dataset.title }} | DAISY{% endblock %}
 
 {% block content %}
-{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-blue-900 rounded-full" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" add="inline-flex items-center justify-center h-9 w-9 text-white bg-blue-900 rounded-full hover:bg-blue-800" editc="h-5 w-5 cursor-pointer text-blue-700" delc="h-5 w-5 cursor-pointer text-red-700" title2="flex items-center gap-2 text-2xl font-light" %}
+{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-primary-900 rounded-full" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" add="inline-flex items-center justify-center h-9 w-9 text-white bg-primary-900 rounded-full hover:bg-primary-800" editc="h-5 w-5 cursor-pointer text-primary-700" delc="h-5 w-5 cursor-pointer text-danger-700" title2="flex items-center gap-2 text-2xl font-light" %}
     <div class="relative mt-4 p-8 rounded bg-gray-50">
         <span class="text-gray-500">Dataset</span>
         <h1 class="text-4xl font-light">{{ dataset.title }}</h1>
@@ -18,7 +18,7 @@
                     </dd>
                     <dt class="font-semibold">Project</dt>
                     <dd>
-                        {% if dataset.project %}<a class="text-blue-700 hover:underline" href="{% url 'project' pk=dataset.project.pk %}">{{ dataset.project }}</a>{% else %}-{% endif %}
+                        {% if dataset.project %}<a class="text-primary-700 hover:underline" href="{% url 'project' pk=dataset.project.pk %}">{{ dataset.project }}</a>{% else %}-{% endif %}
                     </dd>
                     <dt class="font-semibold">Other external id(s)</dt>
                     <dd>{{ dataset.other_external_id|default:'-' }}</dd>
@@ -68,12 +68,12 @@
                    href="{% url 'permission_dataset' pk=dataset.id %}"><i data-lucide="eye" class="h-5 w-5"></i></a>
             {% endif %}
             {% if can_edit %}
-                <a class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-blue-900 shadow hover:bg-blue-800"
+                <a class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-primary-900 shadow hover:bg-primary-800"
                    title="Edit dataset"
                    href="{% url 'dataset_edit' pk=dataset.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
                 {% if not dataset.is_published %}
                     <a id="deletedataset"
-                       class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-red-900 shadow hover:bg-red-800"
+                       class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-danger-900 shadow hover:bg-danger-800"
                        title="Delete dataset"
                        data-toggle="modal"
                        data-target="#modal"
@@ -110,17 +110,17 @@
                         <tbody>
                         {% for data_declaration in dataset.data_declarations.all %}
                             <tr class="odd:bg-gray-50">
-                                <td class="{{ td }}"><a class="text-blue-700 hover:underline" href="{% url 'data_declaration' pk=data_declaration.id %}"><strong>{{ data_declaration.title }}</strong></a></td>
+                                <td class="{{ td }}"><a class="text-primary-700 hover:underline" href="{% url 'data_declaration' pk=data_declaration.id %}"><strong>{{ data_declaration.title }}</strong></a></td>
                                 <td class="{{ td }}">{{ data_declaration.cohorts.all|join:', ' }}</td>
                                 <td class="{{ td }}">{{ data_declaration.partner }}</td>
-                                <td class="{{ td }}">{% if data_declaration.data_types %}{{ data_declaration.data_types|join:', ' }}{% else %}<span class="text-red-700">missing</span>{% endif %}</td>
+                                <td class="{{ td }}">{% if data_declaration.data_types %}{{ data_declaration.data_types|join:', ' }}{% else %}<span class="text-danger-700">missing</span>{% endif %}</td>
                                 <td class="{{ td }}">{{ data_declaration.has_special_subjects|yesno:"yes,no,unknown" }}</td>
                                 <td class="{{ td }}">{{ data_declaration.end_of_storage_duration|default:"" }}</td>
                                 {% if can_edit %}
                                     <td class="{{ td }}">
                                         <span class="inline-flex items-center gap-2">
                                             <a href="{% url 'data_declaration_edit' pk=data_declaration.id %}" title="Edit data declaration"><i data-lucide="pencil" class="{{ editc }}"></i></a>
-                                            <a href="{% url 'data_declarations_duplicate' pk=data_declaration.id %}" title="Duplicate data declaration"><i data-lucide="copy-plus" class="h-5 w-5 cursor-pointer text-blue-700"></i></a>
+                                            <a href="{% url 'data_declarations_duplicate' pk=data_declaration.id %}" title="Duplicate data declaration"><i data-lucide="copy-plus" class="h-5 w-5 cursor-pointer text-primary-700"></i></a>
                                             <i title="Delete data declaration" class="{{ delc }}" data-lucide="trash-2" data-method="delete"
                                                data-confirmation="delete"
                                                data-parent-to-remove="tr"
@@ -135,7 +135,7 @@
                 </div>
                 <div id="edit-declaration-form"></div>
             {% else %}
-                <p class="text-center text-red-700"><br/><em>Dataset is empty!</em></p>
+                <p class="text-center text-danger-700"><br/><em>Dataset is empty!</em></p>
                 {% if can_edit %}
                     <div class="flex items-center justify-center gap-2 text-gray-500"><p>Click here to declare data</p><i data-lucide="arrow-right" class="h-5 w-5"></i></div>
                 {% endif %}
@@ -271,7 +271,7 @@
             <div class="flex items-center justify-between">
                 <h2 class="{{ title2 }}"><i data-lucide="users" class="h-6 w-6"></i> Accesses
                     {% if can_see_protected %}
-                        <a href="{% url 'history' %}?entity_name=access&parent_entity_name=dataset&parent_entity_id={{ dataset.pk }}" title="See dataset accesses history"><i data-lucide="history" class="h-5 w-5 text-blue-700"></i></a>
+                        <a href="{% url 'history' %}?entity_name=access&parent_entity_name=dataset&parent_entity_id={{ dataset.pk }}" title="See dataset accesses history"><i data-lucide="history" class="h-5 w-5 text-primary-700"></i></a>
                     {% endif %}
                 </h2>
                 {% if can_edit %}
@@ -313,7 +313,7 @@
                             <td class="{{ td }}">{{ access.grant_expires_on|default:"-" }}</td>
                             <td class="{{ td }}">
                                 {% if access.application_id %}
-                                    <a class="text-blue-700 hover:underline" href="{{ rems_application_url }}{{ access.application_id }}">{{ access.application_external_id }}</a>
+                                    <a class="text-primary-700 hover:underline" href="{{ rems_application_url }}{{ access.application_id }}">{{ access.application_external_id }}</a>
                                 {% else %}-{% endif %}
                             </td>
                             {% if can_edit %}
@@ -338,7 +338,7 @@
                                 </td>
                             {% endif %}
                             {% if can_see_protected %}
-                                <td class="{{ td }}"><a href="{% url 'history' %}?entity_name=access&entity_id={{ access.pk }}"><i data-lucide="history" class="h-5 w-5 text-blue-700"></i></a></td>
+                                <td class="{{ td }}"><a href="{% url 'history' %}?entity_name=access&entity_id={{ access.pk }}"><i data-lucide="history" class="h-5 w-5 text-primary-700"></i></a></td>
                             {% endif %}
                         </tr>
                     {% endfor %}
@@ -383,7 +383,7 @@
                     {% for share in dataset.shares.all %}
                         <tr class="odd:bg-gray-50">
                             <td class="{{ td }}">{% for ddec in share.data_declarations.all %}{{ ddec.title }}<br/>{% empty %}Entire dataset{% endfor %}</td>
-                            <td class="{{ td }}">{% if share.data_log_type %}{{ share.data_log_type.name }}{% else %}<span class="text-red-700">missing</span>{% endif %}</td>
+                            <td class="{{ td }}">{% if share.data_log_type %}{{ share.data_log_type.name }}{% else %}<span class="text-danger-700">missing</span>{% endif %}</td>
                             <td class="{{ td }}">{{ share.partner }}</td>
                             <td class="{{ td }}">{{ share.granted_on|default:"-" }}</td>
                             <td class="{{ td }}">{{ share.share_notes|default:"-" }}</td>
@@ -444,14 +444,14 @@
                         </thead>
                         <tbody>
                         {% for exposure in exposure_list %}
-                            <tr class="{% if exposure.is_deprecated %}bg-red-50{% else %}odd:bg-gray-50{% endif %}">
+                            <tr class="{% if exposure.is_deprecated %}bg-danger-50{% else %}odd:bg-gray-50{% endif %}">
                                 <td class="{{ td }}">{{ exposure.endpoint }}</td>
                                 <td class="{{ td }}">{% if exposure.form_name %}{{ exposure.form_name }} -- {% endif %}{{ exposure.form_id }}</td>
                                 <td class="{{ td }}">{{ exposure.added }}</td>
                                 <td class="{{ td }}">{% if exposure.is_deprecated %}{{ exposure.deprecated_at }}{% else %}-{% endif %}</td>
                                 <td class="{{ td }}">
                                     <span class="inline-flex items-center gap-2">
-                                        <i class="h-5 w-5 {% if exposure.is_deprecated %}text-gray-400{% else %}cursor-pointer text-blue-700{% endif %}" data-lucide="pencil"
+                                        <i class="h-5 w-5 {% if exposure.is_deprecated %}text-gray-400{% else %}cursor-pointer text-primary-700{% endif %}" data-lucide="pencil"
                                            id="editexposure"
                                            {% if not exposure.is_deprecated %}
                                            title="Edit exposure"
@@ -465,7 +465,7 @@
                                            {% endif %}
                                            data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
                                            data-ajax-url="{% url 'dataset_exposure_edit' pk=exposure.id dataset_pk=dataset.id %}"></i>
-                                        <i class="h-5 w-5 {% if exposure.is_deprecated %}text-gray-400{% else %}cursor-pointer text-red-700{% endif %}" data-lucide="trash-2"
+                                        <i class="h-5 w-5 {% if exposure.is_deprecated %}text-gray-400{% else %}cursor-pointer text-danger-700{% endif %}" data-lucide="trash-2"
                                            {% if not exposure.is_deprecated %}
                                            title="Remove exposure"
                                            data-toggle="modal"

@@ -20,8 +20,8 @@
             {% for user in user_list %}
                 {% if user.first_name and user.last_name %}
                 <tr>
-                    <td><a class="text-blue-700 hover:underline" href="{% url 'user' user.id %}" >{{ user.first_name }} </a></td>
-                    <td><a class="text-blue-700 hover:underline" href="{% url 'user' user.id %}" >{{ user.last_name }}</a></td>
+                    <td><a class="text-primary-700 hover:underline" href="{% url 'user' user.id %}" >{{ user.first_name }} </a></td>
+                    <td><a class="text-primary-700 hover:underline" href="{% url 'user' user.id %}" >{{ user.last_name }}</a></td>
                     <td>{{ user.email }}</td>
 
                         <td>{% if user.source %}{{ user.source }}{% else %} {% endif %} </td>
@@ -35,5 +35,5 @@
 {% endblock %}
 
 {% block floating-buttons %}
-    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'users_add' %}" title="Add user" aria-label="Add user"><i data-lucide="plus" class="h-6 w-6"></i></a>
+    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-primary-900 shadow-lg hover:bg-primary-800" href="{% url 'users_add' %}" title="Add user" aria-label="Add user"><i data-lucide="plus" class="h-6 w-6"></i></a>
 {% endblock %}

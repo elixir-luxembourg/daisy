@@ -5,9 +5,9 @@
     {{ form.partner.label_tag }}
     {% if form.is_bound %}
         {% if form.partner.errors %}
-            {% render_field form.partner class+="block w-full rounded border border-red-700 px-3 py-2" %}
+            {% render_field form.partner class+="block w-full rounded border border-danger-700 px-3 py-2" %}
             {% for error in form.partner.errors %}
-                <div class="mt-1 text-sm text-red-700">
+                <div class="mt-1 text-sm text-danger-700">
                     {{ error }}
                 </div>
             {% endfor %}

@@ -3,7 +3,7 @@
         <div class="rounded border border-gray-200 bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="text-2xl font-light">
-                    <a href="{% url 'contact' pk=contact.pk %}" class="text-blue-700 hover:underline">{{ contact.first_name }} {{ contact.last_name }}</a>
+                    <a href="{% url 'contact' pk=contact.pk %}" class="text-primary-700 hover:underline">{{ contact.first_name }} {{ contact.last_name }}</a>
                 </h2>
                 <ul class="py-1 text-left">
                     <li class="flex items-center">
@@ -11,7 +11,7 @@
                     </li>
                     <li class="flex flex-wrap items-center"><strong>Affiliation(s):</strong>
                         {% for partner in contact.partners %}
-                            <span class="inline-flex items-center ml-1 mb-1 px-2.5 py-0.5 text-xs font-medium text-white bg-blue-900 rounded-full">{{ partner }}</span>
+                            <span class="inline-flex items-center ml-1 mb-1 px-2.5 py-0.5 text-xs font-medium text-white bg-primary-900 rounded-full">{{ partner }}</span>
 
                         {% empty %}
                             -

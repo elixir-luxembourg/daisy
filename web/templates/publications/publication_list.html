@@ -25,7 +25,7 @@
                             <th scope="row" class="px-3 py-2 text-left border-t border-gray-200">{{  forloop.counter }}</th>
                             <td class="px-3 py-2 border-t border-gray-200">{{ publication.citation }}</td>
                             <td class="px-3 py-2 border-t border-gray-200">{% if publication.doi %}{{ publication.doi }}{% else %}-{% endif %}</td>
-                            <td class="px-3 py-2 border-t border-gray-200"><a class="inline-flex items-center px-3 py-1 text-sm font-medium text-blue-900 rounded border border-blue-900 hover:bg-blue-50" href="{%  url 'publication_edit' publication.id %}">Edit</a></td>
+                            <td class="px-3 py-2 border-t border-gray-200"><a class="inline-flex items-center px-3 py-1 text-sm font-medium text-primary-900 rounded border border-primary-900 hover:bg-primary-50" href="{%  url 'publication_edit' publication.id %}">Edit</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -39,5 +39,5 @@
 
 
 {% block floating-buttons %}
-    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-blue-900 shadow-lg hover:bg-blue-800" href="{% url 'publication_add' %}" title="Add publication" aria-label="Add publication"><i data-lucide="plus" class="h-6 w-6"></i></a>
+    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-primary-900 shadow-lg hover:bg-primary-800" href="{% url 'publication_add' %}" title="Add publication" aria-label="Add publication"><i data-lucide="plus" class="h-6 w-6"></i></a>
 {% endblock %}

@@ -265,6 +265,20 @@ $(document).ready(function () {
         }
     });
 
+    // Close navbar dropdowns (<details data-nav-dropdown>) on an outside click or Escape.
+    $(document).on("click", function (event) {
+        $("details[data-nav-dropdown][open]").each(function () {
+            if (!this.contains(event.target)) {
+                this.removeAttribute("open");
+            }
+        });
+    });
+    $(document).on("keydown", function (event) {
+        if (event.key === "Escape") {
+            $("details[data-nav-dropdown][open]").removeAttr("open");
+        }
+    });
+
     $(".deletable").hover(function () {
         const url_delete = $(this).data("url");
         const delete_link = $('<i data-lucide="trash-2" class="delete-button ml-2 inline-flex h-4 w-4 cursor-pointer align-middle text-red-600"></i>').attr("data-url", url_delete);

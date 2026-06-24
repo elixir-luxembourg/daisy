@@ -4,7 +4,7 @@
         <div class="rounded border border-gray-200 bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="text-2xl font-light">
-                  <a href="{% url 'dataset' pk=dataset.pk %}" class="text-blue-700 hover:underline">{{ dataset.title }}</a>
+                  <a href="{% url 'dataset' pk=dataset.pk %}" class="text-primary-700 hover:underline">{{ dataset.title }}</a>
                 </h2>
                 <ul class="py-1 text-left">
                     <li class="flex items-center"><strong class="mr-1">Published:</strong> {{ dataset.is_published | yesno }}</li>
@@ -16,7 +16,7 @@
                     {% if dataset.local_custodians %}
                         <li><strong>Local custodians:</strong>
                             {% for local_custodian in dataset.local_custodians %}
-                                <span class="{{ badge }} bg-blue-900 text-white">{{ local_custodian }}</span>
+                                <span class="{{ badge }} bg-primary-900 text-white">{{ local_custodian }}</span>
                             {% endfor %}
                         </li>
                     {% endif %}

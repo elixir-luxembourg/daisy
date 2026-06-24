@@ -34,9 +34,9 @@
         {% for message in messages %}
         <div role="alert" class="flex items-start gap-3 p-4 rounded border shadow-sm
             {% if message.tags == 'success' %}border-green-200 bg-green-50 text-green-900
-            {% elif message.tags == 'error' or message.tags == 'danger' %}border-red-200 bg-red-50 text-red-900
+            {% elif message.tags == 'error' or message.tags == 'danger' %}border-danger-200 bg-danger-50 text-danger-900
             {% elif message.tags == 'warning' %}border-yellow-200 bg-yellow-50 text-yellow-900
-            {% else %}border-sky-600 bg-sky-50 text-blue-900{% endif %}">
+            {% else %}border-info-600 bg-info-50 text-primary-900{% endif %}">
             <i data-lucide="{% if message.tags == 'success' %}circle-check{% elif message.tags == 'error' or message.tags == 'danger' %}circle-x{% elif message.tags == 'warning' %}triangle-alert{% else %}info{% endif %}" class="h-5 w-5 shrink-0"></i>
             <div class="flex-1">
                 <div class="font-semibold">{{ message.tags|title }}</div>
@@ -59,11 +59,11 @@
     {% endblock %}
 </main>
 
-    <div id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" hidden class="fixed inset-0 z-50 items-center justify-center bg-blue-950/40">
+    <div id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" hidden class="fixed inset-0 z-50 items-center justify-center bg-primary-950/40">
     <div role="document" class="flex flex-col mx-4 max-h-[90vh] w-full max-w-2xl bg-white rounded shadow-lg">
         <div class="flex shrink-0 items-baseline justify-between gap-4 px-6 py-4 border-b border-gray-200">
-            <h5 id="modalLabel" class="modal-title text-lg font-medium text-blue-950"></h5>
-            <button type="button" data-modal-close aria-label="Close" class="text-gray-500 hover:text-blue-950">
+            <h5 id="modalLabel" class="modal-title text-lg font-medium text-primary-950"></h5>
+            <button type="button" data-modal-close aria-label="Close" class="text-gray-500 hover:text-primary-950">
                 <i data-lucide="x" class="h-5 w-5"></i>
             </button>
         </div>

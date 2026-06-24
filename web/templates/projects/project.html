@@ -5,7 +5,7 @@
 {% block head_end %}{{ document_form.media }}{% endblock %}
 
 {% block content %}
-{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-blue-900 rounded-full" badge2="inline-flex items-center px-3 py-1 text-xs font-medium text-gray-700 bg-gray-200 rounded-full" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" add="inline-flex items-center justify-center h-9 w-9 text-white bg-blue-900 rounded-full hover:bg-blue-800" addsum="inline-flex items-center justify-center h-9 w-9 text-white bg-blue-900 rounded-full cursor-pointer list-none hover:bg-blue-800 [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 hidden mt-2 w-56 bg-white rounded border border-gray-200 shadow-lg group-open:block" item="block px-4 py-2 w-full text-left text-sm hover:bg-gray-50" title2="flex items-center gap-2 text-2xl font-light" %}
+{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-primary-900 rounded-full" badge2="inline-flex items-center px-3 py-1 text-xs font-medium text-gray-700 bg-gray-200 rounded-full" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" add="inline-flex items-center justify-center h-9 w-9 text-white bg-primary-900 rounded-full hover:bg-primary-800" addsum="inline-flex items-center justify-center h-9 w-9 text-white bg-primary-900 rounded-full cursor-pointer list-none hover:bg-primary-800 [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 hidden mt-2 w-56 bg-white rounded border border-gray-200 shadow-lg group-open:block" item="block px-4 py-2 w-full text-left text-sm hover:bg-gray-50" title2="flex items-center gap-2 text-2xl font-light" %}
     <div class="relative mt-4 p-8 rounded bg-gray-50">
         <span class="text-gray-500">Project</span>
         <h1 class="text-4xl font-light">{{ project.acronym }}</h1>
@@ -32,13 +32,13 @@
                     <dd>
                         {% if project.child_projects.all %}
                             {% for prj in project.child_projects.all %}
-                                <a class="text-blue-700 hover:underline" href="{% url 'project' pk=prj.pk %}">{{ prj }}</a>
+                                <a class="text-primary-700 hover:underline" href="{% url 'project' pk=prj.pk %}">{{ prj }}</a>
                             {% endfor %}
                         {% else %}-{% endif %}
                     </dd>
                     <dt class="font-semibold">Umbrella project</dt>
                     <dd>
-                        {% if project.umbrella_project %}<a class="text-blue-700 hover:underline" href="{% url 'project' pk=project.umbrella_project.pk %}">{{ project.umbrella_project }}</a>{% else %}-{% endif %}
+                        {% if project.umbrella_project %}<a class="text-primary-700 hover:underline" href="{% url 'project' pk=project.umbrella_project.pk %}">{{ project.umbrella_project }}</a>{% else %}-{% endif %}
                     </dd>
                 </dl>
             </div>
@@ -76,12 +76,12 @@
                    href="{% url 'permission_project' pk=project.id %}"><i data-lucide="eye" class="h-5 w-5"></i></a>
             {% endif %}
             {% if can_edit %}
-                <a class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-blue-900 shadow hover:bg-blue-800"
+                <a class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-primary-900 shadow hover:bg-primary-800"
                    title="Edit project"
                    href="{% url 'project_edit' pk=project.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
                 {% if not project.is_published %}
                     <a id="deleteproject"
-                       class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-red-900 shadow hover:bg-red-800"
+                       class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-danger-900 shadow hover:bg-danger-800"
                        title="Delete project"
                        data-toggle="modal"
                        data-target="#modal"
@@ -106,9 +106,9 @@
                 <h2 class="{{ title2 }}"><i data-lucide="shield" class="h-6 w-6"></i> Ethics</h2>
                 <dl>
                     <dt class="font-semibold">Has national approval?</dt>
-                    <dd>{{ project.has_cner|yesno }} {% if project.cner_notes %}<a class="text-blue-700 hover:underline" href="#" data-toggle="modal" data-target="#modal" data-modal-content="{{ project.cner_notes }}" data-modal-title="National ethics approval notes">(view notes)</a>{% endif %}</dd>
+                    <dd>{{ project.has_cner|yesno }} {% if project.cner_notes %}<a class="text-primary-700 hover:underline" href="#" data-toggle="modal" data-target="#modal" data-modal-content="{{ project.cner_notes }}" data-modal-title="National ethics approval notes">(view notes)</a>{% endif %}</dd>
                     <dt class="font-semibold">Has institutional approval?</dt>
-                    <dd>{{ project.has_erp|yesno }} {% if project.erp_notes %}<a class="text-blue-700 hover:underline" href="#" data-toggle="modal" data-target="#modal" data-modal-content="{{ project.erp_notes }}" data-modal-title="Institutional ethics approval notes">(view notes)</a>{% endif %}</dd>
+                    <dd>{{ project.has_erp|yesno }} {% if project.erp_notes %}<a class="text-primary-700 hover:underline" href="#" data-toggle="modal" data-target="#modal" data-modal-content="{{ project.erp_notes }}" data-modal-title="Institutional ethics approval notes">(view notes)</a>{% endif %}</dd>
                 </dl>
             </div>
         </div>
@@ -148,9 +148,9 @@
                 <ul class="mt-2 divide-y divide-gray-200 rounded border border-gray-200">
                     {% for contact in project.contacts.all %}
                         {% if can_edit %}
-                            <li class="px-3 py-2 deletable" data-delete-title="Remove contact from project" data-url="{% url 'remove_contact_from_project' pk=project.id contact_id=contact.pk %}"><a class="text-blue-700 hover:underline" href="{% url 'contact' pk=contact.id %}">{{ contact.full_name }}</a></li>
+                            <li class="px-3 py-2 deletable" data-delete-title="Remove contact from project" data-url="{% url 'remove_contact_from_project' pk=project.id contact_id=contact.pk %}"><a class="text-primary-700 hover:underline" href="{% url 'contact' pk=contact.id %}">{{ contact.full_name }}</a></li>
                         {% else %}
-                            <li class="px-3 py-2"><a class="text-blue-700 hover:underline" href="{% url 'contact' pk=contact.id %}">{{ contact.full_name }}</a></li>
+                            <li class="px-3 py-2"><a class="text-primary-700 hover:underline" href="{% url 'contact' pk=contact.id %}">{{ contact.full_name }}</a></li>
                         {% endif %}
                     {% endfor %}
                 </ul>
@@ -182,7 +182,7 @@
                             {% for dataset in project.datasets.all %}
                                 <tr class="odd:bg-gray-50">
                                     <td class="{{ td }}">{{ dataset.elu_accession|default:"" }}</td>
-                                    <td class="{{ td }}"><a class="text-blue-700 hover:underline" href="{% url 'dataset' pk=dataset.id %}">{{ dataset.title }}</a></td>
+                                    <td class="{{ td }}"><a class="text-primary-700 hover:underline" href="{% url 'dataset' pk=dataset.id %}">{{ dataset.title }}</a></td>
                                     <td class="{{ td }}">
                                         {% for custodian in dataset.local_custodians.all %}
                                             <span class="{{ badge2 }}">{{ custodian }}</span>
@@ -198,7 +198,7 @@
                 </div>
             {% else %}
                 {% if can_edit %}
-                    <p class="mt-4 text-center text-red-700"><br/><em>Project is empty!</em></p>
+                    <p class="mt-4 text-center text-danger-700"><br/><em>Project is empty!</em></p>
                     <div class="mt-2 flex items-center justify-center gap-2 text-gray-500"><p>Click here to create a dataset</p><i data-lucide="arrow-right" class="h-5 w-5"></i></div>
                 {% endif %}
             {% endif %}
@@ -233,7 +233,7 @@
                         <tbody>
                             {% for contract in project.contracts.all %}
                                 <tr class="odd:bg-gray-50">
-                                    <td class="{{ td }}"><a class="text-blue-700 hover:underline" href="{% url 'contract' pk=contract.id %}">{{ contract.name|default:contract }}</a></td>
+                                    <td class="{{ td }}"><a class="text-primary-700 hover:underline" href="{% url 'contract' pk=contract.id %}">{{ contract.name|default:contract }}</a></td>
                                     <td class="{{ td }}">{{ contract.comments|default:"-" }}</td>
                                     <td class="{{ td }}">
                                         {% if contract.partners.count > 2 %}

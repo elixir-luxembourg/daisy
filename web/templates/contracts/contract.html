@@ -5,7 +5,7 @@
 {% block head_end %}{{ document_form.media }}{% endblock %}
 
 {% block content %}
-{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-blue-900 rounded-full" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" add="inline-flex items-center justify-center h-9 w-9 text-white bg-blue-900 rounded-full hover:bg-blue-800" addsum="inline-flex items-center justify-center h-9 w-9 text-white bg-blue-900 rounded-full hover:bg-blue-800 cursor-pointer list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 mt-2 hidden w-56 bg-white rounded border border-gray-200 shadow-lg group-open:block" item="block w-full px-4 py-2 text-left text-sm hover:bg-gray-50" editc="h-5 w-5 cursor-pointer text-blue-700" delc="h-5 w-5 cursor-pointer text-red-700" title2="flex items-center gap-2 text-2xl font-light" %}
+{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-primary-900 rounded-full" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" add="inline-flex items-center justify-center h-9 w-9 text-white bg-primary-900 rounded-full hover:bg-primary-800" addsum="inline-flex items-center justify-center h-9 w-9 text-white bg-primary-900 rounded-full hover:bg-primary-800 cursor-pointer list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 mt-2 hidden w-56 bg-white rounded border border-gray-200 shadow-lg group-open:block" item="block w-full px-4 py-2 text-left text-sm hover:bg-gray-50" editc="h-5 w-5 cursor-pointer text-primary-700" delc="h-5 w-5 cursor-pointer text-danger-700" title2="flex items-center gap-2 text-2xl font-light" %}
     <div class="relative mt-4 p-8 rounded bg-gray-50">
         <span class="text-gray-500">Contract</span>
         <h1 class="text-4xl font-light">{{ contract }}</h1>
@@ -14,7 +14,7 @@
                 <dl>
                     {% if contract.project %}
                         <dt class="font-semibold">Project:</dt>
-                        <dd><a class="text-blue-700 hover:underline" href="{% url 'project' pk=contract.project.id %}">{{ contract.project }}</a></dd>
+                        <dd><a class="text-primary-700 hover:underline" href="{% url 'project' pk=contract.project.id %}">{{ contract.project }}</a></dd>
                     {% endif %}
                     <dt class="font-semibold">Local custodians</dt>
                     <dd class="flex flex-wrap gap-1">
@@ -33,12 +33,12 @@
         </div>
         <div class="absolute top-4 right-4 flex gap-2">
             {% if can_edit %}
-                <a class="inline-flex items-center justify-center h-10 w-10 text-white bg-blue-900 rounded-full shadow hover:bg-blue-800"
+                <a class="inline-flex items-center justify-center h-10 w-10 text-white bg-primary-900 rounded-full shadow hover:bg-primary-800"
                    title="Edit contract"
                    href="{% url 'contract_edit' pk=contract.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
                 {% if not contract.is_published %}
                     <a id="deletecontract"
-                       class="inline-flex items-center justify-center h-10 w-10 text-white bg-red-900 rounded-full shadow hover:bg-red-800"
+                       class="inline-flex items-center justify-center h-10 w-10 text-white bg-danger-900 rounded-full shadow hover:bg-danger-800"
                        title="Delete contract"
                        data-toggle="modal" data-target="#modal"
                        data-ajax-url="{% url 'contract_delete' pk=contract.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>
@@ -70,7 +70,7 @@
                     <tbody>
                     {% for partner_role in contract.partners_roles.all %}
                         <tr class="odd:bg-gray-50">
-                            <td class="{{ td }}"><a class="text-blue-700 hover:underline" href="{% url 'partner' pk=partner_role.partner_id %}">{{ partner_role.partner.name }}</a></td>
+                            <td class="{{ td }}"><a class="text-primary-700 hover:underline" href="{% url 'partner' pk=partner_role.partner_id %}">{{ partner_role.partner.name }}</a></td>
                             <td class="{{ td }}">{{ partner_role.comments }}</td>
                             <td class="{{ td }}">{{ partner_role.roles.all|join:", " }}</td>
                             <td class="{{ td }}">
@@ -137,7 +137,7 @@
                 <ul class="mt-2 divide-y divide-gray-200 rounded border border-gray-200">
                     {% for share in contract.shares.all %}
                         <li class="grid gap-2 px-3 py-2 md:grid-cols-2">
-                            <p><a class="text-blue-700 hover:underline" href="{% url 'dataset' pk=share.dataset.pk %}">{{ share.dataset }}</a></p>
+                            <p><a class="text-primary-700 hover:underline" href="{% url 'dataset' pk=share.dataset.pk %}">{{ share.dataset }}</a></p>
                             <p>{{ share.share_notes }}</p>
                         </li>
                     {% endfor %}
@@ -164,7 +164,7 @@
             {% if dacs %}
                 <ul class="py-1 text-left">
                     {% for dac in dacs %}
-                        <li><a class="text-blue-700 hover:underline" href="{% url 'dac' pk=dac.id %}">{{ dac.title }}</a></li>
+                        <li><a class="text-primary-700 hover:underline" href="{% url 'dac' pk=dac.id %}">{{ dac.title }}</a></li>
                     {% endfor %}
                 </ul>
             {% endif %}

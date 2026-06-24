@@ -3,7 +3,7 @@
 {% block title %}{{ dac.title }} | DAISY{% endblock %}
 
 {% block content %}
-{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-blue-900 rounded-full" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" add="inline-flex items-center justify-center h-9 w-9 text-white bg-blue-900 rounded-full hover:bg-blue-800" delc="h-5 w-5 cursor-pointer text-red-700" title2="text-2xl font-light" %}
+{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-primary-900 rounded-full" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" add="inline-flex items-center justify-center h-9 w-9 text-white bg-primary-900 rounded-full hover:bg-primary-800" delc="h-5 w-5 cursor-pointer text-danger-700" title2="text-2xl font-light" %}
     <div class="relative mt-4 p-8 rounded bg-gray-50">
         <span class="text-gray-500">Data Access Committee (DAC)</span>
         <h1 class="text-4xl font-light">{{ dac.title }}</h1>
@@ -15,9 +15,9 @@
                         <dd>{{ dac.description }}</dd>
                     {% endif %}
                     <dt class="font-semibold">Contract</dt>
-                    <dd>{% if dac.contract %}<a class="text-blue-700 hover:underline" href="{% url 'contract' pk=dac.contract.pk %}">{{ dac.contract }}</a>{% else %}-{% endif %}</dd>
+                    <dd>{% if dac.contract %}<a class="text-primary-700 hover:underline" href="{% url 'contract' pk=dac.contract.pk %}">{{ dac.contract }}</a>{% else %}-{% endif %}</dd>
                     <dt class="font-semibold">Project</dt>
-                    <dd>{% if dac.contract.project %}<a class="text-blue-700 hover:underline" href="{% url 'project' pk=dac.contract.project.pk %}">{{ dac.contract.project }}</a>{% else %}-{% endif %}</dd>
+                    <dd>{% if dac.contract.project %}<a class="text-primary-700 hover:underline" href="{% url 'project' pk=dac.contract.project.pk %}">{{ dac.contract.project }}</a>{% else %}-{% endif %}</dd>
                     <dt class="font-semibold">Local custodians</dt>
                     <dd class="flex flex-wrap gap-1">
                         {% for local_custodian in local_custodians %}
@@ -37,7 +37,7 @@
         </div>
         <div class="absolute top-4 right-4 flex gap-2">
             {% if can_edit %}
-                <a class="inline-flex items-center justify-center h-10 w-10 text-white bg-blue-900 rounded-full shadow hover:bg-blue-800"
+                <a class="inline-flex items-center justify-center h-10 w-10 text-white bg-primary-900 rounded-full shadow hover:bg-primary-800"
                    title="Edit DAC"
                    href="{% url 'dac_edit' pk=dac.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
             {% endif %}
@@ -76,7 +76,7 @@
                         <tbody>
                         {% for member in memberships %}
                             <tr class="odd:bg-gray-50">
-                                <td class="{{ td }}"><a class="text-blue-700 hover:underline" href="{% url 'contact' pk=member.contact.id %}">{{ member.contact.full_name }}</a></td>
+                                <td class="{{ td }}"><a class="text-primary-700 hover:underline" href="{% url 'contact' pk=member.contact.id %}">{{ member.contact.full_name }}</a></td>
                                 <td class="{{ td }}">{{ member.contact.email }}</td>
                                 <td class="{{ td }}">
                                     <span class="flex flex-wrap gap-1">
@@ -123,7 +123,7 @@
             {% if datasets %}
                 <ul class="py-1 text-left">
                     {% for dataset in datasets %}
-                        <li><a class="text-blue-700 hover:underline" href="{% url 'dataset' pk=dataset.id %}">{{ dataset.title }}</a></li>
+                        <li><a class="text-primary-700 hover:underline" href="{% url 'dataset' pk=dataset.id %}">{{ dataset.title }}</a></li>
                     {% endfor %}
                 </ul>
             {% endif %}

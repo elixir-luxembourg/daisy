@@ -7,17 +7,17 @@
     {% elif field.field.widget.input_type == 'radio' %}
         {% include '_includes/radio.html' %}
     {% else %}
-        <label for="{{ field.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900">{{ field.label }}{% if field.field.required %} <span class="text-red-600">*</span>{% endif %}</label>
+        <label for="{{ field.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900">{{ field.label }}{% if field.field.required %} <span class="text-danger-600">*</span>{% endif %}</label>
         {% if form.is_bound and field.errors %}
             <div class="grid grid-cols-1">
-                {% render_field field class+=base class+="col-start-1 row-start-1 pr-10 text-red-900 outline-red-300 placeholder:text-red-300 focus:outline-red-600" aria-invalid="true" aria-describedby=errid %}
-                <i data-lucide="circle-alert" class="pointer-events-none col-start-1 row-start-1 mr-3 h-5 w-5 self-center justify-self-end text-red-500" aria-hidden="true"></i>
+                {% render_field field class+=base class+="col-start-1 row-start-1 pr-10 text-danger-900 outline-danger-300 placeholder:text-danger-300 focus:outline-danger-600" aria-invalid="true" aria-describedby=errid %}
+                <i data-lucide="circle-alert" class="pointer-events-none col-start-1 row-start-1 mr-3 h-5 w-5 self-center justify-self-end text-danger-500" aria-hidden="true"></i>
             </div>
-            <div id="{{ errid }}" role="alert" class="mt-2 text-sm text-red-600">
+            <div id="{{ errid }}" role="alert" class="mt-2 text-sm text-danger-600">
                 {% for error in field.errors %}{{ error }}{% endfor %}
             </div>
         {% else %}
-            {% render_field field class+=base class+="outline-gray-300 focus:outline-blue-900" %}
+            {% render_field field class+=base class+="outline-gray-300 focus:outline-primary-900" %}
         {% endif %}
     {% endif %}
 

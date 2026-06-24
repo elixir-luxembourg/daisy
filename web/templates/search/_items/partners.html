@@ -4,7 +4,7 @@
         <div class="rounded border border-gray-200 bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="text-2xl font-light">
-                    <a href="{% url 'partner' pk=partner.pk %}" class="inline-flex items-center gap-1 text-blue-700 hover:underline">
+                    <a href="{% url 'partner' pk=partner.pk %}" class="inline-flex items-center gap-1 text-primary-700 hover:underline">
                       {{ partner.name }} {% if partner.acronym %}({{ partner.acronym }}){% endif %}
                       {% if partner.is_clinical %}
                         <i data-lucide="hospital" class="h-5 w-5"></i><span class="sr-only">Clinical</span>
