@@ -43,6 +43,7 @@ SESSION_COOKIE_SECURE = env.bool(
 )
 CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=(ENVIRONMENT != "local"))
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 LOGIN_REDIRECT_URL = env("LOGIN_REDIRECT_URL", default="dashboard")
 LOGIN_URL = env("LOGIN_URL", default="login")
@@ -212,7 +213,7 @@ HELPDESK_EMAIL = env("HELPDESK_EMAIL", default="support@example.com")
 
 LOGFILE_MAX_BYTES = env.int("LOGFILE_MAX_BYTES", default=16777216)  # 16MB
 LOG_DIR = env("LOG_DIR", default=os.path.join(BASE_DIR, "log"))
-LOG_LEVEL = env("LOG_LEVEL", default=("DEBUG" if DEBUG else "ERROR"))
+LOG_LEVEL = env("LOG_LEVEL", default=("DEBUG" if DEBUG else "INFO"))
 
 LOGGING = {
     "version": 1,
@@ -234,7 +235,6 @@ LOGGING = {
     "handlers": {
         "console": {
             "level": "DEBUG",
-            "filters": ["require_debug_true"],
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },

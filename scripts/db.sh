@@ -41,6 +41,13 @@ backup() {
 
     echo "Starting backup..."
 
+    if [[ "${BACKUP_DIR}" == "/" ]]; then
+        echo "ERROR: Refusing to operate on root BACKUP_DIR." >&2
+        exit 1
+    fi
+    echo "Removing old backups from: ${BACKUP_DIR}..."
+    rm -f "${BACKUP_DIR:?}/"backup_*.tar.gz
+
     # Create temporary backup directory
     mkdir -p "${temp_backup_dir}"
 

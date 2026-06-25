@@ -12,6 +12,17 @@ All environments use a single `docker-compose.yaml`. The image for `web`, `worke
 
 CI builds and pushes images via GitHub Actions — release tags → production image, PRs to `develop` → staging image.
 
+## scripts/update_app.sh
+
+Automates the full upgrade in one command: `git pull`, image swap in `.env`, container restart, migrations, static files, search index rebuild, and LDAP user import.
+
+```bash
+# Usage: bash scripts/update_app.sh [<version-tag>]
+bash scripts/update_app.sh pr-634    # deploy a PR build
+bash scripts/update_app.sh 1.12.0    # deploy a release
+bash scripts/update_app.sh           # deploy latest develop
+```
+
 ## Database Backup Before Upgrade
 
 Create a database backup before upgrading:
@@ -177,3 +188,25 @@ The settings is fully moved to environment files. Following steps are necessary 
 
 6. Continue with "Upgrade steps" above (Step 2) to apply migration and index update
 
+## Daisy 1.11.0 to 1.12.0
+
+### Static files bind-mount & host nginx
+
+Nginx now runs on the host (outside Docker Compose) and needs direct access to static files. The `statics` named volume is replaced with a host bind-mount controlled by `STATICFILES_DIR`.
+
+Set `STATICFILES_DIR` in `.env` to a path your host nginx can serve:
+
+```bash
+STATICFILES_DIR=/var/www/daisy/staticfiles
+```
+
+Then migrate the volume:
+
+```bash
+docker compose down
+docker volume rm daisy_statics
+docker compose up -d
+docker compose exec web python manage.py collectstatic --noinput
+```
+
+The `nginx` Docker Compose service is now opt-in (`--profile nginx`). Use your host nginx with the static files at `$STATICFILES_DIR`.

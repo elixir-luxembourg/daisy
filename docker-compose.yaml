@@ -23,10 +23,13 @@ services:
         <<: *app
         expose:
             - "5000"
+        ports:
+            - "127.0.0.1:5000:5000"  # host nginx only; not exposed publicly
         volumes:
-            - statics:/static
+            - ${STATICFILES_DIR:-./staticfiles}:/code/staticfiles
             - solrdata:/solr
             - medias:/code/medias
+            - ${LOG_VOLUME:-logs}:/code/log
         depends_on:
             db:
                 condition: service_healthy
@@ -34,7 +37,7 @@ services:
                 condition: service_healthy
             mq:
                 condition: service_healthy
-        command: gunicorn -w 2 -b :5000 --pid /code/gunicorn.pid elixir_daisy.wsgi
+        command: sh -c "gunicorn -w 2 -b :5000 --pid /code/gunicorn.pid --log-level $${GUNICORN_LOGLEVEL:-info} --access-logfile $${GUNICORN_ACCESS_LOG:-/dev/null} elixir_daisy.wsgi"
         healthcheck:
             test: ["CMD-SHELL", "curl --fail http://localhost:5000 || exit 1"]
             interval: 10s
@@ -61,12 +64,13 @@ services:
             timeout: 5s
             retries: 5
 
-    # Web Server Frontend (Nginx)
+    # Web Server Frontend (Nginx) — opt-in via: docker compose --profile nginx up
     nginx:
         build: ./docker/nginx
         restart: unless-stopped
+        profiles: ["nginx"]
         volumes:
-            - statics:/public/static:ro
+            - ${STATICFILES_DIR:-./staticfiles}:/public/static:ro
             - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
         ports:
             - "80:80"
@@ -194,10 +198,10 @@ services:
 
 volumes:
     pgdata:
-    statics:
     solrdata:
     backups:
     medias:
+    logs:
 
 networks:
     daisy_network:

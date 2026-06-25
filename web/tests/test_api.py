@@ -1,4 +1,5 @@
 from json import loads
+import pytest
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -21,6 +22,8 @@ from test.factories import (
 from core.constants import Permissions
 from core.models import DiseaseTerm
 from web.views.api import create_error_response, protect_api
+
+pytestmark = pytest.mark.django_db
 
 
 def test_create_error_response():

@@ -63,7 +63,7 @@ class Document(CoreModel, NotifyMixin):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
 
-    content = models.FileField(upload_to=get_file_name, blank=False)
+    content = models.FileField(upload_to=get_file_name, blank=False, max_length=255)
     content_url = models.URLField(verbose_name="Document Url", null=True, blank=True)
     content_notes = models.TextField(
         verbose_name="Document Notes", blank=True, null=True

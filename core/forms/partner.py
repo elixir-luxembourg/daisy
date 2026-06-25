@@ -7,7 +7,7 @@ class PartnerForm(ModelForm):
     class Meta:
         model = Partner
         fields = "__all__"
-        exclude = ["is_published"]
+        exclude = ["_is_published"]
 
         # widgets = {
         #     'elu_accession': forms.HiddenInput()
