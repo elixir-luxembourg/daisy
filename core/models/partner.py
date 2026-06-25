@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.apps import apps
 from django.db import models
+from django.utils.module_loading import import_string
 from django_countries.fields import CountryField
 
 from model_utils import Choices
@@ -133,6 +134,20 @@ class Partner(CoreTrackedDBModel):
             return filtered_dict
 
         return base_dict
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.elu_accession:
+            generate_id_function_path = getattr(settings, "IDSERVICE_FUNCTION", None)
+            if generate_id_function_path:
+                generate_id_function = import_string(generate_id_function_path)
+                self.elu_accession = generate_id_function(self)
+
+            if not self.elu_accession:
+                raise ValueError(
+                    "Failed to generate 'elu_accession', object will not be saved."
+                )
+
+        super().save(*args, **kwargs)
 
     def serialize_to_export(self):
         d = self.to_dict()
