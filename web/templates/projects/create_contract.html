@@ -4,12 +4,12 @@
 {% block title %}Create contract | DAISY{% endblock %}
 
 {% block content %}
-    <div class="mt-4 p-8 rounded bg-gray-50">
-        <h1 class="text-4xl font-light">{% block content_title %}Project{% endblock %}</h1>
+    <div class="mt-4">
+        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{% block content_title %}Project{% endblock %}</h1>
     </div>
-    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
         <div class="p-4">
-            <h2 class="text-2xl font-light">{% block card_title %}Create contract{% endblock %}</h2>
+            <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">{% block card_title %}Create contract{% endblock %}</h2>
             <div class="mt-2">
                 {% include '_includes/forms.html' %}
             </div>

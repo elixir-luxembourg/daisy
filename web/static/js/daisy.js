@@ -32,9 +32,9 @@ function initFormsets(elements) {
     }
     elements.formset({
         addText: '<span class="inline-flex items-center gap-1"><i data-lucide="plus" class="h-5 w-5"></i><span>Add new</span></span>',
-        deleteText: '<i data-lucide="trash-2" class="h-5 w-5 text-red-600"></i>',
-        addCssClass: 'add-row inline-flex items-center gap-1 mt-3 text-sm font-medium text-blue-900 hover:text-blue-700',
-        deleteCssClass: 'delete-row inline-flex cursor-pointer text-red-600 hover:text-red-700'
+        deleteText: '<i data-lucide="trash-2" class="h-5 w-5 text-danger-600"></i>',
+        addCssClass: 'add-row inline-flex items-center gap-1 mt-3 text-sm font-medium text-primary-900 hover:text-primary-700',
+        deleteCssClass: 'delete-row inline-flex cursor-pointer text-danger-600 hover:text-danger-700'
     });
     if (window.lucide) {
         window.lucide.createIcons();
@@ -77,15 +77,22 @@ function getModalTitle(modal) {
     return modal.find(".modal-title, #modalLabel").first();
 }
 
+// Error state swaps the input's border/ring utilities (matching the
+// expanded form-input strings rendered by _includes/field.html).
+var INPUT_NORMAL_CLASSES = "border-gray-300 focus:border-primary-900 focus:ring-primary-900";
+var INPUT_ERROR_CLASSES = "border-danger-900 focus:border-danger-900 focus:ring-danger-900";
+
 function clearModalErrors(modal) {
     modal.find(".invalid-feedback, .ajax-field-error").remove();
     modal.find(".is-invalid").removeClass("is-invalid");
-    modal.find("[name]").removeClass("border-red-500 focus:border-red-500 focus:ring-red-500");
+    modal.find("[name].border-danger-900")
+        .removeClass(INPUT_ERROR_CLASSES)
+        .addClass(INPUT_NORMAL_CLASSES);
 }
 
 function addFieldError(input, error) {
-    input.addClass("border-red-500 focus:border-red-500 focus:ring-red-500");
-    input.after($('<div class="invalid-feedback ajax-field-error mt-1 text-sm text-red-600">' + error + '</div>'));
+    input.removeClass(INPUT_NORMAL_CLASSES).addClass(INPUT_ERROR_CLASSES);
+    input.after($('<div class="invalid-feedback ajax-field-error mt-1 text-sm text-danger-900">' + error + '</div>'));
 }
 
 function showModalErrors(modalForm, errors) {
@@ -94,7 +101,7 @@ function showModalErrors(modalForm, errors) {
         if (name === "__all__") {
             messages.forEach(function (error) {
                 modalForm.prepend(
-                    $('<div class="invalid-feedback ajax-field-error mb-3 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">' + error + '</div>')
+                    $('<div role="alert" class="invalid-feedback ajax-field-error relative mb-4 flex items-start gap-3 rounded-xl border border-danger-900 bg-danger-50 px-4 py-3 text-primary-900">' + error + '</div>')
                 );
             });
             return;
@@ -281,7 +288,7 @@ $(document).ready(function () {
 
     $(".deletable").hover(function () {
         const url_delete = $(this).data("url");
-        const delete_link = $('<i data-lucide="trash-2" class="delete-button ml-2 inline-flex h-4 w-4 cursor-pointer align-middle text-red-600"></i>').attr("data-url", url_delete);
+        const delete_link = $('<i data-lucide="trash-2" class="delete-button ml-2 inline-flex h-4 w-4 cursor-pointer align-middle text-danger-600"></i>').attr("data-url", url_delete);
         const delete_title = $(this).data("delete-title");
         if (delete_title){
             delete_link.attr("title", delete_title);

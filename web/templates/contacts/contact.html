@@ -3,10 +3,10 @@
 {% block title %}{{ contact.full_name }} | DAISY{% endblock %}
 
 {% block content %}
-{% with badge="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-primary-900 rounded-full" th="px-3 py-2 text-left font-semibold" td="px-3 py-2 border-t border-gray-200" title2="text-2xl font-light" %}
-    <div class="relative mt-4 p-8 rounded bg-gray-50">
-        <span class="text-gray-500">Contact</span>
-        <h1 class="text-4xl font-light">{{ contact.full_name }}</h1>
+{% with th="border border-gray-200 px-3 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-3 py-2 align-top text-primary-900" title2="font-display text-2xl font-medium tracking-tight text-primary-900" %}
+    <div class="relative mt-4">
+        <p class="font-display text-sm font-semibold text-primary-900">Contact</p>
+        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ contact.full_name }}</h1>
         <div class="grid gap-6 md:grid-cols-2">
             <div>
                 <dl>
@@ -18,7 +18,7 @@
                     {% if contact.partners %}
                         <dd class="flex flex-wrap gap-1">
                             {% for partner in contact.partners.all %}
-                                <span class="{{ badge }}">{{ partner.name }}</span>
+                                <span class="inline-flex items-center rounded-md border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ partner.name }}</span>
                             {% endfor %}
                         </dd>
                     {% endif %}
@@ -51,11 +51,11 @@
 
     {#    Contracts    #}
     {% if contact.partners_roles.all %}
-        <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+        <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="{{ title2 }}">Contracts with this contact</h2>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
+                    <table class="min-w-full border-collapse text-sm lg:text-base">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="{{ th }}">Contract</th>
@@ -88,7 +88,7 @@
 
     {#    DACs   #}
     {% if dacs %}
-        <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+        <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="{{ title2 }}">DACs the contact is member of</h2>
                 <ul class="py-1 text-left">

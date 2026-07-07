@@ -1,28 +1,28 @@
 {% load widget_tweaks %}
 
-{% with base="block w-full px-3 py-2 text-sm text-gray-900 rounded-md bg-white outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2" errid=field.id_for_label|add:"-error" %}
+{% with errid=field.id_for_label|add:"-error" %}
 <div class="mb-4">
     {% if field.field.widget.input_type == 'checkbox' %}
         {% include '_includes/checkbox.html' %}
     {% elif field.field.widget.input_type == 'radio' %}
         {% include '_includes/radio.html' %}
     {% else %}
-        <label for="{{ field.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900">{{ field.label }}{% if field.field.required %} <span class="text-danger-600">*</span>{% endif %}</label>
+        <label for="{{ field.id_for_label }}" class="mb-1 block text-sm font-medium text-primary-900">{{ field.label }}{% if field.field.required %} <span class="ml-0.5 text-danger-900">*</span>{% endif %}</label>
         {% if form.is_bound and field.errors %}
             <div class="grid grid-cols-1">
-                {% render_field field class+=base class+="col-start-1 row-start-1 pr-10 text-danger-900 outline-danger-300 placeholder:text-danger-300 focus:outline-danger-600" aria-invalid="true" aria-describedby=errid %}
-                <i data-lucide="circle-alert" class="pointer-events-none col-start-1 row-start-1 mr-3 h-5 w-5 self-center justify-self-end text-danger-500" aria-hidden="true"></i>
+                {% render_field field class+="block w-full rounded-lg border border-danger-900 bg-white px-3 py-2 shadow-sm text-primary-900 focus:border-danger-900 focus:outline-none focus:ring-1 focus:ring-danger-900 col-start-1 row-start-1 pr-10" aria-invalid="true" aria-describedby=errid %}
+                <i data-lucide="circle-alert" class="pointer-events-none col-start-1 row-start-1 mr-3 h-5 w-5 self-center justify-self-end text-danger-900" aria-hidden="true"></i>
             </div>
-            <div id="{{ errid }}" role="alert" class="mt-2 text-sm text-danger-600">
+            <div id="{{ errid }}" role="alert" class="mt-1 text-sm text-danger-900">
                 {% for error in field.errors %}{{ error }}{% endfor %}
             </div>
         {% else %}
-            {% render_field field class+=base class+="outline-gray-300 focus:outline-primary-900" %}
+            {% render_field field class+="form-input" %}
         {% endif %}
     {% endif %}
 
     {% if field.help_text %}
-        <p class="mt-2 text-sm text-gray-500">{{ field.help_text }}</p>
+        <p class="mt-1 text-xs leading-relaxed text-gray-500">{{ field.help_text }}</p>
     {% endif %}
 </div>
 {% endwith %}

@@ -1,0 +1,125 @@
+/*!
+ * @elixir-lu/ui — design tokens
+ * Tailwind CSS v4 source. Two tiers:
+ *   1. Palette tier  — raw UNI/LCSB brand values as plain custom properties.
+ *                      NEVER reference these directly in app templates.
+ *   2. Semantic tier — `@theme` block; this is what Tailwind generates
+ *                      utilities from (bg-primary-900, text-danger-900, …).
+ *                      Apps override the semantic→palette mapping in their own
+ *                      CSS entry (e.g. DAISY remaps primary → LCSB).
+ *
+ * Consumption: this file must be processed by Tailwind, and the Tailwind
+ * framework must be loaded FIRST in the same compilation (the consumer's CSS /
+ * tailwindcss style block must begin with the tailwindcss import). With the
+ * browser build (no build step) inline this file's contents into a
+ * `<style type="text/tailwindcss">` block, after that import. See README.
+ * @font-face lives in `fonts.css` (plain CSS — load via <link>).
+ */
+
+/* ───────────────────────────── Palette tier ───────────────────────────── */
+:root {
+  /* UNI Blue — foreground brand (headings, links, primary fills). 900 = UNI 100%. */
+  --color-uni-blue-50:  #e9ebed;
+  --color-uni-blue-100: #d2d6da;
+  --color-uni-blue-200: #bcc2c8;
+  --color-uni-blue-300: #a5aeb5;
+  --color-uni-blue-400: #8f9aa3;
+  --color-uni-blue-500: #788590;
+  --color-uni-blue-600: #62717e;
+  --color-uni-blue-700: #4b5d6b;
+  --color-uni-blue-800: #354859;
+  --color-uni-blue-900: #1e3446;
+  --color-uni-blue-950: #142f3f; /* dark surface (footer) */
+
+  /* UNI Red — attention: required fields, errors, logo dot. 900 = UNI 100%. */
+  --color-uni-red-50:  #fcecea;
+  --color-uni-red-100: #f9d8d5;
+  --color-uni-red-200: #f6c5c0;
+  --color-uni-red-300: #f3b1ab;
+  --color-uni-red-400: #f09e97;
+  --color-uni-red-500: #ed8a82;
+  --color-uni-red-600: #ea776d;
+  --color-uni-red-700: #e76358;
+  --color-uni-red-800: #e45043;
+  --color-uni-red-900: #e13c2e;
+  --color-uni-red-950: #e13c2e; /* same source value as 900 */
+
+  /* LCSB Sky — centre/entity colour, info surfaces. 900 = LCSB 100%. */
+  /* Source has 4 tints; intermediate steps repeat them (confirm w/ brand guide). */
+  --color-lcsb-sky-50:  #e7f5fc;
+  --color-lcsb-sky-100: #e7f5fc;
+  --color-lcsb-sky-200: #e7f5fc;
+  --color-lcsb-sky-300: #d7effb;
+  --color-lcsb-sky-400: #d7effb;
+  --color-lcsb-sky-500: #c7e8f9;
+  --color-lcsb-sky-600: #c7e8f9;
+  --color-lcsb-sky-700: #c7e8f9;
+  --color-lcsb-sky-800: #afdef6;
+  --color-lcsb-sky-900: #afdef6;
+  --color-lcsb-sky-950: #afdef6;
+
+  /* Accent — single-step amber (link underlines, decorative motif). */
+  --color-accent-amber: #f6931d;
+}
+
+/* ───────────────────────────── Semantic tier ──────────────────────────── */
+/* Defaults below map the catalog identity (primary → UNI Blue). Apps may
+   override any --color-* / --font-* here in a later cascade layer.
+   `static` forces every token to be emitted as a CSS custom property even if no
+   utility references it — so overrides and JS can always rely on them. */
+@theme static {
+  /* Typography */
+  --font-sans:
+    "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-body:
+    "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Barlow Condensed", "Arial Black", Arial, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* primary → UNI Blue */
+  --color-primary-50:  var(--color-uni-blue-50);
+  --color-primary-100: var(--color-uni-blue-100);
+  --color-primary-200: var(--color-uni-blue-200);
+  --color-primary-300: var(--color-uni-blue-300);
+  --color-primary-400: var(--color-uni-blue-400);
+  --color-primary-500: var(--color-uni-blue-500);
+  --color-primary-600: var(--color-uni-blue-600);
+  --color-primary-700: var(--color-uni-blue-700);
+  --color-primary-800: var(--color-uni-blue-800);
+  --color-primary-900: var(--color-uni-blue-900);
+  --color-primary-950: var(--color-uni-blue-950);
+
+  /* danger → UNI Red */
+  --color-danger-50:  var(--color-uni-red-50);
+  --color-danger-100: var(--color-uni-red-100);
+  --color-danger-200: var(--color-uni-red-200);
+  --color-danger-300: var(--color-uni-red-300);
+  --color-danger-400: var(--color-uni-red-400);
+  --color-danger-500: var(--color-uni-red-500);
+  --color-danger-600: var(--color-uni-red-600);
+  --color-danger-700: var(--color-uni-red-700);
+  --color-danger-800: var(--color-uni-red-800);
+  --color-danger-900: var(--color-uni-red-900);
+  --color-danger-950: var(--color-uni-red-950);
+
+  /* info → LCSB Sky */
+  --color-info-50:  var(--color-lcsb-sky-50);
+  --color-info-100: var(--color-lcsb-sky-100);
+  --color-info-200: var(--color-lcsb-sky-200);
+  --color-info-300: var(--color-lcsb-sky-300);
+  --color-info-400: var(--color-lcsb-sky-400);
+  --color-info-500: var(--color-lcsb-sky-500);
+  --color-info-600: var(--color-lcsb-sky-600);
+  --color-info-700: var(--color-lcsb-sky-700);
+  --color-info-800: var(--color-lcsb-sky-800);
+  --color-info-900: var(--color-lcsb-sky-900);
+  --color-info-950: var(--color-lcsb-sky-950);
+
+  /* accent (single step) */
+  --color-accent: var(--color-accent-amber);
+
+  /* text/icon colour to use on a primary-filled surface (WCAG: white on
+     primary-900 #1e3446 ≈ 12.3:1). Override per app when primary changes. */
+  --color-on-primary: #ffffff;
+}

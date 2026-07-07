@@ -1,22 +1,21 @@
-{% with badge="inline-flex items-center ml-1 mb-1 px-2.5 py-0.5 text-xs font-medium rounded-full" %}
 {% for dataset in data.datasets %}
     <div class="mb-4">
-        <div class="rounded border border-gray-200 bg-white shadow-sm">
+        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div class="p-4">
-                <h2 class="text-2xl font-light">
+                <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">
                   <a href="{% url 'dataset' pk=dataset.pk %}" class="text-primary-700 hover:underline">{{ dataset.title }}</a>
                 </h2>
                 <ul class="py-1 text-left">
                     <li class="flex items-center"><strong class="mr-1">Published:</strong> {{ dataset.is_published | yesno }}</li>
                     <li><strong>Datatypes:</strong>
                         {% for datatype in dataset.data_types %}
-                            <span class="{{ badge }} bg-gray-200 text-gray-800">{{ datatype }}</span>
+                            <span class="inline-flex items-center rounded-md border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700 ml-1 mb-1">{{ datatype }}</span>
                         {% endfor %}
                     </li>
                     {% if dataset.local_custodians %}
                         <li><strong>Local custodians:</strong>
                             {% for local_custodian in dataset.local_custodians %}
-                                <span class="{{ badge }} bg-primary-900 text-white">{{ local_custodian }}</span>
+                                <span class="inline-flex items-center rounded-md bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary ml-1 mb-1">{{ local_custodian }}</span>
                             {% endfor %}
                         </li>
                     {% endif %}
@@ -28,4 +27,3 @@
 {% empty %}
     {% include "search/_items/no_results.html" %}
 {% endfor %}
-{% endwith %}

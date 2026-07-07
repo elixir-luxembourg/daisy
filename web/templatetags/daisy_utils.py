@@ -149,24 +149,42 @@ class FacetLinkNode(Node):
         )
 
         # facets are multi-select: each click toggles one value, several can stay active
-        icon = "square"
-        text_class = "text-gray-700"
+        row_class = (
+            "group -mx-2 flex items-center gap-2 rounded-md px-2 py-1.5 text-sm "
+            "text-primary-900 transition-colors hover:bg-gray-50"
+        )
+        check_class = (
+            "flex h-4 w-4 shrink-0 items-center justify-center rounded-md border "
+            "border-gray-200 bg-white transition-colors group-hover:border-primary-900"
+        )
+        check_html = ""
         state_label = ""
         if is_present:
-            icon = "square-check"
-            text_class = "font-semibold text-blue-950"
+            row_class = (
+                "group -mx-2 flex items-center gap-2 rounded-md bg-info-50 px-2 py-1.5 "
+                "text-sm text-primary-900 transition-colors hover:bg-info-100"
+            )
+            check_class = (
+                "flex h-4 w-4 shrink-0 items-center justify-center rounded-md border "
+                "border-primary-900 bg-primary-900 transition-colors"
+            )
+            check_html = format_html(
+                '<i data-lucide="check" class="h-3 w-3 text-white" aria-hidden="true"></i>'
+            )
             state_label = format_html('<span class="sr-only">, selected</span>')
 
         return format_html(
-            '<li><a href="{}" class="flex items-center gap-2 -mx-2 px-2 min-h-9 text-sm {} rounded hover:bg-gray-50 hover:text-blue-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-900">'
-            '<i data-lucide="{}" class="h-4 w-4 shrink-0" aria-hidden="true"></i>'
-            '<span>{} <span class="text-gray-500">({})</span>{}</span></a></li>',
+            '<li><a href="{}" class="{}">'
+            '<span class="{}">{}</span>'
+            '<span class="min-w-0 flex-1 truncate">{}{}</span>'
+            '<span class="shrink-0 text-xs tabular-nums text-gray-600">{}</span></a></li>',
             url,
-            text_class,
-            icon,
+            row_class,
+            check_class,
+            check_html,
             current_facet[0],
-            current_facet[1],
             state_label,
+            current_facet[1],
         )
 
 
@@ -250,7 +268,7 @@ class OrderLinkNode(Node):
         else:
             cls = (
                 "inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium "
-                "text-blue-900 bg-blue-50 rounded border border-blue-900 hover:bg-blue-100"
+                "text-primary-900 bg-info-50 rounded border border-primary-900 hover:bg-info-100"
             )
 
         return format_html(

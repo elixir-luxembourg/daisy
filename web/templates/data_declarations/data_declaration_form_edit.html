@@ -3,12 +3,12 @@
 
 {% block title %}Edit {{ data_declaration.title }} | DAISY{% endblock %}
 {% block content %}
-    <div class="mt-4 p-8 rounded bg-gray-50">
-        <h1 class="text-4xl font-light">{% block content_title %}Data declaration "<strong>{{ data_declaration.title }}</strong>"{% endblock %}</h1>
+    <div class="mt-4">
+        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{% block content_title %}Data declaration "<strong>{{ data_declaration.title }}</strong>"{% endblock %}</h1>
     </div>
-    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
         <div class="p-4">
-            <h2 class="text-2xl font-light">{% block card_title %}Edit Data Declaration{% endblock %}</h2>
+            <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">{% block card_title %}Edit Data Declaration{% endblock %}</h2>
             <div class="mt-2">
                 <form id="data-declaration-edit-form" class="nice-selects" method="post" action="{{ submit_url }}"
                       novalidate>
@@ -94,7 +94,7 @@
                         </div>
                     </fieldset>
 
-                    <button type="submit" class="mt-4 inline-flex items-center px-4 py-2 text-white bg-primary-900 rounded hover:bg-primary-800">SUBMIT</button>
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors bg-primary-900 text-on-primary hover:bg-primary-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-900 focus-visible:ring-offset-2 mt-4">SUBMIT</button>
                 </form>
             </div>
         </div>

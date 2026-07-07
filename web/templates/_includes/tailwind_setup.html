@@ -19,63 +19,21 @@
     });
 </script>
 <style type="text/tailwindcss">
-    @theme static {
-        --font-sans:
-          "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-        --font-body:
-          "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-        --font-display: "Barlow Condensed", "Arial Black", Arial, sans-serif;
-        --font-mono:
-          ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
-          monospace;
+      /* Tailwind framework first (explicit, not auto-injected — see note below). */
+      @import "tailwindcss";
 
-        /* Semantic tier — mirrors @elixir-lu/ui tokens.css. Interim inline copy
-           until Phase 0/5 wires in the shared tokens.css. Templates use only
-           the semantic utilities (bg-primary-900, text-danger-900, …). */
-
-        /* primary → UNI Blue */
-        --color-primary-50: #e9ebed;
-        --color-primary-100: #d2d6da;
-        --color-primary-200: #bcc2c8;
-        --color-primary-300: #a5aeb5;
-        --color-primary-400: #8f9aa3;
-        --color-primary-500: #788590;
-        --color-primary-600: #62717e;
-        --color-primary-700: #4b5d6b;
-        --color-primary-800: #354859;
-        --color-primary-900: #1e3446;
-        --color-primary-950: #142f3f;
-
-        /* danger → UNI Red */
-        --color-danger-50: #fcecea;
-        --color-danger-100: #f9d8d5;
-        --color-danger-200: #f6c5c0;
-        --color-danger-300: #f3b1ab;
-        --color-danger-400: #f09e97;
-        --color-danger-500: #ed8a82;
-        --color-danger-600: #ea776d;
-        --color-danger-700: #e76358;
-        --color-danger-800: #e45043;
-        --color-danger-900: #e13c2e;
-        --color-danger-950: #e13c2e;
-
-        /* info → LCSB Sky */
-        --color-info-50: #e7f5fc;
-        --color-info-100: #e7f5fc;
-        --color-info-200: #e7f5fc;
-        --color-info-300: #d7effb;
-        --color-info-400: #d7effb;
-        --color-info-500: #c7e8f9;
-        --color-info-600: #c7e8f9;
-        --color-info-700: #c7e8f9;
-        --color-info-800: #afdef6;
-        --color-info-900: #afdef6;
-        --color-info-950: #afdef6;
-
-        /* accent (single step) + text on a primary-filled surface */
-        --color-accent: #f6931d;
-        --color-on-primary: #ffffff;
-      }
+      /* Shared LCSB/UNI design system — vendored from elixir-lu/ui and inlined
+         here (the browser build can't pull in external CSS files). tokens.css
+         defines the semantic tier (primary/danger/info/accent/on-primary) +
+         fonts. primary stays UNI Blue — no DAISY override needed.
+         DAISY consumes the design system as PURE UTILITIES (see the reference
+         styleguide-utilities.html in elixir-lu-ui): components.css is NOT
+         loaded — templates carry the expanded utility strings directly.
+         See web/templates/elixir-lu-ui/SOURCE.md.
+         NOTE: keep the framework import above explicit and avoid writing the
+         at-import token anywhere else in this block — the browser build treats a
+         stray occurrence (even in a comment) as a signal to skip auto-injection. */
+      {% include 'elixir-lu-ui/tokens.css' %}
 
       @layer base {
         button:not(:disabled),

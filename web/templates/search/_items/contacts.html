@@ -1,8 +1,8 @@
 {% for contact in data.contacts %}
     <div class="mb-4">
-        <div class="rounded border border-gray-200 bg-white shadow-sm">
+        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div class="p-4">
-                <h2 class="text-2xl font-light">
+                <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">
                     <a href="{% url 'contact' pk=contact.pk %}" class="text-primary-700 hover:underline">{{ contact.first_name }} {{ contact.last_name }}</a>
                 </h2>
                 <ul class="py-1 text-left">

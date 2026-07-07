@@ -6,7 +6,7 @@
 {% block content %}
     <details open class="group">
         <summary class="mt-4 mb-4 p-4 rounded bg-gray-50 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-            <h1 class="flex items-center gap-2 text-4xl font-light">
+            <h1 class="flex items-center gap-2 font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">
                 <i data-lucide="search" class="h-7 w-7 text-gray-500"></i>
                 History
             </h1>
@@ -70,13 +70,13 @@
                 {% endif %}
             </div>
             <div class="flex justify-end px-4 pb-4">
-                <button class="inline-flex items-center px-4 py-2 text-white bg-primary-900 rounded hover:bg-primary-800" type="submit">Filter</button>
+                <button class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors bg-primary-900 text-on-primary hover:bg-primary-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-900 focus-visible:ring-offset-2" type="submit">Filter</button>
             </div>
         </form>
     </details>
     <div class="mt-4 w-full">
             {% for object in object_list %}
-            <details class="group mb-2 rounded border border-gray-200 bg-white shadow-sm">
+            <details class="group mb-2 rounded-2xl border border-gray-200 bg-white shadow-sm">
                 <summary class="flex items-center justify-between p-2 pt-3 text-gray-500 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                     <span>{{ object.log.actor }} {{ object.action.1 }}d {{ object.log.content_type.model }} #{{ object.log.object_id }} on {{ object.log.timestamp }}</span>
                     <i data-lucide="chevron-down" class="h-5 w-5 transition-transform group-open:rotate-180"></i>

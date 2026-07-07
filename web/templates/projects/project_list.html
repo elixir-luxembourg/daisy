@@ -3,15 +3,15 @@
 {% block title %}Projects | DAISY{% endblock %}
 
 {% block content %}
-    <div class="mt-4 p-8 rounded bg-gray-50">
-        <h1 class="text-4xl font-light">Projects</h1>
+    <div class="mt-4">
+        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">Projects</h1>
     </div>
     <div class="flex flex-wrap w-full">
         {% for project in  project_list %}
-            <div class="card-item m-2 rounded border border-gray-200 bg-white shadow-sm">
+            <div class="card-item rounded-2xl border border-gray-200 bg-white shadow-sm m-2">
                 <div class="p-4">
                     <h2 class="mb-2 text-xl font-semibold">{{ project }}</h2>
-                    <a href="{% url 'project' pk=project.id %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-900 rounded hover:bg-primary-800">Details</a>
+                    <a href="{% url 'project' pk=project.id %}" class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors bg-primary-900 text-on-primary hover:bg-primary-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-900 focus-visible:ring-offset-2">Details</a>
                 </div>
             </div>
         {% empty %}

@@ -5,14 +5,14 @@
 
 {% block content %}
     <div class="mt-4">
-        <div class="p-8 rounded bg-gray-50">
+        <div class="">
             <h1 class="text-3xl font-light">
                 <strong>We are sorry</strong>, there was something wrong with the page you requested! <small class="text-base">(error code: {{ reason }})</small>
             </h1>
         </div>
     </div>
 
-    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
         <div class="p-4">
             <div>
                 {% if reason == "404" %}

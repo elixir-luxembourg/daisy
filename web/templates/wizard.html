@@ -11,9 +11,9 @@
 
 <div class="grid grid-cols-12 gap-6">
     <div class="col-span-12 md:col-span-3">
-        <div class="rounded border border-gray-200 bg-white shadow-sm">
+        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div class="p-4">
-                <h2 class="text-2xl font-light">Wizard steps</h2>
+                <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">Wizard steps</h2>
                 <ul class="mt-2 space-y-1">
                     {% for step in wizard.steps.all %}
                         <li><a href="{% url wizard.url_name step %}" class="block px-3 py-2 rounded hover:bg-gray-50 {% if wizard.steps.current == step %}font-semibold text-white bg-primary-900 hover:bg-primary-800{% endif %}">{{step}}</a></li>
@@ -29,15 +29,15 @@
                     {% if wizard.form.forms %}
                         {{ wizard.form.management_form }}
                         {% for form in wizard.form.forms %}
-                            <div class="mt-4 p-8 rounded bg-gray-50">
-                                <h1 class="text-4xl font-light">{{form.Meta.heading}}</h1>
+                            <div class="mt-4">
+                                <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{form.Meta.heading}}</h1>
                                 <p class="text-gray-500">{{form.Meta.heading_help}}</p>
                             </div>
                             {% include '_includes/forms.html' with form=form %}
                         {% endfor %}
                     {% else %}
-                        <div class="mt-4 p-8 rounded bg-gray-50">
-                            <h1 class="text-4xl font-light">{{form.Meta.heading}}</h1>
+                        <div class="mt-4">
+                            <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{form.Meta.heading}}</h1>
                             <p class="text-gray-500">{{form.Meta.heading_help}}</p>
                         </div>
                         {% include '_includes/forms.html' with form=wizard.form wizard_url_name=wizard.url_name %}

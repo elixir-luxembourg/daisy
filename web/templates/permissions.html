@@ -4,13 +4,13 @@
 {% block title %}Change permissions | DAISY{% endblock %}
 
 {% block content %}
-    <div class="mt-4 p-8 rounded bg-gray-50">
-        <h1 class="text-4xl font-light">Change permissions on {{ selection }} {{ object.title }}</h1>
+    <div class="mt-4">
+        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">Change permissions on {{ selection }} {{ object.title }}</h1>
     </div>
 
-    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
         <div class="p-4">
-            <h2 class="text-2xl font-light">Local custodians</h2>
+            <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">Local custodians</h2>
             <div id="form-container" class="mt-2">
                 <ul>
                     {% for user in local_custodians %}
@@ -23,18 +23,18 @@
             You can change the local custodians on the <a href="{% url edit_url object.id %}" class="text-primary-700 hover:underline">{{selection}} edit page</a>.
         </div>
     </div>
-    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
         <div class="p-4">
-            <h2 class="text-2xl font-light">Edit Permissions of {{ selection }} {{ object.title }}</h2>
+            <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">Edit Permissions of {{ selection }} {{ object.title }}</h2>
             <div id="form-container" class="mt-2">
                 {% include '_includes/permission_form.html' %}
             </div>
         </div>
     </div>
     {% if inherited_permissions %}
-    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
         <div class="p-4">
-            <h2 class="text-2xl font-light">View Inherited Permissions from project <a href="{% url 'project' pk=object.project.id %}" class="text-primary-700 hover:underline">{{ object.project }}</a></h2>
+            <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">View Inherited Permissions from project <a href="{% url 'project' pk=object.project.id %}" class="text-primary-700 hover:underline">{{ object.project }}</a></h2>
             <div class="mt-2">
                 {% include '_includes/permission_table.html' with obj_name='User' obj_perms_const=pj_perms_const obj_perms=inherited_permissions %}
             </div>
@@ -44,9 +44,9 @@
         </div>
     </div>
     {% endif %}
-    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
         <div class="p-4">
-            <h2 class="text-2xl font-light">Permissions</h2>
+            <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">Permissions</h2>
             <div id="form-container" class="mt-2">
                 <dl>
                     <dt>Admin</dt>
@@ -59,7 +59,7 @@
                     <dd>Grant the right to access protected information on this {{selection}}.</dd>
                 </dl>
             </div>
-            <h2 class="text-2xl font-light">Additional notes</h2>
+            <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">Additional notes</h2>
             <p>
                 <b>Admin</b>, <b>Delete</b>, <b>Edit</b> and <b>View</b> permissions are automatically granted for local custodians.
             </p>

@@ -4,15 +4,15 @@
 {% block content_title %}{{ partner }}{% endblock %}
 
 {% block content %}
-{% with fab="inline-flex items-center justify-center h-10 w-10 text-gray-700 bg-white rounded-full border border-gray-300 shadow hover:bg-gray-50" title2="flex items-center gap-2 text-2xl font-light" %}
-    <div class="relative mt-4 p-8 rounded bg-gray-50">
+{% with fab="inline-flex items-center justify-center h-10 w-10 text-gray-700 bg-white rounded-full border border-gray-300 shadow hover:bg-gray-50" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
+    <div class="relative mt-4">
         {% if partner.is_published %}
             <span class="absolute top-4 left-4 inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-green-600 rounded-full">Published</span>
         {% else %}
             <span class="absolute top-4 left-4 inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-gray-500 rounded-full">Not Published</span>
         {% endif %}
         <span class="text-gray-500">Partner</span>
-        <h1 class="text-4xl font-light">{{ partner }}</h1>
+        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ partner }}</h1>
         <div class="grid gap-6 md:grid-cols-2">
             <div>
                 <dl>
@@ -75,7 +75,7 @@
 
     <div class="mt-4 grid gap-4 md:grid-cols-2">
         {#    Contacts    #}
-        <div class="rounded border border-gray-200 bg-white shadow-sm">
+        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="{{ title2 }}"><i data-lucide="contact" class="h-6 w-6"></i> Contacts at this partner</h2>
                 <ul class="mt-2 divide-y divide-gray-200 rounded border border-gray-200">
@@ -86,7 +86,7 @@
             </div>
         </div>
         {#    Contracts    #}
-        <div class="rounded border border-gray-200 bg-white shadow-sm">
+        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="{{ title2 }}"><i data-lucide="handshake" class="h-6 w-6"></i> Contracts with this partner</h2>
                 <ul class="mt-2 flex flex-col gap-2">
