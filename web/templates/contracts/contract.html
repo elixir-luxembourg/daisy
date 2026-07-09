@@ -5,7 +5,7 @@
 {% block head_end %}{{ document_form.media }}{% endblock %}
 
 {% block content %}
-{% with th="border border-gray-200 px-3 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-3 py-2 align-top text-primary-900" add="inline-flex items-center justify-center h-9 w-9 text-white bg-primary-900 rounded-full hover:bg-primary-800" addsum="inline-flex items-center justify-center h-9 w-9 text-white bg-primary-900 rounded-full hover:bg-primary-800 cursor-pointer list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 mt-2 hidden w-56 bg-white rounded border border-gray-200 shadow-lg group-open:block" item="block w-full px-4 py-2 text-left text-sm hover:bg-gray-50" editc="h-5 w-5 cursor-pointer text-primary-700" delc="h-5 w-5 cursor-pointer text-danger-700" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
+{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex size-9 items-center justify-center rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" addsum="cursor-pointer inline-flex size-9 items-center justify-center rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none cursor-pointer list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 mt-2 hidden w-56 bg-white rounded-sm border border-gray-200 shadow-lg group-open:block" item="block w-full px-4 py-2 text-left text-sm hover:bg-gray-50" editc="h-5 w-5 cursor-pointer text-primary-700" delc="h-5 w-5 cursor-pointer text-danger-700" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
     <div class="relative mt-4">
         <p class="font-display text-sm font-semibold text-primary-900">Contract</p>
         <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ contract }}</h1>
@@ -19,7 +19,7 @@
                     <dt class="font-semibold">Local custodians</dt>
                     <dd class="flex flex-wrap gap-1">
                         {% for local_custodian in contract.local_custodians.all %}
-                            <span class="inline-flex items-center rounded-md bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ local_custodian }}</span>
+                            <span class="inline-flex items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ local_custodian }}</span>
                         {% endfor %}
                     </dd>
                 </dl>
@@ -33,12 +33,12 @@
         </div>
         <div class="absolute top-4 right-4 flex gap-2">
             {% if can_edit %}
-                <a class="inline-flex items-center justify-center h-10 w-10 text-white bg-primary-900 rounded-full shadow hover:bg-primary-800"
+                <a class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-primary-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
                    title="Edit contract"
                    href="{% url 'contract_edit' pk=contract.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
                 {% if not contract.is_published %}
                     <a id="deletecontract"
-                       class="inline-flex items-center justify-center h-10 w-10 text-white bg-danger-900 rounded-full shadow hover:bg-danger-800"
+                       class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-danger-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-danger-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
                        title="Delete contract"
                        data-toggle="modal" data-target="#modal"
                        data-ajax-url="{% url 'contract_delete' pk=contract.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>
@@ -48,9 +48,9 @@
     </div>
 
     {#    PARTNERS   #}
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
-            <div class="flex items-center justify-between">
+            <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}"><i data-lucide="users" class="h-6 w-6"></i> Participants</h2>
                 {% if can_edit %}
                     <a href="{% url 'add_partner_role_to_contract' pk=contract.pk %}" class="{{ add }}" title="Add participant to contract"><i data-lucide="plus" class="h-5 w-5"></i></a>
@@ -76,7 +76,7 @@
                             <td class="{{ td }}">
                                 <span class="flex flex-wrap gap-1">
                                     {% for contact in partner_role.contacts.all %}
-                                        <a href="{% url 'contact' pk=contact.id %}" class="inline-flex items-center rounded-md border border-info-300 bg-info-50 px-2 py-0.5 text-xs transition-colors text-primary-900 hover:border-primary-900 hover:bg-info-100">{{ contact.full_name }}</a>
+                                        <a href="{% url 'contact' pk=contact.id %}" class="inline-flex items-center rounded-xs border border-info-300 bg-info-50 px-2 py-0.5 text-xs transition-colors text-primary-900 hover:border-primary-900 hover:bg-info-100">{{ contact.full_name }}</a>
                                     {% endfor %}
                                 </span>
                             </td>
@@ -101,7 +101,7 @@
 
     {#    DOCUMENTS    #}
     {% if user|can_see_protected:contract %}
-        <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm" id="documents-card">
+        <div class="mt-4 rounded-sm bg-white shadow-sm" id="documents-card">
             <div class="p-4">
                 {% if can_edit %}
                     <div class="flex justify-end" id="add-contract-document">
@@ -125,16 +125,16 @@
     {% endif %}
 
     <div class="mt-4 grid gap-4 md:grid-cols-2">
-        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="{{ title2 }}"><i data-lucide="clipboard-list" class="h-6 w-6"></i> Data declarations covered</h2>
                 {% include '_includes/data_declarations_list.html' with entity=contract %}
             </div>
         </div>
-        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="{{ title2 }}"><i data-lucide="activity" class="h-6 w-6"></i> Data logbook entries</h2>
-                <ul class="mt-2 divide-y divide-gray-200 rounded border border-gray-200">
+                <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
                     {% for share in contract.shares.all %}
                         <li class="grid gap-2 px-3 py-2 md:grid-cols-2">
                             <p><a class="text-primary-700 hover:underline" href="{% url 'dataset' pk=share.dataset.pk %}">{{ share.dataset }}</a></p>
@@ -147,9 +147,9 @@
     </div>
 
     {#    DACs   #}
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
-            <div class="flex items-center justify-between">
+            <div class="mb-4 flex items-center justify-between">
                 <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">DACs covered by this contract</h2>
                 <button class="{{ add }}" type="button"
                     id="adddac"

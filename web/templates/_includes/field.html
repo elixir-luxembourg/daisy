@@ -10,14 +10,14 @@
         <label for="{{ field.id_for_label }}" class="mb-1 block text-sm font-medium text-primary-900">{{ field.label }}{% if field.field.required %} <span class="ml-0.5 text-danger-900">*</span>{% endif %}</label>
         {% if form.is_bound and field.errors %}
             <div class="grid grid-cols-1">
-                {% render_field field class+="block w-full rounded-lg border border-danger-900 bg-white px-3 py-2 shadow-sm text-primary-900 focus:border-danger-900 focus:outline-none focus:ring-1 focus:ring-danger-900 col-start-1 row-start-1 pr-10" aria-invalid="true" aria-describedby=errid %}
+                {% render_field field class+="block w-full rounded-xs border border-danger-900 bg-white px-3 py-2 shadow-xs text-primary-900 focus:border-danger-900 focus:outline-none focus:ring-1 focus:ring-danger-900 col-start-1 row-start-1 pr-10" aria-invalid="true" aria-describedby=errid %}
                 <i data-lucide="circle-alert" class="pointer-events-none col-start-1 row-start-1 mr-3 h-5 w-5 self-center justify-self-end text-danger-900" aria-hidden="true"></i>
             </div>
             <div id="{{ errid }}" role="alert" class="mt-1 text-sm text-danger-900">
                 {% for error in field.errors %}{{ error }}{% endfor %}
             </div>
         {% else %}
-            {% render_field field class+="form-input" %}
+            {% render_field field class+="block w-full rounded-xs border border-gray-300 bg-white px-3 py-2 shadow-xs text-primary-900 focus:border-primary-900 focus:outline-none focus:ring-1 focus:ring-primary-900" %}
         {% endif %}
     {% endif %}
 

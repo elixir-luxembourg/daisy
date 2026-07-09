@@ -5,17 +5,17 @@
 
 {% block content %}
     <details open class="group">
-        <summary class="mt-4 mb-4 p-4 rounded bg-gray-50 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <summary class="mt-4 mb-4 p-4 rounded-sm bg-gray-50 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
             <h1 class="flex items-center gap-2 font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">
                 <i data-lucide="search" class="h-7 w-7 text-gray-500"></i>
                 History
             </h1>
         </summary>
-        <form class="w-full rounded border border-gray-200 bg-white">
+        <form class="w-full rounded-sm border border-gray-200 bg-white">
             <div class="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 lg:grid-cols-3">
                 <div>
                     <label for="filter-user" class="mb-1 block text-sm font-medium text-gray-700">Log author</label>
-                    <select id="filter-user" class="block px-3 py-2 w-full text-sm rounded border border-gray-300 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 focus:outline-none" name="user">
+                    <select id="filter-user" class="block px-3 py-2 w-full text-sm rounded-sm border border-gray-300 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 focus:outline-none" name="user">
                         <option value="none" selected disabled hidden>Choose a user...</option>
                         {% for user in users_list %}
                             <option value="{{ user.pk }}">{{ user.full_name | title }}</option>
@@ -24,7 +24,7 @@
                 </div>
                 <div>
                     <label for="filter-action" class="mb-1 block text-sm font-medium text-gray-700">Action performed</label>
-                    <select id="filter-action" class="block px-3 py-2 w-full text-sm rounded border border-gray-300 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 focus:outline-none" name="action">
+                    <select id="filter-action" class="block px-3 py-2 w-full text-sm rounded-sm border border-gray-300 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 focus:outline-none" name="action">
                         <option value="none" selected hidden disabled>Choose an action...</option>
                         {% for action in log_actions %}
                             <option value="{{ action.0 }}">{{ action.1 | title }}</option>
@@ -33,7 +33,7 @@
                 </div>
                 <div>
                     <label for="model-select" class="mb-1 block text-sm font-medium text-gray-700">Model</label>
-                    <select id="model-select" class="block px-3 py-2 w-full text-sm rounded border border-gray-300 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 focus:outline-none" name="entity_name">
+                    <select id="model-select" class="block px-3 py-2 w-full text-sm rounded-sm border border-gray-300 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 focus:outline-none" name="entity_name">
                         <option value="none" selected hidden disabled>Choose a model...</option>
                         {% for model in models_list %}
                             <option value="{{ model }}">{{ model | title }}</option>
@@ -42,16 +42,16 @@
                 </div>
                 <div>
                     <label for="log_entry_start_date" class="mb-1 block text-sm font-medium text-gray-700">Start date</label>
-                    <input id="log_entry_start_date" type="date" class="datepicker block px-3 py-2 w-full text-sm rounded border border-gray-300 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 focus:outline-none" name="start_date" value="{{ start_date }}" />
+                    <input id="log_entry_start_date" type="date" class="datepicker block px-3 py-2 w-full text-sm rounded-sm border border-gray-300 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 focus:outline-none" name="start_date" value="{{ start_date }}" />
                 </div>
                 <div>
                     <label for="log_entry_end_date" class="mb-1 block text-sm font-medium text-gray-700">End date</label>
-                    <input id="log_entry_end_date" type="date" class="datepicker block px-3 py-2 w-full text-sm rounded border border-gray-300 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 focus:outline-none" name="end_date" value="{{ end_date }}" />
+                    <input id="log_entry_end_date" type="date" class="datepicker block px-3 py-2 w-full text-sm rounded-sm border border-gray-300 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 focus:outline-none" name="end_date" value="{{ end_date }}" />
                 </div>
                 <div id="model-fields-filter" class="hidden">
                     <label for="filter-entity-attr" class="mb-1 block text-sm font-medium text-gray-700">Model fields</label>
                     <div>
-                        <select id="filter-entity-attr" class="block px-3 py-2 w-full text-sm rounded border border-gray-300 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 focus:outline-none" name="entity_attr">
+                        <select id="filter-entity-attr" class="block px-3 py-2 w-full text-sm rounded-sm border border-gray-300 focus:border-primary-700 focus:ring-1 focus:ring-primary-700 focus:outline-none" name="entity_attr">
                             <option value="none" selected hidden disabled>Choose a field...</option>
                             {% for attr in model_attributes %}
                                 <option value="{{ attr }}">{{ attr | title }}</option>
@@ -70,13 +70,13 @@
                 {% endif %}
             </div>
             <div class="flex justify-end px-4 pb-4">
-                <button class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors bg-primary-900 text-on-primary hover:bg-primary-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-900 focus-visible:ring-offset-2" type="submit">Filter</button>
+                <button class="cursor-pointer inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" type="submit">Filter</button>
             </div>
         </form>
     </details>
     <div class="mt-4 w-full">
             {% for object in object_list %}
-            <details class="group mb-2 rounded-2xl border border-gray-200 bg-white shadow-sm">
+            <details class="group mb-2 rounded-sm bg-white shadow-sm">
                 <summary class="flex items-center justify-between p-2 pt-3 text-gray-500 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
                     <span>{{ object.log.actor }} {{ object.action.1 }}d {{ object.log.content_type.model }} #{{ object.log.object_id }} on {{ object.log.timestamp }}</span>
                     <i data-lucide="chevron-down" class="h-5 w-5 transition-transform group-open:rotate-180"></i>

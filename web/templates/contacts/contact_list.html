@@ -8,7 +8,7 @@
     </div>
     <div class="gap-4 columns-1 md:columns-2 lg:columns-3">
         {% for contact in contact_list %}
-            <div class="mb-4 break-inside-avoid rounded-2xl border border-gray-200 bg-white shadow-sm">
+            <div class="mb-4 break-inside-avoid rounded-sm bg-white shadow-sm">
                 <div class="p-4">
                     <h2 class="mb-2 text-xl font-semibold">{{ contact.first_name }} {{ contact.last_name }}</h2>
                     <ul class="flex flex-col gap-1">
@@ -40,7 +40,7 @@
                                 {{ contact.phone }}
                             </li>{% endif %}
                     </ul>
-                    <a href="{% url 'contact' pk=contact.id %}" class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors bg-primary-900 text-on-primary hover:bg-primary-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-900 focus-visible:ring-offset-2 mt-3">Details</a>
+                    <a href="{% url 'contact' pk=contact.id %}" class="cursor-pointer inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none mt-3">Details</a>
                 </div>
             </div>
         {% empty %}

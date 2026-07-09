@@ -6,7 +6,7 @@
     <div class="mt-4">
         <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{% block content_title %}Data declaration "<strong>{{ data_declaration.title }}</strong>"{% endblock %}</h1>
     </div>
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
             <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">{% block card_title %}Edit Data Declaration{% endblock %}</h2>
             <div class="mt-2">
@@ -94,7 +94,7 @@
                         </div>
                     </fieldset>
 
-                    <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors bg-primary-900 text-on-primary hover:bg-primary-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-900 focus-visible:ring-offset-2 mt-4">SUBMIT</button>
+                    <button type="submit" class="cursor-pointer inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none mt-4">SUBMIT</button>
                 </form>
             </div>
         </div>

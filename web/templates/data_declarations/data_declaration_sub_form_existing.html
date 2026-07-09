@@ -6,17 +6,17 @@
             {{ field.label_tag }}
             {% if form.is_bound %}
                 {% if field.errors %}
-                    {% render_field field class+="block w-full rounded border border-danger-700 px-3 py-2" %}
+                    {% render_field field class+="block w-full rounded-sm border border-danger-700 px-3 py-2" %}
                     {% for error in field.errors %}
                         <div class="mt-1 text-sm text-danger-700">
                             {{ error }}
                         </div>
                     {% endfor %}
                 {% else %}
-                    {% render_field field class+="block w-full rounded border border-green-600 px-3 py-2" %}
+                    {% render_field field class+="block w-full rounded-sm border border-green-600 px-3 py-2" %}
                 {% endif %}
             {% else %}
-                {% render_field field class+="block w-full rounded border border-gray-300 px-3 py-2" %}
+                {% render_field field class+="block w-full rounded-sm border border-gray-300 px-3 py-2" %}
             {% endif %}
             {% if field.help_text %}
                 <small class="text-sm text-gray-500">{{ field.help_text }}</small>

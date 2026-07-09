@@ -1,6 +1,6 @@
 {% for project in data.projects %}
     <div class="mb-4">
-        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">
                     <a href="{% url 'project' pk=project.pk %}" class="text-primary-700 hover:underline">{{project.acronym}}</a>
@@ -12,7 +12,7 @@
                         <strong>Publications:</strong> <span class="inline-flex items-center ml-1 px-2.5 py-0.5 text-xs font-medium text-primary-900 bg-info-200 rounded-full">{{ project.publications|length }}</span>
                     </li>
                 </ul>
-                <a href="{% url 'project' pk=project.pk %}" class="mt-2 inline-flex items-center px-4 py-2 text-gray-700 rounded border border-gray-300 hover:bg-gray-50">Details &raquo;</a>
+                <a href="{% url 'project' pk=project.pk %}" class="mt-2 cursor-pointer inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] motion-reduce:transition-none">Details &raquo;</a>
             </div>
         </div>
     </div>

@@ -11,7 +11,7 @@
         You're enlisted as a local custodian or a personnel in:
     </div>
 
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
             <div id="form-container">
                 <table id="dsw-projects" class="w-full text-sm">
@@ -26,7 +26,7 @@
                     {% for project in projects %}<tr class="odd:bg-gray-50">
                         <td class="px-3 py-2 border-t border-gray-200">{{project.id}}</td>
                         <td class="px-3 py-2 border-t border-gray-200">{{ project.acronym }}</td>
-                        <td class="px-3 py-2 border-t border-gray-200"><a class="inline-flex items-center px-3 py-1 text-sm font-medium text-primary-900 rounded border border-primary-900 cursor-pointer hover:bg-primary-50" data-project-title="{{ project.title }}" data-project-id="{{ project.id }}" data-project-url="/projects/{{ project.id }}">{{project.title}}</a></td>
+                        <td class="px-3 py-2 border-t border-gray-200"><a class="inline-flex items-center px-3 py-1 text-sm font-medium text-primary-900 rounded-sm border border-primary-900 cursor-pointer hover:bg-primary-50" data-project-title="{{ project.title }}" data-project-id="{{ project.id }}" data-project-url="/projects/{{ project.id }}">{{project.title}}</a></td>
                       </tr>{% endfor %}
                     </tbody>
                   </table>

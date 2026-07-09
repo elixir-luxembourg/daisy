@@ -1,6 +1,6 @@
 {% for partner in data.partners %}
     <div class="mb-4">
-        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">
                     <a href="{% url 'partner' pk=partner.pk %}" class="inline-flex items-center gap-1 text-primary-700 hover:underline">
@@ -12,13 +12,13 @@
                 </h2>
                 <ul class="py-1 text-left">
                         <li class="flex items-center"><strong>Geo-Category:</strong>
-                            <span class="inline-flex items-center rounded-md border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700 ml-1">{{ partner.geo_category }}</span>
+                            <span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700 ml-1">{{ partner.geo_category }}</span>
                         </li>
                         <li class="flex items-center"><strong>Sector:</strong>
-                            <span class="inline-flex items-center rounded-md border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700 ml-1">{{ partner.sector_category }}</span>
+                            <span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700 ml-1">{{ partner.sector_category }}</span>
                         </li>
                 </ul>
-                <a href="{% url 'partner' pk=partner.pk %}" class="mt-2 inline-flex items-center px-4 py-2 text-gray-700 rounded border border-gray-300 hover:bg-gray-50">Details &raquo;</a>
+                <a href="{% url 'partner' pk=partner.pk %}" class="mt-2 cursor-pointer inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] motion-reduce:transition-none">Details &raquo;</a>
             </div>
         </div>
     </div>

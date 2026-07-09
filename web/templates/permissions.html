@@ -8,7 +8,7 @@
         <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">Change permissions on {{ selection }} {{ object.title }}</h1>
     </div>
 
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
             <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">Local custodians</h2>
             <div id="form-container" class="mt-2">
@@ -23,7 +23,7 @@
             You can change the local custodians on the <a href="{% url edit_url object.id %}" class="text-primary-700 hover:underline">{{selection}} edit page</a>.
         </div>
     </div>
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
             <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">Edit Permissions of {{ selection }} {{ object.title }}</h2>
             <div id="form-container" class="mt-2">
@@ -32,7 +32,7 @@
         </div>
     </div>
     {% if inherited_permissions %}
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
             <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">View Inherited Permissions from project <a href="{% url 'project' pk=object.project.id %}" class="text-primary-700 hover:underline">{{ object.project }}</a></h2>
             <div class="mt-2">
@@ -44,7 +44,7 @@
         </div>
     </div>
     {% endif %}
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
             <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">Permissions</h2>
             <div id="form-container" class="mt-2">
@@ -71,10 +71,10 @@
 
 {% block floating-buttons %}
     {% if selection == 'project' %}
-        <a class="float-right inline-flex items-center justify-center h-12 w-12 text-white bg-primary-900 rounded-full shadow-lg hover:bg-primary-800" href="{% url 'project' pk=object.id %}" title="Back to project" aria-label="Back to project"><i data-lucide="arrow-left" class="h-6 w-6"></i>
+        <a class="float-right cursor-pointer inline-flex size-12 items-center justify-center rounded-lg bg-primary-900 text-on-primary shadow-lg transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" href="{% url 'project' pk=object.id %}" title="Back to project" aria-label="Back to project"><i data-lucide="arrow-left" class="h-6 w-6"></i>
         </a>
     {% elif selection == 'dataset' %}
-        <a class="float-right inline-flex items-center justify-center h-12 w-12 text-white bg-primary-900 rounded-full shadow-lg hover:bg-primary-800" href="{% url 'dataset' pk=object.id %}" title="Back to dataset" aria-label="Back to dataset"><i data-lucide="arrow-left" class="h-6 w-6"></i>
+        <a class="float-right cursor-pointer inline-flex size-12 items-center justify-center rounded-lg bg-primary-900 text-on-primary shadow-lg transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" href="{% url 'dataset' pk=object.id %}" title="Back to dataset" aria-label="Back to dataset"><i data-lucide="arrow-left" class="h-6 w-6"></i>
         </a>
     {% endif %}
 {% endblock %}

@@ -8,7 +8,7 @@
     </div>
     <div class="flex flex-wrap w-full">
         {% for contract  in  contract_list %}
-            <div class="card-item rounded-2xl border border-gray-200 bg-white shadow-sm m-2">
+            <div class="card-item rounded-sm bg-white shadow-sm m-2">
                 <div class="p-4">
                     <h2 class="mb-2 text-xl font-semibold">
                         <strong>{{ contract }}</strong>
@@ -19,7 +19,7 @@
                         {% endif %}
                         <li class="flex items-center"><strong>Partner:</strong> {{ contract.partner.name }}</li>
                     </ul>
-                    <a href="{% url 'contract' pk=contract.id %}" class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors bg-primary-900 text-on-primary hover:bg-primary-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-900 focus-visible:ring-offset-2">Details</a>
+                    <a href="{% url 'contract' pk=contract.id %}" class="cursor-pointer inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none">Details</a>
                 </div>
             </div>
         {% empty %}

@@ -3,7 +3,7 @@
 {% block title %}{{ object }} | DAISY{% endblock %}
 
 {% block content %}
-{% with th="border border-gray-200 px-3 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-3 py-2 align-top text-primary-900" %}
+{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" %}
     <div class="relative mt-4">
         <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ object.title }}</h1>
         <div class="grid gap-6 md:grid-cols-2">
@@ -54,7 +54,7 @@
                     <dt class="font-semibold">Data Types</dt>
                     <dd class="flex flex-wrap gap-1">
                         {% for data_type in object.data_types %}
-                            <span class="inline-flex items-center rounded-md border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ data_type }}</span>
+                            <span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ data_type }}</span>
                         {% endfor %}
                     </dd>
 
@@ -88,12 +88,12 @@
         </div>
         <div class="absolute top-4 right-4 flex gap-2">
             {% if can_edit %}
-                <a class="inline-flex items-center justify-center h-10 w-10 text-white bg-primary-900 rounded-full shadow hover:bg-primary-800" href="{% url 'data_declaration_edit' pk=object.id %}" title="Edit data declaration"><i data-lucide="pencil" class="h-5 w-5"></i></a>
+                <a class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-primary-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" href="{% url 'data_declaration_edit' pk=object.id %}" title="Edit data declaration"><i data-lucide="pencil" class="h-5 w-5"></i></a>
             {% endif %}
         </div>
     </div>
 
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
             <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">Use conditions</h2>
             <hr class="my-4 border-gray-200" />
@@ -124,10 +124,10 @@
                             <tbody>
                                 {% for use_condition in object.data_use_conditions.all %}
                                     <tr class="odd:bg-gray-50">
-                                        <td class="px-3 py-2 border border-gray-200">{{ use_condition.condition_class }}</td>
-                                        <td class="px-3 py-2 border border-gray-200">{{ use_condition.use_condition_rule }}</td>
-                                        <td class="px-3 py-2 border border-gray-200">{{ use_condition.use_class_note }}</td>
-                                        <td class="px-3 py-2 border border-gray-200">{{ use_condition.notes }}</td>
+                                        <td class="border border-gray-200 px-4 py-2">{{ use_condition.condition_class }}</td>
+                                        <td class="border border-gray-200 px-4 py-2">{{ use_condition.use_condition_rule }}</td>
+                                        <td class="border border-gray-200 px-4 py-2">{{ use_condition.use_class_note }}</td>
+                                        <td class="border border-gray-200 px-4 py-2">{{ use_condition.notes }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>

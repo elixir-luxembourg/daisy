@@ -150,22 +150,22 @@ class FacetLinkNode(Node):
 
         # facets are multi-select: each click toggles one value, several can stay active
         row_class = (
-            "group -mx-2 flex items-center gap-2 rounded-md px-2 py-1.5 text-sm "
+            "group -mx-2 flex items-center gap-2 rounded-xs px-2 py-1.5 text-sm "
             "text-primary-900 transition-colors hover:bg-gray-50"
         )
         check_class = (
-            "flex h-4 w-4 shrink-0 items-center justify-center rounded-md border "
+            "flex h-4 w-4 shrink-0 items-center justify-center rounded-xs border "
             "border-gray-200 bg-white transition-colors group-hover:border-primary-900"
         )
         check_html = ""
         state_label = ""
         if is_present:
             row_class = (
-                "group -mx-2 flex items-center gap-2 rounded-md bg-info-50 px-2 py-1.5 "
+                "group -mx-2 flex items-center gap-2 rounded-xs bg-info-50 px-2 py-1.5 "
                 "text-sm text-primary-900 transition-colors hover:bg-info-100"
             )
             check_class = (
-                "flex h-4 w-4 shrink-0 items-center justify-center rounded-md border "
+                "flex h-4 w-4 shrink-0 items-center justify-center rounded-xs border "
                 "border-primary-900 bg-primary-900 transition-colors"
             )
             check_html = format_html(
@@ -263,12 +263,12 @@ class OrderLinkNode(Node):
         if icon == "arrow-up-down":
             cls = (
                 "inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium "
-                "text-gray-700 rounded border border-gray-300 hover:bg-gray-50"
+                "text-gray-700 rounded-xs border border-gray-300 hover:bg-gray-50"
             )
         else:
             cls = (
                 "inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium "
-                "text-primary-900 bg-info-50 rounded border border-primary-900 hover:bg-info-100"
+                "text-primary-900 bg-info-50 rounded-xs border border-primary-900 hover:bg-info-100"
             )
 
         return format_html(

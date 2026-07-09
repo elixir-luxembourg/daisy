@@ -1,5 +1,5 @@
 {% for dataset in data.datasets %}
-        <div class="card-item rounded-2xl border border-gray-200 bg-white shadow-sm mb-4 w-full md:w-3/4">
+        <div class="card-item rounded-sm bg-white shadow-sm mb-4 w-full md:w-3/4">
             <div class="p-4">
                 <h2 class="mb-2 text-xl font-semibold">{{ dataset.title }}</h2>
                 <ul class="flex flex-col gap-1">
@@ -17,7 +17,7 @@
                         </li>
                     {% endif %}
                 </ul>
-                <a href="{% url 'dataset' pk=dataset.pk %}" class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors bg-primary-900 text-on-primary hover:bg-primary-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-900 focus-visible:ring-offset-2 mt-3">Details</a>
+                <a href="{% url 'dataset' pk=dataset.pk %}" class="cursor-pointer inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none mt-3">Details</a>
             </div>
         </div>
     {% empty %}

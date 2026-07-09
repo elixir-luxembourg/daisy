@@ -3,7 +3,7 @@
 {% block title %}{{ contact.full_name }} | DAISY{% endblock %}
 
 {% block content %}
-{% with th="border border-gray-200 px-3 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-3 py-2 align-top text-primary-900" title2="font-display text-2xl font-medium tracking-tight text-primary-900" %}
+{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" title2="font-display text-2xl font-medium tracking-tight text-primary-900" %}
     <div class="relative mt-4">
         <p class="font-display text-sm font-semibold text-primary-900">Contact</p>
         <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ contact.full_name }}</h1>
@@ -18,7 +18,7 @@
                     {% if contact.partners %}
                         <dd class="flex flex-wrap gap-1">
                             {% for partner in contact.partners.all %}
-                                <span class="inline-flex items-center rounded-md border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ partner.name }}</span>
+                                <span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ partner.name }}</span>
                             {% endfor %}
                         </dd>
                     {% endif %}
@@ -38,11 +38,11 @@
             </div>
         </div>
         <div class="absolute top-4 right-4 flex gap-2">
-            <a class="inline-flex items-center justify-center h-10 w-10 text-white bg-primary-900 rounded-full shadow hover:bg-primary-800"
+            <a class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-primary-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
                title="Edit contact"
                href="{% url 'contact_edit' pk=contact.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
             <a id="deletecontact"
-               class="inline-flex items-center justify-center h-10 w-10 text-white bg-danger-900 rounded-full shadow hover:bg-danger-800"
+               class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-danger-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-danger-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
                title="Delete contact"
                data-toggle="modal" data-target="#modal"
                data-ajax-url="{% url 'contact_delete' contact.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>
@@ -51,7 +51,7 @@
 
     {#    Contracts    #}
     {% if contact.partners_roles.all %}
-        <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div class="mt-4 rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="{{ title2 }}">Contracts with this contact</h2>
                 <div class="overflow-x-auto">
@@ -68,7 +68,7 @@
                         <tbody>
                             {% for partner_role in contact.partners_roles.all %}
                                 <tr class="odd:bg-gray-50">
-                                    <td class="{{ td }}"><a href="{% url 'contract' pk=partner_role.contract.id %}" class="inline-flex items-center px-3 py-1 text-sm font-medium text-primary-900 rounded border border-primary-900 hover:bg-primary-50">Go to contract</a></td>
+                                    <td class="{{ td }}"><a href="{% url 'contract' pk=partner_role.contract.id %}" class="inline-flex items-center px-3 py-1 text-sm font-medium text-primary-900 rounded-sm border border-primary-900 hover:bg-primary-50">Go to contract</a></td>
                                     <td class="{{ td }}">{{ partner_role.partner.name }}</td>
                                     <td class="{{ td }}"><strong title="{{ partner_role.contract.project.title|truncatechars:75 }}">{{ partner_role.contract.project.acronym }}</strong></td>
                                     <td class="{{ td }}">
@@ -88,7 +88,7 @@
 
     {#    DACs   #}
     {% if dacs %}
-        <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div class="mt-4 rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="{{ title2 }}">DACs the contact is member of</h2>
                 <ul class="py-1 text-left">

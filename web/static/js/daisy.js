@@ -101,7 +101,7 @@ function showModalErrors(modalForm, errors) {
         if (name === "__all__") {
             messages.forEach(function (error) {
                 modalForm.prepend(
-                    $('<div role="alert" class="invalid-feedback ajax-field-error relative mb-4 flex items-start gap-3 rounded-xl border border-danger-900 bg-danger-50 px-4 py-3 text-primary-900">' + error + '</div>')
+                    $('<div role="alert" class="invalid-feedback ajax-field-error relative mb-4 flex items-start gap-3 rounded-sm border border-danger-900 bg-danger-50 px-4 py-3 text-primary-900">' + error + '</div>')
                 );
             });
             return;

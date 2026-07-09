@@ -9,7 +9,7 @@
     </div>
     <div class="mt-4 flex flex-wrap gap-4">
         {% for type in types %}
-            <a class="mb-4 w-full rounded-2xl border border-gray-200 bg-white shadow-sm hover:bg-gray-50 md:w-5/12"
+            <a class="mb-4 w-full rounded-sm bg-white shadow-sm hover:bg-gray-50 md:w-5/12"
                href="{% url 'project_dataset_wizard' pk=project.pk %}">
                 <div class="p-4">
                     <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">{% block card_title %}{{ type }}{% endblock %}</h2>

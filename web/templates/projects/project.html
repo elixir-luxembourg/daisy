@@ -5,7 +5,7 @@
 {% block head_end %}{{ document_form.media }}{% endblock %}
 
 {% block content %}
-{% with th="border border-gray-200 px-3 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-3 py-2 align-top text-primary-900" add="inline-flex items-center justify-center h-9 w-9 text-white bg-primary-900 rounded-full hover:bg-primary-800" addsum="inline-flex items-center justify-center h-9 w-9 text-white bg-primary-900 rounded-full cursor-pointer list-none hover:bg-primary-800 [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 hidden mt-2 w-56 bg-white rounded border border-gray-200 shadow-lg group-open:block" item="block px-4 py-2 w-full text-left text-sm hover:bg-gray-50" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
+{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex size-9 items-center justify-center rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" addsum="cursor-pointer inline-flex size-9 items-center justify-center rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 hidden mt-2 w-56 bg-white rounded-sm border border-gray-200 shadow-lg group-open:block" item="block px-4 py-2 w-full text-left text-sm hover:bg-gray-50" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
     <div class="relative mt-4">
         <p class="font-display text-sm font-semibold text-primary-900">Project</p>
         <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ project.acronym }}</h1>
@@ -17,7 +17,7 @@
                     <dt class="font-semibold">Local custodians</dt>
                     <dd class="flex flex-wrap gap-1">
                         {% for local_custodian in project.local_custodians.all %}
-                            <span class="inline-flex items-center rounded-md bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ local_custodian }}</span>
+                            <span class="inline-flex items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ local_custodian }}</span>
                         {% endfor %}
                     </dd>
                     <dt class="font-semibold">Start date</dt>
@@ -68,20 +68,20 @@
                 <a href="{% url 'admin:core_project_change' project.pk %}"
                    id="project-admin"
                    title="See in django admin"
-                   class="inline-flex h-10 w-10 items-center justify-center text-gray-700 rounded-full border border-gray-300 bg-white shadow hover:bg-gray-50"><i data-lucide="wrench" class="h-5 w-5"></i></a>
+                   class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"><i data-lucide="wrench" class="h-5 w-5"></i></a>
             {% endif %}
             {% if is_admin %}
-                <a class="inline-flex h-10 w-10 items-center justify-center text-gray-700 rounded-full border border-gray-300 bg-white shadow hover:bg-gray-50"
+                <a class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
                    title="Manage project permissions"
                    href="{% url 'permission_project' pk=project.id %}"><i data-lucide="eye" class="h-5 w-5"></i></a>
             {% endif %}
             {% if can_edit %}
-                <a class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-primary-900 shadow hover:bg-primary-800"
+                <a class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-primary-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
                    title="Edit project"
                    href="{% url 'project_edit' pk=project.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
                 {% if not project.is_published %}
                     <a id="deleteproject"
-                       class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-danger-900 shadow hover:bg-danger-800"
+                       class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-danger-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-danger-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
                        title="Delete project"
                        data-toggle="modal"
                        data-target="#modal"
@@ -92,7 +92,7 @@
     </div>
 
     {% if project.description %}
-        <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div class="mt-4 rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">Lay Summary</h2>
                 <blockquote>{{ project.description|linebreaks }}</blockquote>
@@ -101,7 +101,7 @@
     {% endif %}
 
     <div class="mt-4 grid gap-4 md:grid-cols-3">
-        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="{{ title2 }}"><i data-lucide="shield" class="h-6 w-6"></i> Ethics</h2>
                 <dl>
@@ -114,15 +114,15 @@
         </div>
 
         {# PERSONNEL #}
-        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
-                <div class="flex items-center justify-between">
+                <div class="mb-4 flex items-center justify-between">
                     <h2 class="{{ title2 }}"><i data-lucide="users" class="h-6 w-6"></i> Personnel</h2>
                     {% if can_edit %}
                         <button data-toggle="modal" data-target="#modal" data-modal-title="Add personnel to project" data-ajax-url="{% url 'add_personnel_to_project' pk=project.id %}" class="{{ add }}" type="button" title="Add personnel to project"><i data-lucide="plus" class="h-5 w-5"></i></button>
                     {% endif %}
                 </div>
-                <ul class="mt-2 divide-y divide-gray-200 rounded border border-gray-200">
+                <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
                     {% for company_personnel in project.company_personnel.all %}
                         <li class="px-3 py-2 {% if can_edit %}deletable{% endif %}"{% if can_edit %} data-delete-title="Remove personnel from project" data-url="{% url 'remove_personnel_from_project' pk=project.id user_id=company_personnel.pk %}"{% endif %}>{{ company_personnel }}</li>
                     {% endfor %}
@@ -131,9 +131,9 @@
         </div>
 
         {# CONTACTS #}
-        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
-                <div class="flex items-center justify-between">
+                <div class="mb-4 flex items-center justify-between">
                     <h2 class="{{ title2 }}"><i data-lucide="contact" class="h-6 w-6"></i> Contacts</h2>
                     {% if can_edit %}
                         <details class="group relative">
@@ -145,7 +145,7 @@
                         </details>
                     {% endif %}
                 </div>
-                <ul class="mt-2 divide-y divide-gray-200 rounded border border-gray-200">
+                <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
                     {% for contact in project.contacts.all %}
                         {% if can_edit %}
                             <li class="px-3 py-2 deletable" data-delete-title="Remove contact from project" data-url="{% url 'remove_contact_from_project' pk=project.id contact_id=contact.pk %}"><a class="text-primary-700 hover:underline" href="{% url 'contact' pk=contact.id %}">{{ contact.full_name }}</a></li>
@@ -159,9 +159,9 @@
     </div>
 
     {# DATASETS OWNED BY PROJECT #}
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
-            <div class="flex items-center justify-between">
+            <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}"><i data-lucide="folder" class="h-6 w-6"></i> Data of this project</h2>
                 {% if can_edit %}
                     <a href="{% url 'project_dataset_wizard' pk=project.pk %}" class="{{ add }}" title="Add new dataset to project"><i data-lucide="plus" class="h-5 w-5"></i></a>
@@ -185,11 +185,11 @@
                                     <td class="{{ td }}"><a class="text-primary-700 hover:underline" href="{% url 'dataset' pk=dataset.id %}">{{ dataset.title }}</a></td>
                                     <td class="{{ td }}">
                                         {% for custodian in dataset.local_custodians.all %}
-                                            <span class="inline-flex items-center rounded-md border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ custodian }}</span>
+                                            <span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ custodian }}</span>
                                         {% endfor %}
                                     </td>
                                     <td class="{{ td }}">
-                                        {% if dataset.publication_status %}<span class="inline-flex items-center rounded-md border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ dataset.publication_status }}</span>{% endif %}
+                                        {% if dataset.publication_status %}<span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ dataset.publication_status }}</span>{% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -206,9 +206,9 @@
     </div>
 
     {# CONTRACTS #}
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
-            <div class="flex items-center justify-between">
+            <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}"><i data-lucide="handshake" class="h-6 w-6"></i> Contracts</h2>
                 {% if can_edit %}
                     <details class="group relative">
@@ -256,7 +256,7 @@
 
     {# DOCUMENTS #}
     {% if user|can_see_protected:project %}
-        <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm" id="documents-card">
+        <div class="mt-4 rounded-sm bg-white shadow-sm" id="documents-card">
             <div class="p-4">
                 {% if can_edit %}
                     <div class="flex justify-end" id="add-project-document">
@@ -282,9 +282,9 @@
     {% endif %}
 
     {# PUBLICATION #}
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
-            <div class="flex items-center justify-between">
+            <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}"><i data-lucide="book" class="h-6 w-6"></i> Publications</h2>
                 {% if can_edit %}
                     <details class="group relative">
@@ -296,7 +296,7 @@
                     </details>
                 {% endif %}
             </div>
-            <ul class="mt-2 divide-y divide-gray-200 rounded border border-gray-200">
+            <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
                 {% for publication in project.publications.all %}
                     {% if can_edit %}
                         <li class="px-3 py-2 deletable" data-delete-title="Remove publication from project" data-url="{% url 'remove_publication_from_project' pk=project.id publication_id=publication.pk %}">{{ publication.citation }}</li>

@@ -3,7 +3,7 @@
 {% block title %}{{ dac.title }} | DAISY{% endblock %}
 
 {% block content %}
-{% with th="border border-gray-200 px-3 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-3 py-2 align-top text-primary-900" add="inline-flex items-center justify-center h-9 w-9 text-white bg-primary-900 rounded-full hover:bg-primary-800" delc="h-5 w-5 cursor-pointer text-danger-700" title2="font-display text-2xl font-medium tracking-tight text-primary-900" %}
+{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex size-9 items-center justify-center rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" delc="h-5 w-5 cursor-pointer text-danger-700" title2="font-display text-2xl font-medium tracking-tight text-primary-900" %}
     <div class="relative mt-4">
         <p class="font-display text-sm font-semibold text-primary-900">Data Access Committee (DAC)</p>
         <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ dac.title }}</h1>
@@ -21,7 +21,7 @@
                     <dt class="font-semibold">Local custodians</dt>
                     <dd class="flex flex-wrap gap-1">
                         {% for local_custodian in local_custodians %}
-                            <span class="inline-flex items-center rounded-md bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ local_custodian }}</span>
+                            <span class="inline-flex items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ local_custodian }}</span>
                         {% endfor %}
                     </dd>
                 </dl>
@@ -37,7 +37,7 @@
         </div>
         <div class="absolute top-4 right-4 flex gap-2">
             {% if can_edit %}
-                <a class="inline-flex items-center justify-center h-10 w-10 text-white bg-primary-900 rounded-full shadow hover:bg-primary-800"
+                <a class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-primary-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
                    title="Edit DAC"
                    href="{% url 'dac_edit' pk=dac.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
             {% endif %}
@@ -45,9 +45,9 @@
     </div>
 
     {#    MEMBERS   #}
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
-            <div class="flex items-center justify-between">
+            <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}">Members</h2>
                 {% if can_edit %}
                     <button class="{{ add }}"
@@ -81,7 +81,7 @@
                                 <td class="{{ td }}">
                                     <span class="flex flex-wrap gap-1">
                                         {% for partner in member.contact.partners.all %}
-                                            <span class="inline-flex items-center rounded-md border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ partner.name }}</span>
+                                            <span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ partner.name }}</span>
                                         {% endfor %}
                                     </span>
                                 </td>
@@ -105,9 +105,9 @@
     </div>
 
     {#    DATASETS   #}
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
-            <div class="flex items-center justify-between">
+            <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}">Datasets managed by this DAC</h2>
                 {% if is_data_steward %}
                     <button class="{{ add }}"

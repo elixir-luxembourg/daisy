@@ -28,10 +28,10 @@
 
 
 {% block floating-buttons %}
-    <a class="float-right inline-flex items-center justify-center h-12 w-12 text-white bg-primary-900 rounded-full shadow-lg hover:bg-primary-800" href="{% url add_url %}{% if reset %}?reset=true{% endif %}" aria-label="Add new {{ title|lower }}">
+    <a class="float-right cursor-pointer inline-flex size-12 items-center justify-center rounded-lg bg-primary-900 text-on-primary shadow-lg transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" href="{% url add_url %}{% if reset %}?reset=true{% endif %}" aria-label="Add new {{ title|lower }}">
         <i data-lucide="plus" class="h-6 w-6" aria-hidden="true"></i>
     </a>
-    <a class="float-right inline-flex items-center justify-center h-12 w-12 text-gray-700 bg-white rounded-full border border-gray-300 shadow-lg hover:bg-gray-50 md:hidden" href="#sidebar-responsive-left" aria-label="Filter the results">
+    <a class="float-right cursor-pointer inline-flex size-12 items-center justify-center rounded-lg border border-gray-200 bg-white text-primary-900 shadow-lg transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none md:hidden" href="#sidebar-responsive-left" aria-label="Filter the results">
         <i data-lucide="arrow-down-wide-narrow" class="h-6 w-6" aria-hidden="true"></i>
     </a>
 {% endblock %}

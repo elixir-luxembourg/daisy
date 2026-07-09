@@ -3,12 +3,103 @@
 
 {% block content %}
 <section class="pt-8 pb-16">
-    <div class="relative min-h-40 overflow-hidden rounded border border-gray-200 bg-gray-50">
-        <div class="absolute inset-0 bg-left bg-no-repeat opacity-90" style="background-image: url('{% static 'images/banner.png' %}'); background-size: contain;"></div>
+    <div class="relative min-h-40 overflow-hidden rounded-sm border border-gray-200 bg-gray-50">
+        <div class="absolute inset-0 bg-left bg-no-repeat opacity-90" style="background-image: url('{% static 'images/banner-lcsb.svg' %}'); background-size: contain;"></div>
         <div class="relative flex min-h-40 items-start p-5">
             <span class="inline-flex rounded-full border border-gray-200 bg-white/90 px-3 py-1 text-xs font-medium text-primary-950">Version {{ app_version }}</span>
         </div>
     </div>
+
+    {% if show_attention %}
+    <section class="mt-8" aria-labelledby="attention-title">
+        <div class="flex items-center justify-between gap-4 border-b border-gray-300 pb-3">
+            <h2 id="attention-title" class="flex items-center gap-2 text-xl font-medium text-primary-950">
+                <i data-lucide="bell-ring" class="h-5 w-5"></i>
+                Needs attention
+            </h2>
+        </div>
+        <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-{% if can_manage_accesses and deadlines != None %}3{% elif can_manage_accesses %}2{% else %}1{% endif %}">
+
+            {% if can_manage_accesses %}
+            <div class="rounded-sm bg-white p-4 shadow-sm">
+                <h3 class="flex items-center justify-between gap-2 text-sm font-semibold text-primary-950">
+                    <span class="flex items-center gap-2"><i data-lucide="key-round" class="h-4 w-4"></i> Access grants expiring</span>
+                    {% if accesses_expiring_count %}<span class="inline-flex items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ accesses_expiring_count }}</span>{% endif %}
+                </h3>
+                <ul class="mt-2 divide-y divide-gray-100">
+                    {% for access in accesses_expiring %}
+                    <li class="flex items-start justify-between gap-3 py-2">
+                        <div class="min-w-0">
+                            <a href="{% url 'dataset' pk=access.dataset.pk %}#accesses" class="block truncate text-sm font-medium text-primary-950 hover:underline">{{ access.dataset.title }}</a>
+                            <p class="truncate text-xs text-gray-500">{{ access.user|default:access.contact }}</p>
+                        </div>
+                        {% if access.grant_expires_on < today %}
+                        <span class="inline-flex shrink-0 items-center rounded-xs border border-danger-900 bg-danger-50 px-2 py-0.5 text-xs font-medium text-danger-900">expired</span>
+                        {% else %}
+                        <span class="inline-flex shrink-0 items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">in {{ access.grant_expires_on|timeuntil }}</span>
+                        {% endif %}
+                    </li>
+                    {% empty %}
+                    <li class="py-2 text-sm text-gray-500">Nothing expiring in the next 30 days ✓</li>
+                    {% endfor %}
+                </ul>
+                {% if accesses_expiring_more %}
+                <p class="mt-2 text-xs text-gray-500">+ {{ accesses_expiring_more }} more</p>
+                {% endif %}
+            </div>
+
+            <div class="rounded-sm bg-white p-4 shadow-sm">
+                <h3 class="flex items-center justify-between gap-2 text-sm font-semibold text-primary-950">
+                    <span class="flex items-center gap-2"><i data-lucide="archive" class="h-4 w-4"></i> Retention deadline reached</span>
+                    {% if retention_reached_count %}<span class="inline-flex items-center rounded-xs border border-danger-900 bg-danger-50 px-2 py-0.5 text-xs font-medium text-danger-900">{{ retention_reached_count }}</span>{% endif %}
+                </h3>
+                <ul class="mt-2 divide-y divide-gray-100">
+                    {% for declaration in retention_reached %}
+                    <li class="flex items-start justify-between gap-3 py-2">
+                        <div class="min-w-0">
+                            <a href="{% url 'data_declaration' pk=declaration.pk %}" class="block truncate text-sm font-medium text-primary-950 hover:underline">{{ declaration.title }}</a>
+                            <p class="truncate text-xs text-gray-500">{{ declaration.dataset.title }}</p>
+                        </div>
+                        <span class="inline-flex shrink-0 items-center rounded-xs border border-danger-900 bg-danger-50 px-2 py-0.5 text-xs font-medium text-danger-900">{{ declaration.end_of_storage_duration|timesince }} overdue</span>
+                    </li>
+                    {% empty %}
+                    <li class="py-2 text-sm text-gray-500">No storage deadlines reached ✓</li>
+                    {% endfor %}
+                </ul>
+                {% if retention_reached_more %}
+                <p class="mt-2 text-xs text-gray-500">+ {{ retention_reached_more }} more</p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if deadlines != None %}
+            <div class="rounded-sm bg-white p-4 shadow-sm">
+                <h3 class="flex items-center justify-between gap-2 text-sm font-semibold text-primary-950">
+                    <span class="flex items-center gap-2"><i data-lucide="calendar-clock" class="h-4 w-4"></i> Upcoming deadlines</span>
+                    {% if deadlines_count %}<span class="inline-flex items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ deadlines_count }}</span>{% endif %}
+                </h3>
+                <ul class="mt-2 divide-y divide-gray-100">
+                    {% for deadline in deadlines %}
+                    <li class="flex items-start justify-between gap-3 py-2">
+                        <div class="min-w-0">
+                            <a href="{% url 'notifications' %}" class="block truncate text-sm font-medium text-primary-950 hover:underline">{{ deadline.content_object }}</a>
+                            <p class="truncate text-xs text-gray-500">{{ deadline.message|default:deadline.verb }}</p>
+                        </div>
+                        <span class="inline-flex shrink-0 items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ deadline.on|date:"j M Y" }}</span>
+                    </li>
+                    {% empty %}
+                    <li class="py-2 text-sm text-gray-500">No upcoming deadlines ✓</li>
+                    {% endfor %}
+                </ul>
+                {% if deadlines_count %}
+                <p class="mt-2 text-xs"><a href="{% url 'notifications' %}" class="font-medium text-primary-950 hover:underline">View all notifications &rarr;</a></p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+        </div>
+    </section>
+    {% endif %}
 
     <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
         <section aria-labelledby="my-datasets-title">

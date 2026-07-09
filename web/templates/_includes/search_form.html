@@ -1,21 +1,21 @@
 {% load static daisy_utils %}
-{% with primary="btn-primary shrink-0" clearcls="reset-form-button shrink-0 text-gray-500 hover:text-primary-900" optlabel="text-xs font-semibold uppercase tracking-wider text-gray-500" clearfilter="inline-flex items-center gap-1.5 text-sm font-medium text-primary-900 hover:underline" %}
+{% with primary="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" clearcls="reset-form-button shrink-0 text-gray-500 hover:text-primary-900" optlabel="text-xs font-semibold uppercase tracking-wider text-gray-500" clearfilter="inline-flex items-center gap-1.5 text-sm font-medium text-primary-900 hover:underline" %}
     <div class="mb-3 flex flex-wrap items-center gap-3">
         <h2 class="{{ optlabel }}">Browse {{ title }}</h2>
         {% if request.user.is_authenticated and request.user|has_group:"daisy-data-steward" %}
             {% if search_url == 'projects' or search_url == 'datasets' or search_url == 'partners' %}
-                <button id="importModalButton" type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-900 rounded border border-primary-900 hover:bg-primary-50">
+                <button id="importModalButton" type="button" class="cursor-pointer inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-primary-200 bg-white px-4 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none">
                     Import
                 </button>
             {% include 'importer/import_modal.html' %}
             {% endif %}
-            <a class="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-900 rounded border border-primary-900 hover:bg-primary-50" href="export?{% if filters %}filters={{ filters }}&{% endif %}{% if order_by %}order_by={{ order_by | default:'' }}&{% endif %}{% if query %}query={{ query | default:'' }}{% endif %}">Save the results as xlsx</a>
+            <a class="cursor-pointer inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-primary-200 bg-white px-4 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" href="export?{% if filters %}filters={{ filters }}&{% endif %}{% if order_by %}order_by={{ order_by | default:'' }}&{% endif %}{% if query %}query={{ query | default:'' }}{% endif %}">Save the results as xlsx</a>
         {% endif %}
     </div>
     <div class="mb-4">
         <form method="get" action="{% url url %}">
             <div class="flex items-center gap-2">
-                <div class="flex flex-1 items-center gap-2 px-3 py-2 bg-white rounded border border-gray-300 focus-within:border-primary-700 focus-within:ring-1 focus-within:ring-primary-700">
+                <div class="flex h-10 flex-1 items-center gap-2 rounded-xs border border-gray-300 bg-white px-3 shadow-xs focus-within:border-primary-900 focus-within:ring-1 focus-within:ring-primary-900">
                     <i data-lucide="search" class="h-5 w-5 shrink-0 text-gray-500"></i>
                     <input id="query_edit" type="text" class="flex-1 text-sm text-primary-950 bg-transparent focus:outline-none" autocomplete="off" name="query" value="{{ query }}" aria-label="Search for {{ title }}" placeholder="Search for {{ title }}">
                     {% if query %}
@@ -26,11 +26,11 @@
                 </div>
                 {% if order_by_fields %}
                     <details class="group relative shrink-0">
-                        <summary class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-gray-700 rounded border border-gray-300 cursor-pointer list-none hover:bg-gray-50 [&::-webkit-details-marker]:hidden">
+                        <summary class="cursor-pointer inline-flex h-10 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] list-none [&::-webkit-details-marker]:hidden">
                             <i data-lucide="arrow-up-down" class="h-4 w-4"></i> Sort
                             <i data-lucide="chevron-down" class="h-4 w-4 transition-transform group-open:rotate-180"></i>
                         </summary>
-                        <div class="absolute right-0 z-10 mt-2 flex flex-col gap-1 p-2 w-64 bg-white rounded border border-gray-200 shadow-lg">
+                        <div class="absolute right-0 z-10 mt-2 flex flex-col gap-1 p-2 w-64 bg-white rounded-sm border border-gray-200 shadow-lg">
                             {% for field in order_by_fields %}{% orderbylink search_url field %}{% endfor %}
                         </div>
                     </details>

@@ -3,7 +3,7 @@
 {% block title %}{{ dataset.title }} | DAISY{% endblock %}
 
 {% block content %}
-{% with th="border border-gray-200 px-3 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-3 py-2 align-top text-primary-900" add="inline-flex items-center justify-center h-9 w-9 text-white bg-primary-900 rounded-full hover:bg-primary-800" editc="h-5 w-5 cursor-pointer text-primary-700" delc="h-5 w-5 cursor-pointer text-danger-700" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
+{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex size-9 items-center justify-center rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" editc="h-5 w-5 cursor-pointer text-primary-700" delc="h-5 w-5 cursor-pointer text-danger-700" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
     <div class="relative mt-4">
         <p class="font-display text-sm font-semibold text-primary-900">Dataset</p>
         <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ dataset.title }}</h1>
@@ -13,7 +13,7 @@
                     <dt class="font-semibold">Local custodians</dt>
                     <dd class="flex flex-wrap gap-1">
                         {% for local_custodian in dataset.local_custodians.all %}
-                            <span class="inline-flex items-center rounded-md bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ local_custodian }}</span>
+                            <span class="inline-flex items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ local_custodian }}</span>
                         {% endfor %}
                     </dd>
                     <dt class="font-semibold">Project</dt>
@@ -29,16 +29,16 @@
                         <dd class="flex flex-wrap gap-1">
                             {% for exposure in exposure_list %}
                                 {% if exposure.endpoint.url_pattern %}
-                                    <a href="{{ exposure.url }}" class="inline-flex items-center rounded-md border border-info-300 bg-info-50 px-2 py-0.5 text-xs transition-colors text-primary-900 hover:border-primary-900 hover:bg-info-100">{{ exposure.endpoint.name }}</a>
+                                    <a href="{{ exposure.url }}" class="inline-flex items-center rounded-xs border border-info-300 bg-info-50 px-2 py-0.5 text-xs transition-colors text-primary-900 hover:border-primary-900 hover:bg-info-100">{{ exposure.endpoint.name }}</a>
                                 {% else %}
-                                    <span class="inline-flex items-center rounded-md border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ exposure.endpoint.name }}</span>
+                                    <span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ exposure.endpoint.name }}</span>
                                 {% endif %}
                             {% endfor %}
                         </dd>
                     {% endif %}
                     {% if dataset.dac %}
                         <dt class="font-semibold">Data Access Committee (DAC)</dt>
-                        <dd><span class="inline-flex items-center rounded-md border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ dataset.dac.title }}</span></dd>
+                        <dd><span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ dataset.dac.title }}</span></dd>
                     {% endif %}
                 </dl>
             </div>
@@ -60,20 +60,20 @@
                 <a href="{% url 'admin:core_dataset_change' dataset.pk %}"
                    id="dataset-admin"
                    title="See in django admin"
-                   class="inline-flex h-10 w-10 items-center justify-center text-gray-700 rounded-full border border-gray-300 bg-white shadow hover:bg-gray-50"><i data-lucide="wrench" class="h-5 w-5"></i></a>
+                   class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"><i data-lucide="wrench" class="h-5 w-5"></i></a>
             {% endif %}
             {% if is_admin %}
-                <a class="inline-flex h-10 w-10 items-center justify-center text-gray-700 rounded-full border border-gray-300 bg-white shadow hover:bg-gray-50"
+                <a class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
                    title="Manage dataset permissions"
                    href="{% url 'permission_dataset' pk=dataset.id %}"><i data-lucide="eye" class="h-5 w-5"></i></a>
             {% endif %}
             {% if can_edit %}
-                <a class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-primary-900 shadow hover:bg-primary-800"
+                <a class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-primary-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
                    title="Edit dataset"
                    href="{% url 'dataset_edit' pk=dataset.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
                 {% if not dataset.is_published %}
                     <a id="deletedataset"
-                       class="inline-flex h-10 w-10 items-center justify-center text-white rounded-full bg-danger-900 shadow hover:bg-danger-800"
+                       class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-danger-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-danger-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
                        title="Delete dataset"
                        data-toggle="modal"
                        data-target="#modal"
@@ -85,14 +85,15 @@
     </div>
 
     {#    DECLARATIONS      #}
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
-            <div class="flex items-center justify-between">
+            <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}"><i data-lucide="clipboard-list" class="h-6 w-6"></i> Data declarations</h2>
                 {% if can_edit %}
                     <a href="{% url 'data_declarations_add' pk=dataset.id %}" class="{{ add }}" title="Add new data declaration to dataset"><i data-lucide="plus" class="h-5 w-5"></i></a>
                 {% endif %}
             </div>
+            <div></div>
             {% if dataset.data_declarations.all %}
                 <div class="overflow-x-auto">
                     <table class="min-w-full border-collapse text-sm lg:text-base">
@@ -144,9 +145,9 @@
     </div>
 
     {#    LEGAL BASIS  definitions for the DATASET     #}
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
-            <div class="flex items-center justify-between">
+            <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}"><i data-lucide="shield-check" class="h-6 w-6"></i> Legal bases</h2>
                 {% if can_edit %}
                     <button class="{{ add }}" type="button"
@@ -206,9 +207,9 @@
     </div>
 
     {#    STORAGE LOCATION definitions for the DATASET  #}
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
-            <div class="flex items-center justify-between">
+            <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}"><i data-lucide="database" class="h-6 w-6"></i> Storages</h2>
                 {% if can_edit %}
                     <button class="{{ add }}" type="button"
@@ -266,9 +267,9 @@
     </div>
 
     {#    (INTERNAL) ACCESS GIVEN TO DATA FILES     #}
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div id="accesses" class="mt-4 scroll-mt-8 rounded-sm bg-white shadow-sm">
         <div class="p-4">
-            <div class="flex items-center justify-between">
+            <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}"><i data-lucide="users" class="h-6 w-6"></i> Accesses
                     {% if can_see_protected %}
                         <a href="{% url 'history' %}?entity_name=access&parent_entity_name=dataset&parent_entity_id={{ dataset.pk }}" title="See dataset accesses history"><i data-lucide="history" class="h-5 w-5 text-primary-700"></i></a>
@@ -349,9 +350,9 @@
     </div>
 
     {#    LOGBOOK ENTRIES FOR THE DATASET     #}
-    <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
-            <div class="flex items-center justify-between">
+            <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}"><i data-lucide="activity" class="h-6 w-6"></i> Logbook</h2>
                 {% if can_edit %}
                     <button class="{{ add }}" type="button"
@@ -417,9 +418,9 @@
 
     {% if request.user.can_publish %}
         {#    Exposure endpoints for the DATASET  #}
-        <div class="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div class="mt-4 rounded-sm bg-white shadow-sm">
             <div class="p-4">
-                <div class="flex items-center justify-between">
+                <div class="mb-4 flex items-center justify-between">
                     <h2 class="{{ title2 }}"><i data-lucide="globe" class="h-6 w-6"></i> Exposure</h2>
                     <button class="{{ add }}" type="button"
                             id="addexposure"

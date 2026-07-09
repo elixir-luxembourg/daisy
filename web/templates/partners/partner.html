@@ -4,7 +4,7 @@
 {% block content_title %}{{ partner }}{% endblock %}
 
 {% block content %}
-{% with fab="inline-flex items-center justify-center h-10 w-10 text-gray-700 bg-white rounded-full border border-gray-300 shadow hover:bg-gray-50" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
+{% with fab="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
     <div class="relative mt-4">
         {% if partner.is_published %}
             <span class="absolute top-4 left-4 inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-green-600 rounded-full">Published</span>
@@ -59,12 +59,12 @@
                 {% endif %}
             {% endif %}
             {% if can_edit %}
-                <a class="inline-flex items-center justify-center h-10 w-10 text-white bg-primary-900 rounded-full shadow hover:bg-primary-800"
+                <a class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-primary-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
                    title="Edit partner"
                    href="{% url 'partner_edit' pk=partner.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
                 {% if not partner.is_published %}
                     <a id="deletepartner"
-                       class="inline-flex items-center justify-center h-10 w-10 text-white bg-danger-900 rounded-full shadow hover:bg-danger-800"
+                       class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-danger-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-danger-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
                        title="Delete partner"
                        data-toggle="modal" data-target="#modal"
                        data-ajax-url="{% url 'partner_delete' partner.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>
@@ -75,10 +75,10 @@
 
     <div class="mt-4 grid gap-4 md:grid-cols-2">
         {#    Contacts    #}
-        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="{{ title2 }}"><i data-lucide="contact" class="h-6 w-6"></i> Contacts at this partner</h2>
-                <ul class="mt-2 divide-y divide-gray-200 rounded border border-gray-200">
+                <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
                     {% for contact in partner.contacts.all %}
                         <li class="flex items-center gap-2 px-3 py-2"><i data-lucide="contact-round" class="h-5 w-5"></i><strong>{{ contact.full_name }}</strong></li>
                     {% endfor %}
@@ -86,12 +86,12 @@
             </div>
         </div>
         {#    Contracts    #}
-        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="{{ title2 }}"><i data-lucide="handshake" class="h-6 w-6"></i> Contracts with this partner</h2>
                 <ul class="mt-2 flex flex-col gap-2">
                     {% for collab in partner.contracts.all %}
-                        <li class="rounded border border-gray-200">
+                        <li class="rounded-sm border border-gray-200">
                             <div class="flex items-center gap-2 px-3 py-2 border-b border-gray-200"><i data-lucide="link" class="h-5 w-5"></i><a class="text-primary-700 hover:underline" href="{% url 'contract' pk=collab.id %}"><strong>{{ collab.project|truncatechars:100 }}</strong></a></div>
                             <div class="px-3 py-2">
                                 {% for custodian in collab.local_custodians.all %}
