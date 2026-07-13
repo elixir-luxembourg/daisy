@@ -5,7 +5,7 @@
 {% block head_end %}{{ document_form.media }}{% endblock %}
 
 {% block content %}
-{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex size-9 items-center justify-center rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" addsum="cursor-pointer inline-flex size-9 items-center justify-center rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 hidden mt-2 w-56 bg-white rounded-sm border border-gray-200 shadow-lg group-open:block" item="block px-4 py-2 w-full text-left text-sm hover:bg-gray-50" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
+{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" addsum="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 hidden mt-2 w-56 bg-white rounded-sm border border-gray-200 shadow-lg group-open:block" item="block px-4 py-2 w-full text-left text-sm hover:bg-gray-50" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
     <div class="relative mt-4">
         <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
             <div class="min-w-0">
@@ -116,7 +116,7 @@
                 <div class="mb-4 flex items-center justify-between">
                     <h2 class="{{ title2 }}"><i data-lucide="users" class="h-6 w-6"></i> Personnel</h2>
                     {% if can_edit %}
-                        <button data-toggle="modal" data-target="#modal" data-modal-title="Add personnel to project" data-ajax-url="{% url 'add_personnel_to_project' pk=project.id %}" class="{{ add }}" type="button" title="Add personnel to project"><i data-lucide="plus" class="h-5 w-5"></i></button>
+                        <button data-toggle="modal" data-target="#modal" data-modal-title="Add personnel to project" data-ajax-url="{% url 'add_personnel_to_project' pk=project.id %}" class="{{ add }}" type="button" title="Add personnel to project"><i data-lucide="plus" class="h-4 w-4"></i><span>Add personnel</span></button>
                     {% endif %}
                 </div>
                 <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
@@ -134,7 +134,7 @@
                     <h2 class="{{ title2 }}"><i data-lucide="contact" class="h-6 w-6"></i> Contacts</h2>
                     {% if can_edit %}
                         <details class="group relative">
-                            <summary class="{{ addsum }}" title="Add contact to project"><i data-lucide="plus" class="h-5 w-5"></i></summary>
+                            <summary class="{{ addsum }}" title="Add contact to project"><i data-lucide="plus" class="h-4 w-4"></i><span>Add contact</span></summary>
                             <div class="{{ menu }}">
                                 <button data-toggle="modal" data-target="#modal" data-modal-title="Add contact to project" data-ajax-url="{% url 'pick_contact_for_project' pk=project.id %}" class="{{ item }}" type="button" title="Link to existing contact">Link to existing contact</button>
                                 <button data-toggle="modal" data-target="#modal" data-modal-title="Add contact to project" data-ajax-url="{% url 'add_contact_to_project' pk=project.id %}" class="{{ item }}" type="button" title="Add new contact">Create a new contact</button>
@@ -159,9 +159,9 @@
     <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
             <div class="mb-4 flex items-center justify-between">
-                <h2 class="{{ title2 }}"><i data-lucide="folder" class="h-6 w-6"></i> Data of this project</h2>
-                {% if can_edit %}
-                    <a href="{% url 'project_dataset_wizard' pk=project.pk %}" class="{{ add }}" title="Add new dataset to project"><i data-lucide="plus" class="h-5 w-5"></i></a>
+                <h2 class="{{ title2 }}"><i data-lucide="folder" class="h-6 w-6"></i> Datasets</h2>
+                {% if can_edit and project.datasets.all %}
+                    <a href="{% url 'project_dataset_wizard' pk=project.pk %}" class="{{ add }}" title="Add new dataset to project"><i data-lucide="plus" class="h-4 w-4"></i><span>Add dataset</span></a>
                 {% endif %}
             </div>
             {% if project.datasets.all %}
@@ -194,10 +194,12 @@
                     </table>
                 </div>
             {% else %}
-                {% if can_edit %}
-                    <p class="mt-4 text-center text-danger-700"><br/><em>Project is empty!</em></p>
-                    <div class="mt-2 flex items-center justify-center gap-2 text-gray-500"><p>Click here to create a dataset</p><i data-lucide="arrow-right" class="h-5 w-5"></i></div>
-                {% endif %}
+                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                    <p class="text-sm text-gray-500">No datasets in this project yet.</p>
+                    {% if can_edit %}
+                        <a href="{% url 'project_dataset_wizard' pk=project.pk %}" class="{{ add }} mt-3"><i data-lucide="plus" class="h-4 w-4"></i><span>Add dataset</span></a>
+                    {% endif %}
+                </div>
             {% endif %}
         </div>
     </div>
@@ -209,7 +211,7 @@
                 <h2 class="{{ title2 }}"><i data-lucide="handshake" class="h-6 w-6"></i> Contracts</h2>
                 {% if can_edit %}
                     <details class="group relative">
-                        <summary class="{{ addsum }}" title="Add contract to project"><i data-lucide="plus" class="h-5 w-5"></i></summary>
+                        <summary class="{{ addsum }}" title="Add contract to project"><i data-lucide="plus" class="h-4 w-4"></i><span>Add contract</span></summary>
                         <div class="{{ menu }}">
                             <a class="{{ item }}" href="{% url 'project_contract_create' pk=project.pk %}">Create a new contract</a>
                         </div>
@@ -258,7 +260,7 @@
                 {% if can_edit %}
                     <div class="flex justify-end" id="add-project-document">
                         <details class="group relative">
-                            <summary class="{{ addsum }}" title="Add document to project"><i data-lucide="plus" class="h-5 w-5"></i></summary>
+                            <summary class="{{ addsum }}" title="Add document to project"><i data-lucide="plus" class="h-4 w-4"></i><span>Add document</span></summary>
                             <div class="{{ menu }}">
                                 <button data-toggle="modal"
                                         data-target="#modal"
@@ -285,7 +287,7 @@
                 <h2 class="{{ title2 }}"><i data-lucide="book" class="h-6 w-6"></i> Publications</h2>
                 {% if can_edit %}
                     <details class="group relative">
-                        <summary class="{{ addsum }}" title="Add publication to project"><i data-lucide="plus" class="h-5 w-5"></i></summary>
+                        <summary class="{{ addsum }}" title="Add publication to project"><i data-lucide="plus" class="h-4 w-4"></i><span>Add publication</span></summary>
                         <div class="{{ menu }}">
                             <button data-toggle="modal" data-target="#modal" data-modal-title="Add publication to project" data-ajax-url="{% url 'pick_publication_for_project' pk=project.id %}" class="{{ item }}" type="button" title="Link to existing publication">Link to existing publication</button>
                             <button data-toggle="modal" data-target="#modal" data-modal-title="Add publication to project" data-ajax-url="{% url 'add_publication_to_project' pk=project.id %}" class="{{ item }}" type="button" title="Add new publication">Create a new publication</button>

@@ -5,7 +5,7 @@
 {% block head_end %}{{ document_form.media }}{% endblock %}
 
 {% block content %}
-{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex size-9 items-center justify-center rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" addsum="cursor-pointer inline-flex size-9 items-center justify-center rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none cursor-pointer list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 mt-2 hidden w-56 bg-white rounded-sm border border-gray-200 shadow-lg group-open:block" item="block w-full px-4 py-2 text-left text-sm hover:bg-gray-50" editc="h-5 w-5 cursor-pointer text-primary-700" delc="h-5 w-5 cursor-pointer text-danger-700" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
+{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" addsum="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none cursor-pointer list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 mt-2 hidden w-56 bg-white rounded-sm border border-gray-200 shadow-lg group-open:block" item="block w-full px-4 py-2 text-left text-sm hover:bg-gray-50" editc="h-5 w-5 cursor-pointer text-primary-700" delc="h-5 w-5 cursor-pointer text-danger-700" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
     <div class="relative mt-4">
         <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
             <div class="min-w-0">
@@ -50,7 +50,7 @@
             <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}"><i data-lucide="users" class="h-6 w-6"></i> Participants</h2>
                 {% if can_edit %}
-                    <a href="{% url 'add_partner_role_to_contract' pk=contract.pk %}" class="{{ add }}" title="Add participant to contract"><i data-lucide="plus" class="h-5 w-5"></i></a>
+                    <a href="{% url 'add_partner_role_to_contract' pk=contract.pk %}" class="{{ add }}" title="Add participant to contract"><i data-lucide="plus" class="h-4 w-4"></i><span>Add participant</span></a>
                 {% endif %}
             </div>
             <div class="overflow-x-auto">
@@ -103,7 +103,7 @@
                 {% if can_edit %}
                     <div class="flex justify-end" id="add-contract-document">
                         <details class="group relative">
-                            <summary class="{{ addsum }}" title="Add document to contract"><i data-lucide="plus" class="h-5 w-5"></i></summary>
+                            <summary class="{{ addsum }}" title="Add document to contract"><i data-lucide="plus" class="h-4 w-4"></i><span>Add document</span></summary>
                             <div class="{{ menu }}">
                                 <button data-toggle="modal"
                                         data-target="#modal"
@@ -156,7 +156,7 @@
                     data-modal-title="Create new DAC"
                     data-ajax-url="{% url 'add_dac_to_contract' contract_pk=contract.pk %}"
                     data-post-mode="true"
-                    data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"><i data-lucide="plus" class="h-5 w-5"></i></button>
+                    data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Create DAC</span></button>
             </div>
             {% if dacs %}
                 <ul class="py-1 text-left">
