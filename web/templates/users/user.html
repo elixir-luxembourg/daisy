@@ -10,39 +10,36 @@
             <span class="absolute top-4 left-4 inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-gray-500 rounded-full">{{ user.source }}</span>
         {% endif %}
         <span class="text-gray-500">User</span>
-        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ user }}</h1>
-        <div class="grid gap-6 md:grid-cols-2">
-            <div>
-                <dl>
-                    <dt class="font-semibold">First Name</dt>
-                    <dd>{{ user.first_name|default:'unknown' }}</dd>
-                    <dt class="font-semibold">Last Name</dt>
-                    <dd>{{ user.last_name|default:'-' }}</dd>
-                    <dt class="font-semibold">Email Address</dt>
-                    <dd>{{ user.email|default:'unknown' }}</dd>
-                </dl>
+        <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
+            <div class="min-w-0">
+                <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ user }}</h1>
             </div>
-            <div>
-                <dl>
-                    <dt class="font-semibold">Is active</dt>
-                    <dd>{{ user.is_active|yesno }}</dd>
-                    <dt class="font-semibold">User groups</dt>
-                    <dd>{{ user.groups.all|join:", "|default:'-' }}</dd>
-                </dl>
-            </div>
-        </div>
-        <div class="absolute top-4 right-4 flex gap-2">
+            <div class="mt-1 flex flex-wrap shrink-0 gap-2">
             {% if can_edit %}
                 {% if user.source == manual_source %}
-                    <a id="deleteuser" class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-danger-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-danger-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
+                    <a id="deleteuser" class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-danger-200 bg-white px-4 text-sm font-medium text-danger-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-danger-900 hover:bg-danger-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
                        title="Delete"
                        data-toggle="modal" data-target="#modal"
-                       data-ajax-url="{% url 'user_delete' user.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>
+                       data-ajax-url="{% url 'user_delete' user.id %}"><i data-lucide="trash-2" class="h-4 w-4" aria-hidden="true"></i><span>Delete</span></a>
                 {% endif %}
-                <a class="{{ fabblue }}" href="{% url 'user_edit' pk=user.id %}" title="Edit user"><i data-lucide="pencil" class="h-5 w-5"></i></a>
+                <a class="{{ fabblue }}" href="{% url 'user_edit' pk=user.id %}" title="Edit user"><i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i><span>Edit</span></a>
             {% endif %}
-            <a class="{{ fabblue }}" href="{% url 'history' %}?user={{ user.pk }}" title="See user actions"><i data-lucide="history" class="h-5 w-5"></i></a>
+            <a class="{{ fabblue }}" href="{% url 'history' %}?user={{ user.pk }}" title="See user actions"><i data-lucide="history" class="h-4 w-4" aria-hidden="true"></i><span>History</span></a>
+            </div>
         </div>
+        <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">First Name</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ user.first_name|default:'unknown' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Last Name</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ user.last_name|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Email Address</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ user.email|default:'unknown' }}</dd>
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Is active</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ user.is_active|yesno }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">User groups</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ user.groups.all|join:", "|default:'-' }}</dd>
+        </dl>
     </div>
 
     <div class="mt-4">

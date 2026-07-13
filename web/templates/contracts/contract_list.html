@@ -3,8 +3,9 @@
 {% block title %}Contracts | DAISY{% endblock %}
 
 {% block content %}
-    <div class="mt-4">
+    <div class="mt-4 mb-8 flex flex-wrap items-center justify-between gap-4">
         <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">Contracts</h1>
+        <a class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" href="{% url 'contract_add' %}"><i data-lucide="plus" class="h-4 w-4" aria-hidden="true"></i><span>Add contract</span></a>
     </div>
     <div class="flex flex-wrap w-full">
         {% for contract  in  contract_list %}
@@ -29,6 +30,3 @@
 {% endblock %}
 
 
-{% block floating-buttons %}
-    <a class="fixed bottom-6 right-6 z-40 inline-flex h-14 w-14 items-center justify-center text-white rounded-full bg-primary-900 shadow-lg hover:bg-primary-800" href="{% url 'contract_add' %}" title="Add contract" aria-label="Add contract"><i data-lucide="plus" class="h-6 w-6"></i></a>
-{% endblock %}

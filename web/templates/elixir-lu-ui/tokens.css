@@ -58,8 +58,6 @@
   --color-lcsb-sky-900: #afdef6;
   --color-lcsb-sky-950: #afdef6;
 
-  /* Accent — single-step amber (link underlines, decorative motif). */
-  --color-accent-amber: #f6931d;
 }
 
 /* ───────────────────────────── Semantic tier ──────────────────────────── */
@@ -115,9 +113,6 @@
   --color-info-800: var(--color-lcsb-sky-800);
   --color-info-900: var(--color-lcsb-sky-900);
   --color-info-950: var(--color-lcsb-sky-950);
-
-  /* accent (single step) */
-  --color-accent: var(--color-accent-amber);
 
   /* text/icon colour to use on a primary-filled surface (WCAG: white on
      primary-900 #1e3446 ≈ 12.3:1). Override per app when primary changes. */

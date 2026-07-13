@@ -223,8 +223,28 @@ $(document).ready(function () {
         }
     });
 
-    if ($.fn.DataTable && $("#users_table").length) {
-        $("#users_table").DataTable();
+    // Users roster: plain styleguide table with a client-side text filter
+    // (replaces the former DataTables widget on this page).
+    var $userFilter = $("#user-filter");
+    if ($userFilter.length) {
+        var $rows = $("#users_table tbody tr[data-filterable]");
+        var $empty = $("#users_table tbody tr[data-filter-empty]");
+        var $count = $("#user-count");
+        var updateCount = function (shown) {
+            $count.text(shown === $rows.length ? $rows.length + " users" : shown + " of " + $rows.length + " users");
+        };
+        updateCount($rows.length);
+        $userFilter.on("input", function () {
+            var q = $(this).val().trim().toLowerCase();
+            var shown = 0;
+            $rows.each(function () {
+                var match = !q || $(this).text().toLowerCase().indexOf(q) !== -1;
+                $(this).toggle(match);
+                if (match) shown++;
+            });
+            $empty.prop("hidden", shown !== 0);
+            updateCount(shown);
+        });
     }
 
     if ($.fn.select2) {

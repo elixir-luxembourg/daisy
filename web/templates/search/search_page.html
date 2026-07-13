@@ -4,9 +4,15 @@
 
 
 {% block content %}
-    <header class="mt-4 mb-8">
-        <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight text-primary-900 lg:text-5xl">{{ title }}</h1>
-        {% if help_text %}<p class="mt-3 max-w-prose text-lg leading-snug text-primary-900 lg:text-xl">{{ help_text }}</p>{% endif %}
+    <header class="mt-4 mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div class="min-w-0">
+            <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight text-primary-900 lg:text-5xl">{{ title }}</h1>
+            {% if help_text %}<p class="mt-3 max-w-prose text-lg leading-snug text-primary-900 lg:text-xl">{{ help_text }}</p>{% endif %}
+        </div>
+        {% if add_url %}
+        <a class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none mt-3" href="{% url add_url %}{% if reset %}?reset=true{% endif %}">
+            <i data-lucide="plus" class="h-4 w-4" aria-hidden="true"></i><span>Add {{ title|slice:":-1"|lower }}</span></a>
+        {% endif %}
     </header>
     <div class="md:grid md:grid-cols-[13rem_minmax(0,1fr)] md:gap-10 xl:grid-cols-[15rem_minmax(0,1fr)] xl:gap-12">
         <div id="sidebar-left" class="hidden md:block">
@@ -28,9 +34,6 @@
 
 
 {% block floating-buttons %}
-    <a class="float-right cursor-pointer inline-flex size-12 items-center justify-center rounded-lg bg-primary-900 text-on-primary shadow-lg transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" href="{% url add_url %}{% if reset %}?reset=true{% endif %}" aria-label="Add new {{ title|lower }}">
-        <i data-lucide="plus" class="h-6 w-6" aria-hidden="true"></i>
-    </a>
     <a class="float-right cursor-pointer inline-flex size-12 items-center justify-center rounded-lg border border-gray-200 bg-white text-primary-900 shadow-lg transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none md:hidden" href="#sidebar-responsive-left" aria-label="Filter the results">
         <i data-lucide="arrow-down-wide-narrow" class="h-6 w-6" aria-hidden="true"></i>
     </a>

@@ -7,88 +7,85 @@
 {% block content %}
 {% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex size-9 items-center justify-center rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" addsum="cursor-pointer inline-flex size-9 items-center justify-center rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 hidden mt-2 w-56 bg-white rounded-sm border border-gray-200 shadow-lg group-open:block" item="block px-4 py-2 w-full text-left text-sm hover:bg-gray-50" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
     <div class="relative mt-4">
-        <p class="font-display text-sm font-semibold text-primary-900">Project</p>
-        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ project.acronym }}</h1>
-        <div class="grid gap-6 md:grid-cols-2">
-            <div>
-                <dl>
-                    <dt class="font-semibold">Full title</dt>
-                    <dd>{{ project.title|default:'-' }}</dd>
-                    <dt class="font-semibold">Local custodians</dt>
-                    <dd class="flex flex-wrap gap-1">
+        <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
+            <div class="min-w-0">
+                <p class="font-display text-sm font-semibold text-primary-900">Project</p>
+                <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ project.acronym }}</h1>
+            </div>
+            <div class="mt-1 flex flex-wrap shrink-0 gap-2">
+            {% if request.user.is_superuser %}
+                <a href="{% url 'admin:core_project_change' project.pk %}"
+                   id="project-admin"
+                   title="See in django admin"
+                   class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"><i data-lucide="wrench" class="h-4 w-4" aria-hidden="true"></i><span>Admin</span></a>
+            {% endif %}
+            {% if is_admin %}
+                <a class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
+                   title="Manage project permissions"
+                   href="{% url 'permission_project' pk=project.id %}"><i data-lucide="eye" class="h-4 w-4" aria-hidden="true"></i><span>Permissions</span></a>
+            {% endif %}
+            {% if can_edit %}
+                <a class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
+                   title="Edit project"
+                   href="{% url 'project_edit' pk=project.id %}"><i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i><span>Edit</span></a>
+                {% if not project.is_published %}
+                    <a id="deleteproject"
+                       class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-danger-200 bg-white px-4 text-sm font-medium text-danger-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-danger-900 hover:bg-danger-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
+                       title="Delete project"
+                       data-toggle="modal"
+                       data-target="#modal"
+                       data-ajax-url="{% url 'project_delete' project.id %}"><i data-lucide="trash-2" class="h-4 w-4" aria-hidden="true"></i><span>Delete</span></a>
+                {% endif %}
+            {% endif %}
+            </div>
+        </div>
+        <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Full title</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.title|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Local custodians</dt>
+                    <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
                         {% for local_custodian in project.local_custodians.all %}
                             <span class="inline-flex items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ local_custodian }}</span>
                         {% endfor %}
                     </dd>
-                    <dt class="font-semibold">Start date</dt>
-                    <dd>{{ project.start_date|default:'-' }}</dd>
-                    <dt class="font-semibold">End date</dt>
-                    <dd>{{ project.end_date|default:'-' }}</dd>
-                    <dt class="font-semibold">Project web page</dt>
-                    <dd>{{ project.project_web_page|default:'-' }}</dd>
-                    <dt class="font-semibold">Funding resources</dt>
-                    <dd>{{ project.funding_sources.all|join:", "|default:'-' }}</dd>
-                    <dt class="font-semibold">Sub projects</dt>
-                    <dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Start date</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.start_date|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">End date</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.end_date|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Project web page</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.project_web_page|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Funding resources</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.funding_sources.all|join:", "|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Sub projects</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">
                         {% if project.child_projects.all %}
                             {% for prj in project.child_projects.all %}
                                 <a class="text-primary-700 hover:underline" href="{% url 'project' pk=prj.pk %}">{{ prj }}</a>
                             {% endfor %}
                         {% else %}-{% endif %}
                     </dd>
-                    <dt class="font-semibold">Umbrella project</dt>
-                    <dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Umbrella project</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">
                         {% if project.umbrella_project %}<a class="text-primary-700 hover:underline" href="{% url 'project' pk=project.umbrella_project.pk %}">{{ project.umbrella_project }}</a>{% else %}-{% endif %}
                     </dd>
-                </dl>
-            </div>
-            <div>
-                <dl>
-                    <dt class="font-semibold">Accession number</dt>
-                    <dd>{{ project.elu_accession|default:'-' }}</dd>
-                    <dt class="font-semibold">Study features</dt>
-                    <dd>{{ project.study_terms.all|join:", "|default:'-' }}</dd>
-                    <dt class="font-semibold">Disease terms</dt>
-                    <dd>{{ project.disease_terms.all|join:", "|default:'-' }}</dd>
-                    <dt class="font-semibold">Gene terms</dt>
-                    <dd>{{ project.gene_terms.all|join:", "|default:'-' }}</dd>
-                    <dt class="font-semibold">Phenotype terms</dt>
-                    <dd>{{ project.phenotype_terms.all|join:", "|default:'-' }}</dd>
-                    <dt class="font-semibold">Includes automated profiling</dt>
-                    <dd>{{ project.includes_automated_profiling|yesno }}</dd>
-                    <dt class="font-semibold">Remarks</dt>
-                    <dd>{{ project.comments|default:'-' }}</dd>
-                    <dt class="font-semibold">Last update</dt>
-                    <dd>{{ project.updated }}</dd>
-                </dl>
-            </div>
-        </div>
-        <div class="absolute top-4 right-4 flex gap-2">
-            {% if request.user.is_superuser %}
-                <a href="{% url 'admin:core_project_change' project.pk %}"
-                   id="project-admin"
-                   title="See in django admin"
-                   class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"><i data-lucide="wrench" class="h-5 w-5"></i></a>
-            {% endif %}
-            {% if is_admin %}
-                <a class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
-                   title="Manage project permissions"
-                   href="{% url 'permission_project' pk=project.id %}"><i data-lucide="eye" class="h-5 w-5"></i></a>
-            {% endif %}
-            {% if can_edit %}
-                <a class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-primary-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
-                   title="Edit project"
-                   href="{% url 'project_edit' pk=project.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
-                {% if not project.is_published %}
-                    <a id="deleteproject"
-                       class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-danger-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-danger-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
-                       title="Delete project"
-                       data-toggle="modal"
-                       data-target="#modal"
-                       data-ajax-url="{% url 'project_delete' project.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>
-                {% endif %}
-            {% endif %}
-        </div>
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Accession number</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.elu_accession|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Study features</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.study_terms.all|join:", "|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Disease terms</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.disease_terms.all|join:", "|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Gene terms</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.gene_terms.all|join:", "|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Phenotype terms</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.phenotype_terms.all|join:", "|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Includes automated profiling</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.includes_automated_profiling|yesno }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Remarks</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.comments|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Last update</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.updated }}</dd>
+        </dl>
     </div>
 
     {% if project.description %}
@@ -104,11 +101,11 @@
         <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="{{ title2 }}"><i data-lucide="shield" class="h-6 w-6"></i> Ethics</h2>
-                <dl>
-                    <dt class="font-semibold">Has national approval?</dt>
-                    <dd>{{ project.has_cner|yesno }} {% if project.cner_notes %}<a class="text-primary-700 hover:underline" href="#" data-toggle="modal" data-target="#modal" data-modal-content="{{ project.cner_notes }}" data-modal-title="National ethics approval notes">(view notes)</a>{% endif %}</dd>
-                    <dt class="font-semibold">Has institutional approval?</dt>
-                    <dd>{{ project.has_erp|yesno }} {% if project.erp_notes %}<a class="text-primary-700 hover:underline" href="#" data-toggle="modal" data-target="#modal" data-modal-content="{{ project.erp_notes }}" data-modal-title="Institutional ethics approval notes">(view notes)</a>{% endif %}</dd>
+                <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Has national approval?</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.has_cner|yesno }} {% if project.cner_notes %}<a class="text-primary-700 hover:underline" href="#" data-toggle="modal" data-target="#modal" data-modal-content="{{ project.cner_notes }}" data-modal-title="National ethics approval notes">(view notes)</a>{% endif %}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Has institutional approval?</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.has_erp|yesno }} {% if project.erp_notes %}<a class="text-primary-700 hover:underline" href="#" data-toggle="modal" data-target="#modal" data-modal-content="{{ project.erp_notes }}" data-modal-title="Institutional ethics approval notes">(view notes)</a>{% endif %}</dd>
                 </dl>
             </div>
         </div>

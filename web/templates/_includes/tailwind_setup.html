@@ -5,11 +5,7 @@
 <link rel="preload" href="{% static 'fonts/barlow-600.woff2' %}" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="{% static 'fonts/barlow-condensed-600.woff2' %}" as="font" type="font/woff2" crossorigin />
 
-<link href="{% static 'vendor/datatables/css/dataTables.tailwindcss.min.css' %}" rel="stylesheet"/>
-
 <script src="{% static 'vendor/tailwindcss/browser.js' %}"></script>
-<script defer src="{% static 'vendor/datatables/js/dataTables.min.js' %}"></script>
-<script defer src="{% static 'vendor/datatables/js/dataTables.tailwindcss.min.js' %}"></script>
 <script defer src="{% static 'vendor/lucide/lucide.min.js' %}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -24,7 +20,7 @@
 
       /* Shared LCSB/UNI design system — vendored from elixir-lu/ui and inlined
          here (the browser build can't pull in external CSS files). tokens.css
-         defines the semantic tier (primary/danger/info/accent/on-primary) +
+         defines the semantic tier (primary/danger/info/on-primary) +
          fonts. primary stays UNI Blue — no DAISY override needed.
          DAISY consumes the design system as PURE UTILITIES (see the reference
          styleguide-utilities.html in elixir-lu-ui): components.css is NOT

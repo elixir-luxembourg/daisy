@@ -10,7 +10,7 @@ uses.
 ## How DAISY consumes the design system — PURE UTILITIES (2026-06-25)
 
 DAISY loads **only `tokens.css`** (the semantic tier: `primary` / `danger` /
-`info` / `accent` / `on-primary` + fonts), inlined via `{% include %}` into the
+`info` / `on-primary` + fonts), inlined via `{% include %}` into the
 `<style type="text/tailwindcss">` block in `_includes/tailwind_setup.html`.
 
 **`components.css` is deliberately NOT vendored or loaded.** Templates carry

@@ -22,7 +22,7 @@
     {% endif %}
 
     {% if field.help_text %}
-        <p class="mt-1 text-xs leading-relaxed text-gray-500">{{ field.help_text }}</p>
+        <div class="mt-1 text-xs leading-relaxed text-gray-500 has-[ul]:mt-2 has-[ul]:rounded-sm has-[ul]:border has-[ul]:border-primary-900 has-[ul]:bg-primary-50 has-[ul]:px-3 has-[ul]:py-2 has-[ul]:text-primary-900 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-4">{{ field.help_text }}</div>
     {% endif %}
 </div>
 {% endwith %}

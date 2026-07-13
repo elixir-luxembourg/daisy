@@ -5,28 +5,58 @@
 {% block content %}
 {% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex size-9 items-center justify-center rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" editc="h-5 w-5 cursor-pointer text-primary-700" delc="h-5 w-5 cursor-pointer text-danger-700" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
     <div class="relative mt-4">
-        <p class="font-display text-sm font-semibold text-primary-900">Dataset</p>
-        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ dataset.title }}</h1>
-        <div class="grid gap-6 md:grid-cols-2">
-            <div>
-                <dl>
-                    <dt class="font-semibold">Local custodians</dt>
-                    <dd class="flex flex-wrap gap-1">
+        <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
+            <div class="min-w-0">
+                <p class="font-display text-sm font-semibold text-primary-900">Dataset</p>
+                <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ dataset.title }}</h1>
+                <p class="mt-3 text-sm text-gray-500">Added {{ dataset.added }} &middot; Last edited {{ dataset.updated }}</p>
+            </div>
+            <div class="mt-1 flex flex-wrap shrink-0 gap-2">
+            {% if request.user.is_superuser %}
+                <a href="{% url 'admin:core_dataset_change' dataset.pk %}"
+                   id="dataset-admin"
+                   title="See in django admin"
+                   class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"><i data-lucide="wrench" class="h-4 w-4" aria-hidden="true"></i><span>Admin</span></a>
+            {% endif %}
+            {% if is_admin %}
+                <a class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
+                   title="Manage dataset permissions"
+                   href="{% url 'permission_dataset' pk=dataset.id %}"><i data-lucide="eye" class="h-4 w-4" aria-hidden="true"></i><span>Permissions</span></a>
+            {% endif %}
+            {% if can_edit %}
+                <a class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
+                   title="Edit dataset"
+                   href="{% url 'dataset_edit' pk=dataset.id %}"><i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i><span>Edit</span></a>
+                {% if not dataset.is_published %}
+                    <a id="deletedataset"
+                       class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-danger-200 bg-white px-4 text-sm font-medium text-danger-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-danger-900 hover:bg-danger-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
+                       title="Delete dataset"
+                       data-toggle="modal"
+                       data-target="#modal"
+                       data-confirmation="delete"
+                       data-ajax-url="{% url 'dataset_delete' dataset.id %}"><i data-lucide="trash-2" class="h-4 w-4" aria-hidden="true"></i><span>Delete</span></a>
+                {% endif %}
+            {% endif %}
+            </div>
+        </div>
+        <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Local custodians</dt>
+                    <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
                         {% for local_custodian in dataset.local_custodians.all %}
                             <span class="inline-flex items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ local_custodian }}</span>
                         {% endfor %}
                     </dd>
-                    <dt class="font-semibold">Project</dt>
-                    <dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Project</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">
                         {% if dataset.project %}<a class="text-primary-700 hover:underline" href="{% url 'project' pk=dataset.project.pk %}">{{ dataset.project }}</a>{% else %}-{% endif %}
                     </dd>
-                    <dt class="font-semibold">Other external id(s)</dt>
-                    <dd>{{ dataset.other_external_id|default:'-' }}</dd>
-                    <dt class="font-semibold">Other comments</dt>
-                    <dd>{{ dataset.comments|default:'-'|linebreaks }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Other external id(s)</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ dataset.other_external_id|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Other comments</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ dataset.comments|default:'-'|linebreaks }}</dd>
                     {% if exposure_list|length > 0 %}
-                        <dt class="font-semibold">Published on</dt>
-                        <dd class="flex flex-wrap gap-1">
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Published on</dt>
+                        <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
                             {% for exposure in exposure_list %}
                                 {% if exposure.endpoint.url_pattern %}
                                     <a href="{{ exposure.url }}" class="inline-flex items-center rounded-xs border border-info-300 bg-info-50 px-2 py-0.5 text-xs transition-colors text-primary-900 hover:border-primary-900 hover:bg-info-100">{{ exposure.endpoint.name }}</a>
@@ -37,51 +67,15 @@
                         </dd>
                     {% endif %}
                     {% if dataset.dac %}
-                        <dt class="font-semibold">Data Access Committee (DAC)</dt>
-                        <dd><span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ dataset.dac.title }}</span></dd>
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Data Access Committee (DAC)</dt>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base"><span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ dataset.dac.title }}</span></dd>
                     {% endif %}
-                </dl>
-            </div>
-            <div>
-                <dl>
-                    <dt class="font-semibold">Added on</dt>
-                    <dd>{{ dataset.added }}</dd>
-                    <dt class="font-semibold">Last edit</dt>
-                    <dd>{{ dataset.updated }}</dd>
-                    <dt class="font-semibold">Sensitivity class</dt>
-                    <dd>{{ dataset.sensitivity.name|default:'-' }}</dd>
-                    <dt class="font-semibold">Accession number</dt>
-                    <dd>{{ dataset.elu_accession|default:'-' }}</dd>
-                </dl>
-            </div>
-        </div>
-        <div class="absolute top-4 right-4 flex gap-2">
-            {% if request.user.is_superuser %}
-                <a href="{% url 'admin:core_dataset_change' dataset.pk %}"
-                   id="dataset-admin"
-                   title="See in django admin"
-                   class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"><i data-lucide="wrench" class="h-5 w-5"></i></a>
-            {% endif %}
-            {% if is_admin %}
-                <a class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
-                   title="Manage dataset permissions"
-                   href="{% url 'permission_dataset' pk=dataset.id %}"><i data-lucide="eye" class="h-5 w-5"></i></a>
-            {% endif %}
-            {% if can_edit %}
-                <a class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-primary-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
-                   title="Edit dataset"
-                   href="{% url 'dataset_edit' pk=dataset.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
-                {% if not dataset.is_published %}
-                    <a id="deletedataset"
-                       class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-danger-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-danger-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
-                       title="Delete dataset"
-                       data-toggle="modal"
-                       data-target="#modal"
-                       data-confirmation="delete"
-                       data-ajax-url="{% url 'dataset_delete' dataset.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>
-                {% endif %}
-            {% endif %}
-        </div>
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Sensitivity class</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ dataset.sensitivity.name|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Accession number</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ dataset.elu_accession|default:'-' }}</dd>
+        </dl>
     </div>
 
     {#    DECLARATIONS      #}

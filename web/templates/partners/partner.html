@@ -4,7 +4,7 @@
 {% block content_title %}{{ partner }}{% endblock %}
 
 {% block content %}
-{% with fab="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
+{% with fab="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
     <div class="relative mt-4">
         {% if partner.is_published %}
             <span class="absolute top-4 left-4 inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-green-600 rounded-full">Published</span>
@@ -12,65 +12,62 @@
             <span class="absolute top-4 left-4 inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-gray-500 rounded-full">Not Published</span>
         {% endif %}
         <span class="text-gray-500">Partner</span>
-        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ partner }}</h1>
-        <div class="grid gap-6 md:grid-cols-2">
-            <div>
-                <dl>
-                    <dt class="font-semibold">Name</dt>
-                    <dd>{{ partner.name }}</dd>
-                    <dt class="font-semibold">Acronym</dt>
-                    <dd>{{ partner.acronym }}</dd>
-                    <dt class="font-semibold">Address</dt>
-                    <dd>{{ partner.address|default:'-' }}</dd>
-                    <dt class="font-semibold">Country</dt>
-                    <dd>{{ partner.country.name|default:'-' }}</dd>
-                </dl>
+        <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
+            <div class="min-w-0">
+                <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ partner }}</h1>
             </div>
-            <div>
-                <dl>
-                    <dt class="font-semibold">Is clinical?</dt>
-                    {% if partner.is_clinical %}<dd>YES</dd>{% else %}<dd>NO</dd>{% endif %}
-                    <dt class="font-semibold">Geographic category</dt>
-                    <dd>{{ partner.geo_category }}</dd>
-                    <dt class="font-semibold">Sector category</dt>
-                    <dd>{{ partner.sector_category }}</dd>
-                    <dt class="font-semibold">Accession number</dt>
-                    <dd>{{ partner.elu_accession|default:'-' }}</dd>
-                </dl>
-            </div>
-        </div>
-        <div class="absolute top-4 right-4 flex gap-2">
+            <div class="mt-1 flex flex-wrap shrink-0 gap-2">
             {% if request.user.is_superuser %}
                 <a href="{% url 'admin:core_partner_change' partner.pk %}"
                    id="partner-admin"
                    title="See in django admin"
-                   class="{{ fab }}"><i data-lucide="wrench" class="h-5 w-5"></i></a>
+                   class="{{ fab }}"><i data-lucide="wrench" class="h-4 w-4" aria-hidden="true"></i><span>Admin</span></a>
             {% endif %}
             {% if request.user.can_publish %}
                 {% if not partner.is_published %}
                     <a id="publish"
                        class="{{ fab }}"
-                       href="{% url 'partner_publish' pk=partner.id %}"><i data-lucide="upload" class="h-5 w-5"></i></a>
+                       href="{% url 'partner_publish' pk=partner.id %}"><i data-lucide="upload" class="h-4 w-4" aria-hidden="true"></i><span>Publish</span></a>
                 {% else %}
                     <a id="unpublish"
                        data-confirm="Are you sure to unpublish the partner? The changes won't be propagated to other systems!"
                        class="{{ fab }}"
-                       href="{% url 'partner_unpublish' pk=partner.id %}"><i data-lucide="undo-2" class="h-5 w-5"></i></a>
+                       href="{% url 'partner_unpublish' pk=partner.id %}"><i data-lucide="undo-2" class="h-4 w-4" aria-hidden="true"></i><span>Unpublish</span></a>
                 {% endif %}
             {% endif %}
             {% if can_edit %}
-                <a class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-primary-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
+                <a class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
                    title="Edit partner"
-                   href="{% url 'partner_edit' pk=partner.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
+                   href="{% url 'partner_edit' pk=partner.id %}"><i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i><span>Edit</span></a>
                 {% if not partner.is_published %}
                     <a id="deletepartner"
-                       class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-danger-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-danger-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
+                       class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-danger-200 bg-white px-4 text-sm font-medium text-danger-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-danger-900 hover:bg-danger-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
                        title="Delete partner"
                        data-toggle="modal" data-target="#modal"
-                       data-ajax-url="{% url 'partner_delete' partner.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>
+                       data-ajax-url="{% url 'partner_delete' partner.id %}"><i data-lucide="trash-2" class="h-4 w-4" aria-hidden="true"></i><span>Delete</span></a>
                 {% endif %}
             {% endif %}
+            </div>
         </div>
+        <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Name</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ partner.name }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Acronym</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ partner.acronym }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Address</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ partner.address|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Country</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ partner.country.name|default:'-' }}</dd>
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Is clinical?</dt>
+                    {% if partner.is_clinical %}<dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">YES</dd>{% else %}<dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">NO</dd>{% endif %}
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Geographic category</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ partner.geo_category }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Sector category</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ partner.sector_category }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Accession number</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ partner.elu_accession|default:'-' }}</dd>
+        </dl>
     </div>
 
     <div class="mt-4 grid gap-4 md:grid-cols-2">

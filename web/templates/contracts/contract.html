@@ -7,44 +7,41 @@
 {% block content %}
 {% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex size-9 items-center justify-center rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" addsum="cursor-pointer inline-flex size-9 items-center justify-center rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none cursor-pointer list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 mt-2 hidden w-56 bg-white rounded-sm border border-gray-200 shadow-lg group-open:block" item="block w-full px-4 py-2 text-left text-sm hover:bg-gray-50" editc="h-5 w-5 cursor-pointer text-primary-700" delc="h-5 w-5 cursor-pointer text-danger-700" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
     <div class="relative mt-4">
-        <p class="font-display text-sm font-semibold text-primary-900">Contract</p>
-        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ contract }}</h1>
-        <div class="grid gap-6 md:grid-cols-2">
-            <div>
-                <dl>
+        <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
+            <div class="min-w-0">
+                <p class="font-display text-sm font-semibold text-primary-900">Contract</p>
+                <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ contract }}</h1>
+            </div>
+            <div class="mt-1 flex flex-wrap shrink-0 gap-2">
+            {% if can_edit %}
+                <a class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
+                   title="Edit contract"
+                   href="{% url 'contract_edit' pk=contract.id %}"><i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i><span>Edit</span></a>
+                {% if not contract.is_published %}
+                    <a id="deletecontract"
+                       class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-danger-200 bg-white px-4 text-sm font-medium text-danger-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-danger-900 hover:bg-danger-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
+                       title="Delete contract"
+                       data-toggle="modal" data-target="#modal"
+                       data-ajax-url="{% url 'contract_delete' pk=contract.id %}"><i data-lucide="trash-2" class="h-4 w-4" aria-hidden="true"></i><span>Delete</span></a>
+                {% endif %}
+            {% endif %}
+            </div>
+        </div>
+        <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
                     {% if contract.project %}
-                        <dt class="font-semibold">Project:</dt>
-                        <dd><a class="text-primary-700 hover:underline" href="{% url 'project' pk=contract.project.id %}">{{ contract.project }}</a></dd>
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Project:</dt>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base"><a class="text-primary-700 hover:underline" href="{% url 'project' pk=contract.project.id %}">{{ contract.project }}</a></dd>
                     {% endif %}
-                    <dt class="font-semibold">Local custodians</dt>
-                    <dd class="flex flex-wrap gap-1">
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Local custodians</dt>
+                    <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
                         {% for local_custodian in contract.local_custodians.all %}
                             <span class="inline-flex items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ local_custodian }}</span>
                         {% endfor %}
                     </dd>
-                </dl>
-            </div>
-            <div>
-                <dl>
-                    <dt class="font-semibold">Remarks</dt>
-                    <dd>{{ contract.comments|default:'-' }}</dd>
-                </dl>
-            </div>
-        </div>
-        <div class="absolute top-4 right-4 flex gap-2">
-            {% if can_edit %}
-                <a class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-primary-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
-                   title="Edit contract"
-                   href="{% url 'contract_edit' pk=contract.id %}"><i data-lucide="pencil" class="h-5 w-5"></i></a>
-                {% if not contract.is_published %}
-                    <a id="deletecontract"
-                       class="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-danger-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-danger-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
-                       title="Delete contract"
-                       data-toggle="modal" data-target="#modal"
-                       data-ajax-url="{% url 'contract_delete' pk=contract.id %}"><i data-lucide="trash-2" class="h-5 w-5"></i></a>
-                {% endif %}
-            {% endif %}
-        </div>
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Remarks</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ contract.comments|default:'-' }}</dd>
+        </dl>
     </div>
 
     {#    PARTNERS   #}
