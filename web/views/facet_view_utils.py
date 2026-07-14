@@ -84,6 +84,8 @@ def _search_objects(query, filters, facets, model_object, order_by=None):
     # execute the query
     if query:
         queryset = queryset.filter(content=AutoQuery(query))
+        exact_phrase = Exact(query, clean=True).prepare(queryset.query)
+        queryset = queryset.boost(exact_phrase, 1000)
     # get facets
     if facets:
         for field in facets:
