@@ -3,8 +3,8 @@
 {% block title %}{{ dataset.title }} | DAISY{% endblock %}
 
 {% block content %}
-{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" editc="h-5 w-5 cursor-pointer text-primary-700" delc="h-5 w-5 cursor-pointer text-danger-700" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
-    <div class="relative mt-4">
+{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" editc="h-5 w-5 cursor-pointer text-primary-700" delc="h-5 w-5 cursor-pointer text-danger-700" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" tab="-mb-px cursor-pointer shrink-0 border-b-2 border-transparent px-1 pb-3 text-sm font-medium text-gray-600 transition-colors hover:border-info-900 hover:text-primary-900 aria-selected:border-primary-900 aria-selected:font-semibold aria-selected:text-primary-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" %}
+    <div class="mt-4">
         <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
             <div class="min-w-0">
                 <p class="font-display text-sm font-semibold text-primary-900">Dataset</p>
@@ -40,22 +40,22 @@
             </div>
         </div>
         <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Local custodians</dt>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Local custodians</dt>
                     <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
                         {% for local_custodian in dataset.local_custodians.all %}
-                            <span class="inline-flex items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ local_custodian }}</span>
+                            <span class="inline-flex items-center rounded-xs border border-info-300 bg-info-50 px-2 py-0.5 text-xs text-primary-900">{{ local_custodian }}</span>
                         {% endfor %}
                     </dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Project</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Project</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">
                         {% if dataset.project %}<a class="text-primary-700 hover:underline" href="{% url 'project' pk=dataset.project.pk %}">{{ dataset.project }}</a>{% else %}-{% endif %}
                     </dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Other external id(s)</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ dataset.other_external_id|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Other comments</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ dataset.comments|default:'-'|linebreaks }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Other external id(s)</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ dataset.other_external_id|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Other comments</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ dataset.comments|default:'-'|linebreaks }}</dd>
                     {% if exposure_list|length > 0 %}
-                        <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Published on</dt>
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Published on</dt>
                         <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
                             {% for exposure in exposure_list %}
                                 {% if exposure.endpoint.url_pattern %}
@@ -67,17 +67,25 @@
                         </dd>
                     {% endif %}
                     {% if dataset.dac %}
-                        <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Data Access Committee (DAC)</dt>
-                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base"><span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ dataset.dac.title }}</span></dd>
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Data Access Committee (DAC)</dt>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900"><span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ dataset.dac.title }}</span></dd>
                     {% endif %}
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Sensitivity class</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ dataset.sensitivity.name|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Accession number</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ dataset.elu_accession|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Sensitivity class</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ dataset.sensitivity.name|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Accession number</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ dataset.elu_accession|default:'-' }}</dd>
         </dl>
     </div>
 
+    <div role="tablist" aria-label="Dataset sections" data-tabs class="mt-8 flex gap-6 overflow-x-auto border-b border-gray-300">
+        <button type="button" role="tab" aria-selected="false" data-tab="panel-data" class="{{ tab }}">Data</button>
+        <button type="button" role="tab" aria-selected="false" data-tab="panel-legal" class="{{ tab }}">Legal bases</button>
+        <button type="button" role="tab" aria-selected="false" data-tab="panel-accesses" class="{{ tab }}">Accesses</button>
+        {% if request.user.can_publish %}<button type="button" role="tab" aria-selected="false" data-tab="panel-exposures" class="{{ tab }}">Exposures</button>{% endif %}
+    </div>
+
+    <div id="panel-data" data-panel>
     {#    DECLARATIONS      #}
     <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
@@ -140,12 +148,91 @@
         </div>
     </div>
 
+    {#    STORAGE LOCATION definitions for the DATASET  #}
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
+        <div class="p-4">
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="{{ title2 }}"><i data-lucide="database" class="h-6 w-6"></i> Storages</h2>
+                {% if can_edit and dataset.data_locations.all %}
+                    <button class="{{ add }}" type="button"
+                            id="addstoragelocation"
+                            title="Add new storage to dataset"
+                            data-toggle="modal"
+                            data-target="#modal"
+                            data-modal-title="Add new storage"
+                            data-ajax-url="{% url 'dataset_storagelocation_add' dataset_pk=dataset.id %}"
+                            data-post-mode="true"
+                            data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Add storage</span></button>
+                {% endif %}
+            </div>
+            {% if dataset.data_locations.all %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full border-collapse text-sm lg:text-base">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="{{ th }}">Copy</th>
+                            <th scope="col" class="{{ th }}">Platform</th>
+                            <th scope="col" class="{{ th }}">Location</th>
+                            {% if can_edit %}<th scope="col" class="{{ th }} w-28">Actions</th>{% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for location in dataset.data_locations.all %}
+                        <tr class="odd:bg-gray-50">
+                            <td class="{{ td }}">{{ location.category }}</td>
+                            <td class="{{ td }}">{{ location.backend }}</td>
+                            <td class="{{ td }}">{{ location.location_description|truncatechars:80 }}</td>
+                            <td class="{{ td }}">
+                                {% if can_edit %}
+                                    <span class="inline-flex items-center gap-2">
+                                        <i class="{{ editc }}" data-lucide="pencil"
+                                           id="editstoragelocation"
+                                           title="Edit storage"
+                                           data-toggle="modal"
+                                           data-target="#modal"
+                                           data-post-mode="true"
+                                           data-modal-title="Edit storage"
+                                           data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
+                                           data-ajax-url="{% url 'dataset_storagelocation_edit' pk=location.id dataset_pk=dataset.id %}"></i>
+                                        <i class="{{ delc }}" data-lucide="trash-2" data-method="delete"
+                                           data-parent-to-remove="tr"
+                                           title="Delete storage"
+                                           data-url="{% url 'dataset_storagelocation_remove' dataset_pk=dataset.id storagelocation_pk=location.id %}"></i>
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                    <p class="text-sm text-gray-500">No storages yet.</p>
+                    {% if can_edit %}
+                        <button class="{{ add }} mt-3" type="button"
+                                title="Add new storage to dataset"
+                                data-toggle="modal"
+                                data-target="#modal"
+                                data-modal-title="Add new storage"
+                                data-ajax-url="{% url 'dataset_storagelocation_add' dataset_pk=dataset.id %}"
+                                data-post-mode="true"
+                                data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Add storage</span></button>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    </div>
+
+    <div id="panel-legal" data-panel>
     {#    LEGAL BASIS  definitions for the DATASET     #}
     <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
             <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}"><i data-lucide="shield-check" class="h-6 w-6"></i> Legal bases</h2>
-                {% if can_edit %}
+                {% if can_edit and dataset.legal_basis_definitions.all %}
                     <button class="{{ add }}" type="button"
                             id="addlegalbasis"
                             title="Add new legal basis to dataset"
@@ -157,6 +244,7 @@
                             data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Add legal basis</span></button>
                 {% endif %}
             </div>
+            {% if dataset.legal_basis_definitions.all %}
             <div class="overflow-x-auto">
                 <table class="min-w-full border-collapse text-sm lg:text-base">
                     <thead class="bg-gray-50">
@@ -199,69 +287,27 @@
                     </tbody>
                 </table>
             </div>
+            {% else %}
+                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                    <p class="text-sm text-gray-500">No legal bases yet.</p>
+                    {% if can_edit %}
+                        <button class="{{ add }} mt-3" type="button"
+                                title="Add new legal basis to dataset"
+                                data-toggle="modal"
+                                data-target="#modal"
+                                data-modal-title="Add new legal basis"
+                                data-ajax-url="{% url 'dataset_legalbasis_add' dataset_pk=dataset.id %}"
+                                data-post-mode="true"
+                                data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Add legal basis</span></button>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </div>
 
-    {#    STORAGE LOCATION definitions for the DATASET  #}
-    <div class="mt-4 rounded-sm bg-white shadow-sm">
-        <div class="p-4">
-            <div class="mb-4 flex items-center justify-between">
-                <h2 class="{{ title2 }}"><i data-lucide="database" class="h-6 w-6"></i> Storages</h2>
-                {% if can_edit %}
-                    <button class="{{ add }}" type="button"
-                            id="addstoragelocation"
-                            title="Add new storage to dataset"
-                            data-toggle="modal"
-                            data-target="#modal"
-                            data-modal-title="Add new storage"
-                            data-ajax-url="{% url 'dataset_storagelocation_add' dataset_pk=dataset.id %}"
-                            data-post-mode="true"
-                            data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Add storage</span></button>
-                {% endif %}
-            </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full border-collapse text-sm lg:text-base">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col" class="{{ th }}">Copy</th>
-                            <th scope="col" class="{{ th }}">Platform</th>
-                            <th scope="col" class="{{ th }}">Location</th>
-                            {% if can_edit %}<th scope="col" class="{{ th }} w-28">Actions</th>{% endif %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for location in dataset.data_locations.all %}
-                        <tr class="odd:bg-gray-50">
-                            <td class="{{ td }}">{{ location.category }}</td>
-                            <td class="{{ td }}">{{ location.backend }}</td>
-                            <td class="{{ td }}">{{ location.location_description|truncatechars:80 }}</td>
-                            <td class="{{ td }}">
-                                {% if can_edit %}
-                                    <span class="inline-flex items-center gap-2">
-                                        <i class="{{ editc }}" data-lucide="pencil"
-                                           id="editstoragelocation"
-                                           title="Edit storage"
-                                           data-toggle="modal"
-                                           data-target="#modal"
-                                           data-post-mode="true"
-                                           data-modal-title="Edit storage"
-                                           data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"
-                                           data-ajax-url="{% url 'dataset_storagelocation_edit' pk=location.id dataset_pk=dataset.id %}"></i>
-                                        <i class="{{ delc }}" data-lucide="trash-2" data-method="delete"
-                                           data-parent-to-remove="tr"
-                                           title="Delete storage"
-                                           data-url="{% url 'dataset_storagelocation_remove' dataset_pk=dataset.id storagelocation_pk=location.id %}"></i>
-                                    </span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 
+    <div id="panel-accesses" data-panel>
     {#    (INTERNAL) ACCESS GIVEN TO DATA FILES     #}
     <div id="accesses" class="mt-4 scroll-mt-8 rounded-sm bg-white shadow-sm">
         <div class="p-4">
@@ -271,7 +317,7 @@
                         <a href="{% url 'history' %}?entity_name=access&parent_entity_name=dataset&parent_entity_id={{ dataset.pk }}" title="See dataset accesses history"><i data-lucide="history" class="h-5 w-5 text-primary-700"></i></a>
                     {% endif %}
                 </h2>
-                {% if can_edit %}
+                {% if can_edit and dataset.accesses.all %}
                     <button class="{{ add }}" type="button"
                             id="addaccessspec"
                             title="Add new access to dataset"
@@ -283,6 +329,7 @@
                             data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Add access</span></button>
                 {% endif %}
             </div>
+            {% if dataset.accesses.all %}
             <div class="overflow-x-auto">
                 <table class="min-w-full border-collapse text-sm lg:text-base">
                     <thead class="bg-gray-50">
@@ -342,6 +389,21 @@
                     </tbody>
                 </table>
             </div>
+            {% else %}
+                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                    <p class="text-sm text-gray-500">No accesses yet.</p>
+                    {% if can_edit %}
+                        <button class="{{ add }} mt-3" type="button"
+                                title="Add new access to dataset"
+                                data-toggle="modal"
+                                data-target="#modal"
+                                data-modal-title="Add new access"
+                                data-ajax-url="{% url 'dataset_access_add' dataset_pk=dataset.id %}"
+                                data-post-mode="true"
+                                data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Add access</span></button>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </div>
 
@@ -350,7 +412,7 @@
         <div class="p-4">
             <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}"><i data-lucide="activity" class="h-6 w-6"></i> Logbook</h2>
-                {% if can_edit %}
+                {% if can_edit and dataset.shares.all %}
                     <button class="{{ add }}" type="button"
                             id="addshare"
                             title="Add logbook entry for dataset"
@@ -364,6 +426,7 @@
                             data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Add entry</span></button>
                 {% endif %}
             </div>
+            {% if dataset.shares.all %}
             <div class="overflow-x-auto">
                 <table class="min-w-full border-collapse text-sm lg:text-base">
                     <thead class="bg-gray-50">
@@ -409,16 +472,36 @@
                     </tbody>
                 </table>
             </div>
+            {% else %}
+                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                    <p class="text-sm text-gray-500">No logbook entries yet.</p>
+                    {% if can_edit %}
+                        <button class="{{ add }} mt-3" type="button"
+                                title="Add logbook entry for dataset"
+                                data-toggle="modal"
+                                data-target="#modal"
+                                data-modal-title="Add new logbook entry"
+                                data-ajax-url="{% url 'dataset_share_add' dataset_pk=dataset.id %}"
+                                data-ajax-refresh-selector="#partner-select"
+                                data-ajax-refresh-param='partner'
+                                data-post-mode="true"
+                                data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Add entry</span></button>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </div>
 
+    </div>
+
     {% if request.user.can_publish %}
+    <div id="panel-exposures" data-panel>
         {#    Exposure endpoints for the DATASET  #}
         <div class="mt-4 rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <div class="mb-4 flex items-center justify-between">
                     <h2 class="{{ title2 }}"><i data-lucide="globe" class="h-6 w-6"></i> Exposure</h2>
-                    <button class="{{ add }}" type="button"
+                    {% if exposure_list %}<button class="{{ add }}" type="button"
                             id="addexposure"
                             title="Add new exposure endpoint to dataset"
                             data-toggle="modal"
@@ -426,9 +509,10 @@
                             data-modal-title="Add new exposure endpoint"
                             data-ajax-url="{% url 'dataset_exposure_add' dataset_pk=dataset.id %}"
                             data-post-mode="true"
-                            data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Add exposure</span></button>
+                            data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Add exposure</span></button>{% endif %}
                 </div>
-                <div class="overflow-x-auto">
+                {% if exposure_list %}
+            <div class="overflow-x-auto">
                     <table class="min-w-full border-collapse text-sm lg:text-base">
                         <thead class="bg-gray-50">
                             <tr>
@@ -482,8 +566,22 @@
                         </tbody>
                     </table>
                 </div>
+            {% else %}
+                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                    <p class="text-sm text-gray-500">No exposures yet.</p>
+                    <button class="{{ add }} mt-3" type="button"
+                            title="Add new exposure endpoint to dataset"
+                            data-toggle="modal"
+                            data-target="#modal"
+                            data-modal-title="Add new exposure endpoint"
+                            data-ajax-url="{% url 'dataset_exposure_add' dataset_pk=dataset.id %}"
+                            data-post-mode="true"
+                            data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Add exposure</span></button>
+                </div>
+            {% endif %}
             </div>
         </div>
+    </div>
     {% endif %}
 {% endwith %}
 {% endblock %}

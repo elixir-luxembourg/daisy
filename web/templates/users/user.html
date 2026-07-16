@@ -28,17 +28,17 @@
             </div>
         </div>
         <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">First Name</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ user.first_name|default:'unknown' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Last Name</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ user.last_name|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Email Address</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ user.email|default:'unknown' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">First Name</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ user.first_name|default:'unknown' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Last Name</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ user.last_name|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Email Address</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ user.email|default:'unknown' }}</dd>
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Is active</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ user.is_active|yesno }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">User groups</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ user.groups.all|join:", "|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Is active</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ user.is_active|yesno }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">User groups</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ user.groups.all|join:", "|default:'-' }}</dd>
         </dl>
     </div>
 

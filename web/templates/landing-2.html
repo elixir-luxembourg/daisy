@@ -1,0 +1,101 @@
+{% extends 'layout.html' %}
+
+{% block title %}Steward worklist | DAISY{% endblock %}
+
+{% block content %}
+{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" h2="flex items-center gap-2 text-xl font-medium text-primary-950" badge="inline-flex shrink-0 items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary" badge_danger="inline-flex shrink-0 items-center rounded-xs border border-danger-900 bg-danger-50 px-2 py-0.5 text-xs font-medium text-danger-900" badge_quiet="inline-flex shrink-0 items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700" %}
+<section class="pt-8 pb-16">
+    <div class="mb-8">
+        <p class="font-display text-sm font-semibold text-primary-900">Data steward</p>
+        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900">Worklist</h1>
+        <p class="mt-1 text-sm text-gray-500">{% now "l, j F Y" %}</p>
+    </div>
+
+    {% if not overdue_accesses and not expiring_accesses and not retention_reached and not datasets_ready_to_publish %}
+        <div class="rounded-sm border border-dashed border-gray-300 px-6 py-10 text-center">
+            <p class="text-sm text-gray-500">All clear — no access, retention or publishing work pending ✓</p>
+        </div>
+    {% endif %}
+
+    {% if overdue_accesses or expiring_accesses %}
+    <section class="mt-4">
+        <div class="flex items-center justify-between gap-4 border-b border-gray-300 pb-3">
+            <h2 class="{{ h2 }}"><i data-lucide="key-round" class="h-5 w-5"></i> Access grants to review</h2>
+            <span class="{{ badge_quiet }}">{{ overdue_accesses.count }} expired · {{ expiring_accesses.count }} expiring</span>
+        </div>
+        <div class="mt-4 overflow-x-auto">
+            <table class="min-w-full border-collapse text-sm">
+                <thead>
+                    <tr>
+                        <th scope="col" class="{{ th }}">Dataset</th>
+                        <th scope="col" class="{{ th }}">Person</th>
+                        <th scope="col" class="{{ th }}">Expires</th>
+                        <th scope="col" class="{{ th }}">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for access in overdue_accesses|slice:":10" %}
+                    <tr class="odd:bg-gray-50">
+                        <td class="{{ td }}"><a href="{% url 'dataset' pk=access.dataset.pk %}#accesses" class="font-medium text-primary-950 hover:underline">{{ access.dataset.title }}</a></td>
+                        <td class="{{ td }}">{{ access.user|default:access.contact }}</td>
+                        <td class="{{ td }}">{{ access.grant_expires_on|date:"j M Y" }}</td>
+                        <td class="{{ td }}"><span class="{{ badge_danger }}">expired {{ access.grant_expires_on|timesince }} ago</span></td>
+                    </tr>
+                    {% endfor %}
+                    {% for access in expiring_accesses|slice:":10" %}
+                    <tr class="odd:bg-gray-50">
+                        <td class="{{ td }}"><a href="{% url 'dataset' pk=access.dataset.pk %}#accesses" class="font-medium text-primary-950 hover:underline">{{ access.dataset.title }}</a></td>
+                        <td class="{{ td }}">{{ access.user|default:access.contact }}</td>
+                        <td class="{{ td }}">{{ access.grant_expires_on|date:"j M Y" }}</td>
+                        <td class="{{ td }}"><span class="{{ badge }}">in {{ access.grant_expires_on|timeuntil }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if retention_reached %}
+    <section class="mt-8">
+        <div class="flex items-center justify-between gap-4 border-b border-gray-300 pb-3">
+            <h2 class="{{ h2 }}"><i data-lucide="archive" class="h-5 w-5"></i> Retention deadline reached</h2>
+            <span class="{{ badge_quiet }}">{{ retention_reached.count }}</span>
+        </div>
+        <ul class="divide-y divide-gray-200">
+            {% for declaration in retention_reached|slice:":5" %}
+            <li class="flex items-center justify-between gap-3 py-3">
+                <div class="min-w-0">
+                    <a href="{% url 'data_declaration' pk=declaration.pk %}" class="block truncate font-medium text-primary-950 hover:underline">{{ declaration.title }}</a>
+                    <p class="truncate text-xs text-gray-500">{{ declaration.dataset.title }}</p>
+                </div>
+                <span class="{{ badge_danger }}">{{ declaration.end_of_storage_duration|timesince }} overdue</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    {% if datasets_ready_to_publish %}
+    <section class="mt-8">
+        <div class="flex items-center justify-between gap-4 border-b border-gray-300 pb-3">
+            <h2 class="{{ h2 }}"><i data-lucide="upload" class="h-5 w-5"></i> Ready to publish</h2>
+            <span class="{{ badge_quiet }}">{{ datasets_ready_to_publish.count }}</span>
+        </div>
+        <ul class="divide-y divide-gray-200">
+            {% for dataset in datasets_ready_to_publish|slice:":5" %}
+            <li class="py-3">
+                <a href="{% url 'dataset' pk=dataset.pk %}" class="font-medium text-primary-950 hover:underline">{{ dataset.title }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    <p class="mt-8 border-t border-gray-200 pt-4 text-sm text-gray-500">
+        <a href="{% url 'landing' %}" class="font-medium text-primary-950 hover:underline">Full role dashboard &rarr;</a> ·
+        <a href="{% url 'notifications' %}" class="font-medium text-primary-950 hover:underline">Notifications</a>
+    </p>
+</section>
+{% endwith %}
+{% endblock content %}

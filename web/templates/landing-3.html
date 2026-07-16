@@ -1,0 +1,100 @@
+{% extends 'layout.html' %}
+
+{% block title %}Steward inbox | DAISY{% endblock %}
+
+{% block content %}
+{% with h3="flex items-center gap-2 text-sm font-semibold text-primary-950" badge="inline-flex shrink-0 items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary" badge_danger="inline-flex shrink-0 items-center rounded-xs border border-danger-900 bg-danger-50 px-2 py-0.5 text-xs font-medium text-danger-900" badge_quiet="inline-flex shrink-0 items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700" row="flex items-center justify-between gap-3 py-2" %}
+<section class="pt-8 pb-16">
+    <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <p class="font-display text-sm font-semibold text-primary-900">Data steward</p>
+            <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900">Inbox</h1>
+        </div>
+        <p class="text-sm text-gray-500">
+            <span class="{{ badge_danger }}">{{ overdue_accesses.count }} + {{ retention_reached.count }} overdue</span>
+            <span class="{{ badge }}">{{ expiring_accesses.count }} + {{ retention_approaching.count }} due soon</span>
+            <span class="{{ badge_quiet }}">{{ datasets_ready_to_publish.count }} ready to publish</span>
+        </p>
+    </div>
+
+    <div class="mx-auto max-w-3xl space-y-6">
+
+        {% if overdue_accesses or retention_reached %}
+        <div class="rounded-sm border-l-4 border-danger-900 bg-white p-4 shadow-sm">
+            <h3 class="{{ h3 }}"><i data-lucide="alert-triangle" class="h-4 w-4"></i> Overdue</h3>
+            <ul class="mt-2 divide-y divide-gray-100">
+                {% for access in overdue_accesses|slice:":5" %}
+                <li class="{{ row }}">
+                    <div class="min-w-0">
+                        <a href="{% url 'dataset' pk=access.dataset.pk %}#accesses" class="block truncate text-sm font-medium text-primary-950 hover:underline">{{ access.dataset.title }}</a>
+                        <p class="truncate text-xs text-gray-500">Terminate or extend access · {{ access.user|default:access.contact }}</p>
+                    </div>
+                    <span class="{{ badge_danger }}">{{ access.grant_expires_on|timesince }}</span>
+                </li>
+                {% endfor %}
+                {% for declaration in retention_reached|slice:":5" %}
+                <li class="{{ row }}">
+                    <div class="min-w-0">
+                        <a href="{% url 'data_declaration' pk=declaration.pk %}" class="block truncate text-sm font-medium text-primary-950 hover:underline">{{ declaration.title }}</a>
+                        <p class="truncate text-xs text-gray-500">Storage duration reached · {{ declaration.dataset.title }}</p>
+                    </div>
+                    <span class="{{ badge_danger }}">{{ declaration.end_of_storage_duration|timesince }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if expiring_accesses or retention_approaching %}
+        <div class="rounded-sm border-l-4 border-primary-900 bg-white p-4 shadow-sm">
+            <h3 class="{{ h3 }}"><i data-lucide="clock" class="h-4 w-4"></i> Due soon</h3>
+            <ul class="mt-2 divide-y divide-gray-100">
+                {% for access in expiring_accesses|slice:":5" %}
+                <li class="{{ row }}">
+                    <div class="min-w-0">
+                        <a href="{% url 'dataset' pk=access.dataset.pk %}#accesses" class="block truncate text-sm font-medium text-primary-950 hover:underline">{{ access.dataset.title }}</a>
+                        <p class="truncate text-xs text-gray-500">Access expires · {{ access.user|default:access.contact }}</p>
+                    </div>
+                    <span class="{{ badge }}">in {{ access.grant_expires_on|timeuntil }}</span>
+                </li>
+                {% endfor %}
+                {% for declaration in retention_approaching|slice:":5" %}
+                <li class="{{ row }}">
+                    <div class="min-w-0">
+                        <a href="{% url 'data_declaration' pk=declaration.pk %}" class="block truncate text-sm font-medium text-primary-950 hover:underline">{{ declaration.title }}</a>
+                        <p class="truncate text-xs text-gray-500">Storage deadline · {{ declaration.dataset.title }}</p>
+                    </div>
+                    <span class="{{ badge }}">{{ declaration.end_of_storage_duration|date:"j M Y" }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if datasets_ready_to_publish %}
+        <div class="rounded-sm border-l-4 border-gray-300 bg-white p-4 shadow-sm">
+            <h3 class="{{ h3 }}"><i data-lucide="upload" class="h-4 w-4"></i> Ready to publish</h3>
+            <ul class="mt-2 divide-y divide-gray-100">
+                {% for dataset in datasets_ready_to_publish|slice:":5" %}
+                <li class="{{ row }}">
+                    <a href="{% url 'dataset' pk=dataset.pk %}" class="min-w-0 truncate text-sm font-medium text-primary-950 hover:underline">{{ dataset.title }}</a>
+                    <span class="{{ badge_quiet }}">embargo passed</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if not overdue_accesses and not expiring_accesses and not retention_reached and not retention_approaching and not datasets_ready_to_publish %}
+        <div class="rounded-sm border border-dashed border-gray-300 px-6 py-10 text-center">
+            <p class="text-sm text-gray-500">Inbox zero ✓</p>
+        </div>
+        {% endif %}
+
+        <p class="text-center text-sm text-gray-500">
+            <a href="{% url 'landing' %}" class="font-medium text-primary-950 hover:underline">Full role dashboard &rarr;</a>
+        </p>
+    </div>
+</section>
+{% endwith %}
+{% endblock content %}

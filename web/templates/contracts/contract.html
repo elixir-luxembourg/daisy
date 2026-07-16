@@ -29,18 +29,18 @@
         </div>
         <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
                     {% if contract.project %}
-                        <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Project:</dt>
-                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base"><a class="text-primary-700 hover:underline" href="{% url 'project' pk=contract.project.id %}">{{ contract.project }}</a></dd>
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Project:</dt>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900"><a class="text-primary-700 hover:underline" href="{% url 'project' pk=contract.project.id %}">{{ contract.project }}</a></dd>
                     {% endif %}
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Local custodians</dt>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Local custodians</dt>
                     <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
                         {% for local_custodian in contract.local_custodians.all %}
-                            <span class="inline-flex items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ local_custodian }}</span>
+                            <span class="inline-flex items-center rounded-xs border border-info-300 bg-info-50 px-2 py-0.5 text-xs text-primary-900">{{ local_custodian }}</span>
                         {% endfor %}
                     </dd>
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Remarks</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ contract.comments|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Remarks</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ contract.comments|default:'-' }}</dd>
         </dl>
     </div>
 
@@ -49,10 +49,11 @@
         <div class="p-4">
             <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}"><i data-lucide="users" class="h-6 w-6"></i> Participants</h2>
-                {% if can_edit %}
+                {% if can_edit and contract.partners_roles.all %}
                     <a href="{% url 'add_partner_role_to_contract' pk=contract.pk %}" class="{{ add }}" title="Add participant to contract"><i data-lucide="plus" class="h-4 w-4"></i><span>Add participant</span></a>
                 {% endif %}
             </div>
+            {% if contract.partners_roles.all %}
             <div class="overflow-x-auto">
                 <table class="min-w-full border-collapse text-sm lg:text-base">
                     <thead class="bg-gray-50">
@@ -93,6 +94,14 @@
                     </tbody>
                 </table>
             </div>
+            {% else %}
+                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                    <p class="text-sm text-gray-500">No participants yet.</p>
+                    {% if can_edit %}
+                        <a href="{% url 'add_partner_role_to_contract' pk=contract.pk %}" class="{{ add }} mt-3" title="Add participant to contract"><i data-lucide="plus" class="h-4 w-4"></i><span>Add participant</span></a>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </div>
 
@@ -100,7 +109,7 @@
     {% if user|can_see_protected:contract %}
         <div class="mt-4 rounded-sm bg-white shadow-sm" id="documents-card">
             <div class="p-4">
-                {% if can_edit %}
+                {% if can_edit and datafiles %}
                     <div class="flex justify-end" id="add-contract-document">
                         <details class="group relative">
                             <summary class="{{ addsum }}" title="Add document to contract"><i data-lucide="plus" class="h-4 w-4"></i><span>Add document</span></summary>
@@ -131,6 +140,7 @@
         <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="{{ title2 }}"><i data-lucide="activity" class="h-6 w-6"></i> Data logbook entries</h2>
+                {% if contract.shares.all %}
                 <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
                     {% for share in contract.shares.all %}
                         <li class="grid gap-2 px-3 py-2 md:grid-cols-2">
@@ -139,6 +149,11 @@
                         </li>
                     {% endfor %}
                 </ul>
+                {% else %}
+                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                    <p class="text-sm text-gray-500">No logbook entries yet — entries are recorded on the dataset page.</p>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -148,7 +163,7 @@
         <div class="p-4">
             <div class="mb-4 flex items-center justify-between">
                 <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">DACs covered by this contract</h2>
-                <button class="{{ add }}" type="button"
+{% if dacs %}                <button class="{{ add }}" type="button"
                     id="adddac"
                     title="Create new DAC for contract"
                     data-toggle="modal"
@@ -156,14 +171,36 @@
                     data-modal-title="Create new DAC"
                     data-ajax-url="{% url 'add_dac_to_contract' contract_pk=contract.pk %}"
                     data-post-mode="true"
-                    data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Create DAC</span></button>
+                    data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Create DAC</span></button>{% endif %}
             </div>
             {% if dacs %}
-                <ul class="py-1 text-left">
+                <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
                     {% for dac in dacs %}
-                        <li><a class="text-primary-700 hover:underline" href="{% url 'dac' pk=dac.id %}">{{ dac.title }}</a></li>
+                        <li class="flex flex-wrap items-center justify-between gap-3 px-3 py-2">
+                            <div class="min-w-0">
+                                <a class="font-medium text-primary-950 hover:underline" href="{% url 'dac' pk=dac.id %}">{{ dac.title }}</a>
+                                <p class="truncate text-xs text-gray-500">{{ dac.members.count }} member{{ dac.members.count|pluralize }} &middot; {{ dac.datasets.count }} dataset{{ dac.datasets.count|pluralize }} &middot; updated {{ dac.updated|date:"j M Y" }}</p>
+                            </div>
+                            <span class="flex flex-wrap gap-1">
+                                {% for custodian in dac.local_custodians.all %}
+                                    <span class="inline-flex items-center rounded-xs border border-info-300 bg-info-50 px-2 py-0.5 text-xs text-primary-900">{{ custodian }}</span>
+                                {% endfor %}
+                            </span>
+                        </li>
                     {% endfor %}
                 </ul>
+            {% else %}
+                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                    <p class="text-sm text-gray-500">No DACs yet.</p>
+                    <button class="{{ add }} mt-3" type="button"
+                        title="Create new DAC for contract"
+                        data-toggle="modal"
+                        data-target="#modal"
+                        data-modal-title="Create new DAC"
+                        data-ajax-url="{% url 'add_dac_to_contract' contract_pk=contract.pk %}"
+                        data-post-mode="true"
+                        data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Create DAC</span></button>
+                </div>
             {% endif %}
         </div>
     </div>

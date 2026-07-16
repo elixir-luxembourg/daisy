@@ -21,17 +21,17 @@
         </div>
         <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
                     {% if dac.description %}
-                        <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Description</dt>
-                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ dac.description }}</dd>
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Description</dt>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ dac.description }}</dd>
                     {% endif %}
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Contract</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{% if dac.contract %}<a class="text-primary-700 hover:underline" href="{% url 'contract' pk=dac.contract.pk %}">{{ dac.contract }}</a>{% else %}-{% endif %}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Project</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{% if dac.contract.project %}<a class="text-primary-700 hover:underline" href="{% url 'project' pk=dac.contract.project.pk %}">{{ dac.contract.project }}</a>{% else %}-{% endif %}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Local custodians</dt>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Contract</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{% if dac.contract %}<a class="text-primary-700 hover:underline" href="{% url 'contract' pk=dac.contract.pk %}">{{ dac.contract }}</a>{% else %}-{% endif %}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Project</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{% if dac.contract.project %}<a class="text-primary-700 hover:underline" href="{% url 'project' pk=dac.contract.project.pk %}">{{ dac.contract.project }}</a>{% else %}-{% endif %}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Local custodians</dt>
                     <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
                         {% for local_custodian in local_custodians %}
-                            <span class="inline-flex items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ local_custodian }}</span>
+                            <span class="inline-flex items-center rounded-xs border border-info-300 bg-info-50 px-2 py-0.5 text-xs text-primary-900">{{ local_custodian }}</span>
                         {% endfor %}
                     </dd>
 
@@ -43,7 +43,7 @@
         <div class="p-4">
             <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}">Members</h2>
-                {% if can_edit %}
+                {% if can_edit and memberships %}
                     <button class="{{ add }}"
                             type="button"
                             id="addmember"
@@ -94,6 +94,19 @@
                         </tbody>
                     </table>
                 </div>
+            {% else %}
+                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                    <p class="text-sm text-gray-500">No members yet.</p>
+                    {% if can_edit %}
+                        <button class="{{ add }} mt-3"
+                                type="button"
+                                data-toggle="modal"
+                                data-target="#modal"
+                                data-modal-title="Add member to DAC"
+                                data-ajax-url="{% url 'pick_member_for_dac' dac_pk=dac.id %}"
+                                title="Add member to DAC"><i data-lucide="plus" class="h-4 w-4"></i><span>Add member</span></button>
+                    {% endif %}
+                </div>
             {% endif %}
         </div>
     </div>
@@ -103,7 +116,7 @@
         <div class="p-4">
             <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}">Datasets managed by this DAC</h2>
-                {% if is_data_steward %}
+                {% if is_data_steward and datasets %}
                     <button class="{{ add }}"
                             type="button"
                             id="adddataset"
@@ -120,6 +133,19 @@
                         <li><a class="text-primary-700 hover:underline" href="{% url 'dataset' pk=dataset.id %}">{{ dataset.title }}</a></li>
                     {% endfor %}
                 </ul>
+            {% else %}
+                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                    <p class="text-sm text-gray-500">No datasets yet.</p>
+                    {% if is_data_steward %}
+                        <button class="{{ add }} mt-3"
+                                type="button"
+                                data-toggle="modal"
+                                data-target="#modal"
+                                data-modal-title="Add Dataset to DAC"
+                                data-ajax-url="{% url 'pick_dataset_for_dac' dac_pk=dac.id %}"
+                                title="Add Dataset to DAC"><i data-lucide="plus" class="h-4 w-4"></i><span>Add dataset</span></button>
+                    {% endif %}
+                </div>
             {% endif %}
         </div>
     </div>

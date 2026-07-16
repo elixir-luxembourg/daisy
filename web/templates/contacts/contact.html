@@ -22,12 +22,12 @@
             </div>
         </div>
         <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">First name</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ contact.first_name }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Last name</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ contact.last_name }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Affiliations</dt>
-                    {% if not contact.partners.all %}<dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">-</dd>{% endif %}
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">First name</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ contact.first_name }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Last name</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ contact.last_name }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Affiliations</dt>
+                    {% if not contact.partners.all %}<dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">-</dd>{% endif %}
                     {% if contact.partners %}
                         <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
                             {% for partner in contact.partners.all %}
@@ -35,15 +35,15 @@
                             {% endfor %}
                         </dd>
                     {% endif %}
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Type</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ contact.type }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Type</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ contact.type }}</dd>
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Email</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base"><a class="text-primary-700 hover:underline" href="mailto:{{ contact.email }}">{{ contact.email }}</a></dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Address</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ contact.address|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Phone</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ contact.phone|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Email</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900"><a class="text-primary-700 hover:underline" href="mailto:{{ contact.email }}">{{ contact.email }}</a></dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Address</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ contact.address|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Phone</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ contact.phone|default:'-' }}</dd>
         </dl>
     </div>
 

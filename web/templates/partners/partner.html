@@ -52,23 +52,23 @@
             </div>
         </div>
         <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Name</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ partner.name }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Acronym</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ partner.acronym }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Address</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ partner.address|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Country</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ partner.country.name|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Name</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ partner.name }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Acronym</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ partner.acronym }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Address</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ partner.address|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Country</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ partner.country.name|default:'-' }}</dd>
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Is clinical?</dt>
-                    {% if partner.is_clinical %}<dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">YES</dd>{% else %}<dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">NO</dd>{% endif %}
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Geographic category</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ partner.geo_category }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Sector category</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ partner.sector_category }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Accession number</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ partner.elu_accession|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Is clinical?</dt>
+                    {% if partner.is_clinical %}<dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">YES</dd>{% else %}<dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">NO</dd>{% endif %}
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Geographic category</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ partner.geo_category }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Sector category</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ partner.sector_category }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Accession number</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ partner.elu_accession|default:'-' }}</dd>
         </dl>
     </div>
 
@@ -77,17 +77,24 @@
         <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="{{ title2 }}"><i data-lucide="contact" class="h-6 w-6"></i> Contacts at this partner</h2>
+                {% if partner.contacts.all %}
                 <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
                     {% for contact in partner.contacts.all %}
-                        <li class="flex items-center gap-2 px-3 py-2"><i data-lucide="contact-round" class="h-5 w-5"></i><strong>{{ contact.full_name }}</strong></li>
+                        <li class="flex items-center gap-2 px-3 py-2"><i data-lucide="contact-round" class="h-5 w-5"></i><a class="font-medium text-primary-950 hover:underline" href="{% url 'contact' pk=contact.id %}">{{ contact.full_name }}</a></li>
                     {% endfor %}
                 </ul>
+                {% else %}
+                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                    <p class="text-sm text-gray-500">No contacts yet.</p>
+                </div>
+                {% endif %}
             </div>
         </div>
         {#    Contracts    #}
         <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="{{ title2 }}"><i data-lucide="handshake" class="h-6 w-6"></i> Contracts with this partner</h2>
+                {% if partner.contracts.all %}
                 <ul class="mt-2 flex flex-col gap-2">
                     {% for collab in partner.contracts.all %}
                         <li class="rounded-sm border border-gray-200">
@@ -100,6 +107,11 @@
                         </li>
                     {% endfor %}
                 </ul>
+                {% else %}
+                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                    <p class="text-sm text-gray-500">No contracts yet.</p>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

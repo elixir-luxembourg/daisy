@@ -18,7 +18,7 @@ from notification.models import Notification
 ATTENTION_ITEMS_CAP = 8
 
 
-def dashboard(request):
+def dashboard(request, template_name="dashboard.html"):
     the_user = request.user
     today = timezone.localdate()
     soon = today + timedelta(days=30)
@@ -101,10 +101,10 @@ def dashboard(request):
         "deadlines": deadlines,
         "deadlines_count": deadlines_count,
     }
-    return render(request, "dashboard.html", context)
+    return render(request, template_name, context)
 
 
-def landing(request):
+def landing(request, template_name="landing.html"):
     user = request.user
     today = timezone.localdate()
     soon = today + timedelta(days=90)
@@ -369,4 +369,4 @@ def landing(request):
             }
         )
 
-    return render(request, "landing.html", context)
+    return render(request, template_name, context)

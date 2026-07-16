@@ -16,77 +16,77 @@
             </div>
         </div>
         <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Parent Dataset</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base"><a class="text-primary-700 hover:underline" href="{% url 'dataset' pk=object.dataset.id %}">{{ object.dataset.title }}</a></dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Parent Dataset</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900"><a class="text-primary-700 hover:underline" href="{% url 'dataset' pk=object.dataset.id %}">{{ object.dataset.title }}</a></dd>
 
                     {% if object.dataset.project %}
-                        <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Project</dt>
-                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base"><a class="text-primary-700 hover:underline" href="{% url 'project' pk=object.dataset.project.pk %}">{{ object.dataset.project }}</a></dd>
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Project</dt>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900"><a class="text-primary-700 hover:underline" href="{% url 'project' pk=object.dataset.project.pk %}">{{ object.dataset.project }}</a></dd>
                     {% endif %}
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Source Contract</dt>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Source Contract</dt>
                     {% if object.contract %}
-                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base"><a class="text-primary-700 hover:underline" href="{% url 'contract' pk=object.contract.id %}">{{ object.contract }}</a></dd>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900"><a class="text-primary-700 hover:underline" href="{% url 'contract' pk=object.contract.id %}">{{ object.contract }}</a></dd>
                     {% else %}
-                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">No source contract</dd>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">No source contract</dd>
                     {% endif %}
 
                     {% if object.partner %}
-                        <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Partner:</dt>
-                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base"><a class="text-primary-700 hover:underline" href="{% url 'partner' pk=object.partner.id %}">{{ object.partner|default:"-" }}</a></dd>
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Partner:</dt>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900"><a class="text-primary-700 hover:underline" href="{% url 'partner' pk=object.partner.id %}">{{ object.partner|default:"-" }}</a></dd>
                     {% endif %}
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Derived/re-used from:</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ object.data_types_generated.all|join:', '|default:"-" }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Derived/re-used from:</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.data_types_generated.all|join:', '|default:"-" }}</dd>
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Source Notes</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ object.comments|default:"-" }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Source Notes</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.comments|default:"-" }}</dd>
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Source Cohort(s)</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ object.cohorts.all|join:', '|default:"-" }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Source Cohort(s)</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.cohorts.all|join:', '|default:"-" }}</dd>
 
                     {% if object.submission_id %}
-                        <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Submission ID</dt>
-                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ object.submission_id|default:"-" }}</dd>
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Submission ID</dt>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.submission_id|default:"-" }}</dd>
                     {% endif %}
 
                     {% if object.other_external_id %}
-                        <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Other external IDs</dt>
-                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ object.other_external_id|default:"-" }}</dd>
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Other external IDs</dt>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.other_external_id|default:"-" }}</dd>
                     {% endif %}
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Data Types</dt>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Data Types</dt>
                     <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
                         {% for data_type in object.data_types %}
                             <span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ data_type }}</span>
                         {% endfor %}
                     </dd>
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Remarks on data types</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ object.data_types_notes }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Remarks on data types</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.data_types_notes }}</dd>
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Subject Categories</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ object.subjects_category|default:"-" }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Subject Categories</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.subjects_category|default:"-" }}</dd>
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Special Subjects</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ object.has_special_subjects|yesno:"yes,no,unknown" }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Special Subjects</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.has_special_subjects|yesno:"yes,no,unknown" }}</dd>
 
                     {% if object.special_subjects_description %}
-                        <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Description of the nature of special subjects</dt>
-                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ object.special_subjects_description }}</dd>
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Description of the nature of special subjects</dt>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.special_subjects_description }}</dd>
                     {% endif %}
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Share category</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ object.share_category|default:"-" }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Share category</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.share_category|default:"-" }}</dd>
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Access procedure</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ object.access_procedure|default:"-" }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Access procedure</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.access_procedure|default:"-" }}</dd>
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Consent status</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ object.consent_status|default:"-" }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Consent status</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.consent_status|default:"-" }}</dd>
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Deidentification method</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ object.deidentification_method|default:"-" }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Deidentification method</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.deidentification_method|default:"-" }}</dd>
         </dl>
     </div>
 
@@ -96,14 +96,14 @@
             <hr class="my-4 border-gray-200" />
             <div>
                 <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Embargo date</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ object.embargo_date|default:"-" }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Embargo date</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.embargo_date|default:"-" }}</dd>
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">End of storage duration</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ object.end_of_storage_duration|default:"-" }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">End of storage duration</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.end_of_storage_duration|default:"-" }}</dd>
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Storage duration criteria</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ object.storage_duration_criteria }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Storage duration criteria</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.storage_duration_criteria }}</dd>
                 </dl>
 
                 {% if object.data_use_conditions %}

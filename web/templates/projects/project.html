@@ -5,12 +5,13 @@
 {% block head_end %}{{ document_form.media }}{% endblock %}
 
 {% block content %}
-{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" addsum="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 hidden mt-2 w-56 bg-white rounded-sm border border-gray-200 shadow-lg group-open:block" item="block px-4 py-2 w-full text-left text-sm hover:bg-gray-50" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
-    <div class="relative mt-4">
+{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" addsum="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 hidden mt-2 w-56 bg-white rounded-sm border border-gray-200 shadow-lg group-open:block" item="block px-4 py-2 w-full text-left text-sm hover:bg-gray-50" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" tab="-mb-px cursor-pointer shrink-0 border-b-2 border-transparent px-1 pb-3 text-sm font-medium text-gray-600 transition-colors hover:border-info-900 hover:text-primary-900 aria-selected:border-primary-900 aria-selected:font-semibold aria-selected:text-primary-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" %}
+    <div class="mt-4">
         <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
             <div class="min-w-0">
                 <p class="font-display text-sm font-semibold text-primary-900">Project</p>
                 <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ project.acronym }}</h1>
+                <p class="mt-3 text-sm text-gray-500">Added {{ project.added }} &middot; Last edited {{ project.updated }}</p>
             </div>
             <div class="mt-1 flex flex-wrap shrink-0 gap-2">
             {% if request.user.is_superuser %}
@@ -40,54 +41,36 @@
             </div>
         </div>
         <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Full title</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.title|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Local custodians</dt>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Full title</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ project.title|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Local custodians</dt>
                     <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
                         {% for local_custodian in project.local_custodians.all %}
-                            <span class="inline-flex items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary">{{ local_custodian }}</span>
+                            <span class="inline-flex items-center rounded-xs border border-info-300 bg-info-50 px-2 py-0.5 text-xs text-primary-900">{{ local_custodian }}</span>
                         {% endfor %}
                     </dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Start date</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.start_date|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">End date</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.end_date|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Project web page</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.project_web_page|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Funding resources</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.funding_sources.all|join:", "|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Sub projects</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">
-                        {% if project.child_projects.all %}
-                            {% for prj in project.child_projects.all %}
-                                <a class="text-primary-700 hover:underline" href="{% url 'project' pk=prj.pk %}">{{ prj }}</a>
-                            {% endfor %}
-                        {% else %}-{% endif %}
-                    </dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Umbrella project</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">
-                        {% if project.umbrella_project %}<a class="text-primary-700 hover:underline" href="{% url 'project' pk=project.umbrella_project.pk %}">{{ project.umbrella_project }}</a>{% else %}-{% endif %}
-                    </dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Duration</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{% if project.start_date or project.end_date %}{{ project.start_date|default:"?" }} &ndash; {{ project.end_date|default:"ongoing" }}{% else %}-{% endif %}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Project web page</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{% if project.project_web_page %}<a class="text-primary-700 hover:underline" href="{{ project.project_web_page }}" rel="noopener">{{ project.project_web_page }}</a>{% else %}-{% endif %}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Funding resources</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ project.funding_sources.all|join:", "|default:'-' }}</dd>
+                    
 
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Accession number</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.elu_accession|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Study features</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.study_terms.all|join:", "|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Disease terms</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.disease_terms.all|join:", "|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Gene terms</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.gene_terms.all|join:", "|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Phenotype terms</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.phenotype_terms.all|join:", "|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Includes automated profiling</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.includes_automated_profiling|yesno }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Remarks</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.comments|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Last update</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.updated }}</dd>
-        </dl>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Accession number</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ project.elu_accession|default:'-' }}</dd>
+                            </dl>
     </div>
 
+    <div role="tablist" aria-label="Project sections" data-tabs class="mt-8 flex gap-6 overflow-x-auto border-b border-gray-300">
+        <button type="button" role="tab" aria-selected="false" data-tab="panel-about" class="{{ tab }}">About</button>
+        <button type="button" role="tab" aria-selected="false" data-tab="panel-people" class="{{ tab }}">People</button>
+        <button type="button" role="tab" aria-selected="false" data-tab="panel-datasets" class="{{ tab }}">Datasets</button>
+        <button type="button" role="tab" aria-selected="false" data-tab="panel-contracts" class="{{ tab }}">Contracts &amp; documents</button>
+        <button type="button" role="tab" aria-selected="false" data-tab="panel-publications" class="{{ tab }}">Publications</button>
+    </div>
+
+    <div id="panel-about" data-panel>
     {% if project.description %}
         <div class="mt-4 rounded-sm bg-white shadow-sm">
             <div class="p-4">
@@ -97,33 +80,85 @@
         </div>
     {% endif %}
 
-    <div class="mt-4 grid gap-4 md:grid-cols-3">
+        <div class="mt-4 grid items-start gap-4 md:grid-cols-2">
+        <div class="rounded-sm bg-white shadow-sm">
+            <div class="p-4">
+                <h2 class="{{ title2 }}"><i data-lucide="microscope" class="h-6 w-6"></i> Study details</h2>
+                <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Study features</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ project.study_terms.all|join:", "|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Disease terms</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ project.disease_terms.all|join:", "|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Gene terms</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ project.gene_terms.all|join:", "|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Phenotype terms</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ project.phenotype_terms.all|join:", "|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Includes automated profiling</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ project.includes_automated_profiling|yesno }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Remarks</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ project.comments|default:'-' }}</dd>
+                </dl>
+            </div>
+        </div>
+        <div class="rounded-sm bg-white shadow-sm">
+            <div class="p-4">
+                <h2 class="{{ title2 }}"><i data-lucide="folder-tree" class="h-6 w-6"></i> Related projects</h2>
+                <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Sub projects</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">
+                        {% if project.child_projects.all %}
+                            {% for prj in project.child_projects.all %}
+                                <a class="text-primary-700 hover:underline" href="{% url 'project' pk=prj.pk %}">{{ prj }}</a>
+                            {% endfor %}
+                        {% else %}-{% endif %}
+                    </dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Umbrella project</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">
+                        {% if project.umbrella_project %}<a class="text-primary-700 hover:underline" href="{% url 'project' pk=project.umbrella_project.pk %}">{{ project.umbrella_project }}</a>{% else %}-{% endif %}
+                    </dd>
+                </dl>
+            </div>
+        </div>
         <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <h2 class="{{ title2 }}"><i data-lucide="shield" class="h-6 w-6"></i> Ethics</h2>
                 <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Has national approval?</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.has_cner|yesno }} {% if project.cner_notes %}<a class="text-primary-700 hover:underline" href="#" data-toggle="modal" data-target="#modal" data-modal-content="{{ project.cner_notes }}" data-modal-title="National ethics approval notes">(view notes)</a>{% endif %}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Has institutional approval?</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ project.has_erp|yesno }} {% if project.erp_notes %}<a class="text-primary-700 hover:underline" href="#" data-toggle="modal" data-target="#modal" data-modal-content="{{ project.erp_notes }}" data-modal-title="Institutional ethics approval notes">(view notes)</a>{% endif %}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Has national approval?</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ project.has_cner|yesno }} {% if project.cner_notes %}<a class="text-primary-700 hover:underline" href="#" data-toggle="modal" data-target="#modal" data-modal-content="{{ project.cner_notes }}" data-modal-title="National ethics approval notes">(view notes)</a>{% endif %}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Has institutional approval?</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ project.has_erp|yesno }} {% if project.erp_notes %}<a class="text-primary-700 hover:underline" href="#" data-toggle="modal" data-target="#modal" data-modal-content="{{ project.erp_notes }}" data-modal-title="Institutional ethics approval notes">(view notes)</a>{% endif %}</dd>
                 </dl>
             </div>
         </div>
+        </div>
 
+    </div>
+
+    <div id="panel-people" data-panel>
+    <div class="mt-4 grid gap-4 md:grid-cols-2">
         {# PERSONNEL #}
         <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
                 <div class="mb-4 flex items-center justify-between">
                     <h2 class="{{ title2 }}"><i data-lucide="users" class="h-6 w-6"></i> Personnel</h2>
-                    {% if can_edit %}
+                    {% if can_edit and project.company_personnel.all %}
                         <button data-toggle="modal" data-target="#modal" data-modal-title="Add personnel to project" data-ajax-url="{% url 'add_personnel_to_project' pk=project.id %}" class="{{ add }}" type="button" title="Add personnel to project"><i data-lucide="plus" class="h-4 w-4"></i><span>Add personnel</span></button>
                     {% endif %}
                 </div>
+                {% if project.company_personnel.all %}
                 <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
                     {% for company_personnel in project.company_personnel.all %}
                         <li class="px-3 py-2 {% if can_edit %}deletable{% endif %}"{% if can_edit %} data-delete-title="Remove personnel from project" data-url="{% url 'remove_personnel_from_project' pk=project.id user_id=company_personnel.pk %}"{% endif %}>{{ company_personnel }}</li>
                     {% endfor %}
                 </ul>
+                {% else %}
+                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                    <p class="text-sm text-gray-500">No personnel yet.</p>
+                    {% if can_edit %}
+                        <button data-toggle="modal" data-target="#modal" data-modal-title="Add personnel to project" data-ajax-url="{% url 'add_personnel_to_project' pk=project.id %}" class="{{ add }} mt-3" type="button" title="Add personnel to project"><i data-lucide="plus" class="h-4 w-4"></i><span>Add personnel</span></button>
+                    {% endif %}
+                </div>
+                {% endif %}
             </div>
         </div>
 
@@ -132,7 +167,7 @@
             <div class="p-4">
                 <div class="mb-4 flex items-center justify-between">
                     <h2 class="{{ title2 }}"><i data-lucide="contact" class="h-6 w-6"></i> Contacts</h2>
-                    {% if can_edit %}
+                    {% if can_edit and project.contacts.all %}
                         <details class="group relative">
                             <summary class="{{ addsum }}" title="Add contact to project"><i data-lucide="plus" class="h-4 w-4"></i><span>Add contact</span></summary>
                             <div class="{{ menu }}">
@@ -142,6 +177,7 @@
                         </details>
                     {% endif %}
                 </div>
+                {% if project.contacts.all %}
                 <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
                     {% for contact in project.contacts.all %}
                         {% if can_edit %}
@@ -151,10 +187,27 @@
                         {% endif %}
                     {% endfor %}
                 </ul>
+                {% else %}
+                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                    <p class="text-sm text-gray-500">No contacts yet.</p>
+                    {% if can_edit %}
+                        <details class="group relative mt-3 inline-block">
+                            <summary class="{{ addsum }}" title="Add contact to project"><i data-lucide="plus" class="h-4 w-4"></i><span>Add contact</span></summary>
+                            <div class="{{ menu }}">
+                                <button data-toggle="modal" data-target="#modal" data-modal-title="Add contact to project" data-ajax-url="{% url 'pick_contact_for_project' pk=project.id %}" class="{{ item }}" type="button" title="Link to existing contact">Link to existing contact</button>
+                                <button data-toggle="modal" data-target="#modal" data-modal-title="Add contact to project" data-ajax-url="{% url 'add_contact_to_project' pk=project.id %}" class="{{ item }}" type="button" title="Add new contact">Create a new contact</button>
+                            </div>
+                        </details>
+                    {% endif %}
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
 
+    </div>
+
+    <div id="panel-datasets" data-panel>
     {# DATASETS OWNED BY PROJECT #}
     <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
@@ -204,12 +257,15 @@
         </div>
     </div>
 
+    </div>
+
+    <div id="panel-contracts" data-panel>
     {# CONTRACTS #}
     <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
             <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}"><i data-lucide="handshake" class="h-6 w-6"></i> Contracts</h2>
-                {% if can_edit %}
+                {% if can_edit and project.contracts.all %}
                     <details class="group relative">
                         <summary class="{{ addsum }}" title="Add contract to project"><i data-lucide="plus" class="h-4 w-4"></i><span>Add contract</span></summary>
                         <div class="{{ menu }}">
@@ -248,7 +304,12 @@
                     </table>
                 </div>
             {% else %}
-                <p class="text-gray-500">No contracts yet.</p>
+                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                    <p class="text-sm text-gray-500">No contracts yet.</p>
+                    {% if can_edit %}
+                        <a class="{{ add }} mt-3" href="{% url 'project_contract_create' pk=project.pk %}" title="Add contract to project"><i data-lucide="plus" class="h-4 w-4"></i><span>Add contract</span></a>
+                    {% endif %}
+                </div>
             {% endif %}
         </div>
     </div>
@@ -257,7 +318,7 @@
     {% if user|can_see_protected:project %}
         <div class="mt-4 rounded-sm bg-white shadow-sm" id="documents-card">
             <div class="p-4">
-                {% if can_edit %}
+                {% if can_edit and datafiles %}
                     <div class="flex justify-end" id="add-project-document">
                         <details class="group relative">
                             <summary class="{{ addsum }}" title="Add document to project"><i data-lucide="plus" class="h-4 w-4"></i><span>Add document</span></summary>
@@ -280,12 +341,15 @@
         </div>
     {% endif %}
 
+    </div>
+
+    <div id="panel-publications" data-panel>
     {# PUBLICATION #}
     <div class="mt-4 rounded-sm bg-white shadow-sm">
         <div class="p-4">
             <div class="mb-4 flex items-center justify-between">
                 <h2 class="{{ title2 }}"><i data-lucide="book" class="h-6 w-6"></i> Publications</h2>
-                {% if can_edit %}
+                {% if can_edit and project.publications.all %}
                     <details class="group relative">
                         <summary class="{{ addsum }}" title="Add publication to project"><i data-lucide="plus" class="h-4 w-4"></i><span>Add publication</span></summary>
                         <div class="{{ menu }}">
@@ -295,6 +359,7 @@
                     </details>
                 {% endif %}
             </div>
+            {% if project.publications.all %}
             <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
                 {% for publication in project.publications.all %}
                     {% if can_edit %}
@@ -304,7 +369,22 @@
                     {% endif %}
                 {% endfor %}
             </ul>
+            {% else %}
+            <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+                <p class="text-sm text-gray-500">No publications yet.</p>
+                {% if can_edit %}
+                    <details class="group relative mt-3 inline-block">
+                        <summary class="{{ addsum }}" title="Add publication to project"><i data-lucide="plus" class="h-4 w-4"></i><span>Add publication</span></summary>
+                        <div class="{{ menu }}">
+                            <button data-toggle="modal" data-target="#modal" data-modal-title="Add publication to project" data-ajax-url="{% url 'pick_publication_for_project' pk=project.id %}" class="{{ item }}" type="button" title="Link to existing publication">Link to existing publication</button>
+                            <button data-toggle="modal" data-target="#modal" data-modal-title="Add publication to project" data-ajax-url="{% url 'add_publication_to_project' pk=project.id %}" class="{{ item }}" type="button" title="Add new publication">Create a new publication</button>
+                        </div>
+                    </details>
+                {% endif %}
+            </div>
+            {% endif %}
         </div>
+    </div>
     </div>
 {% endwith %}
 {% endblock %}

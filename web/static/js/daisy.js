@@ -333,7 +333,11 @@ $(document).ready(function () {
             });
         });
     });
-    $(".clickable").css("cursor", "pointer").click(function () {
+    $(".clickable").css("cursor", "pointer");
+    // Row actions (delete icons etc.): delegated so it works on any element
+    // carrying data-method + data-url, including icons lucide has replaced
+    // with <svg> after this handler was registered.
+    $(document).on("click", "[data-method][data-url]", function () {
         const urlClick = $(this).data("url");
         const method = $(this).data("method");
         if (!urlClick || !method) {
@@ -375,5 +379,50 @@ $(document).ready(function () {
             e.stopImmediatePropagation();
             e.preventDefault();
         }
+    });
+});
+
+// Detail-page tabs: [data-tabs] holds role=tab buttons whose data-tab names a
+// [data-panel] section id. Styling reacts to aria-selected via utility
+// variants (underline tabs on the section rule). Progressive enhancement -
+// without JS all panels stay visible and stacked. Deep links keep working: a
+// location.hash pointing at a panel or anything inside one (e.g.
+// dataset#accesses) activates that tab on load.
+$(function () {
+    document.querySelectorAll("[data-tabs]").forEach(function (tablist) {
+        var tabs = Array.prototype.slice.call(tablist.querySelectorAll("[data-tab]"));
+        var panels = tabs.map(function (t) {
+            return document.getElementById(t.getAttribute("data-tab"));
+        }).filter(Boolean);
+        if (!tabs.length) return;
+
+        function activate(tab, updateHash) {
+            tabs.forEach(function (t) {
+                t.setAttribute("aria-selected", t === tab ? "true" : "false");
+            });
+            panels.forEach(function (p) {
+                p.hidden = p.id !== tab.getAttribute("data-tab");
+            });
+            if (updateHash) {
+                history.replaceState(null, "", "#" + tab.getAttribute("data-tab"));
+            }
+        }
+
+        tabs.forEach(function (t) {
+            t.addEventListener("click", function () { activate(t, true); });
+        });
+
+        var initial = tabs[0];
+        var hash = window.location.hash.slice(1);
+        var hashTarget = hash ? document.getElementById(hash) : null;
+        var hashPanel = hashTarget ? hashTarget.closest("[data-panel]") : null;
+        if (hashPanel) {
+            var match = tabs.filter(function (t) {
+                return t.getAttribute("data-tab") === hashPanel.id;
+            })[0];
+            if (match) initial = match;
+        }
+        activate(initial, false);
+        if (hashTarget && hashPanel) hashTarget.scrollIntoView();
     });
 });

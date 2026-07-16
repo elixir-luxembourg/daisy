@@ -50,28 +50,28 @@
             </div>
         </div>
         <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Cohort owner</dt>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Cohort owner</dt>
                     <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
                         {% for contact in cohort.owners.all %}
                             <span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ contact }}</span>
                         {% empty %}-{% endfor %}
                     </dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Institutes</dt>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Institutes</dt>
                     <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
                         {% for institute in cohort.institutes.all %}
                             <span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ institute }}</span>
                         {% empty %}-{% endfor %}
                     </dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">URL</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ cohort.cohort_web_page|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Ethics confirmation</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ cohort.ethics_confirmation|yesno }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Ethics confirmation notes</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ cohort.ethics_notes|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Accession number</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ cohort.elu_accession|default:'-' }}</dd>
-                    <dt class="mt-4 first:mt-0 sm:mt-0 text-xs font-medium text-gray-500">Remarks</dt>
-                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900 lg:text-base">{{ cohort.comments|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">URL</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ cohort.cohort_web_page|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Ethics confirmation</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ cohort.ethics_confirmation|yesno }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Ethics confirmation notes</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ cohort.ethics_notes|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Accession number</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ cohort.elu_accession|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Remarks</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ cohort.comments|default:'-' }}</dd>
         </dl>
     </div>
 
