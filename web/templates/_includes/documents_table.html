@@ -59,7 +59,7 @@
                                 data-modal-title="Add document"
                                 data-ajax-url="{% url 'document_add' object_id=object_id content_type=content_type %}"
                                 data-post-mode="true"
-                                {% if project %}data-ajax-redirect-uri="{% url 'project' pk=project.id %}"{% elif contract %}data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"{% endif %}
+                                {% if project %}data-ajax-redirect-uri="{% url 'project' pk=project.id %}#panel-contracts"{% elif contract %}data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"{% endif %}
                                 title="Upload new document"><i data-lucide="plus" class="h-4 w-4"></i><span>Upload document</span></button>
                     {% endif %}
                 </div>

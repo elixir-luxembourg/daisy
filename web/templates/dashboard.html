@@ -3,10 +3,10 @@
 
 {% block content %}
 <section class="pt-8 pb-16">
-    <div class="relative min-h-40 overflow-hidden rounded-sm border border-gray-200 bg-gray-50">
+    <div class="relative min-h-40 overflow-hidden rounded-sm">
         <div class="absolute inset-0 bg-left bg-no-repeat opacity-90" style="background-image: url('{% static 'images/banner-lcsb.svg' %}'); background-size: contain;"></div>
         <div class="relative flex min-h-40 items-start p-5">
-            <span class="inline-flex rounded-full border border-gray-200 bg-white/90 px-3 py-1 text-xs font-medium text-primary-950">Version {{ app_version }}</span>
+            {% if app_version %}<span class="inline-flex rounded-full border border-gray-200 bg-white/90 px-3 py-1 text-xs font-medium text-primary-950">Version {{ app_version }}</span>{% endif %}
         </div>
     </div>
 

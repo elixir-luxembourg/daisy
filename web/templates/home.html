@@ -159,7 +159,7 @@
     </div>
 
     <p class="mt-12 border-t border-gray-200 pt-4 text-sm text-gray-500">
-        DAISY {{ app_version }} ·
+        {% if app_version %}DAISY {{ app_version }} · {% endif %}
         New here? <a href="https://elixir.pages.uni.lu/daisy-doc/" class="font-medium text-primary-950 hover:underline">User guide &rarr;</a> ·
         <a href="{% url 'notifications' %}" class="font-medium text-primary-950 hover:underline">Notifications</a>
     </p>

@@ -6,7 +6,7 @@
 <section class="pt-12 pb-20">
     <div class="flex items-baseline justify-between gap-6 pb-6 border-b border-gray-300">
         <h1 class="text-6xl font-semibold leading-none tracking-tight text-primary-950 font-display sm:text-7xl">DAISY</h1>
-        <span class="font-mono text-sm text-gray-500">v{{ app_version }}</span>
+        {% if app_version %}<span class="font-mono text-sm text-gray-500">v{{ app_version }}</span>{% endif %}
     </div>
 
     <div class="grid grid-cols-1 gap-12 mt-12 lg:grid-cols-3 lg:gap-16">
