@@ -120,8 +120,8 @@ project_dataset_wizard_view = DatasetWizardView.as_view(
 web_urls = [
     # Single pages
     path("", dashboard, name="dashboard"),
-    path("home/", dashboard, {"template_name": "home.html"}, name="home"),
-    path("landing/", landing, name="landing"),
+    path("home/", dashboard, {"template_name": "home.html"}, name="home"),  # UX
+    path("landing/", landing, name="landing"),  # UX
     path("about", about, name="about"),
     path("profile", profile.ProfileEditView.as_view(), name="profile"),
     # API urls
