@@ -5,7 +5,7 @@
 {% block head_end %}{{ document_form.media }}{% endblock %}
 
 {% block content %}
-{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" addsum="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none cursor-pointer list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 mt-2 hidden w-56 bg-white rounded-sm border border-gray-200 shadow-lg group-open:block" item="block w-full px-4 py-2 text-left text-sm hover:bg-gray-50" editc="h-5 w-5 cursor-pointer text-primary-700" delc="h-5 w-5 cursor-pointer text-danger-700" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
+{% with empty="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center" emptyp="text-sm text-gray-500" th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" addsum="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none cursor-pointer list-none [&::-webkit-details-marker]:hidden" menu="absolute right-0 z-10 mt-2 hidden w-56 bg-white rounded-sm border border-gray-200 shadow-lg group-open:block" item="block w-full px-4 py-2 text-left text-sm hover:bg-gray-50" editc="h-5 w-5 cursor-pointer text-primary-700" delc="h-5 w-5 cursor-pointer text-danger-700" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
     <div class="relative mt-4">
         <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
             <div class="min-w-0">
@@ -95,8 +95,8 @@
                 </table>
             </div>
             {% else %}
-                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
-                    <p class="text-sm text-gray-500">No participants yet.</p>
+                <div class="{{ empty }}">
+                    <p class="{{ emptyp }}">No participants yet.</p>
                     {% if can_edit %}
                         <a href="{% url 'add_partner_role_to_contract' pk=contract.pk %}" class="{{ add }} mt-3" title="Add participant to contract"><i data-lucide="plus" class="h-4 w-4"></i><span>Add participant</span></a>
                     {% endif %}
@@ -150,8 +150,8 @@
                     {% endfor %}
                 </ul>
                 {% else %}
-                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
-                    <p class="text-sm text-gray-500">No logbook entries yet — entries are recorded on the dataset page.</p>
+                <div class="{{ empty }}">
+                    <p class="{{ emptyp }}">No logbook entries yet — entries are recorded on the dataset page.</p>
                 </div>
                 {% endif %}
             </div>
@@ -190,8 +190,8 @@
                     {% endfor %}
                 </ul>
             {% else %}
-                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
-                    <p class="text-sm text-gray-500">No DACs yet.</p>
+                <div class="{{ empty }}">
+                    <p class="{{ emptyp }}">No DACs yet.</p>
                     <button class="{{ add }} mt-3" type="button"
                         title="Create new DAC for contract"
                         data-toggle="modal"

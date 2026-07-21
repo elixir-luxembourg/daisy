@@ -4,7 +4,7 @@
 {% block title %}Home | DAISY{% endblock %}
 
 {% block content %}
-{% with card="rounded-sm bg-white p-4 shadow-sm" h2="flex items-center gap-2 text-xl font-medium text-primary-950" badge="inline-flex shrink-0 items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary" badge_danger="inline-flex shrink-0 items-center rounded-xs border border-danger-900 bg-danger-50 px-2 py-0.5 text-xs font-medium text-danger-900" badge_quiet="inline-flex shrink-0 items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700" %}
+{% with add="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" empty="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center" emptyp="text-sm text-gray-500" card="rounded-sm bg-white p-4 shadow-sm" h2="flex items-center gap-2 text-xl font-medium text-primary-950" badge="inline-flex shrink-0 items-center rounded-xs bg-primary-900 px-2 py-0.5 text-xs font-medium text-on-primary" badge_danger="inline-flex shrink-0 items-center rounded-xs border border-danger-900 bg-danger-50 px-2 py-0.5 text-xs font-medium text-danger-900" badge_quiet="inline-flex shrink-0 items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700" %}
 <section class="pt-8 pb-16">
 
     <div class="flex flex-wrap items-center justify-between gap-4">
@@ -128,9 +128,9 @@
                 {% endfor %}
             </ul>
             {% else %}
-            <div class="mt-4 rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
-                <p class="text-sm text-gray-500">No datasets yet.</p>
-                <a href="{{ dataset_wizard_url }}?reset=true" class="cursor-pointer mt-3 inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-primary-200 bg-white px-3 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"><i data-lucide="plus" class="h-4 w-4"></i><span>Add dataset</span></a>
+            <div class="mt-4 {{ empty }}">
+                <p class="{{ emptyp }}">No datasets yet.</p>
+                <a href="{{ dataset_wizard_url }}?reset=true" class="{{ add }} mt-3"><i data-lucide="plus" class="h-4 w-4"></i><span>Add dataset</span></a>
             </div>
             {% endif %}
         </section>
@@ -150,9 +150,9 @@
                 {% endfor %}
             </ul>
             {% else %}
-            <div class="mt-4 rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
-                <p class="text-sm text-gray-500">No projects yet.</p>
-                <a href="{% url 'project_add' %}" class="cursor-pointer mt-3 inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-primary-200 bg-white px-3 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"><i data-lucide="plus" class="h-4 w-4"></i><span>Add project</span></a>
+            <div class="mt-4 {{ empty }}">
+                <p class="{{ emptyp }}">No projects yet.</p>
+                <a href="{% url 'project_add' %}" class="{{ add }} mt-3"><i data-lucide="plus" class="h-4 w-4"></i><span>Add project</span></a>
             </div>
             {% endif %}
         </section>

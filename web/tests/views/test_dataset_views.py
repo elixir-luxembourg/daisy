@@ -228,10 +228,7 @@ def test_dataset_views_scientific_metadata_field(
     :param client: The Django test client
     :param expected_result: Whether the field should be rendered
     """
-    field_node = (
-        '<label for="id_scientific_metadata" class="block mb-2 text-sm font-medium '
-        'text-gray-900">Additional scientific metadata (in JSON format)</label>'
-    )
+    field_node = 'name="scientific_metadata"'
     user = UserFactory(groups=[group()])
     login_test_user(client, user)
 

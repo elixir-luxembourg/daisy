@@ -3,7 +3,7 @@
 {% block title %}{{ dac.title }} | DAISY{% endblock %}
 
 {% block content %}
-{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" delc="h-5 w-5 cursor-pointer text-danger-700" title2="font-display text-2xl font-medium tracking-tight text-primary-900" %}
+{% with empty="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center" emptyp="text-sm text-gray-500" th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" delc="h-5 w-5 cursor-pointer text-danger-700" title2="font-display text-2xl font-medium tracking-tight text-primary-900" %}
     <div class="relative mt-4">
         <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
             <div class="min-w-0">
@@ -95,8 +95,8 @@
                     </table>
                 </div>
             {% else %}
-                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
-                    <p class="text-sm text-gray-500">No members yet.</p>
+                <div class="{{ empty }}">
+                    <p class="{{ emptyp }}">No members yet.</p>
                     {% if can_edit %}
                         <button class="{{ add }} mt-3"
                                 type="button"
@@ -134,8 +134,8 @@
                     {% endfor %}
                 </ul>
             {% else %}
-                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
-                    <p class="text-sm text-gray-500">No datasets yet.</p>
+                <div class="{{ empty }}">
+                    <p class="{{ emptyp }}">No datasets yet.</p>
                     {% if is_data_steward %}
                         <button class="{{ add }} mt-3"
                                 type="button"

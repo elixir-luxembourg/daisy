@@ -98,10 +98,7 @@ def test_contract_view_protected_documents(permissions, group):
     response = client.get(url, follow=True)
 
     if user.is_part_of(VIPGroup()):
-        assert (
-            b'<div class="mt-4 rounded border border-gray-200 bg-white shadow-sm" id="documents-card">'
-            not in response.content
-        )
+        assert b'id="documents-card"' not in response.content
         assert (
             b'<h2 class="flex items-center gap-2 text-xl font-semibold"><i data-lucide="file-text" class="h-5 w-5"></i> Documents</h2>'
             not in response.content
@@ -109,20 +106,14 @@ def test_contract_view_protected_documents(permissions, group):
 
         contract.local_custodians.set([user])
         response = client.get(url, follow=True)
-        assert (
-            b'<div class="mt-4 rounded border border-gray-200 bg-white shadow-sm" id="documents-card">'
-            in response.content
-        )
+        assert b'id="documents-card"' in response.content
         assert (
             b'<h2 class="flex items-center gap-2 text-xl font-semibold"><i data-lucide="file-text" class="h-5 w-5"></i> Documents</h2>'
             in response.content
         )
 
     else:
-        assert (
-            b'<div class="mt-4 rounded border border-gray-200 bg-white shadow-sm" id="documents-card">'
-            in response.content
-        )
+        assert b'id="documents-card"' in response.content
         assert (
             b'<h2 class="flex items-center gap-2 text-xl font-semibold"><i data-lucide="file-text" class="h-5 w-5"></i> Documents</h2>'
             in response.content

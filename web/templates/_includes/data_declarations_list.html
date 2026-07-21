@@ -1,3 +1,4 @@
+{% with empty="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center" emptyp="text-sm text-gray-500" %}
 {% if entity.data_declarations.all %}
     <table class="w-full text-sm">
         <thead class="bg-gray-50">
@@ -19,7 +20,8 @@
         </tbody>
     </table>
 {% else %}
-<div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
-    <p class="text-sm text-gray-500">No data declarations linked yet — declarations are added from their dataset.</p>
+<div class="{{ empty }}">
+    <p class="{{ emptyp }}">No data declarations linked yet — declarations are added from their dataset.</p>
 </div>
 {% endif %}
+{% endwith %}

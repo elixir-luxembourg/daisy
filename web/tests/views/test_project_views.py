@@ -138,19 +138,13 @@ def test_project_view_protected_documents(permissions, group):
     response = client.get(url, follow=True)
 
     if user.is_part_of(DataStewardGroup(), AuditorGroup()):
-        assert (
-            b'<div class="mt-4 rounded border border-gray-200 bg-white shadow-sm" id="documents-card">'
-            in response.content
-        )
+        assert b'id="documents-card"' in response.content
         assert (
             b'<h2 class="flex items-center gap-2 text-xl font-semibold"><i data-lucide="file-text" class="h-5 w-5"></i> Documents</h2>'
             in response.content
         )
     else:
-        assert (
-            b'<div class="mt-4 rounded border border-gray-200 bg-white shadow-sm" id="documents-card">'
-            not in response.content
-        )
+        assert b'id="documents-card"' not in response.content
         assert (
             b'<h2 class="flex items-center gap-2 text-xl font-semibold"><i data-lucide="file-text" class="h-5 w-5"></i> Documents</h2>'
             not in response.content
@@ -159,10 +153,7 @@ def test_project_view_protected_documents(permissions, group):
     if user.is_part_of(VIPGroup()):
         project.local_custodians.set([user])
         response = client.get(url, follow=True)
-        assert (
-            b'<div class="mt-4 rounded border border-gray-200 bg-white shadow-sm" id="documents-card">'
-            in response.content
-        )
+        assert b'id="documents-card"' in response.content
         assert (
             b'<h2 class="flex items-center gap-2 text-xl font-semibold"><i data-lucide="file-text" class="h-5 w-5"></i> Documents</h2>'
             in response.content
@@ -282,10 +273,7 @@ def test_project_views_scientific_metadata_field(
     :param client: The Django test client
     :param expected_result: Whether the field should be rendered
     """
-    field_node = (
-        '<label for="id_scientific_metadata" class="block mb-2 text-sm font-medium '
-        'text-gray-900">Additional scientific metadata (in JSON format)</label>'
-    )
+    field_node = 'name="scientific_metadata"'
     user = UserFactory(groups=[group()])
     login_test_user(client, user)
 

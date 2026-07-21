@@ -4,7 +4,7 @@
 {% block content_title %}{{ partner }}{% endblock %}
 
 {% block content %}
-{% with fab="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
+{% with empty="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center" emptyp="text-sm text-gray-500" fab="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
     <div class="mt-4">
         <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
             <div class="min-w-0">
@@ -84,8 +84,8 @@
                     {% endfor %}
                 </ul>
                 {% else %}
-                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
-                    <p class="text-sm text-gray-500">No contacts yet.</p>
+                <div class="{{ empty }}">
+                    <p class="{{ emptyp }}">No contacts yet.</p>
                 </div>
                 {% endif %}
             </div>
@@ -108,8 +108,8 @@
                     {% endfor %}
                 </ul>
                 {% else %}
-                <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
-                    <p class="text-sm text-gray-500">No contracts yet.</p>
+                <div class="{{ empty }}">
+                    <p class="{{ emptyp }}">No contracts yet.</p>
                 </div>
                 {% endif %}
             </div>

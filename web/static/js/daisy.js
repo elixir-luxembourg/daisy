@@ -161,12 +161,8 @@ function loadModal(modal, title, url, button, postMode, ajaxRefreshSelector, aja
                     cache: false,
                     success: function (results) {
                         if (redirectURI !== undefined) {
-                            var target = new URL(redirectURI, window.location.href);
-                            if (target.href === window.location.href) {
-                                window.location.reload();
-                            } else {
-                                window.location.replace(redirectURI);
-                            }
+                            window.location.replace(redirectURI);
+                            window.location.reload();
                             return;
                         }
                         const select = button.siblings("select");
