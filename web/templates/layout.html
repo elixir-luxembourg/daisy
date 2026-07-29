@@ -22,8 +22,9 @@
     {% block head_end %}{% endblock %}
     <title>{% block title %}DAISY{% endblock %}</title>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="flex flex-col min-h-screen" style="background-color:var(--color-lcsb-sky-50);background-image:radial-gradient(var(--color-lcsb-sky-300) 1px,transparent 1.6px);background-size:18px 18px;">
 
+<div class="mx-auto flex w-full max-w-7xl grow flex-col bg-white shadow-sm">
 {% block navbar %}
 {% include 'navbar.html' %}
 {% endblock %}
@@ -60,6 +61,9 @@
     {% endblock %}
 </main>
 
+{% block footer %}{% include 'footer.html' %}{% endblock %}
+</div>
+
     <div id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" hidden class="fixed inset-0 z-50 items-center justify-center bg-primary-950/40">
     <div role="document" class="flex flex-col mx-4 max-h-[90vh] w-full max-w-2xl bg-white rounded-sm shadow-lg">
         <div class="flex shrink-0 items-baseline justify-between gap-4 px-6 py-4 border-b border-gray-200">
@@ -71,8 +75,6 @@
         <div class="modal-body flex-1 min-h-0 overflow-y-auto px-6 py-4"></div>
     </div>
 </div>
-
-{% block footer %}{% include 'footer.html' %}{% endblock %}
 
     <script src="{% static 'vendor/node_modules/jquery/dist/jquery.min.js' %}"></script>
     <script src="{% static 'vendor/node_modules/select2/dist/js/select2.full.min.js' %}"></script>

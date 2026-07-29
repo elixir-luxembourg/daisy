@@ -112,19 +112,19 @@
                         <table class="min-w-full border-collapse text-sm lg:text-base">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col" class="{{ th }} border border-gray-200">Use Category</th>
-                                    <th scope="col" class="{{ th }} border border-gray-200">Use Condition Rule</th>
-                                    <th scope="col" class="{{ th }} border border-gray-200">Use Category note</th>
-                                    <th scope="col" class="{{ th }} border border-gray-200">Use Condition note</th>
+                                    <th scope="col" class="{{ th }}">Use Category</th>
+                                    <th scope="col" class="{{ th }}">Use Condition Rule</th>
+                                    <th scope="col" class="{{ th }}">Use Category note</th>
+                                    <th scope="col" class="{{ th }}">Use Condition note</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for use_condition in object.data_use_conditions.all %}
                                     <tr class="odd:bg-gray-50">
-                                        <td class="border border-gray-200 px-4 py-2">{{ use_condition.condition_class }}</td>
-                                        <td class="border border-gray-200 px-4 py-2">{{ use_condition.use_condition_rule }}</td>
-                                        <td class="border border-gray-200 px-4 py-2">{{ use_condition.use_class_note }}</td>
-                                        <td class="border border-gray-200 px-4 py-2">{{ use_condition.notes }}</td>
+                                        <td class="{{ td }}">{{ use_condition.condition_class }}</td>
+                                        <td class="{{ td }}">{{ use_condition.use_condition_rule }}</td>
+                                        <td class="{{ td }}">{{ use_condition.use_class_note }}</td>
+                                        <td class="{{ td }}">{{ use_condition.notes }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
