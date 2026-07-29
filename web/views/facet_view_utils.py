@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from django.db.models import Q
 
-from haystack.inputs import Exact, AutoQuery
+from haystack.inputs import Exact, AutoQuery, Raw
 from haystack.query import SearchQuerySet
 
 from core.utils import DaisyLogger
@@ -83,7 +83,10 @@ def _search_objects(query, filters, facets, model_object, order_by=None):
 
     # execute the query
     if query:
-        queryset = queryset.filter(content=AutoQuery(query))
+        fuzzy_query = AutoQuery(query).prepare(queryset.query)
+        exact_phrase = Exact(query, clean=True).prepare(queryset.query)
+        combined_query = "(%s) OR %s^10" % (fuzzy_query, exact_phrase)
+        queryset = queryset.filter(content=Raw(combined_query))
     # get facets
     if facets:
         for field in facets:
