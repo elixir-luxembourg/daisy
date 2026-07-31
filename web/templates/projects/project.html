@@ -83,7 +83,7 @@
         <div class="mt-4 grid items-start gap-4 md:grid-cols-2">
         <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
-                <h2 class="{{ title2 }}"><i data-lucide="microscope" class="h-6 w-6"></i> Study details</h2>
+                <h2 class="{{ title2 }} mb-4"><i data-lucide="microscope" class="h-6 w-6"></i> Study details</h2>
                 <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
                     <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Study features</dt>
                     <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ project.study_terms.all|join:", "|default:'-' }}</dd>
@@ -102,7 +102,7 @@
         </div>
         <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
-                <h2 class="{{ title2 }}"><i data-lucide="folder-tree" class="h-6 w-6"></i> Related projects</h2>
+                <h2 class="{{ title2 }} mb-4"><i data-lucide="folder-tree" class="h-6 w-6"></i> Related projects</h2>
                 <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
                     <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Sub projects</dt>
                     <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">
@@ -121,7 +121,7 @@
         </div>
         <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
-                <h2 class="{{ title2 }}"><i data-lucide="shield" class="h-6 w-6"></i> Ethics</h2>
+                <h2 class="{{ title2 }} mb-4"><i data-lucide="shield" class="h-6 w-6"></i> Ethics</h2>
                 <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
                     <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Has national approval?</dt>
                     <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ project.has_cner|yesno }} {% if project.cner_notes %}<a class="text-primary-700 hover:underline" href="#" data-toggle="modal" data-target="#modal" data-modal-content="{{ project.cner_notes }}" data-modal-title="National ethics approval notes">(view notes)</a>{% endif %}</dd>
@@ -146,7 +146,7 @@
                     {% endif %}
                 </div>
                 {% if project.company_personnel.all %}
-                <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
+                <ul class="divide-y divide-gray-200 rounded-sm border border-gray-200">
                     {% for company_personnel in project.company_personnel.all %}
                         <li class="px-3 py-2 {% if can_edit %}deletable{% endif %}"{% if can_edit %} data-delete-title="Remove personnel from project" data-url="{% url 'remove_personnel_from_project' pk=project.id user_id=company_personnel.pk %}"{% endif %}>{{ company_personnel }}</li>
                     {% endfor %}
@@ -178,7 +178,7 @@
                     {% endif %}
                 </div>
                 {% if project.contacts.all %}
-                <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
+                <ul class="divide-y divide-gray-200 rounded-sm border border-gray-200">
                     {% for contact in project.contacts.all %}
                         {% if can_edit %}
                             <li class="px-3 py-2 deletable" data-delete-title="Remove contact from project" data-url="{% url 'remove_contact_from_project' pk=project.id contact_id=contact.pk %}"><a class="text-primary-700 hover:underline" href="{% url 'contact' pk=contact.id %}">{{ contact.full_name }}</a></li>
@@ -360,7 +360,7 @@
                 {% endif %}
             </div>
             {% if project.publications.all %}
-            <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
+            <ul class="divide-y divide-gray-200 rounded-sm border border-gray-200">
                 {% for publication in project.publications.all %}
                     {% if can_edit %}
                         <li class="px-3 py-2 deletable" data-delete-title="Remove publication from project" data-url="{% url 'remove_publication_from_project' pk=project.id publication_id=publication.pk %}">{{ publication.citation }}</li>

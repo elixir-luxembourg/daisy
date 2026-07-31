@@ -133,15 +133,15 @@
     <div class="mt-4 grid gap-4 md:grid-cols-2">
         <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
-                <h2 class="{{ title2 }}"><i data-lucide="clipboard-list" class="h-6 w-6"></i> Data declarations covered</h2>
+                <h2 class="{{ title2 }} mb-4"><i data-lucide="clipboard-list" class="h-6 w-6"></i> Data declarations covered</h2>
                 {% include '_includes/data_declarations_list.html' with entity=contract %}
             </div>
         </div>
         <div class="rounded-sm bg-white shadow-sm">
             <div class="p-4">
-                <h2 class="{{ title2 }}"><i data-lucide="activity" class="h-6 w-6"></i> Data logbook entries</h2>
+                <h2 class="{{ title2 }} mb-4"><i data-lucide="activity" class="h-6 w-6"></i> Data logbook entries</h2>
                 {% if contract.shares.all %}
-                <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
+                <ul class="divide-y divide-gray-200 rounded-sm border border-gray-200">
                     {% for share in contract.shares.all %}
                         <li class="grid gap-2 px-3 py-2 md:grid-cols-2">
                             <p><a class="text-primary-700 hover:underline" href="{% url 'dataset' pk=share.dataset.pk %}">{{ share.dataset }}</a></p>
@@ -174,7 +174,7 @@
                     data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"><i data-lucide="plus" class="h-4 w-4"></i><span>Create DAC</span></button>{% endif %}
             </div>
             {% if dacs %}
-                <ul class="mt-2 divide-y divide-gray-200 rounded-sm border border-gray-200">
+                <ul class="divide-y divide-gray-200 rounded-sm border border-gray-200">
                     {% for dac in dacs %}
                         <li class="flex flex-wrap items-center justify-between gap-3 px-3 py-2">
                             <div class="min-w-0">

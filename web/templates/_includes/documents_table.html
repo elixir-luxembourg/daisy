@@ -1,68 +1,71 @@
 {% with empty="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center" emptyp="text-sm text-gray-500" %}
-                <h2 class="flex items-center gap-2 text-xl font-semibold"><i data-lucide="file-text" class="h-5 w-5"></i> Documents</h2>
-                {% if datafiles %}
-                <table class="w-full text-sm">
-                    <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-3 py-2 text-left font-semibold" style="max-width: 200px; overflow: auto">Document Type</th>
-                        <th scope="col" class="px-3 py-2 text-left font-semibold" style="max-width: 200px; min-width:120px; overflow: auto">Expiry</th>
-                        <th scope="col" class="px-3 py-2 text-left font-semibold">Notes</th>
-                        <th scope="col" class="px-3 py-2 text-left font-semibold" style="max-width: 400px; overflow: auto">File</th>
-                        <th scope="col" class="px-3 py-2 text-left font-semibold" style="max-width: 200px; overflow: auto"><small>Size</small></th>
-
-                        {% if can_edit %}
-                            <th scope="col" id="document-action-head" class="px-3 py-2 text-left font-semibold" style="width:7em">Actions</th>
-                        {% endif %}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for file in datafiles %}
-                        <tr class="odd:bg-gray-50">
-                            <td class="px-3 py-2 border-t border-gray-200" style="max-width: 200px; overflow: auto">{{ file.get_domain_type_display }}</td>
-                            <td class="px-3 py-2 border-t border-gray-200" style="max-width: 200px; overflow: auto">{{ file.expiry_date | default:'-' }}</td>
-                            <td class="px-3 py-2 border-t border-gray-200">{{ file.content_notes | default:'-' }}</td>
-                            <td class="px-3 py-2 border-t border-gray-200" style="max-width: 400px; overflow: auto"><a class="text-primary-700 hover:underline" href="{% url 'document_download' pk=file.id %}">{{ file.shortname}}</a></td>
-                            <td class="px-3 py-2 border-t border-gray-200"><small>{{ file.size | filesizeformat  }}</small></td>
-                            {% if can_edit %}
-                                <td id="document-action" class="px-3 py-2 border-t border-gray-200">
-                                    <button type="button" data-toggle="modal" id="btnupdate" class="jsBtn clickable inline-flex p-0 text-primary-700 bg-transparent border-0 hover:text-primary-900"
-                                       data-target="#modal"
-                                       data-modal-title="Update document"
-                                       data-post-mode="true"
-                                       {% if project %}
-                                           data-ajax-redirect-uri="{% url 'project' pk=project.id %}"
-                                       {% elif contract %}
-                                           data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"
-                                       {% endif %}
-                                       data-ajax-url="{% url "document_edit" pk=file.id %}"
-                                       aria-label="Update document" title="Update document">
-                                        <i data-lucide="pencil" class="h-5 w-5"></i>
-                                    </button>
-                                    <button type="button" aria-label="Delete document" title="Delete document" class="clickable inline-flex p-0 text-danger-700 bg-transparent border-0 hover:text-danger-900" data-method="delete"
-                                       data-confirmation="delete"
-                                       data-parent-to-remove="tr"
-                                       data-url="{% url 'document_delete' pk=file.id  %}">
-                                        <i data-lucide="trash-2" class="h-5 w-5"></i>
-                                    </button>
-                                </td>
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <div class="mt-2 {{ empty }}">
-                    <p class="{{ emptyp }}">No documents yet.</p>
-                    {% if can_edit %}
-                        <button type="button" class="{{ add }} mt-3"
-                                data-toggle="modal"
-                                data-target="#modal"
-                                data-modal-title="Add document"
-                                data-ajax-url="{% url 'document_add' object_id=object_id content_type=content_type %}"
-                                data-post-mode="true"
-                                {% if project %}data-ajax-redirect-uri="{% url 'project' pk=project.id %}#panel-contracts"{% elif contract %}data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"{% endif %}
-                                title="Upload new document"><i data-lucide="plus" class="h-4 w-4"></i><span>Upload document</span></button>
-                    {% endif %}
-                </div>
+<h2 class="{{ title2 }} mb-4"><i data-lucide="file-text" class="h-6 w-6"></i> Documents</h2>
+{% if datafiles %}
+<div class="overflow-x-auto">
+    <table class="min-w-full border-collapse text-sm lg:text-base">
+        <thead class="bg-gray-50">
+        <tr>
+            <th scope="col" class="{{ th }}">Document Type</th>
+            <th scope="col" class="{{ th }}">Expiry</th>
+            <th scope="col" class="{{ th }}">Notes</th>
+            <th scope="col" class="{{ th }}">File</th>
+            <th scope="col" class="{{ th }}">Size</th>
+            {% if can_edit %}
+                <th scope="col" id="document-action-head" class="{{ th }} w-28">Actions</th>
+            {% endif %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for file in datafiles %}
+            <tr class="odd:bg-gray-50">
+                <td class="{{ td }}">{{ file.get_domain_type_display }}</td>
+                <td class="{{ td }}">{{ file.expiry_date | default:'-' }}</td>
+                <td class="{{ td }}">{{ file.content_notes | default:'-' }}</td>
+                <td class="{{ td }}"><a class="text-primary-700 hover:underline" href="{% url 'document_download' pk=file.id %}">{{ file.shortname }}</a></td>
+                <td class="{{ td }}">{{ file.size | filesizeformat }}</td>
+                {% if can_edit %}
+                    <td id="document-action" class="{{ td }}">
+                        <span class="inline-flex items-center gap-2">
+                            <button type="button" data-toggle="modal" id="btnupdate" class="jsBtn clickable inline-flex p-0 text-primary-700 bg-transparent border-0 hover:text-primary-900"
+                               data-target="#modal"
+                               data-modal-title="Update document"
+                               data-post-mode="true"
+                               {% if project %}
+                                   data-ajax-redirect-uri="{% url 'project' pk=project.id %}"
+                               {% elif contract %}
+                                   data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"
+                               {% endif %}
+                               data-ajax-url="{% url "document_edit" pk=file.id %}"
+                               aria-label="Update document" title="Update document">
+                                <i data-lucide="pencil" class="h-5 w-5"></i>
+                            </button>
+                            <button type="button" aria-label="Delete document" title="Delete document" class="clickable inline-flex p-0 text-danger-700 bg-transparent border-0 hover:text-danger-900" data-method="delete"
+                               data-confirmation="delete"
+                               data-parent-to-remove="tr"
+                               data-url="{% url 'document_delete' pk=file.id %}">
+                                <i data-lucide="trash-2" class="h-5 w-5"></i>
+                            </button>
+                        </span>
+                    </td>
                 {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="{{ empty }}">
+    <p class="{{ emptyp }}">No documents yet.</p>
+    {% if can_edit %}
+        <button type="button" class="{{ add }} mt-3"
+                data-toggle="modal"
+                data-target="#modal"
+                data-modal-title="Add document"
+                data-ajax-url="{% url 'document_add' object_id=object_id content_type=content_type %}"
+                data-post-mode="true"
+                {% if project %}data-ajax-redirect-uri="{% url 'project' pk=project.id %}#panel-contracts"{% elif contract %}data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"{% endif %}
+                title="Upload new document"><i data-lucide="plus" class="h-4 w-4"></i><span>Upload document</span></button>
+    {% endif %}
+</div>
+{% endif %}
 {% endwith %}

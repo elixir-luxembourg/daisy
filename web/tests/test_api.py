@@ -200,8 +200,10 @@ def test_partners_public_access():
 
 def test_partners_published_with_apikey():
     user = UserFactory.create()
-    PartnerFactory(name="Published Partner", _is_published=True)
-    PartnerFactory(name="Unpublished Partner", _is_published=False)
+    PartnerFactory(name="Published Partner", _is_published=True, elu_accession="PUB")
+    PartnerFactory(
+        name="Unpublished Partner", _is_published=False, elu_accession="UNPUB"
+    )
     path = reverse("api_partners")
 
     # without published filter

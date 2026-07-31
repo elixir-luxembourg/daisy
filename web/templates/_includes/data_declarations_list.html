@@ -1,24 +1,26 @@
 {% with empty="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center" emptyp="text-sm text-gray-500" %}
 {% if entity.data_declarations.all %}
-    <table class="w-full text-sm">
-        <thead class="bg-gray-50">
-        <tr>
-            <th scope="col" class="px-3 py-2 text-left font-semibold">Title</th>
-            <th scope="col" class="px-3 py-2 text-left font-semibold">Dataset</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for data_declaration in entity.data_declarations.all %}
-            <tr class="odd:bg-gray-50">
-                <td class="px-3 py-2 border-t border-gray-200">{{ data_declaration.title }}</td>
-                <td class="px-3 py-2 border-t border-gray-200">
-                    <a class="text-primary-700 hover:underline" href="{% url 'dataset' pk=data_declaration.dataset.id %}">
-                        {{ data_declaration.dataset }}</a>
-                </td>
+    <div class="overflow-x-auto">
+        <table class="min-w-full border-collapse text-sm lg:text-base">
+            <thead class="bg-gray-50">
+            <tr>
+                <th scope="col" class="{{ th }}">Title</th>
+                <th scope="col" class="{{ th }}">Dataset</th>
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            {% for data_declaration in entity.data_declarations.all %}
+                <tr class="odd:bg-gray-50">
+                    <td class="{{ td }}">{{ data_declaration.title }}</td>
+                    <td class="{{ td }}">
+                        <a class="text-primary-700 hover:underline" href="{% url 'dataset' pk=data_declaration.dataset.id %}">
+                            {{ data_declaration.dataset }}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% else %}
 <div class="{{ empty }}">
     <p class="{{ emptyp }}">No data declarations linked yet — declarations are added from their dataset.</p>
