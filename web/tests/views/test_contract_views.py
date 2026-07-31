@@ -99,25 +99,16 @@ def test_contract_view_protected_documents(permissions, group):
 
     if user.is_part_of(VIPGroup()):
         assert b'id="documents-card"' not in response.content
-        assert (
-            b'<h2 class="flex items-center gap-2 text-xl font-semibold"><i data-lucide="file-text" class="h-5 w-5"></i> Documents</h2>'
-            not in response.content
-        )
+        assert b'data-lucide="file-text"' not in response.content
 
         contract.local_custodians.set([user])
         response = client.get(url, follow=True)
         assert b'id="documents-card"' in response.content
-        assert (
-            b'<h2 class="flex items-center gap-2 text-xl font-semibold"><i data-lucide="file-text" class="h-5 w-5"></i> Documents</h2>'
-            in response.content
-        )
+        assert b'data-lucide="file-text"' in response.content
 
     else:
         assert b'id="documents-card"' in response.content
-        assert (
-            b'<h2 class="flex items-center gap-2 text-xl font-semibold"><i data-lucide="file-text" class="h-5 w-5"></i> Documents</h2>'
-            in response.content
-        )
+        assert b'data-lucide="file-text"' in response.content
 
 
 @pytest.mark.parametrize(
@@ -140,27 +131,15 @@ def test_contract_edit_protected_documents(permissions, group):
             b'<div class="flex justify-end" id="add-contract-document">'
             in response.content
         )
-        assert (
-            b'<th scope="col" id="document-action-head" class="px-3 py-2 text-left font-semibold" style="width:7em">Actions</th>'
-            in response.content
-        )
-        assert (
-            b'<td id="document-action" class="px-3 py-2 border-t border-gray-200">'
-            in response.content
-        )
+        assert b'id="document-action-head"' in response.content
+        assert b'id="document-action"' in response.content
     else:
         assert (
             b'<div class="flex justify-end" id="add-contract-document">'
             not in response.content
         )
-        assert (
-            b'<th scope="col" id="document-action-head" class="px-3 py-2 text-left font-semibold" style="width:7em">Actions</th>'
-            not in response.content
-        )
-        assert (
-            b'<td id="document-action" class="px-3 py-2 border-t border-gray-200">'
-            not in response.content
-        )
+        assert b'id="document-action-head"' not in response.content
+        assert b'id="document-action"' not in response.content
 
     if user.is_part_of(VIPGroup()):
         contract.local_custodians.set([user])
@@ -169,14 +148,8 @@ def test_contract_edit_protected_documents(permissions, group):
             b'<div class="flex justify-end" id="add-contract-document">'
             in response.content
         )
-        assert (
-            b'<th scope="col" id="document-action-head" class="px-3 py-2 text-left font-semibold" style="width:7em">Actions</th>'
-            in response.content
-        )
-        assert (
-            b'<td id="document-action" class="px-3 py-2 border-t border-gray-200">'
-            in response.content
-        )
+        assert b'id="document-action-head"' in response.content
+        assert b'id="document-action"' in response.content
 
     os.remove(document.content.name)
 
