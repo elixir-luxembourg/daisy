@@ -1,63 +1,51 @@
 {% load static daisy_utils %}
-    {# Header Section #}
-    <div class="row align-items-center mb-4">
-        <div class="col-md-6">
-            <h1 class="h3 fw-bold text-gray-900 mb-0">
-                Browse {{title}}
-            </h1>
-        </div>
-        <div class="col-md-6 d-flex justify-content-end">
-            {% if request.user.is_authenticated and request.user|has_group:"daisy-data-steward" %}
-                {% if search_url == 'projects' or search_url == 'datasets' or search_url == 'partners' %}
-                    <button id="importModalButton" type="button" class="btn btn-secondary btn-outline float-right mx-2">
-                        Import
-                    </button>
-                {% include 'importer/import_modal.html' %}
-                {% endif %}
-                <a class="btn btn-secondary btn-outline float-right" href="export?{% if filters %}filters={{ filters }}&{% endif %}{% if order_by %}order_by={{ order_by | default:'' }}&{% endif %}{% if query %}query={{ query | default:'' }}{% endif %}">Save the results as xlsx</a>
+{% with primary="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" clearcls="reset-form-button shrink-0 text-gray-500 hover:text-primary-900" optlabel="text-xs font-semibold uppercase tracking-wider text-gray-500" clearfilter="inline-flex items-center gap-1.5 text-sm font-medium text-primary-900 hover:underline" %}
+    <div class="mb-3 flex flex-wrap items-center gap-3">
+        <h2 class="{{ optlabel }}">Browse {{ title }}</h2>
+        {% if request.user.is_authenticated and request.user|has_group:"daisy-data-steward" %}
+            {% if search_url == 'projects' or search_url == 'datasets' or search_url == 'partners' %}
+                <button id="importModalButton" type="button" class="cursor-pointer inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-primary-200 bg-white px-4 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none">
+                    Import
+                </button>
+            {% include 'importer/import_modal.html' %}
             {% endif %}
-        </div>
-    </div>
-<div class="row mb-4">
-    <div class="col-lg-12 col-md-12">
-        <form method="get" action="{% url url %}" class="w-100">
-            <div class="search-container shadow-sm rounded mt-2">
-                <div class="input-group p-3 bg-white rounded align-items-center">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text bg-white border-0">
-                            <i class="material-icons align-middle">search</i>
-                        </span>
-                    </div>
-                    <input id="query_edit" type="text" class="form-control bg-white border-0 pl-2 ml-2" autocomplete="off" name="query" value="{{ query }}" placeholder="Search for {{ title }}">
-                    {% if query %}
-                    <div class="input-group-append">
-                        <span class="input-group-text bg-white border-0 mx-1">
-                            <i class="material-icons align-middle close reset-form-button" data-resets="query_edit" data-submits="yes">close</i>
-                        </span>
-                    </div>
-                    {% endif %}
-                    <div class="input-group-append">
-                        <button type="submit" class="btn btn-primary px-4 d-flex align-items-center">Search</button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-
-    <div class="col-lg-12 col-md-12 mt-3 mb-n4">
-        {% if order_by_fields %}
-        <div class="d-flex justify-content-end">
-            <div class="btn-group btn-group-sm" role="group">
-                {% for field in order_by_fields %}
-                    {% orderbylink search_url field %}
-                {% endfor %}
-            </div>
-        </div>
+            <a class="cursor-pointer inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-primary-200 bg-white px-4 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" href="export?{% if filters %}filters={{ filters }}&{% endif %}{% if order_by %}order_by={{ order_by | default:'' }}&{% endif %}{% if query %}query={{ query | default:'' }}{% endif %}">Save the results as xlsx</a>
         {% endif %}
     </div>
-</div>
+    <div class="mb-4">
+        <form method="get" action="{% url url %}">
+            <div class="flex items-center gap-2">
+                <div class="flex h-10 flex-1 items-center gap-2 rounded-xs border border-gray-300 bg-white px-3 shadow-xs focus-within:border-primary-900 focus-within:ring-1 focus-within:ring-primary-900">
+                    <i data-lucide="search" class="h-5 w-5 shrink-0 text-gray-500"></i>
+                    <input id="query_edit" type="text" class="flex-1 text-sm text-primary-950 bg-transparent focus:outline-none" autocomplete="off" name="query" value="{{ query }}" aria-label="Search for {{ title }}" placeholder="Search for {{ title }}">
+                    {% if query %}
+                        <button type="button" class="{{ clearcls }}" data-resets="query_edit" data-submits="yes" aria-label="Clear search">
+                            <i data-lucide="x" class="h-5 w-5"></i>
+                        </button>
+                    {% endif %}
+                </div>
+                {% if order_by_fields %}
+                    <details class="group relative shrink-0">
+                        <summary class="cursor-pointer inline-flex h-10 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] list-none [&::-webkit-details-marker]:hidden">
+                            <i data-lucide="arrow-up-down" class="h-4 w-4"></i> Sort
+                            <i data-lucide="chevron-down" class="h-4 w-4 transition-transform group-open:rotate-180"></i>
+                        </summary>
+                        <div class="absolute right-0 z-10 mt-2 flex flex-col gap-1 p-2 w-64 bg-white rounded-sm border border-gray-200 shadow-lg">
+                            {% for field in order_by_fields %}{% orderbylink search_url field %}{% endfor %}
+                        </div>
+                    </details>
+                {% endif %}
+                <button type="submit" class="{{ primary }}">Search</button>
+            </div>
+        </form>
+        {% if request.GET.filters %}
+            <div class="mt-2 flex justify-end">
+                <a href="{% clear_filters_url url %}" class="{{ clearfilter }}"><i data-lucide="x" class="h-4 w-4"></i> Clear all filters</a>
+            </div>
+        {% endif %}
+    </div>
+{% endwith %}
 <script>
     const importDataUrl = `/import_data/{{ search_url }}/`;
 </script>
-<script defer src="{% static 'js/daisy.js' %}"></script>
 <script defer src="{% static 'js/importer.js' %}"></script>

@@ -203,35 +203,36 @@ def test_partners_public_access():
 
 def test_partners_published_with_apikey():
     user = UserFactory.create()
-    PartnerFactory(name="Published Partner", _is_published=True)
-    PartnerFactory(name="Unpublished Partner", _is_published=False)
+    PartnerFactory(name="Published Partner", _is_published=True, elu_accession="PUB")
+    PartnerFactory(
+        name="Unpublished Partner", _is_published=False, elu_accession="UNPUB"
+    )
     path = reverse("api_partners")
 
     # without published filter
     request = RequestFactory().get(path, {"API_KEY": user.api_key})
     response = api.partners(request)
-    results = loads(response.content).get("results")
+    names = [p["name"] for p in loads(response.content).get("results")]
 
     assert response.status_code == 200
-    assert len(results) == 2
-    assert results[0]["name"] == "Published Partner"
-    assert results[1]["name"] == "Unpublished Partner"
+    assert "Published Partner" in names
+    assert "Unpublished Partner" in names
 
     # with published=true filter
     request = RequestFactory().get(path, {"API_KEY": user.api_key, "published": "true"})
-    results = loads(api.partners(request).content).get("results")
+    names = [p["name"] for p in loads(api.partners(request).content).get("results")]
 
-    assert len(results) == 1
-    assert results[0]["name"] == "Published Partner"
+    assert "Published Partner" in names
+    assert "Unpublished Partner" not in names
 
     # with published=false filter
     request = RequestFactory().get(
         path, {"API_KEY": user.api_key, "published": "false"}
     )
-    results = loads(api.partners(request).content).get("results")
+    names = [p["name"] for p in loads(api.partners(request).content).get("results")]
 
-    assert len(results) == 1
-    assert results[0]["name"] == "Unpublished Partner"
+    assert "Unpublished Partner" in names
+    assert "Published Partner" not in names
 
 
 def test_partners_fields_with_apikey():

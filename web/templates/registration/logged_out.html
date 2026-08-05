@@ -1,12 +1,12 @@
 {% extends 'layout.html' %}
 
-{% block title %}Logged out{% endblock %}
+{% block title %}Logged out | DAISY{% endblock %}
 
 {% block content %}
-    <div class="jumbotron">
-        <h1 class="display-4">Logged out</h1>
+    <div class="mt-4">
+        <h1 class="mb-4 font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">Logged out</h1>
         <p>You have been successfully disconnected.</p>
 
-        <p><a href="{% url 'dashboard' %}">Go to the homepage</a></p>
+        <p><a class="text-primary-700 hover:underline" href="{% url 'dashboard' %}">Go to the homepage</a></p>
     </div>
 {% endblock %}

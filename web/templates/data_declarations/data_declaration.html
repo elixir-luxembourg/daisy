@@ -1,146 +1,138 @@
 {% extends 'layout.html' %}
 
-{% block title %}{{ object }}{% endblock %}
+{% block title %}{{ object }} | DAISY{% endblock %}
 
 {% block content %}
-    <div class="row mt-4">
-        <div class="jumbotron col">
-            <h1>{{ object.title }}</h1>
-            <div class="row">
-                <div class="col">
-                    <dl>
-                        <dt>Parent Dataset</dt>
-                        <dd><a href="{% url 'dataset' pk=object.dataset.id %}">{{ object.dataset.title }}</a></dd>
+{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" %}
+    <div class="relative mt-4">
+        <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
+            <div class="min-w-0">
+                <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ object.title }}</h1>
+            </div>
+            <div class="mt-1 flex flex-wrap shrink-0 gap-2">
+            {% if can_edit %}
+                <a class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" href="{% url 'data_declaration_edit' pk=object.id %}" title="Edit data declaration"><i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i><span>Edit</span></a>
+            {% endif %}
+            </div>
+        </div>
+        <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Parent Dataset</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900"><a class="text-primary-700 hover:underline" href="{% url 'dataset' pk=object.dataset.id %}">{{ object.dataset.title }}</a></dd>
 
-                        {% if object.dataset.project %}
-                            <dt>Project</dt>
-                            <dd>
-                                <a href="{% url 'project' pk=object.dataset.project.pk %}">{{ object.dataset.project }}</a>
-                            </dd>
-                        {% endif %}
-
-                        <dt>Source Contract</dt>
-                        {% if object.contract %}
-                            <dd><a href="{% url 'contract' pk=object.contract.id %}">{{ object.contract }}</a></dd>
-                        {% else %}
-                            <dd>No source contract</dd>
-                        {% endif %}
-
-                        {% if object.partner %}
-                        <dt>Partner:</dt>
-                        <dd><a href="{% url 'partner' pk=object.partner.id %}">{{ object.partner | default:"-" }}</a></dd>
-                        {% endif %}
-
-                        <dt>Derived/re-used from:</dt>
-                        <dd>{{ object.data_types_generated.all | join:', '| default:"-" }}</dd>
-                        
-                        <dt>Source Notes</dt>
-                        <dd>{{ object.comments | default:"-" }}</dd>
-
-                        <dt>Source Cohort(s)</dt>
-                        <dd>{{ object.cohorts.all | join:', '| default:"-" }}</dd>
-                        
-                        {% if object.submission_id %}
-                        <dt>Submission ID</dt>
-                        <dd>{{ object.submission_id| default:"-" }}</dd>
-                        {% endif %}
-
-                        {% if object.other_external_id %}
-                        <dt>Other external IDs</dt>
-                        <dd>{{ object.other_external_id| default:"-" }}</dd>
-                        {% endif %}
-                    </dl>
-                </div>
-                <div class="col">
-                    <dl>
-                        <dt>Data Types</dt>
-                        <dd>
-                            {% for data_type in object.data_types %}
-                                <span class="badge badge-pill badge-primary">{{ data_type }}</span>
-                            {% endfor %}
-                        </dd>
-
-                        <dt>Remarks on data types</dt>
-                        <dd>{{ object.data_types_notes }}</dd>
-
-                        <dt>Subject Categories</dt>
-                        <dd>{{ object.subjects_category  | default:"-" }}</dd>
-
-                        <dt>Special Subjects</dt>
-                        <dd>{{ object.has_special_subjects | yesno:"yes,no,unknown" }}</dd>
-
-                        {% if object.special_subjects_description %}
-                        <dt>Description of the nature of special subjects</dt>
-                        <dd>{{ object.special_subjects_description }}</dd>
-                        {% endif %}
-
-                        <dt>Share category</dt>
-                        <dd>{{ object.share_category | default:"-" }}</dd> 
-
-                        <dt>Access procedure</dt>
-                        <dd>{{ object.access_procedure | default:"-" }}</dd>
-
-                        <dt>Consent status</dt>
-                        <dd>{{ object.consent_status | default:"-" }}</dd>
-
-                        <dt>Deidentification method</dt>
-                        <dd>{{ object.deidentification_method | default:"-" }}</dd>
-                    </dl>
-                </div>
-
-                <div class="floating-buttons-absolute">
-                    {% if can_edit %}
-                        <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'data_declaration_edit' pk=object.id %}"><i
-                                class="material-icons">edit</i>
-                        </a>
+                    {% if object.dataset.project %}
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Project</dt>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900"><a class="text-primary-700 hover:underline" href="{% url 'project' pk=object.dataset.project.pk %}">{{ object.dataset.project }}</a></dd>
                     {% endif %}
-                </div>
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Source Contract</dt>
+                    {% if object.contract %}
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900"><a class="text-primary-700 hover:underline" href="{% url 'contract' pk=object.contract.id %}">{{ object.contract }}</a></dd>
+                    {% else %}
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">No source contract</dd>
+                    {% endif %}
+
+                    {% if object.partner %}
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Partner:</dt>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900"><a class="text-primary-700 hover:underline" href="{% url 'partner' pk=object.partner.id %}">{{ object.partner|default:"-" }}</a></dd>
+                    {% endif %}
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Derived/re-used from:</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.data_types_generated.all|join:', '|default:"-" }}</dd>
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Source Notes</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.comments|default:"-" }}</dd>
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Source Cohort(s)</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.cohorts.all|join:', '|default:"-" }}</dd>
+
+                    {% if object.submission_id %}
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Submission ID</dt>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.submission_id|default:"-" }}</dd>
+                    {% endif %}
+
+                    {% if object.other_external_id %}
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Other external IDs</dt>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.other_external_id|default:"-" }}</dd>
+                    {% endif %}
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Data Types</dt>
+                    <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
+                        {% for data_type in object.data_types %}
+                            <span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ data_type }}</span>
+                        {% endfor %}
+                    </dd>
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Remarks on data types</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.data_types_notes }}</dd>
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Subject Categories</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.subjects_category|default:"-" }}</dd>
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Special Subjects</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.has_special_subjects|yesno:"yes,no,unknown" }}</dd>
+
+                    {% if object.special_subjects_description %}
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Description of the nature of special subjects</dt>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.special_subjects_description }}</dd>
+                    {% endif %}
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Share category</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.share_category|default:"-" }}</dd>
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Access procedure</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.access_procedure|default:"-" }}</dd>
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Consent status</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.consent_status|default:"-" }}</dd>
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Deidentification method</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.deidentification_method|default:"-" }}</dd>
+        </dl>
+    </div>
+
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
+        <div class="p-4">
+            <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">Use conditions</h2>
+            <hr class="my-4 border-gray-200" />
+            <div>
+                <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Embargo date</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.embargo_date|default:"-" }}</dd>
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">End of storage duration</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.end_of_storage_duration|default:"-" }}</dd>
+
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Storage duration criteria</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ object.storage_duration_criteria }}</dd>
+                </dl>
+
+                {% if object.data_use_conditions %}
+                    <hr class="my-4 border-gray-200" />
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full border-collapse text-sm lg:text-base">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="{{ th }}">Use Category</th>
+                                    <th scope="col" class="{{ th }}">Use Condition Rule</th>
+                                    <th scope="col" class="{{ th }}">Use Category note</th>
+                                    <th scope="col" class="{{ th }}">Use Condition note</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for use_condition in object.data_use_conditions.all %}
+                                    <tr class="odd:bg-gray-50">
+                                        <td class="{{ td }}">{{ use_condition.condition_class }}</td>
+                                        <td class="{{ td }}">{{ use_condition.use_condition_rule }}</td>
+                                        <td class="{{ td }}">{{ use_condition.use_class_note }}</td>
+                                        <td class="{{ td }}">{{ use_condition.notes }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
-
-    <div class="row card-deck mt-4">
-        <div class="card ml-0 mr-0 col-md-12">
-            <div class="card-body">
-                <h2 class="card-title">Use conditions</h2>
-                <hr />
-                <div class="card-text">
-                    <dt>Embargo date</dt>
-                    <dd>{{ object.embargo_date | default:"-" }}</dd>
-
-                    <dt>End of storage duration</dt>
-                    <dd>{{ object.end_of_storage_duration | default:"-" }}</dd>
-
-                    <dt>Storage duration criteria</dt>
-                    <dd>{{ object.storage_duration_criteria }}</dd>
-
-                    {% if object.data_use_conditions %}
-                    <hr />
-                    
-                    <table class="table table-bordered table-condensed table-striped">
-                        <thead>
-                            <tr>
-                                <th>Use Category</th>
-                                <th>Use Condition Rule</th>
-                                <th>Use Category note</th>
-                                <th>Use Condition note</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for use_condition in object.data_use_conditions.all %}
-                            <tr>
-                                <td>{{ use_condition.condition_class }}</td>
-                                <td>{{ use_condition.use_condition_rule }}</td>
-                                <td>{{ use_condition.use_class_note }}</td>
-                                <td>{{ use_condition.notes }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
+{% endwith %}
 {% endblock %}
-

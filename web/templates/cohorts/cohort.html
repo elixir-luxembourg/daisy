@@ -1,103 +1,86 @@
 {% extends 'layout.html' %}
 
+{% block title %}{{ cohort }} | DAISY{% endblock %}
 {% block content_title %}{{ cohort }}{% endblock %}
 
 {% block content %}
-    <div class="row mt-4">
-        <div class="jumbotron col">
-            {% if cohort.is_published %}
-                <div class="ribbon ribbon-green"><span>Published</span></div>
-            {% else %}
-                <div class="ribbon ribbon-orange"><span>Not Published</span></div>
+{% with fab="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" %}
+    <div class="mt-4">
+        <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
+            <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                    <p class="font-display text-sm font-semibold text-primary-900">Cohort</p>
+                    {% if cohort.is_published %}
+                        <span class="inline-flex items-center rounded-full bg-green-600 px-2.5 py-0.5 text-xs font-medium text-white">Published</span>
+                    {% else %}
+                        <span class="inline-flex items-center rounded-full bg-gray-500 px-2.5 py-0.5 text-xs font-medium text-white">Not Published</span>
+                    {% endif %}
+                </div>
+                <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ cohort }}</h1>
+            </div>
+            <div class="mt-1 flex flex-wrap shrink-0 gap-2">
+            {% if request.user.is_superuser %}
+                <a href="{% url 'admin:core_cohort_change' cohort.pk %}"
+                   id="cohort-admin"
+                   title="See in django admin"
+                   class="{{ fab }}"><i data-lucide="wrench" class="h-4 w-4" aria-hidden="true"></i><span>Admin</span></a>
             {% endif %}
-
-            <span style="color: #8D8F8F;">Cohort</span>
-            <h1>{{ cohort }}</h1>
-            <div class="row">
-                <div class="col">
-                    <dl>
-                        <dt>Cohort owner</dt>
-                        <dl>
-                            {% for contact in cohort.owners.all %}
-                            <span class="badge badge-pill badge-secondary">{{ contact }}</span>
-                        {% empty %}
-                            -
-                        {% endfor %}
-                        </dl>
-                        <dt>Institutes</dt>
-                        <dl>
-                            {% for institute in cohort.institutes.all %}
-                                <span class="badge badge-pill badge-secondary">{{ institute }}</span>
-                            {% empty %}
-                               -
-                            {% endfor %}
-                        </dl>
-                    </dl>
-                    <dt>URL</dt>
-                    <dd>{{ cohort.cohort_web_page | default:'-' }}</dd>
-                    <dt>Ethics confirmation</dt>
-                    <dd>{{ cohort.ethics_confirmation | yesno }}</dd>
-                    <dt>Ethics confirmation notes</dt>
-                    <dd>{{ cohort.ethics_notes | default:'-' }}</dd>
-                    <dt>Accession number</dt>
-                    <dd>{{ cohort.elu_accession | default:'-'}}</dd>
-                    <dt>Remarks</dt>
-                    <dd>{{ cohort.comments | default:'-'}}</dd>
-                </div>
-                <div class="floating-buttons-absolute">
-                    {% if request.user.is_superuser %}
-                        <a  href="{% url 'admin:core_cohort_change' cohort.pk %}" 
-                            id="cohort-admin" 
-                            title="See in django admin"  
-                            class="btn btn-default bmd-btn-fab float-right">
-                                <i class="material-icons">build</i>
-                        </a>
-                    {% endif %}
-                    {% if request.user.can_publish %}
-                        {% if not cohort.is_published %}
-                            <a href="{% url 'cohort_publish' pk=cohort.pk %}"
-                               id="publish"
-                               title="Publish cohort"
-                               class="btn btn-default bmd-btn-fab float-right">
-                                <i class="material-icons">publish</i>
-                            </a>
-                        {% else %}
-                            <a href="{% url 'cohort_unpublish' pk=cohort.pk %}"
-                               id="unpublish"
-                               data-confirm="Are you sure to unpublish the cohort? The changes won't be propagated to other systems!"
-                               title="Unpublish cohort"
-                               class="btn btn-default bmd-btn-fab float-right">
-                                <i class="material-icons">undo</i>
-                            </a>
-                        {% endif %}
-                    {% endif %}
-                    {% if can_edit %}
-                        <a class="btn btn-primary bmd-btn-fab float-right"  title="Edit cohort" href="{% url 'cohort_edit' pk=cohort.id %}"><i
-                                class="material-icons">edit</i>
-                        </a>
-                        <a  id="deletecohort" class="btn btn-danger bmd-btn-fab float-right red"
-                            title="Delete cohort"
-                            data-toggle="modal" data-target="#modal"
-                            data-ajax-url="{% url 'cohort_delete' cohort.id %}">
-                                <i class="material-icons">delete</i>
-                            </a>
-                    {% endif %}
-                </div>
+            {% if request.user.can_publish %}
+                {% if not cohort.is_published %}
+                    <a href="{% url 'cohort_publish' pk=cohort.pk %}"
+                       id="publish"
+                       title="Publish cohort"
+                       class="{{ fab }}"><i data-lucide="upload" class="h-4 w-4" aria-hidden="true"></i><span>Publish</span></a>
+                {% else %}
+                    <a href="{% url 'cohort_unpublish' pk=cohort.pk %}"
+                       id="unpublish"
+                       data-confirm="Are you sure to unpublish the cohort? The changes won't be propagated to other systems!"
+                       title="Unpublish cohort"
+                       class="{{ fab }}"><i data-lucide="undo-2" class="h-4 w-4" aria-hidden="true"></i><span>Unpublish</span></a>
+                {% endif %}
+            {% endif %}
+            {% if can_edit %}
+                <a class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" title="Edit cohort" href="{% url 'cohort_edit' pk=cohort.id %}"><i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i><span>Edit</span></a>
+                <a id="deletecohort"
+                   class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-danger-200 bg-white px-4 text-sm font-medium text-danger-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-danger-900 hover:bg-danger-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
+                   title="Delete cohort"
+                   data-toggle="modal" data-target="#modal"
+                   data-ajax-url="{% url 'cohort_delete' cohort.id %}"><i data-lucide="trash-2" class="h-4 w-4" aria-hidden="true"></i><span>Delete</span></a>
+            {% endif %}
             </div>
         </div>
+        <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Cohort owner</dt>
+                    <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
+                        {% for contact in cohort.owners.all %}
+                            <span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ contact }}</span>
+                        {% empty %}-{% endfor %}
+                    </dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Institutes</dt>
+                    <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
+                        {% for institute in cohort.institutes.all %}
+                            <span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ institute }}</span>
+                        {% empty %}-{% endfor %}
+                    </dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">URL</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ cohort.cohort_web_page|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Ethics confirmation</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ cohort.ethics_confirmation|yesno }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Ethics confirmation notes</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ cohort.ethics_notes|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Accession number</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ cohort.elu_accession|default:'-' }}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Remarks</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ cohort.comments|default:'-' }}</dd>
+        </dl>
     </div>
 
-
-    <div class="row card-deck mt-4">
-        {#    Datasets    #}
-        <div class="card ml-0 mr-0 col-md-12">
-            <div class="card-body">
-                <h2 class="card-title"><span><i class="material-icons">assignment</i></span> Data declarations</h2>
-                {% include '_includes/data_declarations_list.html' with entity=cohort %}
-            </div>
-
+    {#    Datasets    #}
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
+        <div class="p-4">
+            <h2 class="{{ title2 }} mb-4"><i data-lucide="clipboard-list" class="h-6 w-6"></i> Data declarations</h2>
+            {% include '_includes/data_declarations_list.html' with entity=cohort %}
         </div>
     </div>
+{% endwith %}
 {% endblock %}
-
-

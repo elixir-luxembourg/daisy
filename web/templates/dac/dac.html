@@ -1,154 +1,153 @@
 {% extends 'layout.html' %}
 
-{% block title %}{{ dac.title }}{% endblock %}
+{% block title %}{{ dac.title }} | DAISY{% endblock %}
 
 {% block content %}
-    <div class="row mt-4">
-        <div class="jumbotron col" style="position:relative;">
-            <span style="color: #8D8F8F;">Data Access Committee (DAC)</span>
-            <h1>{{ dac.title }}</h1>
-            <div class="row">
-                <div class="col">
-                    <dl>
-                        {% if dac.description  %}
-                        <dt>Description</dt>
-                        <dd>{{ dac.description }}</dd>
-                        {% endif %}
-                        <dt>Contract</dt>
-                        <dd>
-                        {% if dac.contract  %}<a href="{% url 'contract' pk=dac.contract.pk %}">{{ dac.contract }}</a> {% else %}-{% endif %}
-                        </dd>
-                        <dt>Project</dt>
-                        <dd>
-                        {% if dac.contract.project  %}<a href="{% url 'project' pk=dac.contract.project.pk %}">{{ dac.contract.project }}</a> {% else %}-{% endif %}
-                        </dd>
-                        <dt>Local custodians</dt>
-                        <dd>
-                            {% for local_custodian in local_custodians %}
-                                <span class="badge badge-pill badge-primary">{{ local_custodian }}</span>
-                            {% endfor %}
-                        </dd>
-                    </dl>
-                </div>
-
-                <div class="col">
-                    <dl>
-                        <dt>Added on</dt>
-                        <dd>{{ dac.added }}</dd>
-                        <dt>Last edit</dt>
-                        <dd>{{ dac.updated }}</dd>
-                    </dl>
-                </div>
-                <div class="floating-buttons-absolute">
-                    {% if can_edit %}
-                        <a class="btn btn-primary bmd-btn-fab float-right"
-                           title="Edit DAC"
-                           href="{% url 'dac_edit' pk=dac.id %}">
-                            <i class="material-icons">edit</i>
-                        </a>
-                    {% endif %}
-
-                </div>
+{% with empty="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center" emptyp="text-sm text-gray-500" th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-top font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top text-primary-900" add="cursor-pointer inline-flex h-9 shrink-0 items-center justify-center gap-2 px-3 text-sm font-medium rounded-lg border border-primary-200 bg-white text-primary-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" delc="h-5 w-5 cursor-pointer text-danger-700" title2="font-display text-2xl font-medium tracking-tight text-primary-900" %}
+    <div class="relative mt-4">
+        <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
+            <div class="min-w-0">
+                <p class="font-display text-sm font-semibold text-primary-900">Data Access Committee (DAC)</p>
+                <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ dac.title }}</h1>
+                <p class="mt-3 text-sm text-gray-500">Added {{ dac.added }} &middot; Last edited {{ dac.updated }}</p>
             </div>
-
+            <div class="mt-1 flex flex-wrap shrink-0 gap-2">
+            {% if can_edit %}
+                <a class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none"
+                   title="Edit DAC"
+                   href="{% url 'dac_edit' pk=dac.id %}"><i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i><span>Edit</span></a>
+            {% endif %}
+            </div>
         </div>
+        <dl class="sm:grid sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-x-8 sm:gap-y-3">
+                    {% if dac.description %}
+                        <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Description</dt>
+                        <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{{ dac.description }}</dd>
+                    {% endif %}
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Contract</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{% if dac.contract %}<a class="text-primary-700 hover:underline" href="{% url 'contract' pk=dac.contract.pk %}">{{ dac.contract }}</a>{% else %}-{% endif %}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Project</dt>
+                    <dd class="mt-0.5 sm:mt-0 text-sm text-primary-900">{% if dac.contract.project %}<a class="text-primary-700 hover:underline" href="{% url 'project' pk=dac.contract.project.pk %}">{{ dac.contract.project }}</a>{% else %}-{% endif %}</dd>
+                    <dt class="mt-4 first:mt-0 sm:mt-0 text-sm font-medium text-gray-500">Local custodians</dt>
+                    <dd class="mt-1 sm:mt-0 flex flex-wrap gap-1">
+                        {% for local_custodian in local_custodians %}
+                            <span class="inline-flex items-center rounded-xs border border-info-300 bg-info-50 px-2 py-0.5 text-xs text-primary-900">{{ local_custodian }}</span>
+                        {% endfor %}
+                    </dd>
+
+        </dl>
     </div>
 
     {#    MEMBERS   #}
-    <div class="row card-deck mt-4">
-        <div class="card ml-0 mr-0 col-md-12">
-            <div class="card-body">
-
-                {% if can_edit %}
-                <div class="ml-1 float-right btn-group">
-                    <button class="btn bmd-btn-fab bmd-btn-fab-sm"
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
+        <div class="p-4">
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="{{ title2 }}">Members</h2>
+                {% if can_edit and memberships %}
+                    <button class="{{ add }}"
                             type="button"
                             id="addmember"
                             data-toggle="modal"
                             data-target="#modal"
                             data-modal-title="Add member to DAC"
                             data-ajax-url="{% url 'pick_member_for_dac' dac_pk=dac.id %}"
-                            title="Add member to DAC">
-                        <i class="material-icons">add</i>
-                    </button>
-                </div>
+                            title="Add member to DAC"><i data-lucide="plus" class="h-4 w-4"></i><span>Add member</span></button>
                 {% endif %}
-                
-                <h2 class="card-title">Members</h2>
-                <table class="table table-striped">
-                    {% if memberships %}
-                    <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Organization</th>
-                        <th>Date added</th>
-                        <th>Remark</th>
-                        {% if can_edit %}
-                        <th>Action</th>
-                        {% endif %}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for member in memberships %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'contact' pk=member.contact.id %}">{{ member.contact.full_name }}</a>
-                            </td>
-                            <td>{{ member.contact.email }}</td>
-                            <td>
-                                {% for partner in member.contact.partners.all %}
-                                    <span class="badge badge-pill badge-primary">{{ partner.name }}</span>
-                                {% endfor %}
-                            </td>
-                            <td>{{ member.added }}</td>
-                            <td>{{ member.remark }}</td>
-                            {% if can_edit %}
-                            <td id="document-action">
-                                <i title="Delete document" class="material-icons red clickable" data-method="delete"
-                                   data-confirmation = "delete"
-                                   data-parent-to-remove="tr"
-                                   data-url="{% url 'remove_member_from_dac' dac_pk=dac.id member_pk=member.id  %}">delete_forever</i>
-                            </td>
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                    {% endif %}
-                </table>
             </div>
+            {% if memberships %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full border-collapse text-sm lg:text-base">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="{{ th }}">Name</th>
+                                <th scope="col" class="{{ th }}">Email</th>
+                                <th scope="col" class="{{ th }}">Organization</th>
+                                <th scope="col" class="{{ th }}">Date added</th>
+                                <th scope="col" class="{{ th }}">Remark</th>
+                                {% if can_edit %}<th scope="col" class="{{ th }}">Action</th>{% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for member in memberships %}
+                            <tr class="odd:bg-gray-50">
+                                <td class="{{ td }}"><a class="text-primary-700 hover:underline" href="{% url 'contact' pk=member.contact.id %}">{{ member.contact.full_name }}</a></td>
+                                <td class="{{ td }}">{{ member.contact.email }}</td>
+                                <td class="{{ td }}">
+                                    <span class="flex flex-wrap gap-1">
+                                        {% for partner in member.contact.partners.all %}
+                                            <span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700">{{ partner.name }}</span>
+                                        {% endfor %}
+                                    </span>
+                                </td>
+                                <td class="{{ td }}">{{ member.added }}</td>
+                                <td class="{{ td }}">{{ member.remark }}</td>
+                                {% if can_edit %}
+                                    <td class="{{ td }}" id="document-action">
+                                        <i title="Delete member" class="{{ delc }}" data-lucide="trash-2" data-method="delete"
+                                           data-confirmation="delete"
+                                           data-parent-to-remove="tr"
+                                           data-url="{% url 'remove_member_from_dac' dac_pk=dac.id member_pk=member.id %}"></i>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="{{ empty }}">
+                    <p class="{{ emptyp }}">No members yet.</p>
+                    {% if can_edit %}
+                        <button class="{{ add }} mt-3"
+                                type="button"
+                                data-toggle="modal"
+                                data-target="#modal"
+                                data-modal-title="Add member to DAC"
+                                data-ajax-url="{% url 'pick_member_for_dac' dac_pk=dac.id %}"
+                                title="Add member to DAC"><i data-lucide="plus" class="h-4 w-4"></i><span>Add member</span></button>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </div>
 
     {#    DATASETS   #}
-    <div class="row card-deck mt-4">
-        <div class="card ml-0 mr-0 col-md-12">
-            <div class="card-body">
-                {% if is_data_steward %}
-                <div class="ml-1 float-right btn-group">
-                    <button class="btn bmd-btn-fab bmd-btn-fab-sm"
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
+        <div class="p-4">
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="{{ title2 }}">Datasets managed by this DAC</h2>
+                {% if is_data_steward and datasets %}
+                    <button class="{{ add }}"
                             type="button"
                             id="adddataset"
                             data-toggle="modal"
                             data-target="#modal"
                             data-modal-title="Add Dataset to DAC"
                             data-ajax-url="{% url 'pick_dataset_for_dac' dac_pk=dac.id %}"
-                            title="Add Dataset to DAC">
-                        <i class="material-icons">add</i>
-                    </button>
-                </div>
-                {% endif %}
-                <h2 class="card-title">Datasets managed by this DAC</h2>
-                {% if datasets %}
-                <ul class="card-text list-unstyled text-left py-1">
-                    {% for dataset in datasets %}
-                    <li>
-                        <a href="{% url 'dataset' pk=dataset.id %}">{{ dataset.title }}</a>
-                    </li>
-                    {% endfor %}
-                </ul>
+                            title="Add Dataset to DAC"><i data-lucide="plus" class="h-4 w-4"></i><span>Add dataset</span></button>
                 {% endif %}
             </div>
+            {% if datasets %}
+                <ul class="py-1 text-left">
+                    {% for dataset in datasets %}
+                        <li><a class="text-primary-700 hover:underline" href="{% url 'dataset' pk=dataset.id %}">{{ dataset.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="{{ empty }}">
+                    <p class="{{ emptyp }}">No datasets yet.</p>
+                    {% if is_data_steward %}
+                        <button class="{{ add }} mt-3"
+                                type="button"
+                                data-toggle="modal"
+                                data-target="#modal"
+                                data-modal-title="Add Dataset to DAC"
+                                data-ajax-url="{% url 'pick_dataset_for_dac' dac_pk=dac.id %}"
+                                title="Add Dataset to DAC"><i data-lucide="plus" class="h-4 w-4"></i><span>Add dataset</span></button>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </div>
+{% endwith %}
 {% endblock %}

@@ -1,22 +1,20 @@
 {% for dac in data.dacs %}
-    <div class="row">
-        <div class="col-12 mb-4">
-            <div class="card card-item">
-                <div class="card-body">
-                    <h2 class="card-title">
-                      <a href="{% url 'dac' pk=dac.pk %}">{{ dac.title }}</a>
-                    </h2>
-                    <ul class="card-text list-unstyled text-left py-1">
-                        {% if dac.local_custodians %}
-                            <li><strong>Local custodians:</strong>
-                                {% for local_custodian in dac.local_custodians %}
-                                    <span class="badge badge-pill badge-primary ml-1 mb-1">{{ local_custodian }}</span>
-                                {% endfor %}
-                            </li>
-                        {% endif %}
-                    </ul>
-                    <a href="{% url 'dac' pk=dac.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
-                </div>
+    <div class="mb-4">
+        <div class="rounded-sm bg-white shadow-sm">
+            <div class="p-4">
+                <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">
+                  <a href="{% url 'dac' pk=dac.pk %}" class="text-primary-700 hover:underline">{{ dac.title }}</a>
+                </h2>
+                <ul class="py-1 text-left">
+                    {% if dac.local_custodians %}
+                        <li><strong>Local custodians:</strong>
+                            {% for local_custodian in dac.local_custodians %}
+                                <span class="inline-flex items-center ml-1 mb-1 px-2.5 py-0.5 text-xs font-medium text-white bg-primary-900 rounded-full">{{ local_custodian }}</span>
+                            {% endfor %}
+                        </li>
+                    {% endif %}
+                </ul>
+                <a href="{% url 'dac' pk=dac.pk %}" class="mt-2 cursor-pointer inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] motion-reduce:transition-none">Details &raquo;</a>
             </div>
         </div>
     </div>

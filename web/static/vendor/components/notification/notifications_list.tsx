@@ -133,12 +133,13 @@ export const NotificationList = ({showDismissed, showRecipientColumn, showDismis
                             title={notifications[contentType][0].objectClass}
                             newNotifNumber={newNotifNumber}
                             showDismissBtn={showDismissColumn}
-                            dismissAll={dismissAllNotifications}
                         >
                             <NotificationsTable
                                 data={notifications[contentType]}
                                 showRecipient={showRecipientColumn}
-                                showDismiss={showDismissColumn} onDismiss={dismissNotification}
+                                showDismiss={showDismissColumn}
+                                onDismiss={dismissNotification}
+                                onDismissAll={() => dismissAllNotifications(contentType)}
                             />
                         </NotificationCard>
                     );
@@ -148,13 +149,13 @@ export const NotificationList = ({showDismissed, showRecipientColumn, showDismis
     } else {
         // Display a message if there are no notifications
         return (
-            <div className={"row mt-4 accordion"}>
-                <div className={"card col px-0"}>
-                    <div className={"card-header"}>
-                        <h2 className={"card-title"}>Notifications</h2>
+            <div className={"mt-4 rounded border border-gray-200 bg-white shadow-sm"}>
+                <div>
+                    <div className={"border-b border-gray-200 px-4 py-3"}>
+                        <h2 className={"text-lg font-semibold text-blue-950"}>Notifications</h2>
                     </div>
-                    <div className={"card-body"}>
-                        <p className={"card-text"}>No notification was found</p>
+                    <div className={"px-4 py-3"}>
+                        <p className={"text-sm text-gray-600"}>No notification was found</p>
                     </div>
                 </div>
             </div>
