@@ -3,6 +3,7 @@
 {% block title %}About | DAISY{% endblock %}
 
 {% block content %}
+{% with title2="flex items-center gap-2 font-display text-2xl font-medium tracking-tight text-primary-900" %}
 <section class="pt-12 pb-20">
     <div class="flex items-baseline justify-between gap-6 pb-6 border-b border-gray-300">
         <h1 class="text-6xl font-semibold leading-none tracking-tight text-primary-950 font-display sm:text-7xl">DAISY</h1>
@@ -16,13 +17,13 @@
         </div>
 
         <aside class="lg:col-span-1">
-            <p class="text-xs font-medium tracking-widest text-gray-500">Acknowledgement</p>
+            <h2 class="{{ title2 }}">Acknowledgement</h2>
             <p class="mt-3 text-sm leading-relaxed text-gray-700">Supported by <a href="https://elixir-luxembourg.org/" class="text-primary-950 hover:underline">ELIXIR Luxembourg</a>, through the contribution of the Luxembourg Ministry of Higher Education and Research.</p>
         </aside>
     </div>
 
     <div class="mt-16 pt-6 border-t border-gray-200">
-        <p class="text-xs font-medium tracking-widest text-gray-500">Resources</p>
+        <h2 class="{{ title2 }}">Resources</h2>
         <ul class="mt-3">
             <li class="border-b border-gray-200">
                 <a href="https://elixir-luxembourg.github.io/daisy/" class="group flex items-baseline justify-between gap-6 py-4">
@@ -47,7 +48,7 @@
 
     {% if demo_mode %}
     <div class="mt-16 pt-6 border-t border-gray-200">
-        <p class="text-xs font-medium tracking-widest text-gray-500">Demo deployment</p>
+        <h2 class="{{ title2 }}">Demo deployment</h2>
         <p class="max-w-2xl mt-3 text-sm leading-relaxed text-gray-700">Records reset periodically. Do not enter private, personal, or confidential data. Use the credentials below to sign in as one of the seeded users.</p>
 
         <table class="w-full mt-6 text-sm">
@@ -79,4 +80,5 @@
     </div>
     {% endif %}
 </section>
+{% endwith %}
 {% endblock content %}
