@@ -61,7 +61,9 @@ def test_ldap_backend_in_authentication_backends():
 @pytest.mark.parametrize("login", ["normal.user", "normal.user@uni.lu"])
 def test_ldap_login_resolves_to_imported_user(django_user_model, login):
     email = "normal.user@uni.lu"
-    imported_user = django_user_model.objects.create(username=email, email=email)
+    imported_user = django_user_model.objects.create(
+        username="normal.user", email=email
+    )
     ldap_user = SimpleNamespace(attrs={"mail": [email]})
 
     user, built = LDAPBackend().get_or_build_user(login, ldap_user)
