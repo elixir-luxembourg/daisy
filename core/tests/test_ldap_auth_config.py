@@ -1,6 +1,9 @@
+from types import SimpleNamespace
+
 import ldap
 import pytest
 from django.conf import settings
+from django_auth_ldap.backend import LDAPBackend
 from django_auth_ldap.config import LDAPSearchUnion
 
 pytestmark = pytest.mark.skipif(
@@ -41,6 +44,29 @@ def test_auth_ldap_search_count():
         assert len(searches) > 1
 
 
+def test_auth_ldap_user_query_field_is_email():
+    assert settings.AUTH_LDAP_USER_QUERY_FIELD == "email"
+
+
+def test_auth_ldap_does_not_create_users_at_login():
+    assert settings.AUTH_LDAP_NO_NEW_USERS is True
+
+
 @pytest.mark.django_db
 def test_ldap_backend_in_authentication_backends():
     assert "django_auth_ldap.backend.LDAPBackend" in settings.AUTHENTICATION_BACKENDS
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("login", ["normal.user", "normal.user@uni.lu"])
+def test_ldap_login_resolves_to_imported_user(django_user_model, login):
+    email = "normal.user@uni.lu"
+    imported_user = django_user_model.objects.create(
+        username="normal.user", email=email
+    )
+    ldap_user = SimpleNamespace(attrs={"mail": [email]})
+
+    user, built = LDAPBackend().get_or_build_user(login, ldap_user)
+
+    assert user == imported_user
+    assert built is False
