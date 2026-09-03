@@ -17,7 +17,15 @@ type DismissButtonProps = {
  * @return - The button to dismiss the notification
  */
 const DismissButton = ({notification, onClick}: DismissButtonProps) => {
-    return <span className={"btn btn-link btn-outline m-0"} onClick={() => onClick(notification)}>Dismiss</span>;
+    return (
+        <button
+            type={"button"}
+            className={"inline-flex items-center rounded border border-blue-900 px-3 py-1 text-sm font-medium text-blue-900 hover:bg-blue-50"}
+            onClick={() => onClick(notification)}
+        >
+            Dismiss
+        </button>
+    );
 };
 
 const columnHelper = createColumnHelper<Notification>();
@@ -44,6 +52,7 @@ type NotificationsTableProps = {
     showRecipient: boolean,
     showDismiss: boolean,
     onDismiss: (notification: Notification) => void,
+    onDismissAll: () => void,
 }
 
 /**
@@ -115,6 +124,15 @@ export const NotificationsTable = (props: NotificationsTableProps) => {
         // The dismissAction column displays a button to dismiss the notification if it is not already dismissed
         columnHelper.display({
             id: "dismissAction",
+            header: () => notifications.some(notif => !notif.dismissed) && (
+                <button
+                    type={"button"}
+                    className={"inline-flex items-center rounded border border-blue-900 px-3 py-1 text-sm font-medium text-blue-900 hover:bg-blue-50"}
+                    onClick={props.onDismissAll}
+                >
+                    Dismiss all
+                </button>
+            ),
             cell: cell => cell.row.original.dismissed || <DismissButton notification={cell.row.original} onClick={props.onDismiss}/>,
             enableHiding: true,
         }),
@@ -139,14 +157,15 @@ export const NotificationsTable = (props: NotificationsTableProps) => {
     };
 
     return (
-        <table className={"table table-striped"}>
-            <thead>
+        <table className={"w-full text-left text-sm"}>
+            <thead className={"bg-gray-50"}>
                 {table.getHeaderGroups().map(headerGroup => (
                     <tr key={headerGroup.id} style={{position: "relative"}}>
                         {headerGroup.headers.map(header => (
                             <th
                                 key={header.id}
                                 scope="col"
+                                className={"px-4 py-2 font-semibold text-gray-700"}
                             >
                                 {header.isPlaceholder ?
                                     null :
@@ -159,9 +178,9 @@ export const NotificationsTable = (props: NotificationsTableProps) => {
             </thead>
             <tbody>
                 {table.getRowModel().rows.map(row => (
-                    <tr key={row.id}>
+                    <tr key={row.id} className={"odd:bg-gray-50"}>
                         {row.getVisibleCells().map(cell => (
-                            <td key={cell.id} title={shouldDisplayTitle(cell.column.id) ? (cell.getValue() as string) : undefined}>
+                            <td key={cell.id} className={"border-t border-gray-200 px-4 py-2"} title={shouldDisplayTitle(cell.column.id) ? (cell.getValue() as string) : undefined}>
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </td>
                         ))}

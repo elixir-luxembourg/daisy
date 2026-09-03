@@ -1,34 +1,32 @@
 {% extends 'layout.html' %}
 
-{% block title %}Search page{% endblock %}
-{% block containerclass %}container{% endblock %}
+{% block title %}{{ title }} | DAISY{% endblock %}
 
 
 {% block content %}
-    <div class="card bg-light text-dark my-4 mb-5">
-        <div class="card-body">
-            <div class="card-title">
-                <h1 class="display-4"><i class="material-icons text-secondary">info</i> {{ title }}</h1>
-            </div>
-            <p>{{ help_text }}</p>
-            <p>Use the categories on the left or the search box below to locate {{ title | lower }}. In order to create add a new one, use the button at bottom-right corner.</p>
+    <header class="mt-4 mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div class="min-w-0">
+            <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight text-primary-900 lg:text-5xl">{{ title }}</h1>
+            {% if help_text %}<p class="mt-3 max-w-prose text-lg leading-snug text-primary-900 lg:text-xl">{{ help_text }}</p>{% endif %}
         </div>
-    </div>
-    <div class="row">
-        <!-- Desktop sidebar - hidden on small screens -->
-        <div id="sidebar-left" class="d-none d-md-block col-md-5 col-lg-5 col-xl-4 order-2">
+        {% if add_url %}
+        <a class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none mt-3" href="{% url add_url %}{% if reset %}?reset=true{% endif %}">
+            <i data-lucide="plus" class="h-4 w-4" aria-hidden="true"></i><span>Add {{ title|slice:":-1"|lower }}</span></a>
+        {% endif %}
+    </header>
+    <div class="md:grid md:grid-cols-[13rem_minmax(0,1fr)] md:gap-10 xl:grid-cols-[15rem_minmax(0,1fr)] xl:gap-12">
+        <div id="sidebar-left" class="hidden md:block">
+            <h2 class="sr-only">Filter the results</h2>
             {% include '_includes/facets_sidebar.html' with facets=facets url=search_url %}
         </div>
-        
-        <!-- Main content area -->
-        <div class="col-12 col-md-7 col-lg-7 col-xl-8 order-4">
+
+        <div class="min-w-0">
             {% include '_includes/search_form.html' with title=title query=query url=search_url order_by_fields=order_by_fields %}
             {% include results_template_name with data=data %}
         </div>
-        
-        <!-- Mobile sidebar - shown only on small screens -->
-        <div id="sidebar-responsive-left" class="d-md-none col-12 order-6 mt-4">
-            <h1 class="display-4">Filter the results</h1>
+
+        <div id="sidebar-responsive-left" class="mt-4 md:hidden">
+            <h2 class="mb-2 text-xl font-semibold text-gray-900">Filter the results</h2>
             {% include '_includes/facets_sidebar.html' with facets=facets url=search_url %}
         </div>
     </div>
@@ -36,10 +34,7 @@
 
 
 {% block floating-buttons %}
-     <a class="btn btn-primary bmd-btn-fab float-right" href="{% url add_url %}{% if reset %}?reset=true{% endif %}">
-        <i class="material-icons">add</i>
-    </a>
-    <a class="btn btn-secondary bmd-btn-fab d-md-none float-right" href="#sidebar-responsive-left">
-        <i class="material-icons">sort</i>
+    <a class="float-right cursor-pointer inline-flex size-12 items-center justify-center rounded-lg border border-gray-200 bg-white text-primary-900 shadow-lg transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none md:hidden" href="#sidebar-responsive-left" aria-label="Filter the results">
+        <i data-lucide="arrow-down-wide-narrow" class="h-6 w-6" aria-hidden="true"></i>
     </a>
 {% endblock %}

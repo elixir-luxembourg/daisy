@@ -1,31 +1,32 @@
 {% extends 'layout.html' %}
 
-{% block title %}Publications{% endblock %}
+{% block title %}Publications | DAISY{% endblock %}
 
 {% block content %}
-    <div class="jumbotron mt-4">
-        <h1 class="display-4">Publications</h1>
+    <div class="mt-4 mb-8 flex flex-wrap items-center justify-between gap-4">
+        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">Publications</h1>
+        <a class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" href="{% url 'publication_add' %}"><i data-lucide="plus" class="h-4 w-4" aria-hidden="true"></i><span>Add publication</span></a>
     </div>
 
     {%  if publication_list %}
-        <div class="table table-responsive-lg">
-            <table>
-                <caption>List of publications</caption>
-                <thead>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <caption class="py-2 text-left text-gray-500">List of publications</caption>
+                <thead class="bg-gray-50">
                     <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">Citation string</th>
-                      <th scope="col">DOI</th>
-                      <th scope="col">Edit</th>
+                      <th scope="col" class="px-3 py-2 text-left font-semibold">#</th>
+                      <th scope="col" class="px-3 py-2 text-left font-semibold">Citation string</th>
+                      <th scope="col" class="px-3 py-2 text-left font-semibold">DOI</th>
+                      <th scope="col" class="px-3 py-2 text-left font-semibold">Edit</th>
                     </tr>
                   </thead>
                 <tbody>
                     {% for publication in publication_list %}
-                        <tr>
-                            <th scope="row">{{  forloop.counter }}</th>
-                            <td>{{ publication.citation }}</td>
-                            <td>{% if publication.doi %}{{ publication.doi }}{% else %}-{% endif %}</td>
-                            <td><a class="btn btn-raised btn-secondary btn-sm" href="{%  url 'publication_edit' publication.id %}">Edit</a></td>
+                        <tr class="odd:bg-gray-50">
+                            <th scope="row" class="px-3 py-2 text-left border-t border-gray-200">{{  forloop.counter }}</th>
+                            <td class="px-3 py-2 border-t border-gray-200">{{ publication.citation }}</td>
+                            <td class="px-3 py-2 border-t border-gray-200">{% if publication.doi %}{{ publication.doi }}{% else %}-{% endif %}</td>
+                            <td class="px-3 py-2 border-t border-gray-200"><a class="inline-flex items-center px-3 py-1 text-sm font-medium text-primary-900 rounded-sm border border-primary-900 hover:bg-primary-50" href="{%  url 'publication_edit' publication.id %}">Edit</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -38,8 +39,3 @@
 {% endblock %}
 
 
-{% block floating-buttons %}
-    <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'publication_add' %}"><i
-            class="material-icons">add</i>
-    </a>
-{% endblock %}

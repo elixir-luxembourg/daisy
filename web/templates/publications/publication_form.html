@@ -1,19 +1,18 @@
 {% extends 'layout.html' %}
 
-{% block title %}Publication - Add{% endblock %}
+{% block title %}Add publication | DAISY{% endblock %}
 
 {% block content %}
-    <div class="jumbotron mt-4 {% block jumbotron_class %}{% endblock %}">
-        <h1 class="display-4">{% block content_title %}Publications{% endblock %}</h1>
+    <div class="mt-4 {% block jumbotron_class %}{% endblock %}">
+        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{% block content_title %}Publications{% endblock %}</h1>
     </div>
-    <div class="card">
-        <div class="card-body">
-            <h2 class="card-title">{% block card_title %}Add a new publication{% endblock %}</h2>
-            <div class="card-text">
-                {%  url 'publications' as go_back_link %}
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
+        <div class="p-4">
+            <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">{% block card_title %}Add a new publication{% endblock %}</h2>
+            <div class="mt-2">
+                {% url 'publications' as go_back_link %}
                 {% include '_includes/forms.html' with cancel_button=go_back_link %}
             </div>
         </div>
     </div>
-
 {% endblock %}

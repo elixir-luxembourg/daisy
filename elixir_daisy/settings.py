@@ -466,6 +466,8 @@ if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
         "last_name": "sn",
         "email": "mail",
     }
+    AUTH_LDAP_USER_QUERY_FIELD = "email"
+    AUTH_LDAP_NO_NEW_USERS = True
     LDAP_USERS_IMPORT_CLASS = env("LDAP_USERS_IMPORT_CLASS", default="")
     LDAP_USERS_IMPORT_USERNAME_ATTR = env(
         "LDAP_USERS_IMPORT_USERNAME_ATTR", default="userprincipalname"

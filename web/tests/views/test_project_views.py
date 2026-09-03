@@ -25,7 +25,6 @@ from .utils import (
     check_response_context_data,
     login_test_user,
 )
-from core.forms import ProjectForm
 
 if TYPE_CHECKING:
     from test.factories import GroupFactory
@@ -139,26 +138,17 @@ def test_project_view_protected_documents(permissions, group):
     response = client.get(url, follow=True)
 
     if user.is_part_of(DataStewardGroup(), AuditorGroup()):
-        assert b'<div class="row mt-4" id="documents-card">' in response.content
-        assert (
-            b'<h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>'
-            in response.content
-        )
+        assert b'id="documents-card"' in response.content
+        assert b'data-lucide="file-text"' in response.content
     else:
-        assert b'<div class="row mt-4" id="documents-card">' not in response.content
-        assert (
-            b'<h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>'
-            not in response.content
-        )
+        assert b'id="documents-card"' not in response.content
+        assert b'data-lucide="file-text"' not in response.content
 
     if user.is_part_of(VIPGroup()):
         project.local_custodians.set([user])
         response = client.get(url, follow=True)
-        assert b'<div class="row mt-4" id="documents-card">' in response.content
-        assert (
-            b'<h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>'
-            in response.content
-        )
+        assert b'id="documents-card"' in response.content
+        assert b'data-lucide="file-text"' in response.content
 
 
 @pytest.mark.parametrize(
@@ -177,38 +167,29 @@ def test_project_edit_protected_documents(permissions, group):
 
     if user.is_part_of(DataStewardGroup()):
         assert (
-            b'<div class="ml-1 float-right btn-group" id="add-project-document">'
+            b'<div class="flex justify-end" id="add-project-document">'
             in response.content
         )
-        assert (
-            b'<th id="document-action-head" style="width:7em">Actions</th>'
-            in response.content
-        )
-        assert b'<td id="document-action">' in response.content
+        assert b'id="document-action-head"' in response.content
+        assert b'id="document-action"' in response.content
 
     else:
         assert (
-            b'<div class="ml-1 float-right btn-group" id="add-project-document">'
+            b'<div class="flex justify-end" id="add-project-document">'
             not in response.content
         )
-        assert (
-            b'<th id="document-action-head" style="width:7em">Actions</th>'
-            not in response.content
-        )
-        assert b'<td id="document-action">' not in response.content
+        assert b'id="document-action-head"' not in response.content
+        assert b'id="document-action"' not in response.content
 
     if user.is_part_of(VIPGroup()):
         project.local_custodians.set([user])
         response = client.get(url, follow=True)
         assert (
-            b'<div class="ml-1 float-right btn-group" id="add-project-document">'
+            b'<div class="flex justify-end" id="add-project-document">'
             in response.content
         )
-        assert (
-            b'<th id="document-action-head" style="width:7em">Actions</th>'
-            in response.content
-        )
-        assert b'<td id="document-action">' in response.content
+        assert b'id="document-action-head"' in response.content
+        assert b'id="document-action"' in response.content
 
     os.remove(document.content.name)
 
@@ -265,9 +246,7 @@ def test_project_views_scientific_metadata_field(
     :param client: The Django test client
     :param expected_result: Whether the field should be rendered
     """
-    field_node = ProjectForm(keep_metadata_field=True)[
-        "scientific_metadata"
-    ].label_tag()
+    field_node = 'name="scientific_metadata"'
     user = UserFactory(groups=[group()])
     login_test_user(client, user)
 

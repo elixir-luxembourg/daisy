@@ -98,26 +98,17 @@ def test_contract_view_protected_documents(permissions, group):
     response = client.get(url, follow=True)
 
     if user.is_part_of(VIPGroup()):
-        assert b'<div class="row mt-4" id="documents-card">' not in response.content
-        assert (
-            b'<h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>'
-            not in response.content
-        )
+        assert b'id="documents-card"' not in response.content
+        assert b'data-lucide="file-text"' not in response.content
 
         contract.local_custodians.set([user])
         response = client.get(url, follow=True)
-        assert b'<div class="row mt-4" id="documents-card">' in response.content
-        assert (
-            b'<h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>'
-            in response.content
-        )
+        assert b'id="documents-card"' in response.content
+        assert b'data-lucide="file-text"' in response.content
 
     else:
-        assert b'<div class="row mt-4" id="documents-card">' in response.content
-        assert (
-            b'<h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>'
-            in response.content
-        )
+        assert b'id="documents-card"' in response.content
+        assert b'data-lucide="file-text"' in response.content
 
 
 @pytest.mark.parametrize(
@@ -137,37 +128,28 @@ def test_contract_edit_protected_documents(permissions, group):
 
     if user.is_part_of(DataStewardGroup(), LegalGroup()):
         assert (
-            b'<div class="ml-1 float-right btn-group" id="add-contract-document">'
+            b'<div class="flex justify-end" id="add-contract-document">'
             in response.content
         )
-        assert (
-            b'<th id="document-action-head" style="width:7em">Actions</th>'
-            in response.content
-        )
-        assert b'<td id="document-action">' in response.content
+        assert b'id="document-action-head"' in response.content
+        assert b'id="document-action"' in response.content
     else:
         assert (
-            b'<div class="ml-1 float-right btn-group" id="add-contract-document">'
+            b'<div class="flex justify-end" id="add-contract-document">'
             not in response.content
         )
-        assert (
-            b'<th id="document-action-head" style="width:7em">Actions</th>'
-            not in response.content
-        )
-        assert b'<td id="document-action">' not in response.content
+        assert b'id="document-action-head"' not in response.content
+        assert b'id="document-action"' not in response.content
 
     if user.is_part_of(VIPGroup()):
         contract.local_custodians.set([user])
         response = client.get(url, follow=True)
         assert (
-            b'<div class="ml-1 float-right btn-group" id="add-contract-document">'
+            b'<div class="flex justify-end" id="add-contract-document">'
             in response.content
         )
-        assert (
-            b'<th id="document-action-head" style="width:7em">Actions</th>'
-            in response.content
-        )
-        assert b'<td id="document-action">' in response.content
+        assert b'id="document-action-head"' in response.content
+        assert b'id="document-action"' in response.content
 
     os.remove(document.content.name)
 

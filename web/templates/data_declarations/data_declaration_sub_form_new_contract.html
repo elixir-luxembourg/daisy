@@ -1,13 +1,12 @@
 {% for contract in contracts %}
-    <tr>
-        <td>
-            <div class="radio"><label><input type="radio" name="contract" value="{{ contract.id }}"></label>
-            </div>
+    <tr class="odd:bg-gray-50">
+        <td class="px-3 py-2 border-t border-gray-200">
+            <label class="inline-flex items-center"><input type="radio" name="contract" value="{{ contract.id }}"></label>
         </td>
-        <td>{{ contract.local_custodians.all | join:', ' }}</td>
-        <td>{{ contract.project }}</td>
-        <td>{{ contract.partners.all | join:', ' }}</td>
-        <td>{{ contract.contacts.all | join:', ' |default:"" }}</td>
+        <td class="px-3 py-2 border-t border-gray-200">{{ contract.local_custodians.all | join:', ' }}</td>
+        <td class="px-3 py-2 border-t border-gray-200">{{ contract.project }}</td>
+        <td class="px-3 py-2 border-t border-gray-200">{{ contract.partners.all | join:', ' }}</td>
+        <td class="px-3 py-2 border-t border-gray-200">{{ contract.contacts.all | join:', ' |default:"" }}</td>
     </tr>
 {% endfor %}
 
