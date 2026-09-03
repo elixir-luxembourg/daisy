@@ -81,7 +81,8 @@ def find_and_update_user_or_contact(
         # we only update users based on email if their oidc_id is not set
         if entity.oidc_id:
             raise InconsistentSynchronizerStateException(
-                f"OIDC don't match for {user_or_contact_model.__name__} with email {email}, {oidc_id} expected while {entity.oidc_id} found in daisy"
+                f"OIDC don't match for {user_or_contact_model.__name__} with email {email}, "
+                f"{info.get('id')} expected while {entity.oidc_id} found in daisy"
             )
     else:
         try:
@@ -144,22 +145,35 @@ def update_user_or_contact_from_dict(entity, info):
     entity.oidc_id = info.get("id")
 
 
+def describe_entities(users, contacts):
+    """
+    Build a readable description of the conflicting users and contacts,
+    so that the offending records can be identified from the logs
+    """
+    return ", ".join(
+        f"{entity.__class__.__name__}(id={entity.id}, email={entity.email}, oidc_id={entity.oidc_id})"
+        for entity in [*users, *contacts]
+    )
+
+
 def check_inconsistent_state(oidc_id, email):
     """
     Check if there is an inconsistent state in the database,
     i.e. multiple users or contacts with the same oidc_id or email
     """
-    users_by_oidc_count = User.objects.filter(oidc_id=oidc_id).count()
-    contacts_by_oidc_count = Contact.objects.filter(oidc_id=oidc_id).count()
-    if (users_by_oidc_count + contacts_by_oidc_count) > 1:
+    users_by_oidc = list(User.objects.filter(oidc_id=oidc_id))
+    contacts_by_oidc = list(Contact.objects.filter(oidc_id=oidc_id))
+    if (len(users_by_oidc) + len(contacts_by_oidc)) > 1:
         raise InconsistentSynchronizerStateException(
-            f"Multiple users or contacts found for this oidc_id {oidc_id}"
+            f"Multiple users or contacts found for this oidc_id {oidc_id}: "
+            f"{describe_entities(users_by_oidc, contacts_by_oidc)}"
         )
-    users_by_email_count = User.objects.filter(email=email).count()
-    contacts_by_email_count = Contact.objects.filter(email=email).count()
-    if (users_by_email_count + contacts_by_email_count) > 1:
+    users_by_email = list(User.objects.filter(email=email))
+    contacts_by_email = list(Contact.objects.filter(email=email))
+    if (len(users_by_email) + len(contacts_by_email)) > 1:
         raise InconsistentSynchronizerStateException(
-            f"Multiple users or contacts found for this email {email}"
+            f"Multiple users or contacts found for this email {email}: "
+            f"{describe_entities(users_by_email, contacts_by_email)}"
         )
 
 
@@ -215,10 +229,6 @@ class AccountSynchronizer(ABC):
         logger.info(
             f"Retrieve and update or create contact operation started for oidc_id {oidc_id}, email {email}"
         )
-        logger.info(
-            "Checking for inconsistent state (multiple users or contacts with same oidc_id or email)"
-        )
-
         logger.info("Retrieving user information from external source")
         external_user_information = self.synchronizer_backend.get_external_user_info(
             oidc_id
@@ -245,6 +255,9 @@ class AccountSynchronizer(ABC):
         5) If not found, create a new contact (if create_contact_if_not_found is True)
         Return the matching user or contact if found or created, None otherwise
         """
+        logger.info(
+            "Checking for inconsistent state (multiple users or contacts with same oidc_id or email)"
+        )
         check_inconsistent_state(oidc_id, email)
         logger.info("No inconsistency found")
         user_dict = self.build_user_dict(external_user_information)
