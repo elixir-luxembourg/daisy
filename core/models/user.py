@@ -147,6 +147,8 @@ class User(AbstractUser):
         return base_dict
 
     def save(self, *args, **kw):
+        if self.email:
+            self.email = self.email.lower()
         self.full_name = f"{self.first_name} {self.last_name}"
         super(User, self).save(*args, **kw)
 

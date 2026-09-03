@@ -52,6 +52,9 @@ class ProjectForm(ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs["label_suffix"] = ""
         keep_metadata_field = kwargs.pop("keep_metadata_field", False)
+        enable_keycloak_custodian_lookup = kwargs.pop(
+            "enable_keycloak_custodian_lookup", False
+        )
         super().__init__(*args, **kwargs)
         if not keep_metadata_field:
             del self.fields["scientific_metadata"]
@@ -85,6 +88,13 @@ class ProjectForm(ModelForm):
         self.fields["local_custodians"].queryset = User.objects.exclude(
             username="AnonymousUser"
         )
+        if enable_keycloak_custodian_lookup:
+            self.fields["local_custodians"].widget.attrs[
+                "keycloak_custodian_lookup"
+            ] = True
+            self.fields["local_custodians"].widget.attrs[
+                "keycloak_custodian_provision"
+            ] = reverse_lazy("keycloak_custodian_provision")
 
         self.fields["disease_terms"].widget.attrs["class"] = (
             "ontocomplete"

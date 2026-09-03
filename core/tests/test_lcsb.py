@@ -5,7 +5,7 @@ from django.conf import settings
 import pytest
 import requests_mock
 
-from core.lcsb.oidc import KeycloakSynchronizationBackend
+from core.lcsb.oidc import KeycloakBackend
 from core.lcsb.rems import (
     create_rems_entitlement,
     extract_rems_data,
@@ -32,6 +32,7 @@ class KeycloakAdminConnectionMock:
         return True
 
     def get_users(self, query) -> List[Dict]:
+        self.last_query = query
         return [
             {
                 "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
@@ -85,7 +86,40 @@ class KeycloakAdminConnectionMock:
         ]
 
 
-class KeycloakSynchronizationMethodMock(KeycloakSynchronizationBackend):
+def test_get_users_by_email_uses_exact_verified_match():
+    class EmailLookupMock:
+        def get_users(self, query):
+            assert query == {
+                "email": "testy.mctesty@uni.lu",
+                "exact": True,
+            }
+            return [
+                {
+                    "id": "verified-id",
+                    "email": "testy.mctesty@uni.lu",
+                    "emailVerified": True,
+                    "firstName": "Testy",
+                    "lastName": "McTesty",
+                },
+                {
+                    "id": "unverified-id",
+                    "email": "testy.mctesty@uni.lu",
+                    "emailVerified": False,
+                },
+            ]
+
+    backend = KeycloakBackend({}, connect=False)
+    backend.keycloak_admin_connection = EmailLookupMock()
+
+    users = backend.get_users_by_email("testy.mctesty@uni.lu")
+
+    assert [(user.id, user.email) for user in users] == [
+        ("verified-id", "testy.mctesty@uni.lu")
+    ]
+    assert users[0].username is None
+
+
+class KeycloakSynchronizationMethodMock(KeycloakBackend):
     def test_connection(self) -> bool:
         return True
 
@@ -106,10 +140,10 @@ class KeycloakSynchronizationMethodMock(KeycloakSynchronizationBackend):
 
 def test_keycloak_synchronization_config_validation():
     with pytest.raises(KeyError):
-        kc = KeycloakSynchronizationBackend({})
+        kc = KeycloakBackend({})
 
     with pytest.raises(KeyError):
-        kc = KeycloakSynchronizationBackend({}, False)
+        kc = KeycloakBackend({}, False)
         kc._create_connection({})
 
 

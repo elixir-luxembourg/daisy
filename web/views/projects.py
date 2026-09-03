@@ -87,6 +87,7 @@ class ProjectCreateView(CreateView):
             kwargs.update({"data": data})
         if self.request.user.can_edit_metadata():
             kwargs.update({"keep_metadata_field": True})
+            kwargs.update({"enable_keycloak_custodian_lookup": True})
         return kwargs
 
     def form_valid(self, form):
@@ -150,6 +151,7 @@ class ProjectEditView(CheckerMixin, UpdateView):
         kwargs = super().get_form_kwargs()
         if self.request.user.can_edit_metadata():
             kwargs.update({"keep_metadata_field": True})
+            kwargs.update({"enable_keycloak_custodian_lookup": True})
         return kwargs
 
     def form_valid(self, form):

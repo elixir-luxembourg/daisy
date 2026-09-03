@@ -8,6 +8,7 @@ from web.views import (
     datasets,
     documents,
     legalbasis,
+    keycloak,
     permissions,
     profile,
     projects,
@@ -132,6 +133,16 @@ web_urls = [
     path("api/rems", api.rems_endpoint, name="api_rems_endpoint"),
     path("api/termsearch/<slug:category>", api.termsearch, name="api_termsearch"),
     path("api/users", api.users, name="api_users"),
+    path(
+        "api/keycloak/custodians",
+        keycloak.keycloak_custodian_lookup,
+        name="keycloak_custodian_lookup",
+    ),
+    path(
+        "api/keycloak/custodians/provision",
+        keycloak.provision_keycloak_custodian,
+        name="keycloak_custodian_provision",
+    ),
     path(
         "api/keycloak/force",
         api.force_keycloak_synchronization,

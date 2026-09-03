@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import Dict, List, Tuple, Optional, Union, Type
 from core.models import User, Contact, ContactType, Partner
 from core.utils import DaisyLogger
@@ -22,6 +23,16 @@ class NoUserOrContactFoundInDaisyException(AccountSynchronizationException):
     pass
 
 
+@dataclass
+class OIDCUser:
+    id: str
+    email: str
+    first_name: str
+    last_name: str
+    username: Optional[str] = None
+    identity_provider: Optional[str] = None
+
+
 class AccountSynchronizationBackend(ABC):
     """
     Class that represents a method of obtaining the list of users
@@ -29,10 +40,9 @@ class AccountSynchronizationBackend(ABC):
     """
 
     @abstractmethod
-    def get_list_of_users(self) -> List[Dict]:
+    def get_list_of_users(self) -> List[OIDCUser]:
         """
-        Should return a list of dictionaries with user information,
-        like: {'id': '', 'email': '', 'first_name': '', etc. }
+        Should return a list of OIDCUser objects with user information.
         """
         pass
 
@@ -310,7 +320,7 @@ class DummySynchronizationBackend(AccountSynchronizationBackend):
     def test_connection(self) -> bool:
         return True
 
-    def get_list_of_users(self) -> List[Dict]:
+    def get_list_of_users(self) -> List[OIDCUser]:
         return []
 
     def get_external_user_info(self, oidc_id: str) -> Dict[str, str]:

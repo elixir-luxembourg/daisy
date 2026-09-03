@@ -9,6 +9,7 @@ from core.synchronizers import (
     AccountSynchronizer,
     ExternalUserNotFoundException,
     InconsistentSynchronizerStateException,
+    OIDCUser,
 )
 from core.utils import DaisyLogger
 
@@ -32,7 +33,7 @@ def get_keycloak_config_from_settings() -> Dict:
     }
 
 
-class KeycloakSynchronizationBackend(AccountSynchronizationBackend):
+class KeycloakBackend(AccountSynchronizationBackend):
     def __init__(self, config: Dict, connect=True) -> None:
         self.config = config
         self.keycloak_admin_connection = (
@@ -95,17 +96,36 @@ class KeycloakSynchronizationBackend(AccountSynchronizationBackend):
         except:
             return False
 
-    def get_list_of_users(self) -> List[Dict]:
+    def get_list_of_users(self) -> List[OIDCUser]:
         keycloak_response = self.get_keycloak_admin_connection().get_users(
             {"emailVerified": True}
         )
         return [
-            {
-                "id": user.get("id"),
-                "email": user.get("email", None),
-                "firstName": user.get("firstName"),
-                "lastName": user.get("lastName"),
-            }
+            OIDCUser(
+                id=user.get("id"),
+                email=user.get("email", None),
+                first_name=user.get("firstName"),
+                last_name=user.get("lastName"),
+                username=user.get("username"),
+                identity_provider=user.get("federationLink"),
+            )
+            for user in keycloak_response
+            if user.get("emailVerified", False)
+        ]
+
+    def get_users_by_email(self, email: str) -> List[OIDCUser]:
+        keycloak_response = self.get_keycloak_admin_connection().get_users(
+            {"email": email, "exact": True}
+        )
+        return [
+            OIDCUser(
+                id=user.get("id"),
+                email=user.get("email", None),
+                first_name=user.get("firstName"),
+                last_name=user.get("lastName"),
+                username=user.get("username"),
+                identity_provider=user.get("federationLink"),
+            )
             for user in keycloak_response
             if user.get("emailVerified", False)
         ]

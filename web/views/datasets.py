@@ -82,6 +82,7 @@ class DatasetWizardView(NamedUrlSessionWizardView):
         elif self.request.user.can_edit_metadata():
             # If the user is a data steward, we want to keep the scientific metadata field
             kwargs["keep_metadata_field"] = True
+            kwargs["enable_keycloak_custodian_lookup"] = True
 
         return kwargs
 
@@ -183,6 +184,7 @@ class DatasetCreateView(CreateView):
         if self.request.user.can_edit_metadata():
             # If the user is a data steward, we want to keep the scientific metadata field
             kwargs["keep_metadata_field"] = True
+            kwargs["enable_keycloak_custodian_lookup"] = True
         return kwargs
 
     def form_valid(self, form):
@@ -242,6 +244,7 @@ class DatasetEditView(CheckerMixin, UpdateView):
 
         if self.request.user.can_edit_metadata():
             kwargs.update({"keep_metadata_field": True})
+            kwargs.update({"enable_keycloak_custodian_lookup": True})
         return kwargs
 
 
