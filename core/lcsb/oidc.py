@@ -4,6 +4,7 @@ from django.conf import settings
 from keycloak import KeycloakAdmin
 from keycloak.exceptions import KeycloakGetError, KeycloakAuthenticationError
 
+from core.constants import IdentityProvider
 from core.synchronizers import (
     AccountSynchronizationBackend,
     AccountSynchronizer,
@@ -13,8 +14,18 @@ from core.synchronizers import (
 )
 from core.utils import DaisyLogger
 
-
 logger = DaisyLogger(__name__)
+
+
+def parse_oidc_username(
+    username: Optional[str],
+) -> Tuple[Optional[str], Optional[IdentityProvider]]:
+    if not username:
+        return username, None
+
+    local_username, _, suffix = username.rpartition("|")
+    provider = IdentityProvider.from_username_suffix(suffix) if local_username else None
+    return (local_username, provider) if provider else (username, None)
 
 
 class ExternalUserNotVerifiedException(ExternalUserNotFoundException):
@@ -101,14 +112,7 @@ class KeycloakBackend(AccountSynchronizationBackend):
             {"emailVerified": True}
         )
         return [
-            OIDCUser(
-                id=user.get("id"),
-                email=user.get("email", None),
-                first_name=user.get("firstName"),
-                last_name=user.get("lastName"),
-                username=user.get("username"),
-                identity_provider=user.get("federationLink"),
-            )
+            self._build_oidc_user(user)
             for user in keycloak_response
             if user.get("emailVerified", False)
         ]
@@ -118,17 +122,22 @@ class KeycloakBackend(AccountSynchronizationBackend):
             {"email": email, "exact": True}
         )
         return [
-            OIDCUser(
-                id=user.get("id"),
-                email=user.get("email", None),
-                first_name=user.get("firstName"),
-                last_name=user.get("lastName"),
-                username=user.get("username"),
-                identity_provider=user.get("federationLink"),
-            )
+            self._build_oidc_user(user)
             for user in keycloak_response
             if user.get("emailVerified", False)
         ]
+
+    @staticmethod
+    def _build_oidc_user(user: Dict) -> OIDCUser:
+        username, provider = parse_oidc_username(user.get("username"))
+        return OIDCUser(
+            id=user.get("id"),
+            email=user.get("email", None),
+            first_name=user.get("firstName"),
+            last_name=user.get("lastName"),
+            username=username,
+            identity_provider=provider.display_name if provider else None,
+        )
 
     def get_external_user_info(self, oidc_id: str) -> Dict[str, str]:
         """

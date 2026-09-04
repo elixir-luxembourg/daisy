@@ -12,7 +12,6 @@ from core.constants import Groups as GroupConstants
 from core.models import Partner, Contact, ContactType, User
 from core.utils import DaisyLogger
 
-
 PRINCIPAL_INVESTIGATOR = "Principal_Investigator"
 
 

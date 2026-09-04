@@ -3,7 +3,11 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 
-from core.lcsb.oidc import KeycloakBackend, get_keycloak_config_from_settings
+from core.lcsb.oidc import (
+    KeycloakBackend,
+    get_keycloak_config_from_settings,
+    parse_oidc_username,
+)
 from core.models import Access, Contact, User
 from web.views.utils import is_data_steward
 
@@ -80,8 +84,9 @@ def provision_keycloak_custodian(request):
                 user.oidc_id = oidc_id
                 user.save(update_fields=["oidc_id"])
             else:
+                username, _ = parse_oidc_username(account.get("username"))
                 user = User(
-                    username=account.get("username") or email,
+                    username=username or email,
                     email=email,
                     first_name=account.get("firstName", ""),
                     last_name=account.get("lastName", ""),

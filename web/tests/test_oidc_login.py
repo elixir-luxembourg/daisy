@@ -7,13 +7,17 @@ from core.models import User
 from test.factories import ContactFactory, UserFactory
 
 
-def oidc_token(oidc_id="oidc-id", email="person@example.org"):
+def oidc_token(
+    oidc_id="oidc-id",
+    email="person@example.org",
+    username="person.example",
+):
     return {
         "id_token": "id-token",
         "userinfo": {
             "sub": oidc_id,
             "email": email,
-            "preferred_username": "person.example",
+            "preferred_username": username,
             "given_name": "Person",
             "family_name": "Example",
         },
@@ -89,6 +93,14 @@ def test_auth_creates_active_user_when_identity_is_unclaimed(client):
     assert user.username == "person.example"
     assert user.is_active
     assert not user.has_usable_password()
+
+
+@pytest.mark.django_db
+def test_auth_removes_known_idp_suffix_from_created_username(client):
+    response = authenticate(client, oidc_token(username="person.example|ul"))
+
+    assert response.url == reverse("dashboard")
+    assert User.objects.get(oidc_id="oidc-id").username == "person.example"
 
 
 @pytest.mark.django_db

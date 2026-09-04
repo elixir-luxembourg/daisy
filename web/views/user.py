@@ -19,6 +19,7 @@ from authlib.integrations.django_client import OAuth
 
 from core.constants import Permissions
 from core.forms.user import UserForm, UserEditFormActiveDirectory, UserEditFormManual
+from core.lcsb.oidc import parse_oidc_username
 from core.models import Contact, User
 from core.models.project import ProjectUserObjectPermission
 from core.models.dataset import DatasetUserObjectPermission
@@ -226,8 +227,9 @@ def auth(request):
                     candidate.save(update_fields=["oidc_id"])
                     user = candidate
             elif not matching_users and not matching_contacts.exists() and not contact:
+                username, _ = parse_oidc_username(user_info.get("preferred_username"))
                 user = User(
-                    username=user_info.get("preferred_username") or email,
+                    username=username or email,
                     email=email,
                     first_name=user_info.get("given_name", ""),
                     last_name=user_info.get("family_name", ""),

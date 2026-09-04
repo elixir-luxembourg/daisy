@@ -15,12 +15,16 @@ from test.factories import (
 )
 
 
-def keycloak_account(oidc_id="keycloak-id", email="person@example.org"):
+def keycloak_account(
+    oidc_id="keycloak-id",
+    email="person@example.org",
+    username="person.example",
+):
     return {
         "email": email,
         "firstName": "Person",
         "lastName": "Example",
-        "username": "person.example",
+        "username": username,
         "emailVerified": True,
     }
 
@@ -157,6 +161,23 @@ def test_provisioning_keycloak_custodian_promotes_contact(mock_backend, client):
     assert access.user == user
     assert access.contact is None
     assert contact.oidc_id is None
+
+
+@patch("web.views.keycloak.KeycloakBackend")
+def test_provisioning_removes_known_idp_suffix_from_created_username(
+    mock_backend, client
+):
+    client.force_login(UserFactory(groups=[DataStewardGroup()]))
+    mock_backend.return_value.get_external_user_info.return_value = keycloak_account(
+        username="person.example|ul"
+    )
+
+    response = client.post(
+        reverse("keycloak_custodian_provision"), {"oidc_id": "keycloak-id"}
+    )
+
+    assert response.status_code == 200
+    assert User.objects.get(oidc_id="keycloak-id").username == "person.example"
 
 
 @patch("web.views.keycloak.KeycloakBackend")

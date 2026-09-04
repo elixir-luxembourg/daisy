@@ -29,7 +29,7 @@ class OIDCUser:
     email: str
     first_name: str
     last_name: str
-    username: Optional[str] = None
+    username: str
     identity_provider: Optional[str] = None
 
 

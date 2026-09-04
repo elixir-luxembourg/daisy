@@ -5,7 +5,7 @@ from django.conf import settings
 import pytest
 import requests_mock
 
-from core.lcsb.oidc import KeycloakBackend
+from core.lcsb.oidc import KeycloakBackend, parse_oidc_username
 from core.lcsb.rems import (
     create_rems_entitlement,
     extract_rems_data,
@@ -117,6 +117,29 @@ def test_get_users_by_email_uses_exact_verified_match():
         ("verified-id", "testy.mctesty@uni.lu")
     ]
     assert users[0].username is None
+
+
+@pytest.mark.parametrize(
+    ("suffix", "display_name"),
+    [
+        ("ul", "University of Luxembourg"),
+        ("lih", "Luxembourg Institute of Health"),
+        ("lums", "LCSB User Management System"),
+        ("ls", "LifeScience Login (academic federation)"),
+        ("orcid", "ORCID"),
+    ],
+)
+def test_parse_keycloak_username_identifies_known_provider_suffix(suffix, display_name):
+    username, provider = parse_oidc_username(f"john.doe|{suffix}")
+
+    assert username == "john.doe"
+    assert provider.username_suffix == suffix
+    assert provider.display_name == display_name
+
+
+def test_parse_keycloak_username_preserves_unknown_or_missing_suffix():
+    assert parse_oidc_username("john.doe") == ("john.doe", None)
+    assert parse_oidc_username("john.doe|unknown") == ("john.doe|unknown", None)
 
 
 class KeycloakSynchronizationMethodMock(KeycloakBackend):
