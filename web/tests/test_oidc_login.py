@@ -17,7 +17,7 @@ def oidc_token(
         "userinfo": {
             "sub": oidc_id,
             "email": email,
-            "preferred_username": username,
+            "username": username,
             "given_name": "Person",
             "family_name": "Example",
         },

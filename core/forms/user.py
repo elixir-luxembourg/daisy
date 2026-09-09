@@ -8,7 +8,7 @@ from core.models import User
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "password", "is_active", "groups"]
+        fields = ["first_name", "last_name", "email", "is_active", "groups"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -17,7 +17,6 @@ class UserForm(forms.ModelForm):
         "first_name",
         "last_name",
         "email",
-        "password",
         "is_active",
         "groups",
     ]

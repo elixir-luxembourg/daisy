@@ -5,7 +5,11 @@ from django.conf import settings
 import pytest
 import requests_mock
 
-from core.lcsb.oidc import KeycloakBackend, parse_oidc_username
+from core.lcsb.oidc import (
+    ExternalUserNotVerifiedException,
+    KeycloakBackend,
+    parse_oidc_username,
+)
 from core.lcsb.rems import (
     create_rems_entitlement,
     extract_rems_data,
@@ -117,6 +121,41 @@ def test_get_users_by_email_uses_exact_verified_match():
         ("verified-id", "testy.mctesty@uni.lu")
     ]
     assert users[0].username is None
+
+
+def test_get_external_user_info_returns_the_verified_account_as_oidc_user():
+    class SingleUserMock:
+        def get_user(self, oidc_id):
+            return {
+                "id": oidc_id,
+                "email": "testy.mctesty@uni.lu",
+                "emailVerified": True,
+                "firstName": "Testy",
+                "lastName": "McTesty",
+                "username": "testy.mctesty|ul",
+            }
+
+    backend = KeycloakBackend({}, connect=False)
+    backend.keycloak_admin_connection = SingleUserMock()
+
+    account = backend.get_external_user_info("verified-id")
+
+    assert account.id == "verified-id"
+    assert account.email == "testy.mctesty@uni.lu"
+    assert account.username == "testy.mctesty"
+    assert account.identity_provider == "University of Luxembourg"
+
+
+def test_get_external_user_info_rejects_an_unverified_account():
+    class UnverifiedUserMock:
+        def get_user(self, oidc_id):
+            return {"id": oidc_id, "email": "testy.mctesty@uni.lu"}
+
+    backend = KeycloakBackend({}, connect=False)
+    backend.keycloak_admin_connection = UnverifiedUserMock()
+
+    with pytest.raises(ExternalUserNotVerifiedException):
+        backend.get_external_user_info("unverified-id")
 
 
 @pytest.mark.parametrize(

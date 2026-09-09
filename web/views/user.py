@@ -3,7 +3,7 @@ from django.contrib.auth import update_session_auth_hash, login, logout as dj_lo
 from django.contrib.auth.decorators import login_required, login_not_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.contrib.auth.views import PasswordChangeView, LoginView
+from django.contrib.auth.views import LoginView
 from django.db import transaction
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
@@ -132,6 +132,10 @@ class UserDetailView(DetailView):
 
 @login_required
 def change_password(request):
+    if not request.user.has_usable_password():
+        messages.error(request, "Your password is managed by Keycloak.")
+        return redirect("dashboard")
+
     if request.method == "POST":
         form = PasswordChangeForm(request.user, request.POST or None)
         if form.is_valid():
@@ -152,14 +156,6 @@ def change_password(request):
             "form": form,
         },
     )
-
-
-class UserPasswordChange(PasswordChangeView):
-    template_name = "users/user_change_password.html"
-    success_url = "/"
-
-    def get_success_url(self):
-        return reverse_lazy("login")
 
 
 @superuser_required()
@@ -191,6 +187,46 @@ def oidc_login(request):
     return oauth.keycloak.authorize_redirect(request, redirect_uri)
 
 
+def _create_or_update_user(user_info, oidc_id, email):
+    """
+    Return the DAISY user for this Keycloak identity, and create or complete the record if needed.
+    Returns None if the identity or the email belongs to somebody else.
+    """
+    with transaction.atomic():
+        user = User.objects.select_for_update().filter(oidc_id=oidc_id).first()
+        contact = Contact.objects.select_for_update().filter(oidc_id=oidc_id).first()
+        if user and contact:
+            return None
+        if user:
+            return user
+
+        matching_users = list(
+            User.objects.select_for_update().filter(email__iexact=email)
+        )
+        matching_contacts = Contact.objects.filter(email__iexact=email)
+        if len(matching_users) == 1 and not matching_contacts.exists():
+            candidate = matching_users[0]
+            if candidate.oidc_id is not None:
+                return None
+            candidate.oidc_id = oidc_id
+            candidate.save(update_fields=["oidc_id"])
+            return candidate
+        if matching_users or matching_contacts.exists() or contact:
+            return None
+
+        username, _ = parse_oidc_username(user_info.get("username"))
+        user = User(
+            username=username or email,
+            email=email,
+            first_name=user_info.get("given_name", ""),
+            last_name=user_info.get("family_name", ""),
+            oidc_id=oidc_id,
+        )
+        user.set_unusable_password()
+        user.save()
+        return user
+
+
 @login_not_required
 def auth(request):
     try:
@@ -210,43 +246,16 @@ def auth(request):
         messages.error(request, "Authentication failed.")
         return redirect("login")
 
-    with transaction.atomic():
-        user = User.objects.select_for_update().filter(oidc_id=oidc_id).first()
-        contact = Contact.objects.select_for_update().filter(oidc_id=oidc_id).first()
-        if user and contact:
-            user = None
-        elif not user:
-            matching_users = list(
-                User.objects.select_for_update().filter(email__iexact=email)
-            )
-            matching_contacts = Contact.objects.filter(email__iexact=email)
-            if len(matching_users) == 1 and not matching_contacts.exists():
-                candidate = matching_users[0]
-                if candidate.oidc_id is None:
-                    candidate.oidc_id = oidc_id
-                    candidate.save(update_fields=["oidc_id"])
-                    user = candidate
-            elif not matching_users and not matching_contacts.exists() and not contact:
-                username, _ = parse_oidc_username(user_info.get("preferred_username"))
-                user = User(
-                    username=username or email,
-                    email=email,
-                    first_name=user_info.get("given_name", ""),
-                    last_name=user_info.get("family_name", ""),
-                    oidc_id=oidc_id,
-                )
-                user.set_unusable_password()
-                user.save()
-
-        if not user:
-            messages.error(
-                request,
-                "An account with this email already exists. Contact a data steward.",
-            )
-            return redirect("login")
-        if not user.is_active:
-            messages.error(request, "This account is inactive. Contact a data steward.")
-            return redirect("login")
+    user = _create_or_update_user(user_info, oidc_id, email)
+    if not user:
+        messages.error(
+            request,
+            "An account with this email already exists. Contact a data steward.",
+        )
+        return redirect("login")
+    if not user.is_active:
+        messages.error(request, "This account is inactive. Contact a data steward.")
+        return redirect("login")
 
     request.session["user"] = user_info
     if "id_token" in token:

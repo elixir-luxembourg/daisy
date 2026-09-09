@@ -147,6 +147,18 @@ class User(AbstractUser):
         return base_dict
 
     def save(self, *args, **kw):
+        # the oidc_id is the only stable link to the Keycloak account, it must not change
+        if self.pk:
+            stored_oidc_id = (
+                User.objects.filter(pk=self.pk)
+                .values_list("oidc_id", flat=True)
+                .first()
+            )
+            if stored_oidc_id and stored_oidc_id != self.oidc_id:
+                raise ValueError(
+                    f"The oidc_id of user {self.pk} is immutable: "
+                    f"'{stored_oidc_id}' cannot become '{self.oidc_id}'"
+                )
         if self.email:
             self.email = self.email.lower()
         self.full_name = f"{self.first_name} {self.last_name}"

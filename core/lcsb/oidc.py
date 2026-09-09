@@ -139,9 +139,9 @@ class KeycloakBackend(AccountSynchronizationBackend):
             identity_provider=provider.display_name if provider else None,
         )
 
-    def get_external_user_info(self, oidc_id: str) -> Dict[str, str]:
+    def get_external_user_info(self, oidc_id: str) -> OIDCUser:
         """
-        Should return a dictionary with the external user information
+        Return the Keycloak account for this oidc_id
         """
         try:
             keycloak_response = self.get_keycloak_admin_connection().get_user(oidc_id)
@@ -152,7 +152,7 @@ class KeycloakBackend(AccountSynchronizationBackend):
             raise ExternalUserNotVerifiedException(
                 f"User {oidc_id} is not verified in Keycloak!"
             )
-        return keycloak_response
+        return self._build_oidc_user(keycloak_response)
 
 
 class KeycloakAccountSynchronizer(AccountSynchronizer):
@@ -172,47 +172,37 @@ class KeycloakAccountSynchronizer(AccountSynchronizer):
         for external_account in current_external_accounts:
             self.synchronize_single_account(external_account)
 
-    def build_user_or_contact_dict(
-        self, external_user_information: Dict[str, str]
-    ) -> Dict[str, str]:
+    def build_user_or_contact_dict(self, account: OIDCUser) -> Dict[str, str]:
         """
         Should build a dictionary with the user information based on Daisy User model
         """
         return {
-            "first_name": external_user_information.get(
-                "firstName", "FIRST_NAME_MISSING"
-            ),
-            "last_name": external_user_information.get("lastName", "LAST_NAME_MISSING"),
-            "email": external_user_information.get("email"),
-            "id": external_user_information.get("id"),
+            "first_name": account.first_name or "FIRST_NAME_MISSING",
+            "last_name": account.last_name or "LAST_NAME_MISSING",
+            "email": account.email,
+            "id": account.id,
         }
 
-    def build_user_dict(
-        self, external_user_information: Dict[str, str]
-    ) -> Dict[str, str]:
+    def build_user_dict(self, account: OIDCUser) -> Dict[str, str]:
         """
         Should build a dictionary with the user information based on Daisy User model
         """
-        return self.build_user_or_contact_dict(external_user_information)
+        return self.build_user_or_contact_dict(account)
 
-    def build_contact_dict(
-        self, external_user_information: Dict[str, str]
-    ) -> Dict[str, str]:
+    def build_contact_dict(self, account: OIDCUser) -> Dict[str, str]:
         """
         Should build a dictionary with the user information based on Daisy Contact model
         """
-        return self.build_user_or_contact_dict(external_user_information)
+        return self.build_user_or_contact_dict(account)
 
-    def synchronize_single_account(
-        self, acc: Dict[str, Optional[str]]
-    ) -> Optional[Tuple[str, str]]:
+    def synchronize_single_account(self, account: OIDCUser) -> None:
         # accounts without emails are system accounts and can be skipped
-        if not acc.get("email"):
-            logger.debug(f"Skipping account without email for id {acc.get('id')}")
+        if not account.email:
+            logger.debug(f"Skipping account without email for id {account.id}")
             return
         try:
             self.update_user_or_contact(
-                acc, acc.get("id"), acc.get("email"), create_contact_if_not_found=True
+                account, account.id, account.email, create_contact_if_not_found=True
             )
         except InconsistentSynchronizerStateException as e:
             logger.error(e)

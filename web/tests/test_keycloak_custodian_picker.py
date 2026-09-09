@@ -20,13 +20,14 @@ def keycloak_account(
     email="person@example.org",
     username="person.example",
 ):
-    return {
-        "email": email,
-        "firstName": "Person",
-        "lastName": "Example",
-        "username": username,
-        "emailVerified": True,
-    }
+    return OIDCUser(
+        id=oidc_id,
+        email=email,
+        first_name="Person",
+        last_name="Example",
+        username=username,
+        email_verified=True,
+    )
 
 
 def lookup_as_steward(client):
@@ -56,9 +57,7 @@ def test_lookup_falls_back_to_keycloak_case_insensitively_for_unbound_user(
     mock_backend, client
 ):
     UserFactory(email="person@example.org", oidc_id=None)
-    mock_backend.return_value.get_users_by_email.return_value = [
-        OIDCUser("keycloak-id", "person@example.org", "Person", "Example")
-    ]
+    mock_backend.return_value.get_users_by_email.return_value = [keycloak_account()]
     lookup_as_steward(client)
 
     response = client.get(
@@ -68,7 +67,7 @@ def test_lookup_falls_back_to_keycloak_case_insensitively_for_unbound_user(
     mock_backend.return_value.get_users_by_email.assert_called_once_with(
         "person@example.org"
     )
-    assert response.json()["results"][0]["id"] == "keycloak:keycloak-id"
+    assert response.json()["results"][0]["id"] == "keycloak-id"
 
 
 @patch("web.views.keycloak.KeycloakBackend")
@@ -91,6 +90,7 @@ def test_lookup_returns_one_keycloak_candidate(mock_backend, client):
             "person@example.org",
             "Person",
             "Example",
+            "person.example",
             identity_provider="ldap",
         )
     ]
@@ -102,7 +102,7 @@ def test_lookup_returns_one_keycloak_candidate(mock_backend, client):
 
     assert response.json()["results"] == [
         {
-            "id": "keycloak:keycloak-id",
+            "id": "keycloak-id",
             "text": "Person Example (person@example.org; ldap)",
             "is_active": True,
         }
@@ -119,6 +119,7 @@ def test_lookup_returns_all_keycloak_candidates_with_identity_providers(
             "person@example.org",
             "Person",
             "Example",
+            "person.example",
             identity_provider="ldap",
         ),
         OIDCUser(
@@ -126,6 +127,7 @@ def test_lookup_returns_all_keycloak_candidates_with_identity_providers(
             "person@example.org",
             "Person",
             "Example",
+            "person.example",
             identity_provider="eduGAIN",
         ),
     ]
@@ -164,12 +166,12 @@ def test_provisioning_keycloak_custodian_promotes_contact(mock_backend, client):
 
 
 @patch("web.views.keycloak.KeycloakBackend")
-def test_provisioning_removes_known_idp_suffix_from_created_username(
+def test_provisioning_falls_back_to_the_email_when_keycloak_has_no_username(
     mock_backend, client
 ):
     client.force_login(UserFactory(groups=[DataStewardGroup()]))
     mock_backend.return_value.get_external_user_info.return_value = keycloak_account(
-        username="person.example|ul"
+        username=None
     )
 
     response = client.post(
@@ -177,7 +179,7 @@ def test_provisioning_removes_known_idp_suffix_from_created_username(
     )
 
     assert response.status_code == 200
-    assert User.objects.get(oidc_id="keycloak-id").username == "person.example"
+    assert User.objects.get(oidc_id="keycloak-id").username == "person@example.org"
 
 
 @patch("web.views.keycloak.KeycloakBackend")

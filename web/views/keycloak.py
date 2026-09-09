@@ -3,11 +3,7 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 
-from core.lcsb.oidc import (
-    KeycloakBackend,
-    get_keycloak_config_from_settings,
-    parse_oidc_username,
-)
+from core.lcsb.oidc import KeycloakBackend, get_keycloak_config_from_settings
 from core.models import Access, Contact, User
 from web.views.utils import is_data_steward
 
@@ -38,7 +34,7 @@ def keycloak_custodian_lookup(request):
         provider = user.identity_provider or "Keycloak"
         results.append(
             {
-                "id": f"keycloak:{user.id}",
+                "id": user.id,
                 "text": f"{user.first_name} {user.last_name} ({user.email}; {provider})",
                 "is_active": True,
             }
@@ -56,14 +52,14 @@ def provision_keycloak_custodian(request):
 
     backend = KeycloakBackend(get_keycloak_config_from_settings())
     account = backend.get_external_user_info(oidc_id)
-    email = (account.get("email") or "").strip().lower()
+    email = (account.email or "").strip().lower()
     if not email:
         return JsonResponse({"error": "Keycloak user has no email."}, status=400)
 
     with transaction.atomic():
         user = User.objects.select_for_update().filter(oidc_id=oidc_id).first()
         contact = Contact.objects.select_for_update().filter(oidc_id=oidc_id).first()
-        if user and contact:
+        if user and contact:  # is it important?
             return JsonResponse(
                 {"error": "OIDC ID belongs to both a User and a Contact."}, status=409
             )
@@ -71,7 +67,9 @@ def provision_keycloak_custodian(request):
             matching_users = list(
                 User.objects.select_for_update().filter(email__iexact=email)
             )
-            if len(matching_users) > 1:
+            if (
+                len(matching_users) > 1
+            ):  # same email is OK in Keycloak, but not in DAISY
                 return JsonResponse(
                     {"error": "Multiple DAISY users share this email."}, status=409
                 )
@@ -84,12 +82,11 @@ def provision_keycloak_custodian(request):
                 user.oidc_id = oidc_id
                 user.save(update_fields=["oidc_id"])
             else:
-                username, _ = parse_oidc_username(account.get("username"))
                 user = User(
-                    username=username or email,
+                    username=account.username,
                     email=email,
-                    first_name=account.get("firstName", ""),
-                    last_name=account.get("lastName", ""),
+                    first_name=account.first_name or "",
+                    last_name=account.last_name or "",
                     oidc_id=oidc_id,
                 )
                 user.set_unusable_password()

@@ -31,6 +31,7 @@ class OIDCUser:
     last_name: str
     username: str
     identity_provider: Optional[str] = None
+    email_verified: Optional[bool] = None
 
 
 class AccountSynchronizationBackend(ABC):
@@ -55,9 +56,9 @@ class AccountSynchronizationBackend(ABC):
         pass
 
     @abstractmethod
-    def get_external_user_info(self, oidc_id: str) -> Dict[str, str]:
+    def get_external_user_info(self, oidc_id: str) -> OIDCUser:
         """
-        Should return a dictionary with the user information
+        Should return the external account as an OIDCUser
         """
         pass
 
@@ -151,7 +152,8 @@ def update_user_or_contact_from_dict(entity, info):
     entity.last_name = info.get("last_name", entity.last_name)
     entity.first_name = info.get("first_name", entity.first_name)
     entity.email = info.get("email", entity.email)
-    entity.oidc_id = info.get("id")
+    # a response without an id must not wipe a stored oidc_id
+    entity.oidc_id = info.get("id") or entity.oidc_id
 
 
 def check_inconsistent_state(oidc_id, email):
@@ -195,18 +197,14 @@ class AccountSynchronizer(ABC):
         pass
 
     @abstractmethod
-    def build_user_dict(
-        self, external_user_information: Dict[str, str]
-    ) -> Dict[str, str]:
+    def build_user_dict(self, account: OIDCUser) -> Dict[str, str]:
         """
         Should build a dictionary with the user information based on Daisy User model
         """
         pass
 
     @abstractmethod
-    def build_contact_dict(
-        self, external_user_information: Dict[str, str]
-    ) -> Dict[str, str]:
+    def build_contact_dict(self, account: OIDCUser) -> Dict[str, str]:
         """
         Should build a dictionary with the user information based on Daisy Contact model
         """
@@ -230,17 +228,15 @@ class AccountSynchronizer(ABC):
         )
 
         logger.info("Retrieving user information from external source")
-        external_user_information = self.synchronizer_backend.get_external_user_info(
-            oidc_id
-        )
+        account = self.synchronizer_backend.get_external_user_info(oidc_id)
         logger.info("User details retrieved")
         return self.update_user_or_contact(
-            external_user_information, oidc_id, email, create_contact_if_not_found
+            account, oidc_id, email, create_contact_if_not_found
         )
 
     def update_user_or_contact(
         self,
-        external_user_information: Dict[str, str],
+        account: OIDCUser,
         oidc_id: str,
         email: Optional[str] = None,
         create_contact_if_not_found: bool = False,
@@ -257,7 +253,7 @@ class AccountSynchronizer(ABC):
         """
         check_inconsistent_state(oidc_id, email)
         logger.info("No inconsistency found")
-        user_dict = self.build_user_dict(external_user_information)
+        user_dict = self.build_user_dict(account)
         logger.info(
             f"Trying to find and update corresponding daisy user based on oidc_id {oidc_id}"
         )
@@ -269,7 +265,7 @@ class AccountSynchronizer(ABC):
         logger.info(
             f"Trying to find and update corresponding daisy contact based on oidc_id {oidc_id}"
         )
-        contact_dict = self.build_contact_dict(external_user_information)
+        contact_dict = self.build_contact_dict(account)
         contact = find_and_update_contact(contact_info=contact_dict, oidc_id=oidc_id)
         if contact:
             logger.info(
@@ -323,7 +319,7 @@ class DummySynchronizationBackend(AccountSynchronizationBackend):
     def get_list_of_users(self) -> List[OIDCUser]:
         return []
 
-    def get_external_user_info(self, oidc_id: str) -> Dict[str, str]:
+    def get_external_user_info(self, oidc_id: str) -> OIDCUser:
         raise NotImplementedError
 
 
@@ -336,33 +332,16 @@ class DummyAccountSynchronizer(AccountSynchronizer):
     def __init__(self, synchronizer_backend):
         self.synchronizer_backend = synchronizer_backend
 
-    def build_user_dict(
-        self, external_user_information: Dict[str, str]
-    ) -> Dict[str, str]:
+    def build_user_dict(self, account: OIDCUser) -> Dict[str, str]:
         return {
-            "first_name": external_user_information.get(
-                "first_name", "FIRST_NAME_MISSING"
-            ),
-            "last_name": external_user_information.get(
-                "last_name", "LAST_NAME_MISSING"
-            ),
-            "email": external_user_information.get("email"),
-            "id": external_user_information.get("id"),
+            "first_name": account.first_name or "FIRST_NAME_MISSING",
+            "last_name": account.last_name or "LAST_NAME_MISSING",
+            "email": account.email,
+            "id": account.id,
         }
 
-    def build_contact_dict(
-        self, external_user_information: Dict[str, str]
-    ) -> Dict[str, str]:
-        return {
-            "first_name": external_user_information.get(
-                "first_name", "FIRST_NAME_MISSING"
-            ),
-            "last_name": external_user_information.get(
-                "last_name", "LAST_NAME_MISSING"
-            ),
-            "email": external_user_information.get("email"),
-            "id": external_user_information.get("id"),
-        }
+    def build_contact_dict(self, account: OIDCUser) -> Dict[str, str]:
+        return self.build_user_dict(account)
 
     def test_connection(self):
         return True
