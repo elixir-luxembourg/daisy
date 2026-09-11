@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.db.models import Q
-from core.models import Dataset, Project
+from core.models import Dataset, Partner, Project
 from django.conf import settings
 from django.utils.module_loading import import_string
 
@@ -14,6 +14,7 @@ class Command(BaseCommand):
 
         with transaction.atomic():
             self.generate_ids(Dataset)
+            self.generate_ids(Partner)
             self.generate_ids(Project)
 
         self.stdout.write(self.style.SUCCESS("ID generation complete!"))
