@@ -17,7 +17,7 @@ from core.synchronizers import (
 )
 from core.lcsb.oidc import (
     get_keycloak_config_from_settings,
-    KeycloakSynchronizationBackend,
+    KeycloakBackend,
     KeycloakAccountSynchronizer,
 )
 from core.models.access import Access, StatusChoices
@@ -33,7 +33,7 @@ DEFAULT_REMS_RETRIES = 3
 if getattr(settings, "KEYCLOAK_INTEGRATION", False) is True:
     urllib3.disable_warnings()
     keycloak_config = get_keycloak_config_from_settings()
-    keycloak_backend = KeycloakSynchronizationBackend(keycloak_config)
+    keycloak_backend = KeycloakBackend(keycloak_config)
     synchronizer = KeycloakAccountSynchronizer(keycloak_backend)
 else:
     dummy_backend = DummySynchronizationBackend()

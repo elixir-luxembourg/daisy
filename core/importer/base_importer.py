@@ -12,7 +12,6 @@ from core.constants import Groups as GroupConstants
 from core.models import Partner, Contact, ContactType, User
 from core.utils import DaisyLogger
 
-
 PRINCIPAL_INVESTIGATOR = "Principal_Investigator"
 
 
@@ -284,12 +283,12 @@ class BaseImporter:
             usr_name = first_name.lower() + "." + last_name.lower()
             user = User.objects.create(
                 username=usr_name,
-                password="",
                 first_name=first_name,
                 last_name=last_name,
                 is_active=False,
                 email=email,
             )
+            user.set_unusable_password()
             user.staff = True
 
             if role_name == PRINCIPAL_INVESTIGATOR:

@@ -3,7 +3,8 @@ from django.contrib.auth import update_session_auth_hash, login, logout as dj_lo
 from django.contrib.auth.decorators import login_required, login_not_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.contrib.auth.views import PasswordChangeView, LoginView
+from django.contrib.auth.views import LoginView
+from django.db import transaction
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import (
@@ -18,7 +19,8 @@ from authlib.integrations.django_client import OAuth
 
 from core.constants import Permissions
 from core.forms.user import UserForm, UserEditFormActiveDirectory, UserEditFormManual
-from core.models import User
+from core.lcsb.oidc import parse_oidc_username
+from core.models import Contact, User
 from core.models.project import ProjectUserObjectPermission
 from core.models.dataset import DatasetUserObjectPermission
 from core.models.user import UserSource
@@ -59,9 +61,8 @@ class UserCreateView(CreateView, AjaxViewMixin):
     def form_valid(self, form):
         user = form.save(commit=False)
         email = form.cleaned_data["email"]
-        password = form.cleaned_data["password"]
         groups = form.cleaned_data["groups"]
-        user.set_password(password)
+        user.set_unusable_password()
         user.username = email
         user.source = UserSource.MANUAL
         user.save()
@@ -131,6 +132,10 @@ class UserDetailView(DetailView):
 
 @login_required
 def change_password(request):
+    if not request.user.has_usable_password():
+        messages.error(request, "Your password is managed by Keycloak.")
+        return redirect("dashboard")
+
     if request.method == "POST":
         form = PasswordChangeForm(request.user, request.POST or None)
         if form.is_valid():
@@ -151,14 +156,6 @@ def change_password(request):
             "form": form,
         },
     )
-
-
-class UserPasswordChange(PasswordChangeView):
-    template_name = "users/user_change_password.html"
-    success_url = "/"
-
-    def get_success_url(self):
-        return reverse_lazy("login")
 
 
 @superuser_required()
@@ -190,41 +187,79 @@ def oidc_login(request):
     return oauth.keycloak.authorize_redirect(request, redirect_uri)
 
 
+def _create_or_update_user(user_info, oidc_id, email):
+    """
+    Return the DAISY user for this Keycloak identity, and create or complete the record if needed.
+    Returns None if the identity or the email belongs to somebody else.
+    """
+    with transaction.atomic():
+        user = User.objects.select_for_update().filter(oidc_id=oidc_id).first()
+        contact = Contact.objects.select_for_update().filter(oidc_id=oidc_id).first()
+        if user and contact:
+            return None
+        if user:
+            return user
+
+        matching_users = list(
+            User.objects.select_for_update().filter(email__iexact=email)
+        )
+        matching_contacts = Contact.objects.filter(email__iexact=email)
+        if len(matching_users) == 1 and not matching_contacts.exists():
+            candidate = matching_users[0]
+            if candidate.oidc_id is not None:
+                return None
+            candidate.oidc_id = oidc_id
+            candidate.save(update_fields=["oidc_id"])
+            return candidate
+        if matching_users or matching_contacts.exists() or contact:
+            return None
+
+        username, _ = parse_oidc_username(user_info.get("username"))
+        user = User(
+            username=username or email,
+            email=email,
+            first_name=user_info.get("given_name", ""),
+            last_name=user_info.get("family_name", ""),
+            oidc_id=oidc_id,
+        )
+        user.set_unusable_password()
+        user.save()
+        return user
+
+
 @login_not_required
 def auth(request):
-    token = oauth.keycloak.authorize_access_token(request)
+    try:
+        token = oauth.keycloak.authorize_access_token(request)
+    except Exception:
+        messages.error(request, "Authentication failed.")
+        return redirect("login")
     user_info = token.get("userinfo")
-    request.session["user"] = user_info
-
-    if "id_token" in token:
-        request.session["oidc_id_token"] = token["id_token"]
 
     if not user_info:
         messages.error(request, "Authentication failed.")
         return redirect("login")
 
     oidc_id = user_info.get("sub")
-    email = user_info.get("email")
-    if not email:
+    email = (user_info.get("email") or "").strip().lower()
+    if not oidc_id or not email:
         messages.error(request, "Authentication failed.")
         return redirect("login")
 
-    try:
-        user = User.objects.get(oidc_id=oidc_id)
-    except User.DoesNotExist:
-        try:
-            user = User.objects.get(email=email)
-            user.oidc_id = oidc_id
-            user.save()
-        except User.DoesNotExist:
-            user = User.objects.create_user(
-                username=user_info.get("preferred_username", email),
-                email=email,
-            )
-            user.first_name = user_info.get("given_name", "")
-            user.last_name = user_info.get("family_name", "")
-            user.oidc_id = oidc_id
-            user.save()
+    user = _create_or_update_user(user_info, oidc_id, email)
+    if not user:
+        messages.error(
+            request,
+            "An account with this email already exists. Contact a data steward.",
+        )
+        return redirect("login")
+    if not user.is_active:
+        messages.error(request, "This account is inactive. Contact a data steward.")
+        return redirect("login")
+
+    request.session["user"] = user_info
+    if "id_token" in token:
+        request.session["oidc_id_token"] = token["id_token"]
 
     # django login
     login(request, user, backend="django.contrib.auth.backends.ModelBackend")
@@ -241,8 +276,9 @@ def logout(request):
 
     if id_token and getattr(settings, "OIDC_ENABLED", False):
         keycloak_logout_url = oauth.keycloak.server_metadata.get("end_session_endpoint")
-        redirect_uri = request.build_absolute_uri(reverse("login"))
-        logout_url = f"{keycloak_logout_url}?post_logout_redirect_uri={redirect_uri}&id_token_hint={id_token}"
-        return redirect(logout_url)
+        if keycloak_logout_url:
+            redirect_uri = request.build_absolute_uri(reverse("login"))
+            logout_url = f"{keycloak_logout_url}?post_logout_redirect_uri={redirect_uri}&id_token_hint={id_token}"
+            return redirect(logout_url)
 
     return redirect("login")

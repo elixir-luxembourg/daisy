@@ -74,6 +74,10 @@ def test_protect_api_decorator():
     assert dummy_view(factory.get("", HTTP_X_API_KEY=user_key)).status_code == 200
     assert captured["api_user"] == user
 
+    user.is_active = False
+    user.save()
+    assert dummy_view(factory.get("", {"API_KEY": user_key})).status_code == 401
+
     # user api-key on non-GET
     assert dummy_view(factory.post("", {"API_KEY": user_key})).status_code == 403
     assert dummy_view(factory.post("", HTTP_X_API_KEY=user_key)).status_code == 403

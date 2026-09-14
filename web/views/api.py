@@ -30,7 +30,6 @@ from core.models.term_model import TermCategory, PhenotypeTerm, StudyTerm, GeneT
 from core.utils import DaisyLogger
 from web.views.utils import get_client_ip, get_user_or_contact_by_oidc_id
 
-
 logger = DaisyLogger(__name__)
 
 
@@ -84,7 +83,7 @@ def protect_api(write_required=False):
                     "Write operations require global API key", status=403
                 )
 
-            if user := User.objects.filter(api_key=key).first():
+            if user := User.objects.filter(api_key=key, is_active=True).first():
                 request.api_user = user
                 return view(request, *args, **kwargs)
 

@@ -64,6 +64,11 @@ class Contact(CoreModel):
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
 
+    def save(self, *args, **kwargs):
+        if self.email:
+            self.email = self.email.lower()
+        super().save(*args, **kwargs)
+
     def to_dict(self):
         partners_dict = []
         for partner in self.partners.all():

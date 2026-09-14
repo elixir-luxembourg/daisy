@@ -5,7 +5,11 @@ from django.conf import settings
 import pytest
 import requests_mock
 
-from core.lcsb.oidc import KeycloakSynchronizationBackend
+from core.lcsb.oidc import (
+    ExternalUserNotVerifiedException,
+    KeycloakBackend,
+    parse_oidc_username,
+)
 from core.lcsb.rems import (
     create_rems_entitlement,
     extract_rems_data,
@@ -32,6 +36,7 @@ class KeycloakAdminConnectionMock:
         return True
 
     def get_users(self, query) -> List[Dict]:
+        self.last_query = query
         return [
             {
                 "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
@@ -85,7 +90,98 @@ class KeycloakAdminConnectionMock:
         ]
 
 
-class KeycloakSynchronizationMethodMock(KeycloakSynchronizationBackend):
+def test_get_users_by_email_uses_exact_verified_match():
+    class EmailLookupMock:
+        def get_users(self, query):
+            assert query == {
+                "email": "testy.mctesty@uni.lu",
+                "exact": True,
+            }
+            return [
+                {
+                    "id": "verified-id",
+                    "email": "testy.mctesty@uni.lu",
+                    "emailVerified": True,
+                    "firstName": "Testy",
+                    "lastName": "McTesty",
+                },
+                {
+                    "id": "unverified-id",
+                    "email": "testy.mctesty@uni.lu",
+                    "emailVerified": False,
+                },
+            ]
+
+    backend = KeycloakBackend({}, connect=False)
+    backend.keycloak_admin_connection = EmailLookupMock()
+
+    users = backend.get_users_by_email("testy.mctesty@uni.lu")
+
+    assert [(user.id, user.email) for user in users] == [
+        ("verified-id", "testy.mctesty@uni.lu")
+    ]
+    assert users[0].username is None
+
+
+def test_get_external_user_info_returns_the_verified_account_as_oidc_user():
+    class SingleUserMock:
+        def get_user(self, oidc_id):
+            return {
+                "id": oidc_id,
+                "email": "testy.mctesty@uni.lu",
+                "emailVerified": True,
+                "firstName": "Testy",
+                "lastName": "McTesty",
+                "username": "testy.mctesty|ul",
+            }
+
+    backend = KeycloakBackend({}, connect=False)
+    backend.keycloak_admin_connection = SingleUserMock()
+
+    account = backend.get_external_user_info("verified-id")
+
+    assert account.id == "verified-id"
+    assert account.email == "testy.mctesty@uni.lu"
+    assert account.username == "testy.mctesty"
+    assert account.identity_provider == "University of Luxembourg"
+
+
+def test_get_external_user_info_rejects_an_unverified_account():
+    class UnverifiedUserMock:
+        def get_user(self, oidc_id):
+            return {"id": oidc_id, "email": "testy.mctesty@uni.lu"}
+
+    backend = KeycloakBackend({}, connect=False)
+    backend.keycloak_admin_connection = UnverifiedUserMock()
+
+    with pytest.raises(ExternalUserNotVerifiedException):
+        backend.get_external_user_info("unverified-id")
+
+
+@pytest.mark.parametrize(
+    ("suffix", "display_name"),
+    [
+        ("ul", "University of Luxembourg"),
+        ("lih", "Luxembourg Institute of Health"),
+        ("lums", "LCSB User Management System"),
+        ("ls", "LifeScience Login (academic federation)"),
+        ("orcid", "ORCID"),
+    ],
+)
+def test_parse_keycloak_username_identifies_known_provider_suffix(suffix, display_name):
+    username, provider = parse_oidc_username(f"john.doe|{suffix}")
+
+    assert username == "john.doe"
+    assert provider.username_suffix == suffix
+    assert provider.display_name == display_name
+
+
+def test_parse_keycloak_username_preserves_unknown_or_missing_suffix():
+    assert parse_oidc_username("john.doe") == ("john.doe", None)
+    assert parse_oidc_username("john.doe|unknown") == ("john.doe|unknown", None)
+
+
+class KeycloakSynchronizationMethodMock(KeycloakBackend):
     def test_connection(self) -> bool:
         return True
 
@@ -106,10 +202,10 @@ class KeycloakSynchronizationMethodMock(KeycloakSynchronizationBackend):
 
 def test_keycloak_synchronization_config_validation():
     with pytest.raises(KeyError):
-        kc = KeycloakSynchronizationBackend({})
+        kc = KeycloakBackend({})
 
     with pytest.raises(KeyError):
-        kc = KeycloakSynchronizationBackend({}, False)
+        kc = KeycloakBackend({}, False)
         kc._create_connection({})
 
 

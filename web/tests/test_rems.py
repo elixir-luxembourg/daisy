@@ -6,7 +6,7 @@ from faker import Faker
 
 from core.models import Access
 from core.models import Contact
-from core.synchronizers import ExternalUserNotFoundException
+from core.synchronizers import ExternalUserNotFoundException, OIDCUser
 from core.utils import DaisyLogger
 from test.factories import UserFactory, DatasetFactory, ContactFactory
 
@@ -22,12 +22,13 @@ def patch_get_external_user_info(
 ):
     def mock_get_external_user_info(self, oidc_id):
         if oidc_id == expected_oidc_id:
-            return {
-                "first_name": first_name,
-                "last_name": last_name,
-                "email": email,
-                "id": expected_oidc_id,
-            }
+            return OIDCUser(
+                id=expected_oidc_id,
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                username=email,
+            )
         else:
             raise ExternalUserNotFoundException()
 
