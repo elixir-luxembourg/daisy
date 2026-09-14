@@ -140,6 +140,20 @@ class Dataset(CoreTrackedModel, NotifyMixin):
         else:
             return self.ExposureStatus.UNPUBLISHED
 
+    @property
+    def missing_records(self):
+        checks = {
+            "Legal basis": self.legal_basis_definitions,
+            "Data declaration": self.data_declarations,
+            "Storage": self.data_locations,
+            "Custodian": self.local_custodians,
+        }
+        return [label for label, qs in checks.items() if not qs.exists()]
+
+    @property
+    def is_record_complete(self):
+        return not self.missing_records
+
     def collect_contracts(self):
         result = set()
         for share in self.shares.all():

@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.messages import add_message
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 from core.forms.user import PickUserForm
 from core.models import Project
@@ -27,7 +28,7 @@ def add_personnel_to_project(request, pk):
                 error_message = f"{field}: {error[0]}"
                 error_messages.append(error_message)
             add_message(request, messages.ERROR, "\n".join(error_messages))
-        return redirect(to="project", pk=pk)
+        return redirect(reverse("project", kwargs={"pk": pk}) + "#panel-people")
 
     else:
         form = PickUserForm()

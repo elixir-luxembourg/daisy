@@ -24,28 +24,36 @@ type NotificationHeaderProps = {
 const NotificationHeader = ({className, category, newNotifications, showDismissNumber, isCollapsed, onClick}: NotificationHeaderProps) => {
     const title = `${className.charAt(0).toUpperCase()}${className.substring(1)} Notifications`;
     return (
-        <div
+        <button
+            type={"button"}
             id={`accordion-header-${category}`}
-            className={"card-header btn btn-link d-flex justify-content-center"}
-            data-toggle={"collapse"}
-            data-target={`#accordion-body-${category}`}
-            aria-expanded={"false"}
+            className={"flex w-full items-center justify-between gap-4 px-4 py-3 text-left hover:bg-gray-50"}
+            aria-expanded={!isCollapsed}
             aria-controls={`accordion-body-${category}`}
             onClick={onClick}
         >
-            <div className={"position-relative"}>
-                <h2 className={"card-title"}>{title}</h2>
+            <div className={"relative"}>
+                <h2 className={"text-lg font-semibold text-blue-950"}>{title}</h2>
                 {showDismissNumber && newNotifications > 0 &&
-                    <span className={"badge badge-danger card-badge"}>{newNotifications}</span>
+                    <span className={"absolute -right-6 -top-2 inline-flex min-w-5 items-center justify-center rounded-full bg-red-900 px-1 text-xs font-semibold text-white"}>{newNotifications}</span>
                 }
             </div>
-            <div className={"accordion-toggle"}>
-                {isCollapsed ?
-                    <i className={"material-icons"}>expand_less</i> :
-                    <i className={"material-icons"}>expand_more</i>
-                }
-            </div>
-        </div>
+            <svg
+                xmlns={"http://www.w3.org/2000/svg"}
+                width={"20"}
+                height={"20"}
+                viewBox={"0 0 24 24"}
+                fill={"none"}
+                stroke={"currentColor"}
+                strokeWidth={"2"}
+                strokeLinecap={"round"}
+                strokeLinejoin={"round"}
+                aria-hidden={"true"}
+                className={`h-5 w-5 shrink-0 text-blue-900 transition-transform duration-200 ease-out ${isCollapsed ? "" : "rotate-180"}`}
+            >
+                <path d={"m6 9 6 6 6-6"}/>
+            </svg>
+        </button>
     );
 };
 
@@ -55,7 +63,6 @@ type NotificationCardProps = {
     children: React.ReactElement,
     newNotifNumber: number,
     showDismissBtn: boolean,
-    dismissAll: (contentType: string) => void,
 };
 
 /**
@@ -65,15 +72,14 @@ type NotificationCardProps = {
  * @param newNotifNumber - The number of new notifications in the category
  * @param children - The React components to render in the card
  * @param showDismissBtn - Whether to show the dismiss all button
- * @param dismissAll - The function to dismiss all notifications in the category
  *
  * @return - The card for the notification category
  */
-export const NotificationCard = ({title, type, newNotifNumber, children, showDismissBtn, dismissAll}: NotificationCardProps) => {
+export const NotificationCard = ({title, type, newNotifNumber, children, showDismissBtn}: NotificationCardProps) => {
     const [isCollapsed, setCollapsed] = useState(true);
     return (
-        <div className={"row mt-4 accordion"}>
-            <div className={"card col px-0"}>
+        <div className={"mt-4 rounded border border-gray-200 bg-white shadow-sm"}>
+            <div>
                 <NotificationHeader
                     className={title}
                     category={type}
@@ -83,23 +89,8 @@ export const NotificationCard = ({title, type, newNotifNumber, children, showDis
                     onClick={() => setCollapsed(c => !c)}
                 />
                 { isCollapsed ||
-                    <div id={`accordion-body-${type}`} className={"collapse p-3"}>
-                        {showDismissBtn && newNotifNumber > 0 &&
-                            <div className={"d-flex justify-content-end"}>
-                                <button
-                                    className={"btn btn-link btn-outline float-right"}
-                                    type={"button"}
-                                    onClick={() => dismissAll(type)}
-                                >
-                                    Dismiss all
-                                </button>
-                            </div>
-                        }
-                        <div className={"card-body"}>
-                            <div id={`form-container-${type}`} className={"card-text table-responsive"}>
-                                {children}
-                            </div>
-                        </div>
+                    <div id={`accordion-body-${type}`} className={"overflow-x-auto border-t border-gray-200 text-sm"}>
+                        {children}
                     </div>
                 }
             </div>

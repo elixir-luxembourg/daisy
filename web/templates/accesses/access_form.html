@@ -1,15 +1,15 @@
 {% extends 'layout.html' %}
 
-{% block title %}Access - Add{% endblock %}
+{% block title %}Add access | DAISY{% endblock %}
 
 {% block content %}
-    <div class="jumbotron mt-4">
-        <h1 class="display-4">{% block content_title %}Access{% endblock %}</h1>
+    <div class="mt-4">
+        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{% block content_title %}Access{% endblock %}</h1>
     </div>
-    <div class="card">
-        <div class="card-body">
-            <h2 class="card-title">{% block card_title %}Add a new access{% endblock %}</h2>
-            <div class="card-text">
+    <div class="mt-4 rounded-sm bg-white shadow-sm">
+        <div class="p-4">
+            <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">{% block card_title %}Add a new access{% endblock %}</h2>
+            <div class="mt-2">
                 {% include '_includes/forms.html' %}
             </div>
         </div>

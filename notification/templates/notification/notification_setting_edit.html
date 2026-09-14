@@ -2,19 +2,19 @@
 {% load static %}
 
 {% block content %}
-    <div class="row mt-4">
-        <div class="jumbotron col">
-            <h1 class="display-4">Notification settings</h1>
+    <div class="mt-4 rounded border border-gray-200 bg-gray-50 p-6">
+        <div>
+            <h1 class="text-4xl font-light">Notification settings</h1>
         </div>
     </div>
 
-    <div class="row card">
-        <div class="card-body">
-            <h2 class="card-title">Approaching events:</h2>
-            <h6 class="card-subtitle mb-4">
+    <div class="mt-4 rounded border border-gray-200 bg-white shadow-sm">
+        <div class="p-4">
+            <h2 class="text-xl font-semibold">Approaching events:</h2>
+            <h6 class="mb-4 text-sm text-gray-600">
                 Receive notifications about approaching events (retention period, expiration of documents, ...)
             </h6>
-            <div id="form-container" class="card-text">
+            <div id="form-container">
                 {% include '_includes/forms.html' %}
             </div>
         </div>

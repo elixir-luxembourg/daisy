@@ -1,17 +1,18 @@
 {% extends 'layout.html' %}
 
-{% block title %}Projects{% endblock %}
+{% block title %}Projects | DAISY{% endblock %}
 
 {% block content %}
-    <div class="jumbotron mt-4">
-        <h1 class="display-4">Projects</h1>
+    <div class="mt-4 mb-8 flex flex-wrap items-center justify-between gap-4">
+        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">Projects</h1>
+        <a class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" href="{% url 'project_add' %}"><i data-lucide="plus" class="h-4 w-4" aria-hidden="true"></i><span>Add project</span></a>
     </div>
-    <div class="d-flex flex-wrap w-100">
+    <div class="flex flex-wrap w-full">
         {% for project in  project_list %}
-            <div class="m-2 card-item card">
-                <div class="card-body">
-                    <h2 class="card-title">{{ project }}</h2>
-                    <a href="{% url 'project' pk=project.id %}" class="btn btn-primary">Details</a>
+            <div class="card-item rounded-sm bg-white shadow-sm m-2">
+                <div class="p-4">
+                    <h2 class="mb-2 text-xl font-semibold">{{ project }}</h2>
+                    <a href="{% url 'project' pk=project.id %}" class="cursor-pointer inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none">Details</a>
                 </div>
             </div>
         {% empty %}
@@ -21,9 +22,3 @@
 {% endblock %}
 
 
-{% block floating-buttons %}
-    <a class="btn btn-primary bmd-btn-fab float-right" href="{% url 'project_add' %}"><i
-            class="material-icons">add</i>
-
-    </a>
-{% endblock %}

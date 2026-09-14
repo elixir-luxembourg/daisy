@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.messages import add_message
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, ListView, UpdateView
 
@@ -70,7 +70,7 @@ def pick_publication_for_project(request, pk):
             return HttpResponseBadRequest("wrong parameters")
         project.save()
         add_message(request, messages.SUCCESS, "Publication added")
-        return redirect(to="project", pk=pk)
+        return redirect(reverse("project", kwargs={"pk": pk}) + "#panel-publications")
 
     else:
         form = PickPublicationForm()
@@ -98,7 +98,7 @@ def add_publication_to_project(request, pk):
                 error_message = f"{field}: {error[0]}"
                 error_messages.append(error_message)
             add_message(request, messages.ERROR, "\n".join(error_messages))
-        return redirect(to="project", pk=pk)
+        return redirect(reverse("project", kwargs={"pk": pk}) + "#panel-publications")
 
     else:
         form = PublicationForm()

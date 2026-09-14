@@ -86,6 +86,21 @@ The back-end administrator account. Superusers have unrestricted access to all D
 
 ## Permissions
 
+Where **user groups** and **record-level roles** are what you assign to a user, *permissions* are what those assignments translate into — the concrete actions a user may perform on a record. You normally don't set them by hand: they are derived automatically from a user's group and their *Local Custodian* assignments (see the [Summary Table](#summary-table) below). If fine-grained control on a specific record is really needed, a user with **admin** permission on it can view and change permissions directly on the *Permissions Management* page, reached via the eye icon in the record's overview box.
+
+### Permission types
+
+Beyond the standard *view* and *add* permissions, DAISY defines four additional permission types:
+
+| Permission | Description |
+|-----------|-------------|
+| **Edit** | Can modify the properties of a record. |
+| **Delete** | Can delete a record. |
+| **Protected** | Can view and edit protected elements of a record (e.g. document attachments, sensitive fields). |
+| **Admin** | Can grant and revoke permissions on a record for other users. |
+
+### Managed objects
+
 Permissions are managed on the following primary objects:
 
 | Object | Protected & Admin permissions |
@@ -140,21 +155,3 @@ Instance-level permissions granted directly on a record always take precedence; 
 | **Auditor** | All | — | — | All | — |
 
 *"Own records" means records where the user is assigned as Local Custodian or is the creator.*
-
----
-
-## Permission Types
-
-Beyond the standard view/add permissions, DAISY defines four additional permission types:
-
-| Permission | Description |
-|-----------|-------------|
-| **Edit** | Can modify the properties of a record. |
-| **Delete** | Can delete a record. |
-| **Protected** | Can view and edit protected elements of a record (e.g. document attachments, sensitive fields). |
-| **Admin** | Can grant and revoke permissions on a record for other users. |
-
-These permissions apply at two levels:
-
-- **Group level (global):** Granted to all members of a user group across all records (e.g. Data Stewards have edit permissions everywhere).
-- **Instance level:** Granted to specific users on a specific record (e.g. a VIP user who is Local Custodian of a particular project).

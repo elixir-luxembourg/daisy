@@ -1,49 +1,71 @@
-                <h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th style="max-width: 200px; overflow: auto">Document Type</th>
-                        <th style="max-width: 200px; min-width:120px; overflow: auto">Expiry</th>
-                        <th>Notes</th>
-                        <th style="max-width: 400px; overflow: auto">File</th>
-                        <th style="max-width: 200px; overflow: auto"><small>Size<small></th>
-                        
-                        
-                        {% if can_edit %}
-                            <th id="document-action-head" style="width:7em">Actions</th>
-                        {% endif %}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for file in datafiles %}
-                        <tr>
-                            <td style="max-width: 200px; overflow: auto"><span class="col-xs-4 text-center">{{ file.get_domain_type_display }}</span></td>
-                            <td style="max-width: 200px; overflow: auto"><span class="col-xs-4 text-center">{{ file.expiry_date | default:'-' }}</span></td>
-                            <td><span class="col-xs-4 text-center">{{ file.content_notes | default:'-' }}</span>
-                            <td style="max-width: 400px; overflow: auto"><a href="{% url 'document_download' pk=file.id %}">{{ file.shortname}}</a></td>
-                            <td><small><span class="col-xs-4 text-center">{{ file.size | filesizeformat  }}</span></small></td>
-                            {% if can_edit %}
-                                <td id="document-action">
-                                    <a data-toggle="modal" id="btnupdate" class="jsBtn clickable"
-                                       data-target="#modal"
-                                       data-modal-title="Update document"
-                                       data-post-mode="true"
-                                       {% if project %}
-                                           data-ajax-redirect-uri="{% url 'project' pk=project.id %}"
-                                       {% elif contract %}
-                                           data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"
-                                       {% endif %}
-                                       data-ajax-url="{% url "document_edit" pk=file.id %}"
-                                       title="Update document">
-                                        <i class="material-icons">edit</i>
-                                    </a>
-                                    <i title="Delete document" class="material-icons red clickable" data-method="delete"
-                                       data-confirmation = "delete"
-                                       data-parent-to-remove="tr"
-                                       data-url="{% url 'document_delete' pk=file.id  %}">delete_forever</i>
-                                </td>
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+{% with empty="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center" emptyp="text-sm text-gray-500" %}
+<h2 class="{{ title2 }} mb-4"><i data-lucide="file-text" class="h-6 w-6"></i> Documents</h2>
+{% if datafiles %}
+<div class="overflow-x-auto">
+    <table class="min-w-full border-collapse text-sm lg:text-base">
+        <thead class="bg-gray-50">
+        <tr>
+            <th scope="col" class="{{ th }}">Document Type</th>
+            <th scope="col" class="{{ th }}">Expiry</th>
+            <th scope="col" class="{{ th }}">Notes</th>
+            <th scope="col" class="{{ th }}">File</th>
+            <th scope="col" class="{{ th }}">Size</th>
+            {% if can_edit %}
+                <th scope="col" id="document-action-head" class="{{ th }} w-28">Actions</th>
+            {% endif %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for file in datafiles %}
+            <tr class="odd:bg-gray-50">
+                <td class="{{ td }}">{{ file.get_domain_type_display }}</td>
+                <td class="{{ td }}">{{ file.expiry_date | default:'-' }}</td>
+                <td class="{{ td }}">{{ file.content_notes | default:'-' }}</td>
+                <td class="{{ td }}"><a class="text-primary-700 hover:underline" href="{% url 'document_download' pk=file.id %}">{{ file.shortname }}</a></td>
+                <td class="{{ td }}">{{ file.size | filesizeformat }}</td>
+                {% if can_edit %}
+                    <td id="document-action" class="{{ td }}">
+                        <span class="inline-flex items-center gap-2">
+                            <button type="button" data-toggle="modal" id="btnupdate" class="jsBtn clickable inline-flex p-0 text-primary-700 bg-transparent border-0 hover:text-primary-900"
+                               data-target="#modal"
+                               data-modal-title="Update document"
+                               data-post-mode="true"
+                               {% if project %}
+                                   data-ajax-redirect-uri="{% url 'project' pk=project.id %}"
+                               {% elif contract %}
+                                   data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"
+                               {% endif %}
+                               data-ajax-url="{% url "document_edit" pk=file.id %}"
+                               aria-label="Update document" title="Update document">
+                                <i data-lucide="pencil" class="h-5 w-5"></i>
+                            </button>
+                            <button type="button" aria-label="Delete document" title="Delete document" class="clickable inline-flex p-0 text-danger-700 bg-transparent border-0 hover:text-danger-900" data-method="delete"
+                               data-confirmation="delete"
+                               data-parent-to-remove="tr"
+                               data-url="{% url 'document_delete' pk=file.id %}">
+                                <i data-lucide="trash-2" class="h-5 w-5"></i>
+                            </button>
+                        </span>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="{{ empty }}">
+    <p class="{{ emptyp }}">No documents yet.</p>
+    {% if can_edit %}
+        <button type="button" class="{{ add }} mt-3"
+                data-toggle="modal"
+                data-target="#modal"
+                data-modal-title="Add document"
+                data-ajax-url="{% url 'document_add' object_id=object_id content_type=content_type %}"
+                data-post-mode="true"
+                {% if project %}data-ajax-redirect-uri="{% url 'project' pk=project.id %}#panel-contracts"{% elif contract %}data-ajax-redirect-uri="{% url 'contract' pk=contract.id %}"{% endif %}
+                title="Upload new document"><i data-lucide="plus" class="h-4 w-4"></i><span>Upload document</span></button>
+    {% endif %}
+</div>
+{% endif %}
+{% endwith %}

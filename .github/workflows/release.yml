@@ -2,7 +2,7 @@ name: Validate Version bump upon release
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
   validate-version:

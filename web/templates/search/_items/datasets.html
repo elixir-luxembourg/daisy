@@ -1,28 +1,26 @@
 {% for dataset in data.datasets %}
-    <div class="row">
-        <div class="col-12 mb-4">
-            <div class="card card-item">
-                <div class="card-body">
-                    <h2 class="card-title">
-                      <a href="{% url 'dataset' pk=dataset.pk %}">{{ dataset.title }}</a>
-                    </h2>
-                    <ul class="card-text list-unstyled text-left py-1">
-                        <li class="d-flex align-items-center"><strong class="mr-1">Published:</strong> {{ dataset.is_published | yesno }}</li>
-                        <li><strong>Datatypes:</strong>
-                            {% for datatype in dataset.data_types %}
-                                <span class="badge badge-pill badge-secondary ml-1 mb-1">{{ datatype }}</span>
+    <div class="mb-4">
+        <div class="rounded-sm bg-white shadow-sm">
+            <div class="p-4">
+                <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">
+                  <a href="{% url 'dataset' pk=dataset.pk %}" class="text-primary-700 hover:underline">{{ dataset.title }}</a>
+                </h2>
+                <ul class="py-1 text-left">
+                    <li class="flex items-center"><strong class="mr-1">Published:</strong> {{ dataset.is_published | yesno }}</li>
+                    <li><strong>Datatypes:</strong>
+                        {% for datatype in dataset.data_types %}
+                            <span class="inline-flex items-center rounded-xs border border-gray-200 bg-white px-2 py-0.5 text-xs text-gray-700 ml-1 mb-1">{{ datatype }}</span>
+                        {% endfor %}
+                    </li>
+                    {% if dataset.local_custodians %}
+                        <li><strong>Local custodians:</strong>
+                            {% for local_custodian in dataset.local_custodians %}
+                                <span class="inline-flex items-center rounded-xs border border-info-300 bg-info-50 px-2 py-0.5 text-xs text-primary-900 ml-1 mb-1">{{ local_custodian }}</span>
                             {% endfor %}
                         </li>
-                        {% if dataset.local_custodians %}
-                            <li><strong>Local custodians:</strong>
-                                {% for local_custodian in dataset.local_custodians %}
-                                    <span class="badge badge-pill badge-primary ml-1 mb-1">{{ local_custodian }}</span>
-                                {% endfor %}
-                            </li>
-                        {% endif %}
-                    </ul>
-                    <a href="{% url 'dataset' pk=dataset.pk %}" class="btn btn-secondary btn-outline">Details &raquo;</a>
-                </div>
+                    {% endif %}
+                </ul>
+                <a href="{% url 'dataset' pk=dataset.pk %}" class="mt-2 cursor-pointer inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-primary-900 shadow-xs transition-[scale,box-shadow,background-color] duration-150 ease-out hover:bg-gray-50 hover:shadow-sm active:scale-[0.96] motion-reduce:transition-none">Details &raquo;</a>
             </div>
         </div>
     </div>
