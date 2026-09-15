@@ -1,5 +1,6 @@
 import time
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, TypedDict
+
 from django.conf import settings
 from keycloak import KeycloakAdmin
 from keycloak.exceptions import KeycloakGetError, KeycloakAuthenticationError
@@ -28,17 +29,34 @@ def parse_oidc_username(
     return (local_username, provider) if provider else (username, None)
 
 
+class KeycloakUserResponse(TypedDict, total=False):
+    id: str
+    username: str
+    firstName: str
+    lastName: str
+    email: str
+    emailVerified: bool
+    enabled: bool
+    createdTimestamp: int
+    totp: bool
+    disableableCredentialTypes: List[str]
+    requiredActions: List[str]
+    notBefore: int
+    access: Dict[str, bool]
+
+
 class ExternalUserNotVerifiedException(ExternalUserNotFoundException):
     pass
 
 
 def get_keycloak_config_from_settings() -> Dict:
+    # settings.py defines the KEYCLOAK_* values only when KEYCLOAK_INTEGRATION is on
     return {
-        "KEYCLOAK_URL": getattr(settings, "KEYCLOAK_URL"),
-        "KEYCLOAK_REALM_LOGIN": getattr(settings, "KEYCLOAK_REALM_LOGIN"),
-        "KEYCLOAK_REALM_ADMIN": getattr(settings, "KEYCLOAK_REALM_ADMIN"),
-        "KEYCLOAK_USER": getattr(settings, "KEYCLOAK_USER"),
-        "KEYCLOAK_PASS": getattr(settings, "KEYCLOAK_PASS"),
+        "KEYCLOAK_URL": getattr(settings, "KEYCLOAK_URL", None),
+        "KEYCLOAK_REALM_LOGIN": getattr(settings, "KEYCLOAK_REALM_LOGIN", None),
+        "KEYCLOAK_REALM_ADMIN": getattr(settings, "KEYCLOAK_REALM_ADMIN", None),
+        "KEYCLOAK_USER": getattr(settings, "KEYCLOAK_USER", None),
+        "KEYCLOAK_PASS": getattr(settings, "KEYCLOAK_PASS", None),
         "KEYCLOAK_MAX_RETRIES": getattr(settings, "KEYCLOAK_MAX_RETRIES", 3),
         "KEYCLOAK_RETRY_DELAY": getattr(settings, "KEYCLOAK_RETRY_DELAY", 2),
     }
@@ -66,8 +84,8 @@ class KeycloakBackend(AccountSynchronizationBackend):
             if key not in config:
                 raise KeyError(f"'{key}' missing in KeycloakAdmin configuration!")
 
-    def get_keycloak_admin_connection(self) -> None:
-        if self.keycloak_admin_connection is not None:
+    def get_keycloak_admin_connection(self) -> KeycloakAdmin:
+        if self.keycloak_admin_connection is None:
             self.keycloak_admin_connection = self._create_connection(self.config)
 
         return self.keycloak_admin_connection
@@ -108,8 +126,8 @@ class KeycloakBackend(AccountSynchronizationBackend):
             return False
 
     def get_list_of_users(self) -> List[OIDCUser]:
-        keycloak_response = self.get_keycloak_admin_connection().get_users(
-            {"emailVerified": True}
+        keycloak_response: List[KeycloakUserResponse] = (
+            self.get_keycloak_admin_connection().get_users({"emailVerified": True})
         )
         return [
             self._build_oidc_user(user)
@@ -118,7 +136,9 @@ class KeycloakBackend(AccountSynchronizationBackend):
         ]
 
     def get_users_by_email(self, email: str) -> List[OIDCUser]:
-        keycloak_response = self.get_keycloak_admin_connection().get_users(
+        keycloak_response: List[
+            KeycloakUserResponse
+        ] = self.get_keycloak_admin_connection().get_users(
             {"email": email, "exact": True}
         )
         return [
@@ -128,11 +148,11 @@ class KeycloakBackend(AccountSynchronizationBackend):
         ]
 
     @staticmethod
-    def _build_oidc_user(user: Dict) -> OIDCUser:
+    def _build_oidc_user(user: KeycloakUserResponse) -> OIDCUser:
         username, provider = parse_oidc_username(user.get("username"))
         return OIDCUser(
             id=user.get("id"),
-            email=user.get("email", None),
+            email=user.get("email"),
             first_name=user.get("firstName"),
             last_name=user.get("lastName"),
             username=username,
@@ -144,7 +164,9 @@ class KeycloakBackend(AccountSynchronizationBackend):
         Return the Keycloak account for this oidc_id
         """
         try:
-            keycloak_response = self.get_keycloak_admin_connection().get_user(oidc_id)
+            keycloak_response: KeycloakUserResponse = (
+                self.get_keycloak_admin_connection().get_user(oidc_id)
+            )
         except KeycloakGetError as e:
             raise ExternalUserNotFoundException(e)
         # We ignore users that are not verified

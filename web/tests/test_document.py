@@ -154,7 +154,7 @@ def test_download_document_forbidden(
     pk = response.json()["id"]
 
     client_user_vip.logout()
-    client_user_vip.login(username=user_normal.username, password=user_normal.password)
+    client_user_vip.login(username=user_normal.username, password="password")
     url = reverse("document_download", args=(pk,))
     assert client_user_vip.get(url).status_code == 403
 
@@ -215,7 +215,7 @@ def test_delete_document_forbidden(
     pk = response.json()["id"]
 
     client_user_vip.logout()
-    client_user_vip.login(username=user_normal.username, password=user_normal.password)
+    client_user_vip.login(username=user_normal.username, password="password")
 
     url = reverse("document_delete", args=(pk,))
     assert client_user_vip.delete(url).status_code == 403

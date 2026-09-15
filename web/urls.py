@@ -133,14 +133,14 @@ web_urls = [
     path("api/termsearch/<slug:category>", api.termsearch, name="api_termsearch"),
     path("api/users", api.users, name="api_users"),
     path(
-        "api/keycloak/custodians",
-        keycloak.keycloak_custodian_lookup,
-        name="keycloak_custodian_lookup",
+        "api/keycloak/users/<int:pk>/candidates",
+        keycloak.keycloak_candidates,
+        name="keycloak_candidates",
     ),
     path(
-        "api/keycloak/custodians/provision",
-        keycloak.provision_keycloak_custodian,
-        name="keycloak_custodian_provision",
+        "api/keycloak/users/<int:pk>/bind",
+        keycloak.bind_keycloak_identity,
+        name="keycloak_bind_identity",
     ),
     path(
         "api/keycloak/force",

@@ -11,7 +11,7 @@ def login(client, user):
     Shotcut to log an user to a client.
     """
     assert client.login(
-        username=user.username, password=user.password
+        username=user.username, password="password"
     ), f"Login of user {user.username} failed"
 
 

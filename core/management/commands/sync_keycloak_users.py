@@ -1,4 +1,5 @@
 from collections import defaultdict
+from typing import List, NamedTuple, Tuple
 
 from django.core.management import BaseCommand, CommandError
 from django.db import transaction
@@ -6,10 +7,18 @@ from guardian.conf import settings as guardian_settings
 
 from core.lcsb.oidc import KeycloakBackend, get_keycloak_config_from_settings
 from core.models.user import User
+from core.synchronizers import OIDCUser
 
 
 def normalized_email(email):
     return (email or "").strip().lower()
+
+
+class SyncPlan(NamedTuple):
+    to_update: List[Tuple[User, str]] = []  # user:oidc_id
+    to_deactivate: List[User] = []
+    no_kc_accounts: List[User] = []
+    multiple_kc_accounts: List[Tuple[User, List[OIDCUser]]] = []
 
 
 class Command(BaseCommand):
@@ -30,66 +39,76 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         dry_run = options["dry_run"]
         backend = KeycloakBackend(get_keycloak_config_from_settings())
-        accounts = backend.get_list_of_users()
-        to_update, to_deactivate, unmatched = self.plan(
-            accounts, options["deactivate_unmatched"]
-        )
+        keycloak_accounts = backend.get_list_of_users()
+        plan = self.plan(keycloak_accounts, options["deactivate_unmatched"])
+
+        # report results via stdout
+        for user, keycloak_candidates in plan.multiple_kc_accounts:
+            self.stdout.write(
+                f"Shared email, not bound: {user.email} (DAISY user {user.pk})"
+            )
+            for account in keycloak_candidates:
+                provider = account.identity_provider or account.username
+                self.stdout.write(f"  {account.id}  {provider}")
+
+        for user in plan.no_kc_accounts:
+            self.stdout.write(f"No Keycloak account: {user.email or user.username}.")
 
         self.stdout.write(
             f"{'Would update' if dry_run else 'Updated'} "
-            f"{len(to_update)} user(s) with an oidc_id."
+            f"{len(plan.to_update)} user(s) with an oidc_id."
         )
         self.stdout.write(
             f"{'Would deactivate' if dry_run else 'Deactivated'} "
-            f"{len(to_deactivate)} user(s)."
+            f"{len(plan.to_deactivate)} user(s)."
         )
         if not dry_run:
-            self.apply(to_update, to_deactivate)
+            self.apply(plan.to_update, plan.to_deactivate)
             return
-        # these users cannot log in, a steward fixes the email or creates the account
-        for user in unmatched:
-            self.stdout.write(f"No Keycloak account: {user.email or user.username}")
 
-    def plan(self, accounts, deactivate_unmatched):
+    def plan(self, accounts, deactivate_unmatched) -> "SyncPlan":
         """
-        Return the users to bind to a Keycloak account, the users to deactivate,
-        and the active users that Keycloak does not know.
+        Decide what to do with every DAISY user. A branch that handles the user stops there, the
+        users that fall through are the ones that Keycloak does not know.
         """
-        account_by_email = self.account_by_email(accounts)
-        keycloak_ids = {account.id for account in accounts if account.id}
-
-        # the guardian anonymous user is a system row, it has no Keycloak account
-        users = list(
+        keycloak_accounts_by_email = self.keycloak_accounts_by_email(accounts)
+        keycloak_account_ids = {account.id for account in accounts if account.id}
+        daisy_users = list(
             User.objects.exclude(username=guardian_settings.ANONYMOUS_USER_NAME)
         )
-        owner_by_oidc_id = {user.oidc_id: user for user in users if user.oidc_id}
+        users_by_oidc_id = {user.oidc_id: user for user in daisy_users if user.oidc_id}
+
         users_by_email = defaultdict(list)
-        for user in users:
+        for user in daisy_users:
             users_by_email[normalized_email(user.email)].append(user)
 
-        to_update = []
-        to_deactivate = []
-        unmatched = []
-        for user in users:
+        sync_plan = SyncPlan()
+        for user in daisy_users:
             email = normalized_email(user.email)
-            account = account_by_email.get(email)
+            keycloak_candidates = keycloak_accounts_by_email.get(email, [])
             if user.oidc_id:
-                found = user.oidc_id in keycloak_ids
-            elif account:
-                self.check_account_is_free(
-                    account, users_by_email[email], owner_by_oidc_id
-                )
-                to_update.append((user, account.id))
-                found = True
-            else:
-                found = False
-            if found or not user.is_active:
+                if user.oidc_id in keycloak_account_ids:
+                    continue
+            elif len(keycloak_candidates) > 1:
+                sync_plan.multiple_kc_accounts.append((user, keycloak_candidates))
                 continue
-            unmatched.append(user)
-            # a superuser is the break-glass account, only a steward deactivates it
-            if not user.is_superuser and (user.oidc_id or deactivate_unmatched):
-                to_deactivate.append(user)
-        return to_update, to_deactivate, unmatched
+            elif keycloak_candidates:
+                account = keycloak_candidates[0]
+                self.check_account(account, users_by_email[email], users_by_oidc_id)
+                sync_plan.to_update.append((user, account.id))
+                continue
+
+            sync_plan.no_kc_accounts.append(user)
+            if self.must_deactivate(user, deactivate_unmatched):
+                sync_plan.to_deactivate.append(user)
+        return sync_plan
+
+    @staticmethod
+    def must_deactivate(user, deactivate_unmatched) -> bool:
+        """A superuser is the break-glass account, only a steward deactivates it."""
+        if not user.is_active or user.is_superuser:
+            return False
+        return bool(user.oidc_id) or deactivate_unmatched
 
     @staticmethod
     def apply(to_update, to_deactivate):
@@ -102,32 +121,20 @@ class Command(BaseCommand):
                 user.save(update_fields=["is_active"])
 
     @staticmethod
-    def account_by_email(accounts):
+    def keycloak_accounts_by_email(accounts):
         """
-        Map every email to its single Keycloak account.
-        A data steward has to resolve the emails with more than one account first.
+        Group the Keycloak accounts by email. An account without an email is a system account.
+        An email with more than one account is reported, it must not stop the other users.
         """
-        accounts_by_email = defaultdict(list)
+        grouped = defaultdict(list)
         for account in accounts:
             email = normalized_email(account.email)
             if email:
-                accounts_by_email[email].append(account)
-
-        shared_emails = {
-            email: found for email, found in accounts_by_email.items() if len(found) > 1
-        }
-        if shared_emails:
-            raise CommandError(
-                "Multiple verified Keycloak accounts share an email; no changes made: "
-                + "; ".join(
-                    f"{email}: {', '.join(account.id for account in found)}"
-                    for email, found in sorted(shared_emails.items())
-                )
-            )
-        return {email: found[0] for email, found in accounts_by_email.items()}
+                grouped[email].append(account)
+        return grouped
 
     @staticmethod
-    def check_account_is_free(account, users_with_that_email, owner_by_oidc_id):
+    def check_account(account, users_with_that_email, users_by_oidc_id):
         """
         Refuse to assign an oidc_id when the target is ambiguous or already taken.
         """
@@ -136,9 +143,9 @@ class Command(BaseCommand):
                 f"Keycloak account {account.id} ({account.email}) matches multiple DAISY users "
                 f"({', '.join(str(user.pk) for user in users_with_that_email)}); no changes made"
             )
-        owner = owner_by_oidc_id.get(account.id)
-        if owner:
+        user = users_by_oidc_id.get(account.id)
+        if user:
             raise CommandError(
-                f"Keycloak account {account.id} is already assigned to DAISY user {owner.pk}; "
+                f"Keycloak account {account.id} is already assigned to DAISY user {user.pk}; "
                 "no changes made"
             )

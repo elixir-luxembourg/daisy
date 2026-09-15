@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% load static %}
 
 {% block title %}Users | DAISY{% endblock %}
 
@@ -26,6 +27,7 @@
                     <th scope="col" class="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-middle font-semibold text-primary-900">Name</th>
                     <th scope="col" class="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-middle font-semibold text-primary-900">Email</th>
                     <th scope="col" class="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-middle font-semibold text-primary-900">Source</th>
+                    <th scope="col" class="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-middle font-semibold text-primary-900">OIDC ID</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,15 +37,29 @@
                         <td class="border border-gray-200 px-4 py-2 align-top"><a class="text-primary-700 hover:underline" href="{% url 'user' user.id %}">{{ user.first_name }} {{ user.last_name }}</a></td>
                         <td class="border border-gray-200 px-4 py-2 align-top text-gray-600">{{ user.email }}</td>
                         <td class="border border-gray-200 px-4 py-2 align-top text-gray-600">{{ user.source|default:"" }}</td>
+                        <td class="border border-gray-200 px-4 py-2 align-top text-gray-600">
+                            {% if user.oidc_id %}
+                                <span class="font-mono text-xs">{{ user.oidc_id }}</span>
+                            {% else %}
+                                <button type="button" class="keycloak-bind inline-flex items-center justify-center gap-1.5 rounded-xs border border-primary-200 bg-white px-2 py-1.5 text-sm text-primary-900 hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary"
+                                        data-candidates-url="{% url 'keycloak_candidates' user.id %}"
+                                        data-bind-url="{% url 'keycloak_bind_identity' user.id %}"
+                                        data-email="{{ user.email }}"><i data-lucide="link" class="h-4 w-4" aria-hidden="true"></i><span>Find in Keycloak</span></button>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endif %}
                 {% endfor %}
                 <tr data-filter-empty hidden>
-                    <td colspan="3" class="border border-gray-200 px-4 py-6 text-center text-sm text-gray-500">No users match your filter.</td>
+                    <td colspan="4" class="border border-gray-200 px-4 py-6 text-center text-sm text-gray-500">No users match your filter.</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
 {% endblock %}
+
+{% block js %}
+    <script src="{% static 'js/keycloak-identity-binder.js' %}"></script>
+{% endblock js %}
 

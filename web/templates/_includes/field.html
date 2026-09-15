@@ -7,12 +7,7 @@
     {% elif field.field.widget.input_type == 'radio' %}
         {% include '_includes/radio.html' %}
     {% else %}
-        <div class="mb-1 flex items-center justify-between gap-2">
-            <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-primary-900">{{ field.label }}{% if field.field.required %} <span class="ml-0.5 text-danger-900">*</span>{% endif %}</label>
-            {% if field.field.widget.attrs.keycloak_custodian_lookup %}
-                <button type="button" class="keycloak-custodian-add inline-flex size-8 items-center justify-center rounded-xs border border-primary-200 bg-white text-primary-900 hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary" data-select-id="{{ field.id_for_label }}" data-search-url="{% url 'keycloak_custodian_lookup' %}" data-provision-url="{{ field.field.widget.attrs.keycloak_custodian_provision }}" title="Add local custodian" aria-label="Add local custodian"><i data-lucide="user-plus" class="h-4 w-4"></i></button>
-            {% endif %}
-        </div>
+        <label for="{{ field.id_for_label }}" class="mb-1 block text-sm font-medium text-primary-900">{{ field.label }}{% if field.field.required %} <span class="ml-0.5 text-danger-900">*</span>{% endif %}</label>
         {% if form.is_bound and field.errors %}
             <div class="grid grid-cols-1">
                 {% render_field field class+="block w-full rounded-xs border border-danger-900 bg-white px-3 py-2 shadow-xs text-primary-900 focus:border-danger-900 focus:outline-none focus:ring-1 focus:ring-danger-900 col-start-1 row-start-1 pr-10" aria-invalid="true" aria-describedby=errid %}

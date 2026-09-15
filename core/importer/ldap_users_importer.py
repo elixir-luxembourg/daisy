@@ -5,7 +5,7 @@ from django_auth_ldap.config import LDAPSearch
 
 from core.constants import Groups as GroupConstants
 from core.importer.users_importer import UsersImporter
-from core.models.user import UserSource
+from core.models.user import User, UserSource
 
 
 class LDAPUsersImporter(UsersImporter):
@@ -17,6 +17,27 @@ class LDAPUsersImporter(UsersImporter):
 
     # self.filter = settings.LDAP_USERS_IMPORT_CLASS
     # self.username_attribute = settings.LDAP_USERS_IMPORT_USERNAME_ATTR
+
+    @staticmethod
+    def _is_new_account(username):
+        """
+        Tell whether the import creates this account. get_or_build_user() matches the Django user
+        on the username, case insensitive, so this repeats the same lookup before the import.
+        """
+        if isinstance(username, bytes):
+            username = username.decode()
+        return not User.objects.filter(username__iexact=username.lower()).exists()
+
+    @staticmethod
+    def _deactivate_new_account(user):
+        """
+        A user authenticates with Keycloak, so a new account cannot log in before auth() binds its
+        oidc_id, and it stays inactive until then. populate_user() already stores an unusable
+        password for an account that it creates.
+        An account that exists keeps its is_active and its password: it can be a user that works
+        today, and a re-import must not lock them out.
+        """
+        user.is_active = False
 
     def import_all_users(self):
         ldap_backend = LDAPBackend()
@@ -33,15 +54,26 @@ class LDAPUsersImporter(UsersImporter):
                 search_term = result[1][self.username_attribute][0]
             else:
                 search_term = result[0].split(",")[0].split("=")[1]
+            is_new = self._is_new_account(search_term)
             user = ldap_backend.populate_user(search_term)
+            if user is None:
+                continue
             user.source = UserSource.ACTIVE_DIRECTORY
+            if is_new:
+                self._deactivate_new_account(user)
             user.save()
 
     def import_from_username(self, username, set_pi=False):
         ldap_backend = LDAPBackend()
+        is_new = self._is_new_account(username)
         user = ldap_backend.populate_user(username)
+        if user is None:
+            return
+
+        if is_new:
+            self._deactivate_new_account(user)
+            user.save()
 
         if set_pi:
             g = Group.objects.get(name=GroupConstants.VIP.value)
             user.groups.add(g)
-            # user.save()

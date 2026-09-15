@@ -29,9 +29,7 @@ def test_access_history(client, is_steward, user_vip, user_data_steward):
     another_access.save()
 
     if is_steward:
-        client.login(
-            username=user_data_steward.username, password=user_data_steward.password
-        )
+        client.login(username=user_data_steward.username, password="password")
         res = client.get(reverse("history"), follow=True)
         assert res.status_code == 200
         assert len(res.context["object_list"]) == 3
@@ -43,7 +41,7 @@ def test_access_history(client, is_steward, user_vip, user_data_steward):
         assert len(res.context["object_list"]) == 2
 
     else:
-        client.login(username=user_vip.username, password=user_vip.password)
+        client.login(username=user_vip.username, password="password")
         res = client.get(reverse("history"), follow=True)
         assert res.status_code == 403
 

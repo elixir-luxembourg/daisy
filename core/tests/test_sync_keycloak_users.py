@@ -12,6 +12,7 @@ def keycloak_user(
     oidc_id="keycloak-id",
     email="person@example.org",
     username="person.example",
+    identity_provider=None,
 ):
     return OIDCUser(
         id=oidc_id,
@@ -19,6 +20,7 @@ def keycloak_user(
         first_name="Person",
         last_name="Example",
         username=username,
+        identity_provider=identity_provider,
     )
 
 
@@ -171,22 +173,67 @@ def test_sync_ignores_keycloak_account_without_email():
 
 
 @pytest.mark.django_db
-def test_sync_rejects_duplicate_keycloak_email_without_changes():
+def test_sync_reports_a_shared_keycloak_email_and_binds_nothing_for_it():
     user = UserFactory(email="person@example.org", oidc_id=None)
 
-    with pytest.raises(
-        CommandError,
-        match="Multiple verified Keycloak accounts share an email",
-    ):
-        run_sync(
-            [
-                keycloak_user("first-id"),
-                keycloak_user("second-id"),
-            ]
-        )
+    output = run_sync(
+        [
+            keycloak_user("first-id", identity_provider="University of Luxembourg"),
+            keycloak_user("second-id", identity_provider="ORCID"),
+        ]
+    )
 
     user.refresh_from_db()
     assert user.oidc_id is None
+    assert output.splitlines() == [
+        f"Shared email, not bound: person@example.org (DAISY user {user.pk})",
+        "  first-id  University of Luxembourg",
+        "  second-id  ORCID",
+        "Updated 0 user(s) with an oidc_id.",
+        "Deactivated 0 user(s).",
+    ]
+
+
+@pytest.mark.django_db
+def test_sync_keeps_a_user_with_a_shared_keycloak_email_active():
+    user = UserFactory(email="person@example.org", oidc_id=None, is_active=True)
+
+    output = run_sync(
+        [keycloak_user("first-id"), keycloak_user("second-id")],
+        "--deactivate-unmatched",
+    )
+
+    user.refresh_from_db()
+    assert user.is_active
+    assert "Deactivated 0 user(s)." in output
+
+
+@pytest.mark.django_db
+def test_sync_binds_the_other_users_when_one_email_is_shared():
+    shared = UserFactory(email="shared@example.org", oidc_id=None)
+    single = UserFactory(email="single@example.org", oidc_id=None)
+
+    run_sync(
+        [
+            keycloak_user("first-id", email="shared@example.org"),
+            keycloak_user("second-id", email="shared@example.org"),
+            keycloak_user("single-id", email="single@example.org"),
+        ]
+    )
+
+    shared.refresh_from_db()
+    single.refresh_from_db()
+    assert shared.oidc_id is None
+    assert single.oidc_id == "single-id"
+
+
+@pytest.mark.django_db
+def test_sync_dry_run_lists_an_inactive_unbound_user():
+    UserFactory(email="person@example.org", oidc_id=None, is_active=False)
+
+    output = run_sync([], "--dry-run")
+
+    assert "No Keycloak account: person@example.org" in output.splitlines()
 
 
 @pytest.mark.django_db

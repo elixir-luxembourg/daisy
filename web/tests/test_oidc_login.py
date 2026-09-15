@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 from django.shortcuts import reverse
+from django.test import override_settings
 
 from core.models import User
 from test.factories import ContactFactory, UserFactory
@@ -10,7 +11,7 @@ from test.factories import ContactFactory, UserFactory
 def oidc_token(
     oidc_id="oidc-id",
     email="person@example.org",
-    username="person.example",
+    username="person.example|ul",
 ):
     return {
         "id_token": "id-token",
@@ -50,6 +51,29 @@ def test_auth_adopts_active_unbound_user_by_case_insensitive_email(client):
     assert response.url == reverse("dashboard")
     user.refresh_from_db()
     assert user.oidc_id == "oidc-id"
+
+
+@pytest.mark.django_db
+def test_auth_activates_an_imported_user_when_it_binds_the_oidc_id(client):
+    user = UserFactory(oidc_id=None, email="person@example.org", is_active=False)
+
+    response = authenticate(client, oidc_token())
+
+    assert response.url == reverse("dashboard")
+    user.refresh_from_db()
+    assert user.oidc_id == "oidc-id"
+    assert user.is_active
+
+
+@pytest.mark.django_db
+def test_auth_keeps_a_bound_user_that_keycloak_forgot_inactive(client):
+    user = UserFactory(oidc_id="oidc-id", email="person@example.org", is_active=False)
+
+    response = authenticate(client, oidc_token())
+
+    assert response.url == reverse("login")
+    user.refresh_from_db()
+    assert not user.is_active
 
 
 @pytest.mark.django_db
@@ -101,6 +125,57 @@ def test_auth_removes_known_idp_suffix_from_created_username(client):
 
     assert response.url == reverse("dashboard")
     assert User.objects.get(oidc_id="oidc-id").username == "person.example"
+
+
+@pytest.mark.django_db
+@override_settings(OIDC_ALLOWED_IDENTITY_PROVIDERS=["ul"])
+@pytest.mark.parametrize("username", ["person.example|orcid", "person.example"])
+def test_auth_rejects_a_first_login_from_another_identity_provider(client, username):
+    response = authenticate(client, oidc_token(username=username))
+
+    assert response.url == reverse("login")
+    assert not User.objects.filter(oidc_id="oidc-id").exists()
+
+
+@pytest.mark.django_db
+@override_settings(OIDC_ALLOWED_IDENTITY_PROVIDERS=["ul"])
+def test_auth_does_not_adopt_an_unbound_user_from_another_identity_provider(client):
+    user = UserFactory(oidc_id=None, email="person@example.org")
+
+    response = authenticate(client, oidc_token(username="person.example|orcid"))
+
+    assert response.url == reverse("login")
+    user.refresh_from_db()
+    assert user.oidc_id is None
+
+
+@pytest.mark.django_db
+@override_settings(OIDC_ALLOWED_IDENTITY_PROVIDERS=["ul"])
+def test_auth_logs_in_a_bound_user_from_another_identity_provider(client):
+    user = UserFactory(oidc_id="oidc-id", email="person@example.org")
+
+    response = authenticate(client, oidc_token(username="person.example|orcid"))
+
+    assert response.url == reverse("dashboard")
+    assert client.session["_auth_user_id"] == str(user.id)
+
+
+@pytest.mark.django_db
+@override_settings(OIDC_ALLOWED_IDENTITY_PROVIDERS=["ul", "lih"])
+def test_auth_accepts_every_configured_identity_provider(client):
+    response = authenticate(client, oidc_token(username="person.example|lih"))
+
+    assert response.url == reverse("dashboard")
+    assert User.objects.get(oidc_id="oidc-id").username == "person.example"
+
+
+@pytest.mark.django_db
+@override_settings(OIDC_ALLOWED_IDENTITY_PROVIDERS=[])
+def test_auth_accepts_any_identity_provider_when_none_is_configured(client):
+    response = authenticate(client, oidc_token(username="person.example|orcid"))
+
+    assert response.url == reverse("dashboard")
+    assert User.objects.filter(oidc_id="oidc-id").exists()
 
 
 @pytest.mark.django_db

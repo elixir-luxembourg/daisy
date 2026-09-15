@@ -392,6 +392,15 @@ if OIDC_ENABLED := env.bool("OIDC_ENABLED", default=False):
         }
     }
 
+# Username suffixes of the identity providers that may create or claim a DAISY account on a first
+# login, for example "ul". Every instance has its own providers, see core.constants.
+# An empty list allows every identity provider.
+OIDC_ALLOWED_IDENTITY_PROVIDERS = [
+    suffix.strip().lower()
+    for suffix in env.list("OIDC_ALLOWED_IDENTITY_PROVIDERS", default=[])
+    if suffix.strip()
+]
+
 if DEBUG:
     DEBUG_TOOLBAR_PANELS = [
         "debug_toolbar.panels.versions.VersionsPanel",
@@ -410,14 +419,12 @@ if DEBUG:
 
 GLOBAL_API_KEY = env("GLOBAL_API_KEY")
 
-# if LDAP authentication will be used and user definitions will be bulk imported from LDAP
+# if user definitions will be bulk imported from LDAP. Users authenticate with Keycloak,
+# LDAPBackend is deliberately not in AUTHENTICATION_BACKENDS, the importer calls populate_user()
 if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
     import ldap
     from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 
-    AUTHENTICATION_BACKENDS = [
-        "django_auth_ldap.backend.LDAPBackend",
-    ] + AUTHENTICATION_BACKENDS
     AUTH_LDAP_SERVER_URI = env("AUTH_LDAP_SERVER_URI", default=None)
 
     if env.bool("AUTH_LDAP_IGNORE_CERT_ERRORS", default=False):
@@ -491,9 +498,17 @@ CELERY_BEAT_SCHEDULE = {
         "task": "notification.tasks.send_notifications_for_user_upcoming_events",
         "schedule": crontab(minute=0, hour=7),  # Execute task in the morning
     },
-    "synchronizer-every-day": {
-        "task": "core.tasks.run_synchronizer",
-        "schedule": crontab(minute=0, hour=2),  # Execute task at 2am
+    # run_synchronizer (synchronize_all) is deliberately not scheduled any more. It iterates the
+    # Keycloak accounts, so it cannot see a DAISY user that Keycloak does not know any more, and it
+    # runs with create_contact_if_not_found=True, which creates a Contact for every Keycloak account
+    # that does not match. sync_keycloak_users iterates the DAISY users instead: it binds the
+    # oidc_id, deactivates the users that disappeared from Keycloak, and creates nothing.
+    # synchronize_all stays in the code for resolving an email by oidc_id (REMS).
+    "sync-keycloak-users-every-day": {
+        "task": "core.tasks.sync_keycloak_users",
+        "schedule": crontab(
+            minute=0, hour=2
+        ),  # Execute task at 2am, after import_users
     },
     "update-rems-application-external-id": {
         "task": "core.tasks.update_rems_access_external_id",

@@ -1,7 +1,6 @@
 from django import forms
 from django.shortcuts import get_object_or_404
 from django.forms import ValidationError
-from django.urls import reverse_lazy
 from core.models import Dataset, User, Project
 from core.models.contract import Contract
 
@@ -56,9 +55,6 @@ class DatasetForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs.pop("dataset", None)
         keep_metadata = kwargs.pop("keep_metadata_field", False)
-        enable_keycloak_custodian_lookup = kwargs.pop(
-            "enable_keycloak_custodian_lookup", False
-        )
 
         super().__init__(*args, **kwargs)
         if not keep_metadata:
@@ -67,13 +63,6 @@ class DatasetForm(forms.ModelForm):
         self.fields["local_custodians"].queryset = User.objects.exclude(
             username="AnonymousUser"
         )
-        if enable_keycloak_custodian_lookup:
-            self.fields["local_custodians"].widget.attrs[
-                "keycloak_custodian_lookup"
-            ] = True
-            self.fields["local_custodians"].widget.attrs[
-                "keycloak_custodian_provision"
-            ] = reverse_lazy("keycloak_custodian_provision")
         projects = Project.objects.filter().all()
         project_choices = [(None, "---------------------")]
         project_choices.extend([(p.id, str(p)) for p in projects])

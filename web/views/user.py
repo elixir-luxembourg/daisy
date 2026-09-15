@@ -17,7 +17,7 @@ from django.views.generic import (
 from django.conf import settings
 from authlib.integrations.django_client import OAuth
 
-from core.constants import Permissions
+from core.constants import IdentityProvider, Permissions
 from core.forms.user import UserForm, UserEditFormActiveDirectory, UserEditFormManual
 from core.lcsb.oidc import parse_oidc_username
 from core.models import Contact, User
@@ -187,10 +187,44 @@ def oidc_login(request):
     return oauth.keycloak.authorize_redirect(request, redirect_uri)
 
 
+class IdentityProviderNotAllowed(Exception):
+    pass
+
+
+def _allowed_identity_providers():
+    """
+    The identity providers that may create or claim a DAISY account on a first login.
+    They are configured per instance with OIDC_ALLOWED_IDENTITY_PROVIDERS, as username suffixes.
+    An empty list allows every identity provider.
+    """
+    return [
+        suffix.strip().lower()
+        for suffix in getattr(settings, "OIDC_ALLOWED_IDENTITY_PROVIDERS", [])
+        if suffix.strip()
+    ]
+
+
+def _identity_provider_is_allowed(provider):
+    allowed = _allowed_identity_providers()
+    if not allowed:
+        return True
+    return provider is not None and provider.username_suffix in allowed
+
+
+def _allowed_identity_provider_names():
+    """The display names for the error message, the configured suffix if the provider is unknown."""
+    names = []
+    for suffix in _allowed_identity_providers():
+        provider = IdentityProvider.from_username_suffix(suffix)
+        names.append(provider.display_name if provider else suffix)
+    return ", ".join(names)
+
+
 def _create_or_update_user(user_info, oidc_id, email):
     """
     Return the DAISY user for this Keycloak identity, and create or complete the record if needed.
     Returns None if the identity or the email belongs to somebody else.
+    Raises IdentityProviderNotAllowed on a first login from another identity provider.
     """
     with transaction.atomic():
         user = User.objects.select_for_update().filter(oidc_id=oidc_id).first()
@@ -198,7 +232,12 @@ def _create_or_update_user(user_info, oidc_id, email):
         if user and contact:
             return None
         if user:
+            # already bound, the identity provider of a known account is not checked again
             return user
+
+        username, provider = parse_oidc_username(user_info.get("username"))
+        if not _identity_provider_is_allowed(provider):
+            raise IdentityProviderNotAllowed(provider)
 
         matching_users = list(
             User.objects.select_for_update().filter(email__iexact=email)
@@ -209,12 +248,14 @@ def _create_or_update_user(user_info, oidc_id, email):
             if candidate.oidc_id is not None:
                 return None
             candidate.oidc_id = oidc_id
-            candidate.save(update_fields=["oidc_id"])
+            # an imported user waits inactive for this first login, see LDAPUsersImporter.
+            # a user that Keycloak does not know any more is found by oidc_id above and stays inactive
+            candidate.is_active = True
+            candidate.save(update_fields=["oidc_id", "is_active"])
             return candidate
         if matching_users or matching_contacts.exists() or contact:
             return None
 
-        username, _ = parse_oidc_username(user_info.get("username"))
         user = User(
             username=username or email,
             email=email,
@@ -246,7 +287,15 @@ def auth(request):
         messages.error(request, "Authentication failed.")
         return redirect("login")
 
-    user = _create_or_update_user(user_info, oidc_id, email)
+    try:
+        user = _create_or_update_user(user_info, oidc_id, email)
+    except IdentityProviderNotAllowed:
+        messages.error(
+            request,
+            f"Your first login must use an account from: "
+            f"{_allowed_identity_provider_names()}. Contact a data steward.",
+        )
+        return redirect("login")
     if not user:
         messages.error(
             request,
