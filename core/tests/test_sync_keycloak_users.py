@@ -3,7 +3,9 @@ from unittest.mock import patch
 
 import pytest
 from django.core.management import CommandError, call_command
+from django.test import override_settings
 
+from core.constants import IdentityProvider
 from core.synchronizers import OIDCUser
 from test.factories import UserFactory
 
@@ -12,7 +14,7 @@ def keycloak_user(
     oidc_id="keycloak-id",
     email="person@example.org",
     username="person.example",
-    identity_provider=None,
+    identity_provider=IdentityProvider.UL,
 ):
     return OIDCUser(
         id=oidc_id,
@@ -178,8 +180,8 @@ def test_sync_reports_a_shared_keycloak_email_and_binds_nothing_for_it():
 
     output = run_sync(
         [
-            keycloak_user("first-id", identity_provider="University of Luxembourg"),
-            keycloak_user("second-id", identity_provider="ORCID"),
+            keycloak_user("first-id"),
+            keycloak_user("second-id"),
         ]
     )
 
@@ -188,7 +190,7 @@ def test_sync_reports_a_shared_keycloak_email_and_binds_nothing_for_it():
     assert output.splitlines() == [
         f"Shared email, not bound: person@example.org (DAISY user {user.pk})",
         "  first-id  University of Luxembourg",
-        "  second-id  ORCID",
+        "  second-id  University of Luxembourg",
         "Updated 0 user(s) with an oidc_id.",
         "Deactivated 0 user(s).",
     ]
@@ -262,3 +264,49 @@ def test_sync_rejects_keycloak_identity_already_owned_by_another_user():
 
     unbound_user.refresh_from_db()
     assert unbound_user.oidc_id is None
+
+
+@pytest.mark.django_db
+def test_sync_does_not_bind_an_account_of_another_identity_provider():
+    user = UserFactory(email="person@example.org", oidc_id=None, is_active=True)
+
+    output = run_sync(
+        [keycloak_user(identity_provider=IdentityProvider.ORCID)],
+        "--deactivate-unmatched",
+    )
+
+    user.refresh_from_db()
+    assert user.oidc_id is None
+    # Keycloak knows them, so they are not reported as missing and stay active
+    assert user.is_active
+    assert output.splitlines() == [
+        "Identity provider not allowed, not bound: person@example.org (ORCID)",
+        "Updated 0 user(s) with an oidc_id.",
+        "Deactivated 0 user(s).",
+    ]
+
+
+@pytest.mark.django_db
+def test_sync_binds_the_allowed_account_when_the_email_has_several_providers():
+    user = UserFactory(email="person@example.org", oidc_id=None)
+
+    run_sync(
+        [
+            keycloak_user("orcid-id", identity_provider=IdentityProvider.ORCID),
+            keycloak_user("ul-id", identity_provider=IdentityProvider.UL),
+        ]
+    )
+
+    user.refresh_from_db()
+    assert user.oidc_id == "ul-id"
+
+
+@pytest.mark.django_db
+@override_settings(OIDC_ALLOWED_IDENTITY_PROVIDERS=[])
+def test_sync_binds_any_provider_when_none_is_configured():
+    user = UserFactory(email="person@example.org", oidc_id=None)
+
+    run_sync([keycloak_user(identity_provider=IdentityProvider.ORCID)])
+
+    user.refresh_from_db()
+    assert user.oidc_id == "keycloak-id"

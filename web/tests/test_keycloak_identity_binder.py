@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 from django.shortcuts import reverse
 
+from core.constants import IdentityProvider
 from core.forms.dataset import DatasetForm
 from core.models import Access, User
 from core.synchronizers import OIDCUser
@@ -48,8 +49,8 @@ def bind_url(user):
 def test_candidates_list_every_keycloak_account_of_the_email(mock_backend, client):
     user = UserFactory(email="person@example.org", oidc_id=None)
     mock_backend.return_value.get_users_by_email.return_value = [
-        keycloak_account("first-id", identity_provider="University of Luxembourg"),
-        keycloak_account("second-id", identity_provider="ORCID"),
+        keycloak_account("first-id", identity_provider=IdentityProvider.UL),
+        keycloak_account("second-id", identity_provider=IdentityProvider.ORCID),
     ]
     as_superuser(client)
 

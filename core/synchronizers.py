@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Dict, List, Tuple, Optional, Union, Type
+from core.constants import IdentityProvider
 from core.models import User, Contact, ContactType, Partner
 from core.utils import DaisyLogger
 
@@ -30,7 +31,7 @@ class OIDCUser:
     first_name: str
     last_name: str
     username: str
-    identity_provider: Optional[str] = None
+    identity_provider: Optional[IdentityProvider] = None
     email_verified: Optional[bool] = None
 
 

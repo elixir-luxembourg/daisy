@@ -5,6 +5,7 @@ from django.conf import settings
 import pytest
 import requests_mock
 
+from core.constants import IdentityProvider
 from core.lcsb.oidc import (
     ExternalUserNotVerifiedException,
     KeycloakBackend,
@@ -143,7 +144,7 @@ def test_get_external_user_info_returns_the_verified_account_as_oidc_user():
     assert account.id == "verified-id"
     assert account.email == "testy.mctesty@uni.lu"
     assert account.username == "testy.mctesty"
-    assert account.identity_provider == "University of Luxembourg"
+    assert account.identity_provider is IdentityProvider.UL
 
 
 def test_get_external_user_info_rejects_an_unverified_account():

@@ -42,7 +42,11 @@ def keycloak_candidates(request, pk):
     backend = KeycloakBackend(get_keycloak_config_from_settings())
     results = []
     for account in backend.get_users_by_email(email):
-        provider = account.identity_provider or account.username or "Keycloak"
+        provider = (
+            account.identity_provider.display_name
+            if account.identity_provider
+            else (account.username or "Keycloak")
+        )
         results.append(
             {
                 "id": account.id,

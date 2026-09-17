@@ -17,9 +17,13 @@ from django.views.generic import (
 from django.conf import settings
 from authlib.integrations.django_client import OAuth
 
-from core.constants import IdentityProvider, Permissions
+from core.constants import Permissions
 from core.forms.user import UserForm, UserEditFormActiveDirectory, UserEditFormManual
-from core.lcsb.oidc import parse_oidc_username
+from core.lcsb.oidc import (
+    allowed_identity_provider_names,
+    identity_provider_is_allowed,
+    parse_oidc_username,
+)
 from core.models import Contact, User
 from core.models.project import ProjectUserObjectPermission
 from core.models.dataset import DatasetUserObjectPermission
@@ -191,35 +195,6 @@ class IdentityProviderNotAllowed(Exception):
     pass
 
 
-def _allowed_identity_providers():
-    """
-    The identity providers that may create or claim a DAISY account on a first login.
-    They are configured per instance with OIDC_ALLOWED_IDENTITY_PROVIDERS, as username suffixes.
-    An empty list allows every identity provider.
-    """
-    return [
-        suffix.strip().lower()
-        for suffix in getattr(settings, "OIDC_ALLOWED_IDENTITY_PROVIDERS", [])
-        if suffix.strip()
-    ]
-
-
-def _identity_provider_is_allowed(provider):
-    allowed = _allowed_identity_providers()
-    if not allowed:
-        return True
-    return provider is not None and provider.username_suffix in allowed
-
-
-def _allowed_identity_provider_names():
-    """The display names for the error message, the configured suffix if the provider is unknown."""
-    names = []
-    for suffix in _allowed_identity_providers():
-        provider = IdentityProvider.from_username_suffix(suffix)
-        names.append(provider.display_name if provider else suffix)
-    return ", ".join(names)
-
-
 def _create_or_update_user(user_info, oidc_id, email):
     """
     Return the DAISY user for this Keycloak identity, and create or complete the record if needed.
@@ -236,7 +211,7 @@ def _create_or_update_user(user_info, oidc_id, email):
             return user
 
         username, provider = parse_oidc_username(user_info.get("username"))
-        if not _identity_provider_is_allowed(provider):
+        if not identity_provider_is_allowed(provider):
             raise IdentityProviderNotAllowed(provider)
 
         matching_users = list(
@@ -293,7 +268,7 @@ def auth(request):
         messages.error(
             request,
             f"Your first login must use an account from: "
-            f"{_allowed_identity_provider_names()}. Contact a data steward.",
+            f"{allowed_identity_provider_names()}. Contact a data steward.",
         )
         return redirect("login")
     if not user:

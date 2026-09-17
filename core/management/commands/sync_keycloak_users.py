@@ -1,11 +1,16 @@
 from collections import defaultdict
-from typing import List, NamedTuple, Tuple
+from dataclasses import dataclass, field
+from typing import List, Tuple
 
 from django.core.management import BaseCommand, CommandError
 from django.db import transaction
 from guardian.conf import settings as guardian_settings
 
-from core.lcsb.oidc import KeycloakBackend, get_keycloak_config_from_settings
+from core.lcsb.oidc import (
+    KeycloakBackend,
+    get_keycloak_config_from_settings,
+    identity_provider_is_allowed,
+)
 from core.models.user import User
 from core.synchronizers import OIDCUser
 
@@ -14,11 +19,19 @@ def normalized_email(email):
     return (email or "").strip().lower()
 
 
-class SyncPlan(NamedTuple):
-    to_update: List[Tuple[User, str]] = []  # user:oidc_id
-    to_deactivate: List[User] = []
-    no_kc_accounts: List[User] = []
-    multiple_kc_accounts: List[Tuple[User, List[OIDCUser]]] = []
+@dataclass
+class SyncPlan:
+    # default_factory, a NamedTuple default would share one list between every plan
+    to_update: List[Tuple[User, str]] = field(default_factory=list)  # user:oidc_id
+    to_deactivate: List[User] = field(default_factory=list)
+    no_kc_accounts: List[User] = field(default_factory=list)
+    multiple_kc_accounts: List[Tuple[User, List[OIDCUser]]] = field(
+        default_factory=list
+    )
+    # an account exists, but no identity provider of OIDC_ALLOWED_IDENTITY_PROVIDERS
+    not_allowed_kc_accounts: List[Tuple[User, List[OIDCUser]]] = field(
+        default_factory=list
+    )
 
 
 class Command(BaseCommand):
@@ -48,8 +61,15 @@ class Command(BaseCommand):
                 f"Shared email, not bound: {user.email} (DAISY user {user.pk})"
             )
             for account in keycloak_candidates:
-                provider = account.identity_provider or account.username
-                self.stdout.write(f"  {account.id}  {provider}")
+                self.stdout.write(f"  {account.id}  {self.provider_label(account)}")
+
+        for user, keycloak_candidates in plan.not_allowed_kc_accounts:
+            providers = ", ".join(
+                self.provider_label(account) for account in keycloak_candidates
+            )
+            self.stdout.write(
+                f"Identity provider not allowed, not bound: {user.email} ({providers})"
+            )
 
         for user in plan.no_kc_accounts:
             self.stdout.write(f"No Keycloak account: {user.email or user.username}.")
@@ -86,14 +106,23 @@ class Command(BaseCommand):
         for user in daisy_users:
             email = normalized_email(user.email)
             keycloak_candidates = keycloak_accounts_by_email.get(email, [])
+            # only an allowed identity provider may give an oidc_id, like on a first login
+            allowed_candidates = [
+                account
+                for account in keycloak_candidates
+                if identity_provider_is_allowed(account.identity_provider)
+            ]
             if user.oidc_id:
                 if user.oidc_id in keycloak_account_ids:
                     continue
-            elif len(keycloak_candidates) > 1:
-                sync_plan.multiple_kc_accounts.append((user, keycloak_candidates))
+            elif keycloak_candidates and not allowed_candidates:
+                sync_plan.not_allowed_kc_accounts.append((user, keycloak_candidates))
                 continue
-            elif keycloak_candidates:
-                account = keycloak_candidates[0]
+            elif len(allowed_candidates) > 1:
+                sync_plan.multiple_kc_accounts.append((user, allowed_candidates))
+                continue
+            elif allowed_candidates:
+                account = allowed_candidates[0]
                 self.check_account(account, users_by_email[email], users_by_oidc_id)
                 sync_plan.to_update.append((user, account.id))
                 continue
@@ -102,6 +131,13 @@ class Command(BaseCommand):
             if self.must_deactivate(user, deactivate_unmatched):
                 sync_plan.to_deactivate.append(user)
         return sync_plan
+
+    @staticmethod
+    def provider_label(account: OIDCUser) -> str:
+        """The identity provider of an account, its username when the suffix is unknown."""
+        if account.identity_provider:
+            return account.identity_provider.display_name
+        return account.username
 
     @staticmethod
     def must_deactivate(user, deactivate_unmatched) -> bool:

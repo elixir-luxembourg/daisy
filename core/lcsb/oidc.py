@@ -29,6 +29,31 @@ def parse_oidc_username(
     return (local_username, provider) if provider else (username, None)
 
 
+def allowed_identity_providers() -> List[IdentityProvider]:
+    """
+    The identity providers that may create or claim a DAISY account. Every instance has its own,
+    so they come from OIDC_ALLOWED_IDENTITY_PROVIDERS as username suffixes.
+    An empty setting allows every identity provider.
+    """
+    providers = []
+    for suffix in getattr(settings, "OIDC_ALLOWED_IDENTITY_PROVIDERS", []):
+        provider = IdentityProvider.from_username_suffix(suffix.strip())
+        if provider:
+            providers.append(provider)
+    return providers
+
+
+def identity_provider_is_allowed(provider: Optional[IdentityProvider]) -> bool:
+    """Used on a first login (auth) and before the sync stores an oidc_id."""
+    allowed = allowed_identity_providers()
+    return not allowed or provider in allowed
+
+
+def allowed_identity_provider_names() -> str:
+    """The display names of the allowed providers, for a message to the user."""
+    return ", ".join(provider.display_name for provider in allowed_identity_providers())
+
+
 class KeycloakUserResponse(TypedDict, total=False):
     id: str
     username: str
@@ -156,7 +181,7 @@ class KeycloakBackend(AccountSynchronizationBackend):
             first_name=user.get("firstName"),
             last_name=user.get("lastName"),
             username=username,
-            identity_provider=provider.display_name if provider else None,
+            identity_provider=provider,
         )
 
     def get_external_user_info(self, oidc_id: str) -> OIDCUser:
