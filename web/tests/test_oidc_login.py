@@ -75,14 +75,16 @@ def test_auth_creates_a_new_user_instead_of_adopting_an_inactive_one(client):
 
 
 @pytest.mark.django_db
-def test_auth_keeps_a_bound_user_that_keycloak_forgot_inactive(client):
+def test_auth_activates_an_inactive_user_of_the_subject(client):
     user = UserFactory(oidc_id="oidc-id", email="person@example.org", is_active=False)
 
     response = authenticate(client, oidc_token())
 
-    assert response.url == reverse("login")
+    assert response.url == reverse("dashboard")
+    assert client.session["_auth_user_id"] == str(user.id)
     user.refresh_from_db()
-    assert not user.is_active
+    assert user.is_active
+    assert User.objects.filter(oidc_id="oidc-id").count() == 1
 
 
 @pytest.mark.django_db
@@ -191,13 +193,14 @@ def test_auth_adopts_an_unbound_user_whatever_the_identity_provider(client):
 
 
 @pytest.mark.django_db
-def test_auth_rejects_inactive_user(client):
-    UserFactory(oidc_id="oidc-id", is_active=False)
+def test_auth_keeps_an_inactive_row_of_another_subject_inactive(client):
+    other = UserFactory(oidc_id="other-id", email="other@example.org", is_active=False)
 
     response = authenticate(client, oidc_token())
 
-    assert response.url == reverse("login")
-    assert "_auth_user_id" not in client.session
+    assert response.url == reverse("dashboard")
+    other.refresh_from_db()
+    assert not other.is_active
 
 
 @pytest.mark.django_db

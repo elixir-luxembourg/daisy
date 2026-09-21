@@ -23,7 +23,7 @@ from core.models import User
 from core.models.project import ProjectUserObjectPermission
 from core.models.dataset import DatasetUserObjectPermission
 from core.models.user import UserSource
-from core.synchronizers import get_contact
+from core.synchronizers import activated, get_contact
 from core.utils import DaisyLogger, normalized_email
 from web.views.utils import AjaxViewMixin
 
@@ -219,13 +219,7 @@ def _create_or_update_user(user_info, oidc_id, email):
     with transaction.atomic():
         user = User.objects.select_for_update().filter(oidc_id=oidc_id).first()
         if user:
-            # TODO: requirement - an inactive user of this subject has to get a new account
-            # instead of the refusal. It needs a decision first: oidc_id is unique and immutable
-            # (User.save), so the subject has to move to the new row, and the access records, the
-            # custodianships and the guardian permissions stay on the old one. The permissions
-            # API answers by oidc_id and REMS recognises a granted entitlement by it
-            # (check_existence_automatic), so both would stop seeing the older records
-            return user
+            return activated(user)
 
         contact = get_contact(oidc_id, email)
         if contact:

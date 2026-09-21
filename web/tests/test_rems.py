@@ -82,6 +82,39 @@ def test_rems_handler_user_by_oidc_is_never_updated(
     assert user.email == email
 
 
+def test_rems_handler_activates_an_inactive_user_of_the_subject(
+    client, user_vip, user_data_steward, mocker
+):
+    """The same rule as the login, see test_oidc_login."""
+    email = "john.doe@uni.lu"
+    patch_get_external_user_info(mocker, email=email)
+    resource_id = "TEST-2-5591E3-1"
+    expiration_date = datetime.date.today() + datetime.timedelta(days=1)
+    user = UserFactory(oidc_id="12345", email=email, is_active=False)
+    dataset = DatasetFactory(
+        title="Test", local_custodians=[user_data_steward], elu_accession=resource_id
+    )
+    data = [
+        {
+            "application": 4057,
+            "resource": resource_id,
+            "user": user.oidc_id,
+            "mail": email,
+            "end": expiration_date.strftime("%Y-%m-%d") + "T23:59:59.000Z",
+        }
+    ]
+
+    response = client.post(
+        reverse("api_rems_endpoint"), json.dumps(data), content_type="application/json"
+    )
+
+    assert response.status_code == 200, response.content
+    user.refresh_from_db()
+    assert user.is_active
+    assert User.objects.filter(oidc_id="12345").count() == 1
+    assert Access.objects.filter(dataset=dataset, user=user).count() == 1
+
+
 def test_rems_handler_duplicate(client, user_vip, user_data_steward, mocker):
     email = "john.doe@test.com"
     patch_get_external_user_info(mocker, email=email)

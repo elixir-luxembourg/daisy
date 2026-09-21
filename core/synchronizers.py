@@ -79,6 +79,17 @@ def create_user(account: OIDCUser) -> User:
     return user
 
 
+def activated(user: User) -> User:
+    """
+    The row of a Keycloak subject is the person: a login and an entitlement activate it again
+    instead of creating a second one. A person is blocked in Keycloak now, not with is_active.
+    """
+    if not user.is_active:
+        user.is_active = True
+        user.save(update_fields=["is_active"])
+    return user
+
+
 def get_contact(oidc_id: str, email: Optional[str] = None) -> Optional[Contact]:
     """
     The contact of this Keycloak subject, or of this email. A subject always becomes a user, so
@@ -101,7 +112,7 @@ def user_for_oidc_id(
     """
     user = User.objects.filter(oidc_id=oidc_id).first()
     if user:
-        return user
+        return activated(user)
 
     contact = get_contact(oidc_id, email)
     if contact:

@@ -204,11 +204,18 @@ The role check reads the `resource_access` claim of the OIDC client, so the Keyc
 to add its client roles to the ID token. A person without the role gets "Access not granted" and
 no DAISY user is created for them.
 
+A login and a REMS entitlement activate the DAISY user of the Keycloak account again when it is
+inactive, so that its access records, custodianships and permissions stay with the person.
+`is_active` is therefore not a way to block somebody: disable their Keycloak account, or take the
+`OIDC_REQUIRED_ROLE` role away from them.
+
 ##### LDAP
 
 LDAP is the `import_users` command only. It never authenticates anybody: Keycloak does, see OIDC
-above. The accounts that the import creates are inactive until an administrator binds their
-Keycloak identity in the `OIDC ID` column of `/definitions/users`.
+above. The accounts that the import creates are active and hold no `oidc_id`: the first login
+binds the account of that email, or an administrator binds it in the `OIDC ID` column of
+`/definitions/users`. Run `match_keycloak_users` before `import_keycloak_users`, otherwise the
+Keycloak import does not recognise the imported rows and creates a second user for each person.
 
 | Key                      | Description                                   | Expected values | Default value           |
 | ------------------------ | --------------------------------------------- | --------------- | ----------------------- |
