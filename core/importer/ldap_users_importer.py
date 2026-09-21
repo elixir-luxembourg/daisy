@@ -8,13 +8,6 @@ from core.importer.users_importer import UsersImporter
 from core.models.user import User, UserSource
 
 
-class ImportLDAPBackend(LDAPBackend):
-    default_settings = {
-        "NO_NEW_USERS": False,
-        "USER_QUERY_FIELD": None,
-    }
-
-
 class LDAPUsersImporter(UsersImporter):
     def __init__(self, class_filter, username_attribute, search_dn, simple_search=True):
         self.search_dn = search_dn
@@ -47,7 +40,7 @@ class LDAPUsersImporter(UsersImporter):
         user.is_active = False
 
     def import_all_users(self):
-        ldap_backend = ImportLDAPBackend()
+        ldap_backend = LDAPBackend()
         ldap_user = _LDAPUser(ldap_backend, username="")
         ldap_search = LDAPSearch(
             self.search_dn,
@@ -72,7 +65,7 @@ class LDAPUsersImporter(UsersImporter):
             user.save()
 
     def import_from_username(self, username, set_pi=False):
-        ldap_backend = ImportLDAPBackend()
+        ldap_backend = LDAPBackend()
         django_username = ldap_backend.ldap_to_django_username(username)
         user = ldap_backend.populate_user(username)
         if user is None:
