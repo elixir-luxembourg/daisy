@@ -61,7 +61,8 @@ class LDAPUsersImporter(UsersImporter):
                 search_term = result[1][self.username_attribute][0]
             else:
                 search_term = result[0].split(",")[0].split("=")[1]
-            is_new = self._is_new_account(search_term)
+            django_username = ldap_backend.ldap_to_django_username(search_term)
+            is_new = self._is_new_account(django_username)
             user = ldap_backend.populate_user(search_term)
             if user is None:
                 continue
@@ -72,12 +73,13 @@ class LDAPUsersImporter(UsersImporter):
 
     def import_from_username(self, username, set_pi=False):
         ldap_backend = ImportLDAPBackend()
+        django_username = ldap_backend.ldap_to_django_username(username)
         user = ldap_backend.populate_user(username)
         if user is None:
             return None
 
         user.source = UserSource.ACTIVE_DIRECTORY
-        if self._is_new_account(username):
+        if self._is_new_account(django_username):
             self._deactivate_new_account(user)
         user.save()
 
