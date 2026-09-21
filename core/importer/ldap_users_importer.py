@@ -9,10 +9,10 @@ from core.models.user import User, UserSource
 
 
 class ImportLDAPBackend(LDAPBackend):
-    def __init__(self):
-        super().__init__()
-        self.settings.NO_NEW_USERS = False
-        self.settings.USER_QUERY_FIELD = None
+    default_settings = {
+        "NO_NEW_USERS": False,
+        "USER_QUERY_FIELD": None,
+    }
 
 
 class LDAPUsersImporter(UsersImporter):
@@ -82,7 +82,7 @@ class LDAPUsersImporter(UsersImporter):
         user.save()
 
         if set_pi:
-            g = Group.objects.get(name=GroupConstants.VIP.value)
+            g, _ = Group.objects.get_or_create(name=GroupConstants.VIP.value)
             user.groups.add(g)
 
         return user
