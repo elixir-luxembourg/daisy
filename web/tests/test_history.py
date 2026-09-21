@@ -10,13 +10,13 @@ log = DaisyLogger(__name__)
 
 
 @pytest.mark.parametrize("is_steward", [True, False])
-def test_access_history(client, is_steward, user_vip, user_data_steward):
+def test_access_history(client, is_steward, user_custodian, user_data_steward):
     new_dataset = Dataset(title="First test dataset")
     new_dataset.save()
-    new_dataset.local_custodians.set([user_vip])
+    new_dataset.local_custodians.set([user_custodian])
     new_dataset.save()
 
-    new_access = Access(dataset=new_dataset, created_by=user_vip)
+    new_access = Access(dataset=new_dataset, created_by=user_custodian)
     new_access.grant_expires_on = datetime.date.today() + datetime.timedelta(days=1)
     new_access.save()
 
@@ -41,7 +41,7 @@ def test_access_history(client, is_steward, user_vip, user_data_steward):
         assert len(res.context["object_list"]) == 2
 
     else:
-        client.login(username=user_vip.username, password="password")
+        client.login(username=user_custodian.username, password="password")
         res = client.get(reverse("history"), follow=True)
         assert res.status_code == 403
 

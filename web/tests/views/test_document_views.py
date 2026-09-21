@@ -4,7 +4,6 @@ from django.shortcuts import reverse
 from django.contrib.contenttypes.models import ContentType
 
 from test.factories import (
-    VIPGroup,
     DataStewardGroup,
     LegalGroup,
     AuditorGroup,
@@ -72,32 +71,8 @@ def check_document_view_permissions(
         method,
     )
 
-    if user.is_part_of(VIPGroup()):
-        document.content_object.local_custodians.set([user])
-        assert all(
-            [
-                user.has_permission_on_object(
-                    [f"core.{action.value}_{parent_object.__class__.__name__.lower()}"],
-                    document,
-                )
-                for action in actions_list
-            ]
-        )
-        check_response_status(
-            url,
-            user,
-            [
-                f"core.{action.value}_{parent_object.__class__.__name__.lower()}"
-                for action in actions_list
-            ],
-            document,
-            method,
-        )
 
-
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "doc_factory",
     [DatasetDocumentFactory, ContractDocumentFactory, ProjectDocumentFactory],

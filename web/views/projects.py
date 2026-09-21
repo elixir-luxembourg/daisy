@@ -14,7 +14,7 @@ from django.views.generic import (
     DeleteView,
 )
 
-from core.constants import Permissions, Groups
+from core.constants import Permissions
 from core.forms.contract import ContractForm
 from core.forms.dataset import DatasetForm
 from core.forms.project import ProjectForm, DatasetSelection
@@ -74,17 +74,7 @@ class ProjectCreateView(CreateView):
     template_name = "projects/project_form.html"
 
     def get_form_kwargs(self):
-        # get user from kwargs and check if user is pi or not
-        # automatically add him to the responsible people if pi
         kwargs = super().get_form_kwargs()
-        if self.request.user.is_part_of(Groups.VIP) and "data" in kwargs:
-            data = kwargs["data"].copy()
-            if (
-                "local_custodians" not in data
-                or str(self.request.user.pk) not in data["local_custodians"]
-            ):
-                data.update({"local_custodians": str(self.request.user.pk)})
-            kwargs.update({"data": data})
         if self.request.user.can_edit_metadata():
             kwargs.update({"keep_metadata_field": True})
         return kwargs

@@ -9,15 +9,14 @@ from test import factories
 
 @pytest.mark.django_db
 def test_import_projects(celery_session_worker, contact_types, partners):
-    VIP = factories.VIPGroup()
 
     # every local contact of the file needs a user, the import creates no placeholder
-    factories.UserFactory.create(first_name="Joanne", last_name="Swift", groups=[VIP])
-    factories.UserFactory.create(first_name="Rebecca", last_name="Kafe", groups=[VIP])
+    factories.UserFactory.create(first_name="Joanne", last_name="Swift")
+    factories.UserFactory.create(first_name="Rebecca", last_name="Kafe")
     factories.UserFactory.create(first_name="Embury", last_name="Bask")
 
-    factories.UserFactory.create(first_name="Colman", last_name="Level", groups=[VIP])
-    factories.UserFactory.create(first_name="Nic", last_name="Purple", groups=[VIP])
+    factories.UserFactory.create(first_name="Colman", last_name="Level")
+    factories.UserFactory.create(first_name="Nic", last_name="Purple")
     factories.UserFactory.create(first_name="James", last_name="BK")
 
     projects_json = os.path.join(

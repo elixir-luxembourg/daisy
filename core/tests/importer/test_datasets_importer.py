@@ -23,26 +23,25 @@ def test_import_datasets(
     gdpr_roles,
     can_defer_constraint_checks,
 ):
-    VIP = factories.VIPGroup()
 
     factories.UserFactory.create(
-        first_name="Igor", last_name="Teal", groups=[VIP], email="user@uni.edu"
+        first_name="Igor", last_name="Teal", email="user@uni.edu"
     )
     factories.UserFactory.create(
-        first_name="Joanne", last_name="Swift", groups=[VIP], email="user@uni.edu"
+        first_name="Joanne", last_name="Swift", email="user@uni.edu"
     )
     # every local contact of the file needs a user, the import creates no placeholder
     factories.UserFactory.create(
-        first_name="Rene", last_name="Sahoo", groups=[VIP], email="user@uni.edu"
+        first_name="Rene", last_name="Sahoo", email="user@uni.edu"
     )
     factories.UserFactory.create(
-        first_name="Paul", last_name="Mauve", groups=[VIP], email="user@uni.edu"
+        first_name="Paul", last_name="Mauve", email="user@uni.edu"
     )
     factories.UserFactory.create(
-        first_name="Rob", last_name="Blue", groups=[VIP], email="user@uni.edu"
+        first_name="Rob", last_name="Blue", email="user@uni.edu"
     )
     factories.UserFactory.create(
-        first_name="Ali", last_name="Gator", groups=[VIP], email="user@uni.edu"
+        first_name="Ali", last_name="Gator", email="user@uni.edu"
     )
 
     data_file = os.path.join(

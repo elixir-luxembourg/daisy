@@ -13,7 +13,6 @@ from django.urls import reverse
 from django.utils.module_loading import import_string
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
-from core import constants
 from core.utils import DaisyLogger
 from core.models import DataDeclaration
 from core.permissions.mapping import PERMISSION_MAPPING
@@ -191,11 +190,7 @@ class Dataset(CoreTrackedModel, NotifyMixin):
                     "first_name": lc.first_name,
                     "last_name": lc.last_name,
                     "email": lc.email,
-                    "role": (
-                        "Principal_Investigator"
-                        if lc.is_part_of(constants.Groups.VIP.name)
-                        else "Researcher"
-                    ),
+                    "role": "Researcher",
                     "affiliations": [HomeOrganisation().name],
                 }
             )

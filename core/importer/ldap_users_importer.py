@@ -1,9 +1,7 @@
 import ldap
-from django.contrib.auth.models import Group
 from django_auth_ldap.backend import LDAPBackend, _LDAPUser
 from django_auth_ldap.config import LDAPSearch
 
-from core.constants import Groups as GroupConstants
 from core.importer.users_importer import UsersImporter
 from core.models.user import UserSource
 
@@ -39,7 +37,7 @@ class LDAPUsersImporter(UsersImporter):
             user.source = UserSource.ACTIVE_DIRECTORY
             user.save()
 
-    def import_from_username(self, username, set_pi=False):
+    def import_from_username(self, username):
         ldap_backend = LDAPBackend()
         user = ldap_backend.populate_user(username)
         if user is None:
@@ -47,9 +45,4 @@ class LDAPUsersImporter(UsersImporter):
 
         user.source = UserSource.ACTIVE_DIRECTORY
         user.save()
-
-        if set_pi:
-            g = Group.objects.get(name=GroupConstants.VIP.value)
-            user.groups.add(g)
-
         return user

@@ -3,7 +3,6 @@ from django.shortcuts import reverse
 from typing import Optional
 
 from test.factories import (
-    VIPGroup,
     DataStewardGroup,
     LegalGroup,
     AuditorGroup,
@@ -34,9 +33,7 @@ def check_partner_views_permissions(
         check_response_status(url, user, [], partner)
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "url_name, action",
     [
@@ -64,9 +61,7 @@ def test_partners_views_permissions(permissions, group, url_name, action):
     check_partner_views_permissions(url, user, action, partner)
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "url_name", ["partner_publish", "partner_unpublish", "partners_export"]
 )

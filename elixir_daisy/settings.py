@@ -504,3 +504,8 @@ CELERY_BEAT_SCHEDULE = {
 if ENVIRONMENT == "test":
     if password_hashers := env.list("PASSWORD_HASHERS", default=None):
         PASSWORD_HASHERS = password_hashers
+
+    # For test environments, use template0 to avoid PostgreSQL collation version issues
+    DATABASES["default"]["TEST"] = {
+        "TEMPLATE": "template0",
+    }

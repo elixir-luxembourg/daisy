@@ -7,9 +7,7 @@ from test.factories import *
 
 # test checker
 @pytest.mark.parametrize("factory", [ContractFactory, DatasetFactory, ProjectFactory])
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 def test_entity_default_permissions(permissions, factory, group):
     """
     Tests whether a user from a given group has the correct permissions on different Entities
@@ -26,45 +24,7 @@ def test_entity_default_permissions(permissions, factory, group):
     entity = factory()
     entity.save()
 
-    if user.is_part_of(VIPGroup()):
-        assert not user.has_permission_on_object(
-            f"core.{constants.Permissions.EDIT.value}_{entity.__class__.__name__.lower()}",
-            entity,
-        )
-        assert not user.has_permission_on_object(
-            f"core.{constants.Permissions.PROTECTED.value}_{entity.__class__.__name__.lower()}",
-            entity,
-        )
-        assert not user.has_permission_on_object(
-            f"core.{constants.Permissions.ADMIN.value}_{entity.__class__.__name__.lower()}",
-            entity,
-        )
-        assert not user.has_permission_on_object(
-            f"core.{constants.Permissions.DELETE.value}_{entity.__class__.__name__.lower()}",
-            entity,
-        )
-
-        entity.local_custodians.set([user])
-        entity.save()
-        # assert user.has_permission_on_object(constants.Permissions.VIEW, entity)
-        assert user.has_permission_on_object(
-            f"core.{constants.Permissions.EDIT.value}_{entity.__class__.__name__.lower()}",
-            entity,
-        )
-        assert user.has_permission_on_object(
-            f"core.{constants.Permissions.PROTECTED.value}_{entity.__class__.__name__.lower()}",
-            entity,
-        )
-        assert user.has_permission_on_object(
-            f"core.{constants.Permissions.ADMIN.value}_{entity.__class__.__name__.lower()}",
-            entity,
-        )
-        assert user.has_permission_on_object(
-            f"core.{constants.Permissions.DELETE.value}_{entity.__class__.__name__.lower()}",
-            entity,
-        )
-
-    elif user.is_part_of(AuditorGroup()):
+    if user.is_part_of(AuditorGroup()):
         assert user.has_permission_on_object(
             f"core.{constants.Permissions.PROTECTED.value}_{entity.__class__.__name__.lower()}",
             entity,
@@ -139,9 +99,7 @@ def test_entity_default_permissions(permissions, factory, group):
 
 
 # test user
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "klass_name",
     [
@@ -223,27 +181,7 @@ def test_global_document_perms(group, expected, Factory, attribute, permissions)
     )
 
 
-@pytest.mark.parametrize("attribute", ["project", "dataset", "contract"])
-@pytest.mark.parametrize("perm", [p for p in constants.Permissions])
-@pytest.mark.skip("VIP Group does not exist anymore for permissions")
-def test_vip_membership_perms(perm, attribute, permissions):
-    """
-    A user added as local custodian should have all permissions for all objects in the membership.
-    """
-    group = Group.objects.get(name=constants.Groups.VIP.value)
-    contract = ContractFactory()
-    dataset = DatasetFactory.create(project=contract.project)
-    entities = {"project": contract.project, "contract": contract, "dataset": dataset}
-    user = UserFactory.create(groups=[group])
-    user.assign_permissions_to_project(contract.project)
-    assert user.has_permission_on_object(
-        f"core.{perm.value}_{attribute}", entities.get(attribute)
-    )
-
-
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 def test_contract_entity_permissions(permissions, group):
     """
     Tests user permissions on Contract and related chidren entities based on User status
@@ -306,9 +244,7 @@ def test_contract_entity_permissions(permissions, group):
         )
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "entity_factory",
     [
@@ -360,9 +296,7 @@ def test_dataset_entity_permissions(permissions, group, entity_factory):
         )
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize("entity_factory", [ProjectDocumentFactory])
 def test_project_entity_permissions(permissions, group, entity_factory):
     """

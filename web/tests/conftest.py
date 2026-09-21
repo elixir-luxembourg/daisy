@@ -11,8 +11,8 @@ def client_user_normal(client, user_normal):
 
 
 @pytest.fixture
-def client_user_vip(client, user_vip):
-    client.login(username=user_vip.username, password=PASSWORD)
+def client_user_custodian(client, user_custodian):
+    client.login(username=user_custodian.username, password=PASSWORD)
     return client
 
 

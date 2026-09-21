@@ -11,7 +11,7 @@ from guardian.shortcuts import (
     remove_perm,
 )
 
-from core.constants import Permissions, Groups
+from core.constants import Permissions
 from core.models import Dataset, Project
 from core.forms import UserPermFormSet
 from core.permissions.checker import AutoChecker
@@ -48,13 +48,11 @@ def index(request, selection, pk):
     # remove request user and local custodians from it and treat them separately
     initial = []
     local_custodians = obj.local_custodians.all()
-    local_vips = [u for u in local_custodians if u.is_part_of(Groups.VIP.value)]
     context = {
         "object": obj,
         "selection": selection,
         "edit_url": f"{selection}_edit",
         "local_custodians": local_custodians,
-        "local_vips": local_vips,
         "pj_perms_const": list(
             map(lambda x: f"{x}_project", [p.value for p in Permissions])
         ),
@@ -110,11 +108,8 @@ def index(request, selection, pk):
                     remove_perm(f"{perm.value}_{selection}", user, obj)
                 continue
 
-            if user in local_vips:
-                # don't do anything for local vips.
-                continue
-            elif user in local_custodians:
-                # local custodians that are not VIP can be assigned or removed an ADMIN or PROTECTED perm. All other must stay the same
+            if user in local_custodians:
+                # a local custodian can be assigned or removed an ADMIN or PROTECTED perm. All other must stay the same
                 for perm, value in data.items():
                     if value or data.get(f"{Permissions.ADMIN.value}_{selection}"):
                         assign_perm(perm, user, obj)

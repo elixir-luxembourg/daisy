@@ -40,7 +40,7 @@ def patch_get_external_user_info(
 
 
 def test_rems_handler_user_by_oidc_is_never_updated(
-    client, user_vip, user_data_steward, mocker
+    client, user_custodian, user_data_steward, mocker
 ):
     """The subject names the user, and nothing updates a stored row."""
     email = "john.doe@uni.lu"
@@ -83,7 +83,7 @@ def test_rems_handler_user_by_oidc_is_never_updated(
 
 
 def test_rems_handler_activates_an_inactive_user_of_the_subject(
-    client, user_vip, user_data_steward, mocker
+    client, user_custodian, user_data_steward, mocker
 ):
     """The same rule as the login, see test_oidc_login."""
     email = "john.doe@uni.lu"
@@ -115,7 +115,7 @@ def test_rems_handler_activates_an_inactive_user_of_the_subject(
     assert Access.objects.filter(dataset=dataset, user=user).count() == 1
 
 
-def test_rems_handler_duplicate(client, user_vip, user_data_steward, mocker):
+def test_rems_handler_duplicate(client, user_custodian, user_data_steward, mocker):
     email = "john.doe@test.com"
     patch_get_external_user_info(mocker, email=email)
     resource_id = "TEST-2-5591E3-1"
@@ -151,7 +151,7 @@ def test_rems_handler_duplicate(client, user_vip, user_data_steward, mocker):
     assert len(accesses) == 1
 
 
-def test_rems_handler_no_expiration(client, user_vip, user_data_steward, mocker):
+def test_rems_handler_no_expiration(client, user_custodian, user_data_steward, mocker):
     resource_id = "TEST-2-5591E3-1"
     email = "john.doe@test.com"
     patch_get_external_user_info(mocker, email=email)
@@ -186,7 +186,9 @@ def test_rems_handler_no_expiration(client, user_vip, user_data_steward, mocker)
     assert len(accesses) == 1
 
 
-def test_rems_handler_different_expiration(client, user_vip, user_data_steward, mocker):
+def test_rems_handler_different_expiration(
+    client, user_custodian, user_data_steward, mocker
+):
     resource_id = "TEST-2-5591E3-1"
     expiration_date_1 = datetime.date.today() + datetime.timedelta(days=1)
     expiration_date_2 = datetime.date.today() + datetime.timedelta(days=2)
@@ -224,7 +226,7 @@ def test_rems_handler_different_expiration(client, user_vip, user_data_steward, 
     assert len(accesses) == 2
 
 
-def test_rems_handler_user_not_found(client, user_vip, user_data_steward, mocker):
+def test_rems_handler_user_not_found(client, user_custodian, user_data_steward, mocker):
     email = "john.doe@test.com"
     patch_get_external_user_info(mocker, expected_oidc_id="not_found")
     resource_id = "TEST-2-5591E3-1"
@@ -256,7 +258,7 @@ def test_rems_handler_user_not_found(client, user_vip, user_data_steward, mocker
 
 
 def test_rems_handler_creates_a_user_for_a_subject_that_a_contact_holds(
-    client, user_vip, user_data_steward, mocker
+    client, user_custodian, user_data_steward, mocker
 ):
     """A subject becomes a user, the contact keeps its access records until a migration."""
     email = "john.doe@test.com"
@@ -291,7 +293,7 @@ def test_rems_handler_creates_a_user_for_a_subject_that_a_contact_holds(
 
 
 def test_rems_handler_binds_an_unbound_user_of_that_email(
-    client, user_vip, user_data_steward, mocker
+    client, user_custodian, user_data_steward, mocker
 ):
     """One active user waits unbound for that email: the entitlement binds it, nothing else."""
     email = "john.doe@test.com"
@@ -332,7 +334,7 @@ def test_rems_handler_binds_an_unbound_user_of_that_email(
 
 
 def test_rems_handler_creates_a_user_when_the_email_is_ambiguous(
-    client, user_vip, user_data_steward, mocker
+    client, user_custodian, user_data_steward, mocker
 ):
     """
     Nothing says which of the two rows is the person, so the subject gets a user of its own and
@@ -389,7 +391,7 @@ def test_rems_handler_creates_a_user_when_the_email_is_ambiguous(
 
 
 def test_rems_handler_ignores_a_contact_with_the_same_email(
-    client, user_vip, user_data_steward, mocker
+    client, user_custodian, user_data_steward, mocker
 ):
     """
     A contact is a record, not an identity: the subject gets a user, and the contact of that
@@ -443,7 +445,7 @@ def test_rems_handler_ignores_a_contact_with_the_same_email(
 
 
 def test_rems_handler_creates_a_user_for_an_unknown_subject(
-    client, user_vip, user_data_steward, mocker
+    client, user_custodian, user_data_steward, mocker
 ):
     """Keycloak knows every REMS grantee, so a subject DAISY does not hold becomes a user."""
     faker = Faker()
@@ -492,7 +494,7 @@ def test_rems_handler_creates_a_user_for_an_unknown_subject(
 
 
 def test_rems_handler_uses_the_user_when_a_contact_holds_the_subject_too(
-    client, user_vip, user_data_steward, mocker
+    client, user_custodian, user_data_steward, mocker
 ):
     """The user of the subject answers, the contact of the same subject is only reported."""
     email = "john.doe@test.com"

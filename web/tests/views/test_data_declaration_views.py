@@ -3,7 +3,6 @@ from typing import Union
 from django.shortcuts import reverse
 
 from test.factories import (
-    VIPGroup,
     DataStewardGroup,
     LegalGroup,
     AuditorGroup,
@@ -38,19 +37,9 @@ def check_data_declaration_views_permissions(
         assert not user.has_permission_on_object(
             f"core.{Permissions.EDIT.value}_dataset", obj
         )
-        if user.is_part_of(VIPGroup()):
-            parent_dataset.local_custodians.set([user])
-            assert user.has_permission_on_object(
-                f"core.{Permissions.EDIT.value}_dataset", obj
-            )
-            check_response_status(
-                url, user, [f"core.{Permissions.EDIT.value}_dataset"], obj
-            )
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "url_name",
     [

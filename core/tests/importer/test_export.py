@@ -29,11 +29,8 @@ def test_export_projects(
     storage_resources,
     can_defer_constraint_checks,
 ):
-    VIP = factories.VIPGroup()
 
-    rebecca = factories.UserFactory.create(
-        first_name="Rebecca", last_name="Kafe", groups=[VIP]
-    )
+    rebecca = factories.UserFactory.create(first_name="Rebecca", last_name="Kafe")
     embury = factories.UserFactory.create(first_name="Embury", last_name="Bask")
 
     a_project = factories.ProjectFactory.create(
@@ -98,10 +95,7 @@ def test_export_datasets(
     storage_resources,
     can_defer_constraint_checks,
 ):
-    VIP = factories.VIPGroup()
-    rebecca = factories.UserFactory.create(
-        first_name="Rebecca", last_name="Kafe", groups=[VIP]
-    )
+    rebecca = factories.UserFactory.create(first_name="Rebecca", last_name="Kafe")
     embury = factories.UserFactory.create(first_name="Embury", last_name="Bask")
 
     a_project = factories.ProjectFactory.create(

@@ -11,7 +11,6 @@ from test.factories import (
     ContactFactory,
     DatasetFactory,
     UserFactory,
-    VIPGroup,
 )
 
 
@@ -222,13 +221,13 @@ def test_binding_requires_a_superuser(client):
 
 
 def test_dataset_form_saves_selected_user_as_local_custodian():
-    vip = UserFactory(groups=[VIPGroup()])
+    custodian = UserFactory()
     selected_user = UserFactory()
-    dataset = DatasetFactory(local_custodians=[vip])
+    dataset = DatasetFactory(local_custodians=[custodian])
     form = DatasetForm(
         data={
             "title": dataset.title,
-            "local_custodians": [vip.id, selected_user.id],
+            "local_custodians": [custodian.id, selected_user.id],
             "project": dataset.project.id,
             "comments": dataset.comments or "",
             "other_external_id": dataset.other_external_id or "",

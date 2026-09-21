@@ -14,7 +14,6 @@ class Permissions(Enum):
 
 class Groups(Enum):
     DATA_STEWARD = "daisy-data-steward"
-    VIP = "daisy-vip"
     AUDITOR = "daisy-auditors"
     LEGAL = "daisy-legal"
 

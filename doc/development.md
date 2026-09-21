@@ -30,6 +30,9 @@ black .
 ./manage.py import_users
 ```
 
+It creates active users without an `oidc_id`. Match them with Keycloak next, before
+`import_keycloak_users` creates a second user for each of them.
+
 ## Match the users with Keycloak, once after the migration
 
 Preview the match first:
