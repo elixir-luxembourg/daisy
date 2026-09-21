@@ -198,6 +198,11 @@ Defaults work for development; **production requires explicit configuration**.
 | `OIDC_CLIENT_ID`      | OIDC client ID (required if enabled)          | str             | Required when enabled   |
 | `OIDC_CLIENT_SECRET`  | OIDC client secret (required if enabled)      | str             | Required when enabled   |
 | `OIDC_METADATA_URL`   | OIDC metadata URL (required if enabled)       | str             | Required when enabled   |
+| `OIDC_REQUIRED_ROLE`  | Client role a login requires, empty allows every account | str  | `""` (no check)         |
+
+The role check reads the `resource_access` claim of the OIDC client, so the Keycloak client has
+to add its client roles to the ID token. A person without the role gets "Access not granted" and
+no DAISY user is created for them.
 
 ##### LDAP
 
