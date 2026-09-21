@@ -129,7 +129,10 @@ def celery_config():
 # thoses users must correspond to those created in the LDAP tree
 @pytest.fixture
 def user_normal(django_user_model):
-    u = django_user_model.objects.create(username="normal.user")
+    u = django_user_model.objects.create(
+        username="normal.user",
+        email="normal.user@uni.lu",
+    )
     u.set_password("password")
     u.save()
     return u
@@ -137,7 +140,10 @@ def user_normal(django_user_model):
 
 @pytest.fixture
 def user_vip(django_user_model):
-    u = django_user_model.objects.create(username="pi.number1")
+    u = django_user_model.objects.create(
+        username="pi.number1",
+        email="pi.number1@uni.lu",
+    )
     u.set_password("password")
     u.save()
     g, _ = Group.objects.get_or_create(name=GroupConstants.VIP.value)
@@ -147,7 +153,10 @@ def user_vip(django_user_model):
 
 @pytest.fixture
 def user_data_steward(django_user_model):
-    u = django_user_model.objects.create(username="data.steward")
+    u = django_user_model.objects.create(
+        username="data.steward",
+        email="data.steward@uni.lu",
+    )
     u.set_password("password")
     u.save()
     g, _ = Group.objects.get_or_create(name=GroupConstants.DATA_STEWARD.value)

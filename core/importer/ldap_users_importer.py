@@ -1,9 +1,18 @@
 import ldap
+from django.contrib.auth.models import Group
 from django_auth_ldap.backend import LDAPBackend, _LDAPUser
 from django_auth_ldap.config import LDAPSearch
 
+from core.constants import Groups as GroupConstants
 from core.importer.users_importer import UsersImporter
 from core.models.user import User, UserSource
+
+
+class ImportLDAPBackend(LDAPBackend):
+    def __init__(self):
+        super().__init__()
+        self.settings.NO_NEW_USERS = False
+        self.settings.USER_QUERY_FIELD = None
 
 
 class LDAPUsersImporter(UsersImporter):
@@ -38,7 +47,7 @@ class LDAPUsersImporter(UsersImporter):
         user.is_active = False
 
     def import_all_users(self):
-        ldap_backend = LDAPBackend()
+        ldap_backend = ImportLDAPBackend()
         ldap_user = _LDAPUser(ldap_backend, username="")
         ldap_search = LDAPSearch(
             self.search_dn,
@@ -60,3 +69,20 @@ class LDAPUsersImporter(UsersImporter):
             if is_new:
                 self._deactivate_new_account(user)
             user.save()
+
+    def import_from_username(self, username, set_pi=False):
+        ldap_backend = ImportLDAPBackend()
+        user = ldap_backend.populate_user(username)
+        if user is None:
+            return None
+
+        user.source = UserSource.ACTIVE_DIRECTORY
+        if self._is_new_account(username):
+            self._deactivate_new_account(user)
+        user.save()
+
+        if set_pi:
+            g = Group.objects.get(name=GroupConstants.VIP.value)
+            user.groups.add(g)
+
+        return user
