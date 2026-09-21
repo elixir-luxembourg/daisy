@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required, login_not_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import LoginView
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import (
@@ -18,17 +18,16 @@ from django.conf import settings
 from authlib.integrations.django_client import OAuth
 
 from core.constants import Permissions
-from core.forms.user import UserForm, UserEditFormActiveDirectory, UserEditFormManual
-from core.lcsb.oidc import (
-    allowed_identity_provider_names,
-    identity_provider_is_allowed,
-    parse_oidc_username,
-)
-from core.models import Contact, User
+from core.forms.user import UserForm
+from core.models import User
 from core.models.project import ProjectUserObjectPermission
 from core.models.dataset import DatasetUserObjectPermission
 from core.models.user import UserSource
+from core.synchronizers import get_contact
+from core.utils import DaisyLogger, normalized_email
 from web.views.utils import AjaxViewMixin
+
+logger = DaisyLogger(__name__)
 
 
 def superuser_required():
@@ -82,13 +81,8 @@ class UserEditView(UpdateView):
     model = User
     template_name = "users/user_form_edit.html"
     success_message = "User profile has been updated"
-
-    def get_form_class(self):
-        user = self.get_object()
-        if user.source == UserSource.ACTIVE_DIRECTORY:
-            return UserEditFormActiveDirectory
-        else:
-            return UserEditFormManual
+    # every user is editable, whatever its source
+    form_class = UserForm
 
     def get_success_url(self):
         return reverse_lazy("user", kwargs={"pk": self.object.id})
@@ -103,7 +97,6 @@ class UserDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         can_edit = True
         context["can_edit"] = can_edit
-        context["manual_source"] = UserSource.MANUAL
         project_set = ProjectUserObjectPermission.objects.filter(user=context["user"])
         dataset_set = DatasetUserObjectPermission.objects.filter(user=context["user"])
         project_perms = {}
@@ -191,56 +184,86 @@ def oidc_login(request):
     return oauth.keycloak.authorize_redirect(request, redirect_uri)
 
 
-class IdentityProviderNotAllowed(Exception):
-    pass
+def _create_user(user_info, oidc_id, email):
+    """
+    The user of a first login: the username as Keycloak gives it, with the identity provider
+    suffix or without, and an unusable password. The source stays the default, a login is not a
+    directory import.
+    """
+    user = User(
+        username=user_info.get("username"),
+        email=email,
+        first_name=user_info.get("given_name", ""),
+        last_name=user_info.get("family_name", ""),
+        oidc_id=oidc_id,
+    )
+    user.set_unusable_password()
+    try:
+        # a savepoint, a failed creation must not break the transaction of the caller
+        with transaction.atomic():
+            user.save()
+    except IntegrityError as exception:
+        # a concurrent first login won the race (select_for_update locks nothing when no row
+        # matches), or an older DAISY row holds the username
+        logger.error(exception)
+        return User.objects.filter(oidc_id=oidc_id).first()
+    return user
 
 
 def _create_or_update_user(user_info, oidc_id, email):
     """
-    Return the DAISY user for this Keycloak identity, and create or complete the record if needed.
-    Returns None if the identity or the email belongs to somebody else.
-    Raises IdentityProviderNotAllowed on a first login from another identity provider.
+    The DAISY user of this Keycloak identity, created when DAISY does not hold it yet.
+    None refuses the login: several active users share the email and nothing says which one is
+    the person. Every identity provider may log in, the username suffix is a label only.
     """
     with transaction.atomic():
         user = User.objects.select_for_update().filter(oidc_id=oidc_id).first()
-        contact = Contact.objects.select_for_update().filter(oidc_id=oidc_id).first()
-        if user and contact:
-            return None
         if user:
-            # already bound, the identity provider of a known account is not checked again
+            # TODO: requirement - an inactive user of this subject has to get a new account
+            # instead of the refusal. It needs a decision first: oidc_id is unique and immutable
+            # (User.save), so the subject has to move to the new row, and the access records, the
+            # custodianships and the guardian permissions stay on the old one. The permissions
+            # API answers by oidc_id and REMS recognises a granted entitlement by it
+            # (check_existence_automatic), so both would stop seeing the older records
             return user
 
-        username, provider = parse_oidc_username(user_info.get("username"))
-        if not identity_provider_is_allowed(provider):
-            raise IdentityProviderNotAllowed(provider)
+        contact = get_contact(oidc_id, email)
+        if contact:
+            # a contact never blocks a login, but its access rows need a migration
+            logger.warning(
+                f"Contact {contact.pk} holds the Keycloak subject {oidc_id} or its email, "
+                f"the login creates a user and the access records of the contact stay behind"
+            )
 
-        matching_users = list(
-            User.objects.select_for_update().filter(email__iexact=email)
+        # bind the record of this person, an inactive row is never adopted
+        unbound = list(
+            User.objects.select_for_update().filter(
+                email__iexact=email, oidc_id__isnull=True, is_active=True
+            )
         )
-        matching_contacts = Contact.objects.filter(email__iexact=email)
-        if len(matching_users) == 1 and not matching_contacts.exists():
-            candidate = matching_users[0]
-            if candidate.oidc_id is not None:
-                return None
-            candidate.oidc_id = oidc_id
-            # an imported user waits inactive for this first login, see LDAPUsersImporter.
-            # a user that Keycloak does not know any more is found by oidc_id above and stays inactive
-            candidate.is_active = True
-            candidate.save(update_fields=["oidc_id", "is_active"])
-            return candidate
-        if matching_users or matching_contacts.exists() or contact:
+        if len(unbound) > 1:
             return None
+        if unbound:
+            user = unbound[0]
+            user.oidc_id = oidc_id
+            user.save(update_fields=["oidc_id"])
+            return user
 
-        user = User(
-            username=username or email,
-            email=email,
-            first_name=user_info.get("given_name", ""),
-            last_name=user_info.get("family_name", ""),
-            oidc_id=oidc_id,
-        )
-        user.set_unusable_password()
-        user.save()
-        return user
+        return _create_user(user_info, oidc_id, email)
+
+
+def _has_required_role(user_info) -> bool:
+    """
+    The client roles of DAISY, from the `resource_access` claim of the client that authenticated.
+    An empty OIDC_REQUIRED_ROLE allows every account, as an instance without the role needs.
+    """
+    required_role = getattr(settings, "OIDC_REQUIRED_ROLE", "")
+    if not required_role:
+        return True
+    client_roles = user_info.get("resource_access", {}).get(
+        oauth.keycloak.client_id, {}
+    )
+    return required_role in client_roles.get("roles", [])
 
 
 @login_not_required
@@ -257,20 +280,20 @@ def auth(request):
         return redirect("login")
 
     oidc_id = user_info.get("sub")
-    email = (user_info.get("email") or "").strip().lower()
+    email = normalized_email(user_info.get("email"))
     if not oidc_id or not email:
         messages.error(request, "Authentication failed.")
         return redirect("login")
 
-    try:
-        user = _create_or_update_user(user_info, oidc_id, email)
-    except IdentityProviderNotAllowed:
-        messages.error(
-            request,
-            f"Your first login must use an account from: "
-            f"{allowed_identity_provider_names()}. Contact a data steward.",
-        )
+    if not _has_required_role(user_info):
+        # the identity is valid, the person may not use DAISY: nothing is created for them, and
+        # the id_token stays for a logout of the Keycloak session
+        if "id_token" in token:
+            request.session["oidc_id_token"] = token["id_token"]
+        messages.error(request, "Access not granted. Contact a data steward.")
         return redirect("login")
+
+    user = _create_or_update_user(user_info, oidc_id, email)
     if not user:
         messages.error(
             request,

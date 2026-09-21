@@ -7,22 +7,26 @@ from django.test import override_settings
 from core.models import User
 from test.factories import ContactFactory, UserFactory
 
+CLIENT_ID = "daisy-client"
+
 
 def oidc_token(
     oidc_id="oidc-id",
     email="person@example.org",
     username="person.example|ul",
+    roles=None,
+    client_id=CLIENT_ID,
 ):
-    return {
-        "id_token": "id-token",
-        "userinfo": {
-            "sub": oidc_id,
-            "email": email,
-            "username": username,
-            "given_name": "Person",
-            "family_name": "Example",
-        },
+    userinfo = {
+        "sub": oidc_id,
+        "email": email,
+        "username": username,
+        "given_name": "Person",
+        "family_name": "Example",
     }
+    if roles is not None:
+        userinfo["resource_access"] = {client_id: {"roles": roles}}
+    return {"id_token": "id-token", "userinfo": userinfo}
 
 
 def authenticate(client, token):
@@ -54,15 +58,20 @@ def test_auth_adopts_active_unbound_user_by_case_insensitive_email(client):
 
 
 @pytest.mark.django_db
-def test_auth_activates_an_imported_user_when_it_binds_the_oidc_id(client):
-    user = UserFactory(oidc_id=None, email="person@example.org", is_active=False)
+def test_auth_creates_a_new_user_instead_of_adopting_an_inactive_one(client):
+    """A login never adopts and never activates an inactive record."""
+    inactive = UserFactory(oidc_id=None, email="person@example.org", is_active=False)
 
     response = authenticate(client, oidc_token())
 
     assert response.url == reverse("dashboard")
-    user.refresh_from_db()
-    assert user.oidc_id == "oidc-id"
-    assert user.is_active
+    inactive.refresh_from_db()
+    assert inactive.oidc_id is None
+    assert not inactive.is_active
+    created = User.objects.get(oidc_id="oidc-id")
+    assert created.pk != inactive.pk
+    assert created.username == "person.example|ul"
+    assert created.is_active
 
 
 @pytest.mark.django_db
@@ -77,35 +86,63 @@ def test_auth_keeps_a_bound_user_that_keycloak_forgot_inactive(client):
 
 
 @pytest.mark.django_db
-def test_auth_rejects_email_bound_to_another_oidc_id(client):
-    user = UserFactory(oidc_id="other-id", email="person@example.org")
+def test_auth_creates_a_user_for_a_second_identity_of_the_same_email(client):
+    """
+    Two Keycloak accounts on one email are two users now, and nobody is locked out.
+    The oidc_id of the first one is immutable.
+    """
+    bound = UserFactory(oidc_id="other-id", email="person@example.org")
+
+    response = authenticate(client, oidc_token())
+
+    assert response.url == reverse("dashboard")
+    bound.refresh_from_db()
+    assert bound.oidc_id == "other-id"
+    created = User.objects.get(oidc_id="oidc-id")
+    assert created.pk != bound.pk
+    assert created.email == "person@example.org"
+
+
+@pytest.mark.django_db
+def test_auth_refuses_when_several_active_users_share_the_email(client):
+    """Nothing says which record is the person, a data steward decides."""
+    first = UserFactory(oidc_id=None, email="person@example.org")
+    second = UserFactory(oidc_id=None, email="PERSON@EXAMPLE.ORG")
 
     response = authenticate(client, oidc_token())
 
     assert response.url == reverse("login")
-    user.refresh_from_db()
-    assert user.oidc_id == "other-id"
+    first.refresh_from_db()
+    second.refresh_from_db()
+    assert first.oidc_id is None
+    assert second.oidc_id is None
     assert not User.objects.filter(oidc_id="oidc-id").exists()
 
 
 @pytest.mark.django_db
-def test_auth_rejects_email_claimed_by_contact(client):
-    ContactFactory(email="person@example.org")
+def test_auth_creates_a_user_although_a_contact_has_the_email(client):
+    """A contact is a record, not an identity, and it does not block a login."""
+    contact = ContactFactory(email="person@example.org")
 
     response = authenticate(client, oidc_token())
 
-    assert response.url == reverse("login")
-    assert not User.objects.filter(oidc_id="oidc-id").exists()
+    assert response.url == reverse("dashboard")
+    assert User.objects.filter(oidc_id="oidc-id").exists()
+    contact.refresh_from_db()
+    assert contact.oidc_id is None
 
 
 @pytest.mark.django_db
-def test_auth_rejects_oidc_id_claimed_by_contact(client):
-    ContactFactory(oidc_id="oidc-id", email="person@example.org")
+def test_auth_creates_a_user_although_a_contact_holds_the_subject(client):
+    """A subject becomes a user, the contact keeps its access records until a migration."""
+    contact = ContactFactory(oidc_id="oidc-id", email="person@example.org")
 
     response = authenticate(client, oidc_token())
 
-    assert response.url == reverse("login")
-    assert not User.objects.filter(oidc_id="oidc-id").exists()
+    assert response.url == reverse("dashboard")
+    assert User.objects.filter(oidc_id="oidc-id").exists()
+    contact.refresh_from_db()
+    assert contact.oidc_id == "oidc-id"
 
 
 @pytest.mark.django_db
@@ -114,68 +151,43 @@ def test_auth_creates_active_user_when_identity_is_unclaimed(client):
 
     assert response.url == reverse("dashboard")
     user = User.objects.get(oidc_id="oidc-id")
-    assert user.username == "person.example"
+    assert user.username == "person.example|ul"
     assert user.is_active
     assert not user.has_usable_password()
 
 
 @pytest.mark.django_db
-def test_auth_removes_known_idp_suffix_from_created_username(client):
-    response = authenticate(client, oidc_token(username="person.example|ul"))
+def test_auth_refuses_when_an_older_row_holds_the_keycloak_username(client):
+    """A username is unique. The row belongs to another email, so a steward has to fix it."""
+    UserFactory(username="person.example|ul", email="other@example.org", oidc_id=None)
 
-    assert response.url == reverse("dashboard")
-    assert User.objects.get(oidc_id="oidc-id").username == "person.example"
-
-
-@pytest.mark.django_db
-@override_settings(OIDC_ALLOWED_IDENTITY_PROVIDERS=["ul"])
-@pytest.mark.parametrize("username", ["person.example|orcid", "person.example"])
-def test_auth_rejects_a_first_login_from_another_identity_provider(client, username):
-    response = authenticate(client, oidc_token(username=username))
+    response = authenticate(client, oidc_token())
 
     assert response.url == reverse("login")
     assert not User.objects.filter(oidc_id="oidc-id").exists()
 
 
 @pytest.mark.django_db
-@override_settings(OIDC_ALLOWED_IDENTITY_PROVIDERS=["ul"])
-def test_auth_does_not_adopt_an_unbound_user_from_another_identity_provider(client):
+@pytest.mark.parametrize(
+    "username", ["person.example|ul", "person.example|orcid", "person.example"]
+)
+def test_auth_accepts_every_identity_provider(client, username):
+    """Nothing filters on the identity provider."""
+    response = authenticate(client, oidc_token(username=username))
+
+    assert response.url == reverse("dashboard")
+    assert User.objects.get(oidc_id="oidc-id").username == username
+
+
+@pytest.mark.django_db
+def test_auth_adopts_an_unbound_user_whatever_the_identity_provider(client):
     user = UserFactory(oidc_id=None, email="person@example.org")
 
     response = authenticate(client, oidc_token(username="person.example|orcid"))
 
-    assert response.url == reverse("login")
+    assert response.url == reverse("dashboard")
     user.refresh_from_db()
-    assert user.oidc_id is None
-
-
-@pytest.mark.django_db
-@override_settings(OIDC_ALLOWED_IDENTITY_PROVIDERS=["ul"])
-def test_auth_logs_in_a_bound_user_from_another_identity_provider(client):
-    user = UserFactory(oidc_id="oidc-id", email="person@example.org")
-
-    response = authenticate(client, oidc_token(username="person.example|orcid"))
-
-    assert response.url == reverse("dashboard")
-    assert client.session["_auth_user_id"] == str(user.id)
-
-
-@pytest.mark.django_db
-@override_settings(OIDC_ALLOWED_IDENTITY_PROVIDERS=["ul", "lih"])
-def test_auth_accepts_every_configured_identity_provider(client):
-    response = authenticate(client, oidc_token(username="person.example|lih"))
-
-    assert response.url == reverse("dashboard")
-    assert User.objects.get(oidc_id="oidc-id").username == "person.example"
-
-
-@pytest.mark.django_db
-@override_settings(OIDC_ALLOWED_IDENTITY_PROVIDERS=[])
-def test_auth_accepts_any_identity_provider_when_none_is_configured(client):
-    response = authenticate(client, oidc_token(username="person.example|orcid"))
-
-    assert response.url == reverse("dashboard")
-    assert User.objects.filter(oidc_id="oidc-id").exists()
+    assert user.oidc_id == "oidc-id"
 
 
 @pytest.mark.django_db
@@ -197,3 +209,46 @@ def test_auth_handles_failed_token_exchange(client):
         response = client.get(reverse("auth"))
 
     assert response.url == reverse("login")
+
+
+@pytest.mark.django_db
+def test_auth_logs_in_without_a_role_when_none_is_required(client):
+    """The default allows every account of the realm."""
+    response = authenticate(client, oidc_token())
+
+    assert response.url == reverse("dashboard")
+    assert User.objects.filter(oidc_id="oidc-id").exists()
+
+
+@pytest.mark.django_db
+@override_settings(OIDC_REQUIRED_ROLE="daisy")
+def test_auth_logs_in_with_the_required_client_role(client):
+    with patch("web.views.user.oauth.keycloak.client_id", CLIENT_ID):
+        response = authenticate(client, oidc_token(roles=["daisy", "other"]))
+
+    assert response.url == reverse("dashboard")
+    assert User.objects.filter(oidc_id="oidc-id").exists()
+
+
+@pytest.mark.django_db
+@override_settings(OIDC_REQUIRED_ROLE="daisy")
+@pytest.mark.parametrize("roles", [None, [], ["other"]])
+def test_auth_refuses_a_login_without_the_required_role(client, roles):
+    """Nothing is created for a person that may not use DAISY."""
+    with patch("web.views.user.oauth.keycloak.client_id", CLIENT_ID):
+        response = authenticate(client, oidc_token(roles=roles))
+
+    assert response.url == reverse("login")
+    assert not User.objects.filter(oidc_id="oidc-id").exists()
+    # the Keycloak session can still be ended, so the person can try another account
+    assert client.session["oidc_id_token"] == "id-token"
+
+
+@pytest.mark.django_db
+@override_settings(OIDC_REQUIRED_ROLE="daisy")
+def test_auth_ignores_the_roles_of_another_client(client):
+    with patch("web.views.user.oauth.keycloak.client_id", CLIENT_ID):
+        response = authenticate(client, oidc_token(roles=["daisy"], client_id="other"))
+
+    assert response.url == reverse("login")
+    assert not User.objects.filter(oidc_id="oidc-id").exists()

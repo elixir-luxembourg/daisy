@@ -6,6 +6,7 @@ from typing import Dict, Optional
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.core.management import call_command
 from django.core.paginator import Paginator
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -17,7 +18,6 @@ from guardian.shortcuts import get_objects_for_user
 from core.importer.datasets_exporter import DatasetsExporter
 from core.importer.projects_exporter import ProjectsExporter
 from core.lcsb.rems import handle_rems_callback
-from core.lcsb.rems import synchronizer
 from core.models import (
     User,
     Cohort,
@@ -329,18 +329,21 @@ def rems_endpoint(request):
 @csrf_exempt
 @protect_api(write_required=True)
 def force_keycloak_synchronization(request) -> JsonResponse:
+    """
+    Run the nightly Keycloak import now. It creates a user for every new Keycloak account and it
+    updates no user that exists, the same as the scheduled task.
+    """
     if request.method != "POST":
         return create_error_response("Method not allowed", status=405)
     try:
-        logger.debug("Forcing refreshing the account information from Keycloak...")
-        synchronizer.synchronize_all()
-        logger.debug("...successfully refreshed the information from Keycloak!")
-        return JsonResponse(
-            f"OK ({synchronizer.__class__.__name__})", status=200, safe=False
-        )
+        logger.debug("Importing the new accounts from Keycloak...")
+        report = StringIO()
+        call_command("import_keycloak_users", stdout=report)
+        logger.debug("...successfully imported the new accounts from Keycloak!")
+        return JsonResponse(report.getvalue(), status=200, safe=False)
     except Exception as ex:
         return JsonResponse(
-            f"Something went wrong (using: {synchronizer.__class__.__name__}): {ex}",
+            f"Something went wrong during the Keycloak import: {ex}",
             status=500,
             safe=False,
         )
@@ -371,12 +374,16 @@ def permissions(request, user_oidc_id: str) -> JsonResponse:
         return create_error_response(message, status=404)
 
     try:
-        if user:
-            permissions = user.get_access_permissions()
-            return JsonResponse(permissions, status=200, safe=False)
-        elif contact:
-            permissions = contact.get_access_permissions()
-            return JsonResponse(permissions, status=200, safe=False)
+        # a subject can hold a user and a contact of before the migration: the person has the
+        # access records of both until the contacts are migrated
+        permissions = list(user.get_access_permissions()) if user else []
+        if contact:
+            permissions += [
+                permission
+                for permission in contact.get_access_permissions()
+                if permission not in permissions
+            ]
+        return JsonResponse(permissions, status=200, safe=False)
     except Exception as e:
         message = "Something went wrong during exporting the permissions"
         more = str(e)

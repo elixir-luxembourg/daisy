@@ -31,8 +31,9 @@ def test_import_datasets(
     factories.UserFactory.create(
         first_name="Joanne", last_name="Swift", groups=[VIP], email="user@uni.edu"
     )
+    # every local contact of the file needs a user, the import creates no placeholder
     factories.UserFactory.create(
-        first_name="Elgin", last_name="Gray", groups=[VIP], email="user@uni.edu"
+        first_name="Rene", last_name="Sahoo", groups=[VIP], email="user@uni.edu"
     )
     factories.UserFactory.create(
         first_name="Paul", last_name="Mauve", groups=[VIP], email="user@uni.edu"

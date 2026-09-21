@@ -9,7 +9,7 @@ from core.constants import IdentityProvider
 from core.lcsb.oidc import (
     ExternalUserNotVerifiedException,
     KeycloakBackend,
-    parse_oidc_username,
+    identity_provider_of,
 )
 from core.lcsb.rems import (
     create_rems_entitlement,
@@ -143,7 +143,8 @@ def test_get_external_user_info_returns_the_verified_account_as_oidc_user():
 
     assert account.id == "verified-id"
     assert account.email == "testy.mctesty@uni.lu"
-    assert account.username == "testy.mctesty"
+    # the username keeps the suffix, the provider is a label next to it
+    assert account.username == "testy.mctesty|ul"
     assert account.identity_provider is IdentityProvider.UL
 
 
@@ -169,17 +170,16 @@ def test_get_external_user_info_rejects_an_unverified_account():
         ("orcid", "ORCID"),
     ],
 )
-def test_parse_keycloak_username_identifies_known_provider_suffix(suffix, display_name):
-    username, provider = parse_oidc_username(f"john.doe|{suffix}")
+def test_identity_provider_of_identifies_a_known_suffix(suffix, display_name):
+    provider = identity_provider_of(f"john.doe|{suffix}")
 
-    assert username == "john.doe"
     assert provider.username_suffix == suffix
     assert provider.display_name == display_name
 
 
-def test_parse_keycloak_username_preserves_unknown_or_missing_suffix():
-    assert parse_oidc_username("john.doe") == ("john.doe", None)
-    assert parse_oidc_username("john.doe|unknown") == ("john.doe|unknown", None)
+@pytest.mark.parametrize("username", ["john.doe", "john.doe|unknown", "|ul", "", None])
+def test_identity_provider_of_returns_nothing_without_a_known_suffix(username):
+    assert identity_provider_of(username) is None
 
 
 class KeycloakSynchronizationMethodMock(KeycloakBackend):

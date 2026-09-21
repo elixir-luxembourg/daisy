@@ -20,12 +20,10 @@
             </div>
             <div class="mt-1 flex flex-wrap shrink-0 gap-2">
             {% if can_edit %}
-                {% if user.source == manual_source %}
-                    <a id="deleteuser" class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-danger-200 bg-white px-4 text-sm font-medium text-danger-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-danger-900 hover:bg-danger-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
-                       title="Delete"
-                       data-toggle="modal" data-target="#modal"
-                       data-ajax-url="{% url 'user_delete' user.id %}"><i data-lucide="trash-2" class="h-4 w-4" aria-hidden="true"></i><span>Delete</span></a>
-                {% endif %}
+                <a id="deleteuser" class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-danger-200 bg-white px-4 text-sm font-medium text-danger-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-danger-900 hover:bg-danger-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
+                   title="Delete"
+                   data-toggle="modal" data-target="#modal"
+                   data-ajax-url="{% url 'user_delete' user.id %}"><i data-lucide="trash-2" class="h-4 w-4" aria-hidden="true"></i><span>Delete</span></a>
                 <a class="{{ fabblue }}" href="{% url 'user_edit' pk=user.id %}" title="Edit user"><i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i><span>Edit</span></a>
             {% endif %}
             <a class="{{ fabblue }}" href="{% url 'history' %}?user={{ user.pk }}" title="See user actions"><i data-lucide="history" class="h-4 w-4" aria-hidden="true"></i><span>History</span></a>

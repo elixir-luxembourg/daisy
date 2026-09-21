@@ -30,6 +30,11 @@ class DaisyLogger:
         return wrap
 
 
+def normalized_email(email):
+    """The comparable form of an email. User.save() lower-cases it, Keycloak does not."""
+    return (email or "").strip().lower()
+
+
 class BootstrapChecker:
     """
     This is a small helper class to find any problems with missing values

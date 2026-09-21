@@ -6,12 +6,14 @@ from core.models import User
 
 
 class UserForm(forms.ModelForm):
+    """
+    Create and edit a user, whatever its source. Keycloak is the only source of the accounts now,
+    and the email has to stay editable: it is the key of the identity binding of a stored user.
+    """
+
     class Meta:
         model = User
         fields = ["first_name", "last_name", "email", "is_active", "groups"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
     field_order = [
         "first_name",
@@ -20,24 +22,6 @@ class UserForm(forms.ModelForm):
         "is_active",
         "groups",
     ]
-
-
-class UserEditFormActiveDirectory(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = ["is_active", "groups"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-
-class UserEditFormManual(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = ["first_name", "last_name", "email", "is_active", "groups"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
 
 class PickUserForm(forms.Form):
@@ -70,19 +54,3 @@ class UserAuthForm(AuthenticationForm):
             }
         )
     )
-
-    def clean(self):
-        username = self.cleaned_data.get("username")
-        suffix = getattr(settings, "LOGIN_USERNAME_SUFFIX", "")
-        if username and suffix:
-            if not username.endswith(suffix):
-                alternative_suffix = getattr(
-                    settings, "LOGIN_USERNAME_ALTERNATIVE_SUFFIX", ""
-                )
-                if alternative_suffix and username.endswith(alternative_suffix):
-                    self.cleaned_data["username"] = (
-                        username[0 : -len(alternative_suffix)] + suffix
-                    )
-                else:
-                    self.cleaned_data["username"] = username + suffix
-        return super().clean()

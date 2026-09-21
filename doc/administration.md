@@ -201,9 +201,13 @@ Defaults work for development; **production requires explicit configuration**.
 
 ##### LDAP
 
+LDAP is the `import_users` command only. It never authenticates anybody: Keycloak does, see OIDC
+above. The accounts that the import creates are inactive until an administrator binds their
+Keycloak identity in the `OIDC ID` column of `/definitions/users`.
+
 | Key                      | Description                                   | Expected values | Default value           |
 | ------------------------ | --------------------------------------------- | --------------- | ----------------------- |
-| `LDAP_ENABLED`           | Enable LDAP authentication                    | bool            | `False`                 |
+| `LDAP_ENABLED`           | Enable the LDAP user import                   | bool            | `False`                 |
 | `AUTH_LDAP_SERVER_URI`   | LDAP server URI (required if enabled)         | str             | Required when enabled   |
 | `AUTH_LDAP_BIND_DN`      | LDAP bind DN                                  | str             | `None`                  |
 | `AUTH_LDAP_BIND_PASSWORD`| LDAP bind password (required if enabled)      | str             | Required when enabled   |

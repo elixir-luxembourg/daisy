@@ -1,5 +1,6 @@
 import time
-from typing import Dict, List, Optional, Tuple, TypedDict
+from collections import defaultdict
+from typing import Dict, List, Optional, TypedDict
 
 from django.conf import settings
 from keycloak import KeycloakAdmin
@@ -8,50 +9,43 @@ from keycloak.exceptions import KeycloakGetError, KeycloakAuthenticationError
 from core.constants import IdentityProvider
 from core.synchronizers import (
     AccountSynchronizationBackend,
-    AccountSynchronizer,
     ExternalUserNotFoundException,
-    InconsistentSynchronizerStateException,
     OIDCUser,
 )
-from core.utils import DaisyLogger
+from core.utils import DaisyLogger, normalized_email
 
 logger = DaisyLogger(__name__)
 
 
-def parse_oidc_username(
-    username: Optional[str],
-) -> Tuple[Optional[str], Optional[IdentityProvider]]:
+def identity_provider_of(username: Optional[str]) -> Optional[IdentityProvider]:
+    """
+    The identity provider that the username suffix suggests, `john.doe|ul` -> UL. A label only:
+    no suffix, or an unknown one, gives None and no decision may depend on it.
+    """
     if not username:
-        return username, None
-
+        return None
     local_username, _, suffix = username.rpartition("|")
-    provider = IdentityProvider.from_username_suffix(suffix) if local_username else None
-    return (local_username, provider) if provider else (username, None)
+    return IdentityProvider.from_username_suffix(suffix) if local_username else None
 
 
-def allowed_identity_providers() -> List[IdentityProvider]:
+def provider_label(account: OIDCUser) -> str:
+    """The identity provider of an account, its username when the suffix says nothing."""
+    if account.identity_provider:
+        return account.identity_provider.display_name
+    return account.username or "Keycloak"
+
+
+def accounts_by_email(accounts: List[OIDCUser]) -> Dict[str, List[OIDCUser]]:
     """
-    The identity providers that may create or claim a DAISY account. Every instance has its own,
-    so they come from OIDC_ALLOWED_IDENTITY_PROVIDERS as username suffixes.
-    An empty setting allows every identity provider.
+    Group the accounts by email, one email can hold several. An account without an email is a
+    system account, it is left out.
     """
-    providers = []
-    for suffix in getattr(settings, "OIDC_ALLOWED_IDENTITY_PROVIDERS", []):
-        provider = IdentityProvider.from_username_suffix(suffix.strip())
-        if provider:
-            providers.append(provider)
-    return providers
-
-
-def identity_provider_is_allowed(provider: Optional[IdentityProvider]) -> bool:
-    """Used on a first login (auth) and before the sync stores an oidc_id."""
-    allowed = allowed_identity_providers()
-    return not allowed or provider in allowed
-
-
-def allowed_identity_provider_names() -> str:
-    """The display names of the allowed providers, for a message to the user."""
-    return ", ".join(provider.display_name for provider in allowed_identity_providers())
+    grouped = defaultdict(list)
+    for account in accounts:
+        email = normalized_email(account.email)
+        if email:
+            grouped[email].append(account)
+    return grouped
 
 
 class KeycloakUserResponse(TypedDict, total=False):
@@ -174,14 +168,17 @@ class KeycloakBackend(AccountSynchronizationBackend):
 
     @staticmethod
     def _build_oidc_user(user: KeycloakUserResponse) -> OIDCUser:
-        username, provider = parse_oidc_username(user.get("username"))
+        # the username keeps the identity provider suffix, `john.doe|ul`
+        username = user.get("username")
         return OIDCUser(
             id=user.get("id"),
             email=user.get("email"),
             first_name=user.get("firstName"),
             last_name=user.get("lastName"),
             username=username,
-            identity_provider=provider,
+            identity_provider=identity_provider_of(username),
+            email_verified=user.get("emailVerified"),
+            enabled=user.get("enabled"),
         )
 
     def get_external_user_info(self, oidc_id: str) -> OIDCUser:
@@ -200,56 +197,3 @@ class KeycloakBackend(AccountSynchronizationBackend):
                 f"User {oidc_id} is not verified in Keycloak!"
             )
         return self._build_oidc_user(keycloak_response)
-
-
-class KeycloakAccountSynchronizer(AccountSynchronizer):
-    def __init__(self, synchronizer_backend: AccountSynchronizationBackend):
-        """We'll need a way to fetch accounts to synchronize"""
-        self.synchronizer_backend = synchronizer_backend
-        self.test_connection()
-
-    def test_connection(self) -> bool:
-        if self.synchronizer_backend is not None:
-            return self.synchronizer_backend.test_connection()
-        return False
-
-    def synchronize_all(self) -> None:
-        """This will fetch the accounts from external source and use them to synchronize DAISY accounts"""
-        current_external_accounts = self.synchronizer_backend.get_list_of_users()
-        for external_account in current_external_accounts:
-            self.synchronize_single_account(external_account)
-
-    def build_user_or_contact_dict(self, account: OIDCUser) -> Dict[str, str]:
-        """
-        Should build a dictionary with the user information based on Daisy User model
-        """
-        return {
-            "first_name": account.first_name or "FIRST_NAME_MISSING",
-            "last_name": account.last_name or "LAST_NAME_MISSING",
-            "email": account.email,
-            "id": account.id,
-        }
-
-    def build_user_dict(self, account: OIDCUser) -> Dict[str, str]:
-        """
-        Should build a dictionary with the user information based on Daisy User model
-        """
-        return self.build_user_or_contact_dict(account)
-
-    def build_contact_dict(self, account: OIDCUser) -> Dict[str, str]:
-        """
-        Should build a dictionary with the user information based on Daisy Contact model
-        """
-        return self.build_user_or_contact_dict(account)
-
-    def synchronize_single_account(self, account: OIDCUser) -> None:
-        # accounts without emails are system accounts and can be skipped
-        if not account.email:
-            logger.debug(f"Skipping account without email for id {account.id}")
-            return
-        try:
-            self.update_user_or_contact(
-                account, account.id, account.email, create_contact_if_not_found=True
-            )
-        except InconsistentSynchronizerStateException as e:
-            logger.error(e)

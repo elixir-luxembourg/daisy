@@ -4,8 +4,13 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET, require_POST
 
-from core.lcsb.oidc import KeycloakBackend, get_keycloak_config_from_settings
+from core.lcsb.oidc import (
+    KeycloakBackend,
+    get_keycloak_config_from_settings,
+    provider_label,
+)
 from core.models import Contact, User
+from core.utils import normalized_email
 from web.views.utils import is_superuser
 
 CONTACT_OWNS_THE_ACCOUNT = (
@@ -35,22 +40,20 @@ def keycloak_candidates(request, pk):
     if user.oidc_id:
         return JsonResponse({"error": "This user already has an OIDC ID."}, status=409)
 
-    email = (user.email or "").strip().lower()
+    email = normalized_email(user.email)
     if not email:
         return JsonResponse({"error": "This user has no email."}, status=400)
 
     backend = KeycloakBackend(get_keycloak_config_from_settings())
     results = []
     for account in backend.get_users_by_email(email):
-        provider = (
-            account.identity_provider.display_name
-            if account.identity_provider
-            else (account.username or "Keycloak")
-        )
         results.append(
             {
                 "id": account.id,
-                "text": f"{account.first_name} {account.last_name} ({account.email}; {provider})",
+                "text": (
+                    f"{account.first_name} {account.last_name} "
+                    f"({account.email}; {provider_label(account)})"
+                ),
             }
         )
     return JsonResponse({"results": results})
@@ -70,7 +73,7 @@ def bind_keycloak_identity(request, pk):
 
     backend = KeycloakBackend(get_keycloak_config_from_settings())
     account = backend.get_external_user_info(oidc_id)
-    account_email = (account.email or "").strip().lower()
+    account_email = normalized_email(account.email)
 
     with transaction.atomic():
         user = get_object_or_404(User.objects.select_for_update(), pk=pk)
@@ -78,7 +81,7 @@ def bind_keycloak_identity(request, pk):
             return JsonResponse(
                 {"error": "This user already has an OIDC ID."}, status=409
             )
-        if account_email != (user.email or "").strip().lower():
+        if account_email != normalized_email(user.email):
             return JsonResponse(
                 {"error": "This Keycloak account has another email."}, status=409
             )

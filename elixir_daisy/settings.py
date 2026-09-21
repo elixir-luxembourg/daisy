@@ -392,14 +392,9 @@ if OIDC_ENABLED := env.bool("OIDC_ENABLED", default=False):
         }
     }
 
-# Username suffixes of the identity providers that may create or claim a DAISY account on a first
-# login, for example "ul". Every instance has its own providers, see core.constants.
-# An empty list allows every identity provider.
-OIDC_ALLOWED_IDENTITY_PROVIDERS = [
-    suffix.strip().lower()
-    for suffix in env.list("OIDC_ALLOWED_IDENTITY_PROVIDERS", default=[])
-    if suffix.strip()
-]
+# The client role that a login requires, empty allows every account of the realm. It comes from
+# the `resource_access` claim, so Keycloak has to add the client roles to the ID token
+OIDC_REQUIRED_ROLE = env("OIDC_REQUIRED_ROLE", default="")
 
 if DEBUG:
     DEBUG_TOOLBAR_PANELS = [
@@ -479,10 +474,6 @@ if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
     )
     AUTH_LDAP_USER_DN_TEMPLATE = env("AUTH_LDAP_USER_DN_TEMPLATE", default=None)
 
-# list of usernames of users that will imported and set as pi when
-# import_users is used to bulk create users from an LDAP server
-PREDEFINED_PIS_LIST = env.list("PREDEFINED_PIS_LIST", default=[])
-
 from celery.schedules import crontab
 
 CELERY_BEAT_SCHEDULE = {
@@ -498,17 +489,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "notification.tasks.send_notifications_for_user_upcoming_events",
         "schedule": crontab(minute=0, hour=7),  # Execute task in the morning
     },
-    # run_synchronizer (synchronize_all) is deliberately not scheduled any more. It iterates the
-    # Keycloak accounts, so it cannot see a DAISY user that Keycloak does not know any more, and it
-    # runs with create_contact_if_not_found=True, which creates a Contact for every Keycloak account
-    # that does not match. sync_keycloak_users iterates the DAISY users instead: it binds the
-    # oidc_id, deactivates the users that disappeared from Keycloak, and creates nothing.
-    # synchronize_all stays in the code for resolving an email by oidc_id (REMS).
-    "sync-keycloak-users-every-day": {
-        "task": "core.tasks.sync_keycloak_users",
-        "schedule": crontab(
-            minute=0, hour=2
-        ),  # Execute task at 2am, after import_users
+    # match_keycloak_users is the one-time match of the migration, it is not scheduled
+    "import-keycloak-users-every-day": {
+        "task": "core.tasks.import_keycloak_users",
+        "schedule": crontab(minute=0, hour=2),  # Execute task at 2am
     },
     "update-rems-application-external-id": {
         "task": "core.tasks.update_rems_access_external_id",

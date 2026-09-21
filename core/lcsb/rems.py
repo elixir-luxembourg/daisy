@@ -2,7 +2,7 @@ import json
 import urllib3
 from datetime import datetime, date, timedelta
 from dateutil.parser import isoparse
-from typing import Dict, Union, Tuple
+from typing import Dict, Tuple
 
 from django.conf import settings
 from django.http import HttpRequest
@@ -10,18 +10,15 @@ from django.db.models import Q
 import requests
 
 from core.synchronizers import (
-    DummyAccountSynchronizer,
-    ExternalUserNotFoundException,
-    InconsistentSynchronizerStateException,
     DummySynchronizationBackend,
+    ExternalUserNotFoundException,
+    user_for_oidc_id,
 )
 from core.lcsb.oidc import (
     get_keycloak_config_from_settings,
     KeycloakBackend,
-    KeycloakAccountSynchronizer,
 )
 from core.models.access import Access, StatusChoices
-from core.models.contact import Contact
 from core.models.dataset import Dataset
 from core.models.user import User
 from core.utils import DaisyLogger
@@ -32,12 +29,10 @@ DEFAULT_REMS_RETRIES = 3
 
 if getattr(settings, "KEYCLOAK_INTEGRATION", False) is True:
     urllib3.disable_warnings()
-    keycloak_config = get_keycloak_config_from_settings()
-    keycloak_backend = KeycloakBackend(keycloak_config)
-    synchronizer = KeycloakAccountSynchronizer(keycloak_backend)
+    keycloak_backend = KeycloakBackend(get_keycloak_config_from_settings())
 else:
-    dummy_backend = DummySynchronizationBackend()
-    synchronizer = DummyAccountSynchronizer(dummy_backend)
+    # an instance without the integration cannot resolve a subject
+    keycloak_backend = DummySynchronizationBackend()
 
 
 def check_existence_automatic(item: Dict[str, str]) -> bool:
@@ -154,31 +149,22 @@ def handle_rems_entitlement(data: Dict[str, str]) -> bool:
         raise ValueError(message)
 
     try:
-        entity = synchronizer.retrieve_and_update_user_or_contact(
-            oidc_id=user_oidc_id, email=email, create_contact_if_not_found=True
-        )
+        user = user_for_oidc_id(keycloak_backend, user_oidc_id, email)
     except ExternalUserNotFoundException as e:
         logger.error(
-            f"REMS :: User not found in synchronizer for id '{user_oidc_id}'",
-            exc_info=e,
-        )
-        return False
-    except InconsistentSynchronizerStateException as e:
-        logger.error(
-            f"REMS :: Inconsistent synchronizer state for id '{user_oidc_id}' and email {email}",
+            f"REMS :: Keycloak does not know the subject '{user_oidc_id}'",
             exc_info=e,
         )
         return False
 
-    return create_rems_entitlement(entity, application, resource, expiration_date)
+    return create_rems_entitlement(user, application, resource, expiration_date)
 
 
 def create_rems_entitlement(
-    obj: Union[Access, User], application: int, dataset_id: str, expiration_date: date
+    user: User, application: int, dataset_id: str, expiration_date: date
 ) -> bool:
     """
-    Tries to find a dataset with `elu_accession` equal to `dataset_id`.
-    If it exists, it will add a new logbook entry (Access object) set to the current user/contact
+    Add a logbook entry (an Access) of that user to the dataset of `dataset_id`.
     Assumes that the Dataset exists, otherwise will throw an exception.
     """
     dataset = Dataset.objects.get(elu_accession=dataset_id)
@@ -198,17 +184,7 @@ def create_rems_entitlement(
         "application_external_id": external_id,
     }
 
-    if isinstance(obj, User):
-        new_logbook_entry = Access(user=obj, **access_kwargs)
-    elif isinstance(obj, Contact):
-        new_logbook_entry = Access(contact=obj, **access_kwargs)
-    else:
-        klass = obj.__class__.__name__
-        raise TypeError(
-            f"Wrong type of the object - should be Contact or User, is: {klass} instead"
-        )
-
-    new_logbook_entry.save()
+    Access(user=user, **access_kwargs).save()
     return True
 
 

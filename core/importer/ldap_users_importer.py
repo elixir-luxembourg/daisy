@@ -1,9 +1,7 @@
 import ldap
-from django.contrib.auth.models import Group
 from django_auth_ldap.backend import LDAPBackend, _LDAPUser
 from django_auth_ldap.config import LDAPSearch
 
-from core.constants import Groups as GroupConstants
 from core.importer.users_importer import UsersImporter
 from core.models.user import User, UserSource
 
@@ -31,11 +29,11 @@ class LDAPUsersImporter(UsersImporter):
     @staticmethod
     def _deactivate_new_account(user):
         """
-        A user authenticates with Keycloak, so a new account cannot log in before auth() binds its
-        oidc_id, and it stays inactive until then. populate_user() already stores an unusable
-        password for an account that it creates.
-        An account that exists keeps its is_active and its password: it can be a user that works
-        today, and a re-import must not lock them out.
+        An imported account waits inactive: a user authenticates with Keycloak, and an inactive
+        row keeps its api_key out of the API. A login never activates it, an administrator binds
+        the Keycloak identity in the `oidc id` column of the user list.
+        An account that exists keeps its is_active and its password: a re-import must not lock
+        out a user that works today. populate_user() stores an unusable password for a new one.
         """
         user.is_active = False
 
@@ -62,18 +60,3 @@ class LDAPUsersImporter(UsersImporter):
             if is_new:
                 self._deactivate_new_account(user)
             user.save()
-
-    def import_from_username(self, username, set_pi=False):
-        ldap_backend = LDAPBackend()
-        is_new = self._is_new_account(username)
-        user = ldap_backend.populate_user(username)
-        if user is None:
-            return
-
-        if is_new:
-            self._deactivate_new_account(user)
-            user.save()
-
-        if set_pi:
-            g = Group.objects.get(name=GroupConstants.VIP.value)
-            user.groups.add(g)

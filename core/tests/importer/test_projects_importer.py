@@ -11,7 +11,8 @@ from test import factories
 def test_import_projects(celery_session_worker, contact_types, partners):
     VIP = factories.VIPGroup()
 
-    factories.UserFactory.create(first_name="Julia", last_name="Crayon", groups=[VIP])
+    # every local contact of the file needs a user, the import creates no placeholder
+    factories.UserFactory.create(first_name="Joanne", last_name="Swift", groups=[VIP])
     factories.UserFactory.create(first_name="Rebecca", last_name="Kafe", groups=[VIP])
     factories.UserFactory.create(first_name="Embury", last_name="Bask")
 
