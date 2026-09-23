@@ -10,6 +10,7 @@ from core.lcsb.oidc import (
     provider_label,
 )
 from core.models import Contact, User
+from core.synchronizers import ExternalUserNotFoundException
 from core.utils import normalized_email
 from web.views.utils import is_superuser
 
@@ -17,15 +18,6 @@ CONTACT_OWNS_THE_ACCOUNT = (
     "This Keycloak account belongs to a contact in DAISY. Their access records must move "
     "to a user account first, please ask an administrator."
 )
-
-
-def serialize_user(user):
-    return {
-        "id": str(user.pk),
-        "text": f"{user.get_full_name()} ({user.email})",
-        "oidc_id": user.oidc_id or "",
-        "is_active": user.is_active,
-    }
 
 
 @login_required
@@ -72,7 +64,13 @@ def bind_keycloak_identity(request, pk):
         return JsonResponse({"error": "Keycloak user ID is required."}, status=400)
 
     backend = KeycloakBackend(get_keycloak_config_from_settings())
-    account = backend.get_external_user_info(oidc_id)
+    try:
+        # ExternalUserNotVerifiedException is one of these
+        account = backend.get_external_user_info(oidc_id)
+    except ExternalUserNotFoundException:
+        return JsonResponse(
+            {"error": "Keycloak has no verified account with this ID."}, status=404
+        )
     account_email = normalized_email(account.email)
 
     with transaction.atomic():
@@ -96,4 +94,4 @@ def bind_keycloak_identity(request, pk):
         user.oidc_id = oidc_id
         user.save(update_fields=["oidc_id"])
 
-    return JsonResponse({"user": serialize_user(user)})
+    return JsonResponse({"user": {"oidc_id": user.oidc_id}})

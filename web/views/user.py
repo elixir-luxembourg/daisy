@@ -24,7 +24,7 @@ from core.models.project import ProjectUserObjectPermission
 from core.models.dataset import DatasetUserObjectPermission
 from core.models.user import UserSource
 from core.synchronizers import activated, get_contact
-from core.utils import DaisyLogger, normalized_email
+from core.utils import DaisyLogger, normalized_email, records_with_email
 from web.views.utils import AjaxViewMixin
 
 logger = DaisyLogger(__name__)
@@ -186,12 +186,11 @@ def oidc_login(request):
 
 def _create_user(user_info, oidc_id, email):
     """
-    The user of a first login: the username as Keycloak gives it, with the identity provider
-    suffix or without, and an unusable password. The source stays the default, a login is not a
-    directory import.
+    The user of a first login: the username of the `preferred_username` claim, with the identity
+    provider suffix or without, and an unusable password.
     """
     user = User(
-        username=user_info.get("username"),
+        username=user_info.get("preferred_username") or email,
         email=email,
         first_name=user_info.get("given_name", ""),
         last_name=user_info.get("family_name", ""),
@@ -230,10 +229,11 @@ def _create_or_update_user(user_info, oidc_id, email):
             )
 
         # bind the record of this person, an inactive row is never adopted
-        unbound = list(
+        unbound = records_with_email(
             User.objects.select_for_update().filter(
-                email__iexact=email, oidc_id__isnull=True, is_active=True
-            )
+                oidc_id__isnull=True, is_active=True
+            ),
+            email,
         )
         if len(unbound) > 1:
             return None
@@ -279,13 +279,21 @@ def auth(request):
         messages.error(request, "Authentication failed.")
         return redirect("login")
 
+    # an unverified email must never adopt the stored user of that email
+    if not user_info.get("email_verified"):
+        messages.error(
+            request,
+            "Your email is not verified in Keycloak. Verify it and log in again.",
+        )
+        return redirect("login")
+
     if not _has_required_role(user_info):
         # the identity is valid, the person may not use DAISY: nothing is created for them, and
         # the id_token stays for a logout of the Keycloak session
         if "id_token" in token:
             request.session["oidc_id_token"] = token["id_token"]
         messages.error(request, "Access not granted. Contact a data steward.")
-        return redirect("login")
+        return redirect("logout")
 
     user = _create_or_update_user(user_info, oidc_id, email)
     if not user:
@@ -298,7 +306,6 @@ def auth(request):
         messages.error(request, "This account is inactive. Contact a data steward.")
         return redirect("login")
 
-    request.session["user"] = user_info
     if "id_token" in token:
         request.session["oidc_id_token"] = token["id_token"]
 
@@ -308,12 +315,11 @@ def auth(request):
     return redirect("dashboard")
 
 
+@login_not_required
 def logout(request):
+    """A refused person reaches this anonymous, and still has to leave the Keycloak session."""
     id_token = request.session.get("oidc_id_token")
-
     dj_logout(request)
-    request.session.pop("user", None)
-    request.session.pop("oidc_id_token", None)
 
     if id_token and getattr(settings, "OIDC_ENABLED", False):
         keycloak_logout_url = oauth.keycloak.server_metadata.get("end_session_endpoint")

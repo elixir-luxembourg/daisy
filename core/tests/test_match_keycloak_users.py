@@ -138,6 +138,7 @@ def test_match_reports_an_account_that_another_user_holds():
     output = run_match([keycloak_user()])
 
     user.refresh_from_db()
+    owner.refresh_from_db()
     assert user.oidc_id is None
     assert owner.oidc_id == "keycloak-id"
     assert output.splitlines() == [

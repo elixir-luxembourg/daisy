@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 from django.core.management import call_command
+from django.test import override_settings
 
 from core.constants import IdentityProvider
 from core.models.user import User
@@ -29,13 +30,27 @@ def keycloak_user(
 
 
 def run_import(keycloak_users, *args):
-    with patch(
+    # .env.test keeps the integration off
+    with override_settings(KEYCLOAK_INTEGRATION=True), patch(
         "core.management.commands.import_keycloak_users.KeycloakBackend"
     ) as backend:
         backend.return_value.get_list_of_users.return_value = keycloak_users
         output = StringIO()
         call_command("import_keycloak_users", *args, stdout=output)
     return output.getvalue()
+
+
+@pytest.mark.django_db
+@override_settings(KEYCLOAK_INTEGRATION=False)
+@patch("core.management.commands.import_keycloak_users.KeycloakBackend")
+def test_import_does_nothing_without_the_integration(backend):
+    """The scheduled task and /api/keycloak/force both land here."""
+    output = StringIO()
+    call_command("import_keycloak_users", stdout=output)
+
+    assert "The Keycloak integration is off" in output.getvalue()
+    backend.assert_not_called()
+    assert not User.objects.exclude(oidc_id=None).exists()
 
 
 @pytest.mark.django_db

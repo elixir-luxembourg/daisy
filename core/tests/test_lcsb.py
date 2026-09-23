@@ -9,6 +9,7 @@ from core.constants import IdentityProvider
 from core.lcsb.oidc import (
     ExternalUserNotVerifiedException,
     KeycloakBackend,
+    KeycloakUserResponse,
     identity_provider_of,
 )
 from core.lcsb.rems import (
@@ -32,62 +33,61 @@ from test.factories import (
 from web.views.utils import get_user_or_contact_by_oidc_id
 
 
+def keycloak_user_response(drop=(), **overrides) -> KeycloakUserResponse:
+    """
+    One user of the Keycloak Admin API, with every field of KeycloakUserResponse.
+    `drop` leaves keys out, as Keycloak does for an account that has no email.
+    """
+    user = {
+        "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+        "createdTimestamp": 1634231689999,
+        "username": "0000-0001-2222-3333",
+        "enabled": True,
+        "totp": False,
+        "emailVerified": True,
+        "firstName": "TESTY",
+        "lastName": "MCTesty",
+        "email": "testy.mctesty@uni.lu",
+        "disableableCredentialTypes": [],
+        "requiredActions": [],
+        "notBefore": 0,
+        "access": {
+            "manageGroupMembership": False,
+            "view": True,
+            "mapRoles": False,
+            "impersonate": False,
+            "manage": False,
+        },
+        **overrides,
+    }
+    return {key: value for key, value in user.items() if key not in drop}
+
+
 class KeycloakAdminConnectionMock:
     def well_know(self) -> bool:
         return True
 
-    def get_users(self, query) -> List[Dict]:
+    def get_users(self, query) -> List[KeycloakUserResponse]:
         self.last_query = query
         return [
-            {
-                "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
-                "createdTimestamp": 1634231689999,
-                "username": "0000-0001-2222-3333",
-                "enabled": True,
-                "totp": False,
-                "emailVerified": True,
-                "firstName": "TESTY",
-                "lastName": "MCTesty",
-                "email": "testy.mctesty@uni.lu",
-                "disableableCredentialTypes": [],
-                "requiredActions": [],
-                "notBefore": 0,
-                "access": {
-                    "manageGroupMembership": False,
-                    "view": True,
-                    "mapRoles": False,
-                    "impersonate": False,
-                    "manage": False,
-                },
-            },
-            {
-                "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeef",
-                "createdTimestamp": 1634231689998,
-                "username": "0000-0001-2222-3334",
-                "enabled": True,
-                "totp": False,
-                "emailVerified": True,
-                "firstName": "BOBBY",
-                "lastName": "FISCHER",
-                "email": "bobby.fischer@gmail.com",
-                "disableableCredentialTypes": [],
-                "requiredActions": [],
-                "notBefore": 0,
-                "access": {
-                    "manageGroupMembership": False,
-                    "view": True,
-                    "mapRoles": False,
-                    "impersonate": False,
-                    "manage": False,
-                },
-            },
-            {
-                "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeeg",
-                "createdTimestamp": 1634231689997,
-                "username": "0000-0001-2222-3335",
-                "firstName": "Ann",
-                "lastName": "Bann",
-            },
+            keycloak_user_response(),
+            keycloak_user_response(
+                id="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeef",
+                createdTimestamp=1634231689998,
+                username="0000-0001-2222-3334",
+                firstName="BOBBY",
+                lastName="FISCHER",
+                email="bobby.fischer@gmail.com",
+            ),
+            # a system account: no email, so Keycloak sends neither key
+            keycloak_user_response(
+                drop=("email", "emailVerified"),
+                id="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeeg",
+                createdTimestamp=1634231689997,
+                username="0000-0001-2222-3335",
+                firstName="Ann",
+                lastName="Bann",
+            ),
         ]
 
 
@@ -99,18 +99,8 @@ def test_get_users_by_email_uses_exact_verified_match():
                 "exact": True,
             }
             return [
-                {
-                    "id": "verified-id",
-                    "email": "testy.mctesty@uni.lu",
-                    "emailVerified": True,
-                    "firstName": "Testy",
-                    "lastName": "McTesty",
-                },
-                {
-                    "id": "unverified-id",
-                    "email": "testy.mctesty@uni.lu",
-                    "emailVerified": False,
-                },
+                keycloak_user_response(drop=("username",), id="verified-id"),
+                keycloak_user_response(id="unverified-id", emailVerified=False),
             ]
 
     backend = KeycloakBackend({}, connect=False)
@@ -124,17 +114,24 @@ def test_get_users_by_email_uses_exact_verified_match():
     assert users[0].username is None
 
 
+def test_get_list_of_users_keeps_the_verified_accounts_only():
+    """The match and the import bind identities on this list."""
+    backend = KeycloakBackend({}, connect=False)
+    backend.keycloak_admin_connection = KeycloakAdminConnectionMock()
+
+    users = backend.get_list_of_users()
+
+    assert [user.email for user in users] == [
+        "testy.mctesty@uni.lu",
+        "bobby.fischer@gmail.com",
+    ]
+    assert backend.keycloak_admin_connection.last_query == {"emailVerified": True}
+
+
 def test_get_external_user_info_returns_the_verified_account_as_oidc_user():
     class SingleUserMock:
         def get_user(self, oidc_id):
-            return {
-                "id": oidc_id,
-                "email": "testy.mctesty@uni.lu",
-                "emailVerified": True,
-                "firstName": "Testy",
-                "lastName": "McTesty",
-                "username": "testy.mctesty|ul",
-            }
+            return keycloak_user_response(id=oidc_id, username="testy.mctesty|ul")
 
     backend = KeycloakBackend({}, connect=False)
     backend.keycloak_admin_connection = SingleUserMock()
@@ -151,7 +148,7 @@ def test_get_external_user_info_returns_the_verified_account_as_oidc_user():
 def test_get_external_user_info_rejects_an_unverified_account():
     class UnverifiedUserMock:
         def get_user(self, oidc_id):
-            return {"id": oidc_id, "email": "testy.mctesty@uni.lu"}
+            return keycloak_user_response(drop=("emailVerified",), id=oidc_id)
 
     backend = KeycloakBackend({}, connect=False)
     backend.keycloak_admin_connection = UnverifiedUserMock()

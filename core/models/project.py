@@ -13,7 +13,6 @@ from django.utils.safestring import mark_safe
 from django.utils.module_loading import import_string
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
-from core import constants
 from core.permissions.mapping import PERMISSION_MAPPING
 from notification import NotifyMixin
 from notification.models import NotificationVerb, Notification

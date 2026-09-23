@@ -177,7 +177,6 @@ class KeycloakBackend(AccountSynchronizationBackend):
             last_name=user.get("lastName"),
             username=username,
             identity_provider=identity_provider_of(username),
-            email_verified=user.get("emailVerified"),
             enabled=user.get("enabled"),
         )
 

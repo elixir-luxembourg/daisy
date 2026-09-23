@@ -489,23 +489,20 @@ CELERY_BEAT_SCHEDULE = {
         "task": "notification.tasks.send_notifications_for_user_upcoming_events",
         "schedule": crontab(minute=0, hour=7),  # Execute task in the morning
     },
-    # match_keycloak_users is the one-time match of the migration, it is not scheduled
-    "import-keycloak-users-every-day": {
-        "task": "core.tasks.import_keycloak_users",
-        "schedule": crontab(minute=0, hour=2),  # Execute task at 2am
-    },
     "update-rems-application-external-id": {
         "task": "core.tasks.update_rems_access_external_id",
         "schedule": crontab(minute=0, hour=3),  # Execute task at 3am
     },
 }
 
+# match_keycloak_users is the one-time match of the migration, it is not scheduled
+if KEYCLOAK_INTEGRATION:
+    CELERY_BEAT_SCHEDULE["import-keycloak-users-every-day"] = {
+        "task": "core.tasks.import_keycloak_users",
+        "schedule": crontab(minute=0, hour=2),  # Execute task at 2am
+    }
+
 
 if ENVIRONMENT == "test":
     if password_hashers := env.list("PASSWORD_HASHERS", default=None):
         PASSWORD_HASHERS = password_hashers
-
-    # For test environments, use template0 to avoid PostgreSQL collation version issues
-    DATABASES["default"]["TEST"] = {
-        "TEMPLATE": "template0",
-    }

@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 from core.constants import IdentityProvider
 from core.models import Contact, User, UserSource
-from core.utils import DaisyLogger, normalized_email
+from core.utils import DaisyLogger, normalized_email, records_with_email
 
 logger = DaisyLogger(__name__)
 
@@ -25,7 +25,6 @@ class OIDCUser:
     last_name: str
     username: str
     identity_provider: Optional[IdentityProvider] = None
-    email_verified: Optional[bool] = None
     # a disabled account must not become an active DAISY user
     enabled: Optional[bool] = None
 
@@ -98,7 +97,8 @@ def get_contact(oidc_id: str, email: Optional[str] = None) -> Optional[Contact]:
     contact = Contact.objects.filter(oidc_id=oidc_id).first()
     if contact or not email:
         return contact
-    return Contact.objects.filter(email__iexact=email).first()
+    contacts = records_with_email(Contact.objects.all(), email)
+    return contacts[0] if contacts else None
 
 
 def user_for_oidc_id(
@@ -130,14 +130,8 @@ def bind_or_create_user(account: OIDCUser, email: Optional[str] = None) -> User:
     and create a user otherwise. An inactive user is never adopted: a login cannot activate a
     stored row, so the identity needs a user of its own.
     """
-    candidates = (
-        list(
-            User.objects.filter(
-                email__iexact=email, oidc_id__isnull=True, is_active=True
-            )
-        )
-        if email
-        else []
+    candidates = records_with_email(
+        User.objects.filter(oidc_id__isnull=True, is_active=True), email
     )
     if len(candidates) == 1:
         user = candidates[0]

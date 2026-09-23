@@ -5,9 +5,11 @@ from django.shortcuts import reverse
 
 from core.constants import IdentityProvider
 from core.forms.dataset import DatasetForm
-from core.models import Access, User
+from core.models import User
 from core.synchronizers import OIDCUser
+from core.synchronizers import ExternalUserNotFoundException
 from test.factories import (
+    AccessFactory,
     ContactFactory,
     DatasetFactory,
     UserFactory,
@@ -123,6 +125,8 @@ def test_binding_stores_the_selected_oidc_id(mock_backend, client):
 @patch("web.views.keycloak.KeycloakBackend")
 def test_binding_creates_no_user_and_moves_no_access(mock_backend, client):
     user = UserFactory(email="person@example.org", oidc_id=None)
+    contact = ContactFactory(email="person@example.org")
+    access = AccessFactory(contact=contact, user=None)
     mock_backend.return_value.get_external_user_info.return_value = keycloak_account()
     as_superuser(client)
     users_before = User.objects.count()
@@ -131,7 +135,9 @@ def test_binding_creates_no_user_and_moves_no_access(mock_backend, client):
 
     assert response.status_code == 200
     assert User.objects.count() == users_before
-    assert Access.objects.count() == 0
+    access.refresh_from_db()
+    assert access.contact == contact
+    assert access.user is None
 
 
 @pytest.mark.django_db
@@ -203,6 +209,23 @@ def test_binding_is_refused_for_a_user_that_has_an_oidc_id(mock_backend, client)
 
 
 @pytest.mark.django_db
+@patch("web.views.keycloak.KeycloakBackend")
+def test_binding_reports_an_unknown_subject_as_not_found(mock_backend, client):
+    """An unknown or unverified account is a 404, not a 500."""
+    user = UserFactory(email="person@example.org", oidc_id=None)
+    mock_backend.return_value.get_external_user_info.side_effect = (
+        ExternalUserNotFoundException("gone")
+    )
+    as_superuser(client)
+
+    response = client.post(bind_url(user), {"oidc_id": "keycloak-id"})
+
+    assert response.status_code == 404
+    user.refresh_from_db()
+    assert user.oidc_id is None
+
+
+@pytest.mark.django_db
 def test_candidates_require_a_superuser(client):
     user = UserFactory(oidc_id=None)
     client.force_login(UserFactory())
@@ -249,3 +272,12 @@ def test_binder_script_has_the_lookup_and_bind_contract():
     assert "response.results.forEach" in contents
     assert "bindIdentity" in contents
     assert 'trigger.data("bind-url")' in contents
+
+
+def test_binder_script_builds_no_markup_from_values():
+    """Keycloak values reach the modal as text, never as markup."""
+    with open("web/static/js/keycloak-identity-binder.js") as script:
+        contents = script.read()
+
+    assert "${" not in contents
+    assert "html:" not in contents

@@ -4,13 +4,13 @@ $(function () {
         const modal = $("#modal");
         const body = modal.find(".modal-body");
         modal.find(".modal-title").text("Find in Keycloak");
-        body.empty().append($("<div>", {
-            class: "space-y-4",
-            html: `
-                <p class="text-sm text-gray-500">Accounts for <span class="font-medium text-primary-900">${trigger.data("email")}</span></p>
-                <div role="alert" class="hidden text-sm text-danger-900"></div>
-                <div class="keycloak-candidates space-y-2"></div>`,
-        }));
+        // the email comes from Keycloak, text: keeps it out of the markup
+        const email = $("<span>", {class: "font-medium text-primary-900", text: trigger.data("email")});
+        body.empty().append($("<div>", {class: "space-y-4"}).append(
+            $("<p>", {class: "text-sm text-gray-500", text: "Accounts for "}).append(email),
+            $("<div>", {role: "alert", class: "hidden text-sm text-danger-900"}),
+            $("<div>", {class: "keycloak-candidates space-y-2"}),
+        ));
         openModal(modal);
 
         const error = body.find("[role=alert]");

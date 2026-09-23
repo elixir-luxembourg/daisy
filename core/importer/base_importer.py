@@ -10,7 +10,7 @@ from django.conf import settings
 from core.lcsb.oidc import KeycloakBackend, get_keycloak_config_from_settings
 from core.models import Partner, Contact, ContactType, User
 from core.synchronizers import get_contact, create_user
-from core.utils import DaisyLogger, normalized_email
+from core.utils import DaisyLogger, normalized_email, records_with_email
 
 PRINCIPAL_INVESTIGATOR = "Principal_Investigator"
 
@@ -226,11 +226,13 @@ class BaseImporter:
         and a login cannot activate a stored row.
         """
         users = User.objects.filter(is_active=True)
-        if email:
-            by_email = list(users.filter(email__iexact=email))
-            if len(by_email) == 1:
-                return by_email[0]
+        by_email = records_with_email(users, email)
+        if len(by_email) == 1:
+            return by_email[0]
 
+        # TODO: a name is not an identity, Keycloak is the only reliable check of a local person.
+        # Dropping this branch sends the case to user_from_keycloak(), and it changes
+        # test_an_active_user_is_reused and every import on an instance without Keycloak.
         by_name = list(
             users.filter(
                 first_name__icontains=first_name, last_name__icontains=last_name

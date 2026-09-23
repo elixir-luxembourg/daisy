@@ -14,13 +14,16 @@ def oidc_token(
     oidc_id="oidc-id",
     email="person@example.org",
     username="person.example|ul",
+    email_verified=True,
     roles=None,
     client_id=CLIENT_ID,
 ):
+    """The claims of a Keycloak id_token. `preferred_username` is the standard claim."""
     userinfo = {
         "sub": oidc_id,
         "email": email,
-        "username": username,
+        "email_verified": email_verified,
+        "preferred_username": username,
         "given_name": "Person",
         "family_name": "Example",
     }
@@ -159,6 +162,44 @@ def test_auth_creates_active_user_when_identity_is_unclaimed(client):
 
 
 @pytest.mark.django_db
+def test_auth_falls_back_to_the_email_when_keycloak_sends_no_username(client):
+    """A user needs a username, the email is the one value that a login always has."""
+    response = authenticate(client, oidc_token(username=None))
+
+    assert response.url == reverse("dashboard")
+    assert User.objects.get(oidc_id="oidc-id").username == "person@example.org"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("email_verified", [False, None])
+def test_auth_refuses_an_unverified_email(client, email_verified):
+    """An unverified email must never adopt the stored user of that email."""
+    user = UserFactory(oidc_id=None, email="person@example.org")
+
+    response = authenticate(client, oidc_token(email_verified=email_verified))
+
+    assert response.url == reverse("login")
+    user.refresh_from_db()
+    assert user.oidc_id is None
+    assert not User.objects.filter(oidc_id="oidc-id").exists()
+
+
+@pytest.mark.django_db
+def test_auth_does_not_bind_a_look_alike_email(client):
+    """UPPER() folds `ı` to `I`, so `admın@uni.lu` must not adopt `admin@uni.lu`."""
+    victim = UserFactory(oidc_id=None, email="admin@uni.lu")
+
+    response = authenticate(client, oidc_token(email="admın@uni.lu"))
+
+    assert response.url == reverse("dashboard")
+    victim.refresh_from_db()
+    assert victim.oidc_id is None
+    created = User.objects.get(oidc_id="oidc-id")
+    assert created.pk != victim.pk
+    assert created.email == "admın@uni.lu"
+
+
+@pytest.mark.django_db
 def test_auth_refuses_when_an_older_row_holds_the_keycloak_username(client):
     """A username is unique. The row belongs to another email, so a steward has to fix it."""
     UserFactory(username="person.example|ul", email="other@example.org", oidc_id=None)
@@ -241,9 +282,9 @@ def test_auth_refuses_a_login_without_the_required_role(client, roles):
     with patch("web.views.user.oauth.keycloak.client_id", CLIENT_ID):
         response = authenticate(client, oidc_token(roles=roles))
 
-    assert response.url == reverse("login")
+    # logout ends the Keycloak session, so the person can try another account
+    assert response.url == reverse("logout")
     assert not User.objects.filter(oidc_id="oidc-id").exists()
-    # the Keycloak session can still be ended, so the person can try another account
     assert client.session["oidc_id_token"] == "id-token"
 
 
@@ -253,5 +294,5 @@ def test_auth_ignores_the_roles_of_another_client(client):
     with patch("web.views.user.oauth.keycloak.client_id", CLIENT_ID):
         response = authenticate(client, oidc_token(roles=["daisy"], client_id="other"))
 
-    assert response.url == reverse("login")
+    assert response.url == reverse("logout")
     assert not User.objects.filter(oidc_id="oidc-id").exists()

@@ -8,6 +8,7 @@ match_keycloak_users is the one-time match of the migration.
 from dataclasses import dataclass, field
 from typing import List, Tuple
 
+from django.conf import settings
 from django.core.management import BaseCommand
 from django.db import IntegrityError, transaction
 
@@ -40,6 +41,11 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        # the scheduled task and /api/keycloak/force both land here
+        if not getattr(settings, "KEYCLOAK_INTEGRATION", False):
+            self.stdout.write("The Keycloak integration is off, nothing to import.")
+            return
+
         dry_run = options["dry_run"]
         backend = KeycloakBackend(get_keycloak_config_from_settings())
         plan = self.plan(backend.get_list_of_users())
