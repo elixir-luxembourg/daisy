@@ -142,20 +142,21 @@ def test_binding_creates_no_user_and_moves_no_access(mock_backend, client):
 
 @pytest.mark.django_db
 @patch("web.views.keycloak.KeycloakBackend")
-def test_binding_refuses_an_account_that_belongs_to_a_contact(mock_backend, client):
+def test_binding_an_account_that_a_contact_holds(mock_backend, client):
+    """A contact is a record, not an identity: the login, REMS and the import bind it too."""
     user = UserFactory(email="person@example.org", oidc_id=None)
-    ContactFactory(oidc_id="keycloak-id", email="person@example.org")
+    contact = ContactFactory(oidc_id="keycloak-id", email="person@example.org")
     mock_backend.return_value.get_external_user_info.return_value = keycloak_account()
     as_superuser(client)
 
     response = client.post(bind_url(user), {"oidc_id": "keycloak-id"})
 
-    assert response.status_code == 409
-    assert response.json()["error"].startswith(
-        "This Keycloak account belongs to a contact in DAISY."
-    )
+    assert response.status_code == 200
     user.refresh_from_db()
-    assert user.oidc_id is None
+    assert user.oidc_id == "keycloak-id"
+    # the access records of the contact stay behind, they need a migration
+    contact.refresh_from_db()
+    assert contact.oidc_id == "keycloak-id"
 
 
 @pytest.mark.django_db

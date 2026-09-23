@@ -9,15 +9,12 @@ from core.lcsb.oidc import (
     get_keycloak_config_from_settings,
     provider_label,
 )
-from core.models import Contact, User
-from core.synchronizers import ExternalUserNotFoundException
-from core.utils import normalized_email
+from core.models import User
+from core.synchronizers import ExternalUserNotFoundException, get_contact
+from core.utils import DaisyLogger, normalized_email
 from web.views.utils import is_superuser
 
-CONTACT_OWNS_THE_ACCOUNT = (
-    "This Keycloak account belongs to a contact in DAISY. Their access records must move "
-    "to a user account first, please ask an administrator."
-)
+logger = DaisyLogger(__name__)
 
 
 @login_required
@@ -83,8 +80,13 @@ def bind_keycloak_identity(request, pk):
             return JsonResponse(
                 {"error": "This Keycloak account has another email."}, status=409
             )
-        if Contact.objects.filter(oidc_id=oidc_id).exists():
-            return JsonResponse({"error": CONTACT_OWNS_THE_ACCOUNT}, status=409)
+        contact = get_contact(oidc_id)
+        if contact:
+            # a contact never blocks a user, but its access rows need a migration
+            logger.warning(
+                f"Contact {contact.pk} holds the Keycloak subject {oidc_id}, "
+                f"the binding leaves its access records behind"
+            )
         if User.objects.filter(oidc_id=oidc_id).exists():
             return JsonResponse(
                 {"error": "This Keycloak account is already used by another user."},
