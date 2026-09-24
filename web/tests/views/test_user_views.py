@@ -3,6 +3,8 @@ from django.shortcuts import reverse
 from django.test.client import Client
 
 from test.factories import (
+    AccessFactory,
+    ContactFactory,
     DataStewardGroup,
     LegalGroup,
     AuditorGroup,
@@ -50,3 +52,53 @@ def test_user_views_permissions(
     user = UserFactory(groups=[group()])
     check_user_views_permissions(url, user)
     check_user_views_permissions(url, user_admin)
+
+
+@pytest.mark.django_db
+def test_users_list_shows_only_the_contacts_that_hold_a_subject(client):
+    bound = ContactFactory(email="bound@example.org", oidc_id="subject-1")
+    ContactFactory(email="plain@example.org", oidc_id=None)
+    client.force_login(UserFactory(is_superuser=True))
+
+    contacts = client.get(reverse("users")).context["contacts"]
+
+    assert [contact.pk for contact in contacts] == [bound.pk]
+
+
+@pytest.mark.django_db
+def test_users_list_resolves_the_user_and_the_access_rows_of_a_contact(client):
+    contact = ContactFactory(email="grantee@example.org", oidc_id="subject-1")
+    user = UserFactory(oidc_id="subject-1")
+    AccessFactory(contact=contact, user=None)
+    client.force_login(UserFactory(is_superuser=True))
+
+    response = client.get(reverse("users"))
+    row = response.context["contacts"][0]
+
+    assert row.user_of_subject == user
+    assert row.access_count == 1
+    assert f"?contact__id__exact={contact.id}" in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_users_list_reports_a_contact_that_no_user_holds(client):
+    ContactFactory(email="orphan@example.org", oidc_id="subject-1")
+    client.force_login(UserFactory(is_superuser=True))
+
+    row = client.get(reverse("users")).context["contacts"][0]
+
+    assert row.user_of_subject is None
+    assert row.access_count == 0
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("integration", [True, False])
+def test_the_keycloak_button_follows_the_integration(settings, client, integration):
+    settings.KEYCLOAK_INTEGRATION = integration
+    UserFactory(oidc_id=None)
+    client.force_login(UserFactory(is_superuser=True))
+
+    page = client.get(reverse("users")).content.decode()
+
+    assert ("keycloak-bind" in page) is integration
+    assert ("keycloak-identity-binder.js" in page) is integration

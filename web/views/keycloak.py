@@ -1,3 +1,6 @@
+from functools import wraps
+
+from django.conf import settings
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
 from django.http import JsonResponse
@@ -17,8 +20,23 @@ from web.views.utils import is_superuser
 logger = DaisyLogger(__name__)
 
 
+def keycloak_required(view):
+    """An instance without the integration has no Keycloak to ask, and asking raises."""
+
+    @wraps(view)
+    def wrapper(request, *args, **kwargs):
+        if not getattr(settings, "KEYCLOAK_INTEGRATION", False):
+            return JsonResponse(
+                {"error": "The Keycloak integration is not enabled."}, status=503
+            )
+        return view(request, *args, **kwargs)
+
+    return wrapper
+
+
 @login_required
 @user_passes_test(is_superuser)
+@keycloak_required
 @require_GET
 def keycloak_candidates(request, pk):
     """
@@ -50,6 +68,7 @@ def keycloak_candidates(request, pk):
 
 @login_required
 @user_passes_test(is_superuser)
+@keycloak_required
 @require_POST
 def bind_keycloak_identity(request, pk):
     """

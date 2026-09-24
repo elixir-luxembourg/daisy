@@ -204,10 +204,21 @@ The role check reads the `resource_access` claim of the OIDC client, so the Keyc
 to add its client roles to the ID token. A person without the role gets "Access not granted" and
 no DAISY user is created for them.
 
+`KEYCLOAK_INTEGRATION` gates the identity binder of `/definitions/users`: without it the `OIDC ID`
+column shows a `-` instead of the `Find in Keycloak` button, and the two `api/keycloak/users/<pk>/`
+endpoints answer `503`.
+
+The same page has a read-only `Contacts with an OIDC ID` tab: the contacts that still hold a
+Keycloak subject, with the user of that subject and the number of their access records. Nothing
+creates such a contact any more, so the list only shrinks. It calls Keycloak for nothing and works
+without the integration. An administrator moves the access records to the user in the Django admin,
+which every row links to.
+
 A login and a REMS entitlement activate the DAISY user of the Keycloak account again when it is
 inactive, so that its access records, custodianships and permissions stay with the person.
 `is_active` is therefore not a way to block somebody: disable their Keycloak account, or take the
-`OIDC_REQUIRED_ROLE` role away from them.
+`OIDC_REQUIRED_ROLE` role away from them. The user form does not offer the field for that reason.
+The Django admin still does, and a login undoes it there too.
 
 ##### LDAP
 

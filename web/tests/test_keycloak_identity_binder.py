@@ -16,6 +16,12 @@ from test.factories import (
 )
 
 
+@pytest.fixture(autouse=True)
+def keycloak_integration(settings):
+    """The endpoints answer 503 without it, so every test here must mock KeycloakBackend."""
+    settings.KEYCLOAK_INTEGRATION = True
+
+
 def keycloak_account(
     oidc_id="keycloak-id",
     email="person@example.org",
@@ -242,6 +248,26 @@ def test_binding_requires_a_superuser(client):
     response = client.post(bind_url(user), {"oidc_id": "keycloak-id"})
 
     assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_candidates_are_unavailable_without_the_integration(settings, client):
+    settings.KEYCLOAK_INTEGRATION = False
+    user = UserFactory(oidc_id=None)
+    as_superuser(client)
+
+    assert client.get(candidates_url(user)).status_code == 503
+
+
+@pytest.mark.django_db
+def test_binding_is_unavailable_without_the_integration(settings, client):
+    settings.KEYCLOAK_INTEGRATION = False
+    user = UserFactory(oidc_id=None)
+    as_superuser(client)
+
+    response = client.post(bind_url(user), {"oidc_id": "keycloak-id"})
+
+    assert response.status_code == 503
 
 
 def test_dataset_form_saves_selected_user_as_local_custodian():
