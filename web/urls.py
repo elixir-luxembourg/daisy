@@ -8,6 +8,7 @@ from web.views import (
     datasets,
     documents,
     legalbasis,
+    keycloak,
     permissions,
     profile,
     projects,
@@ -107,7 +108,6 @@ from web.views.user import (
     UserDelete,
     UserEditView,
     UsersListView,
-    UserPasswordChange,
 )
 from web.views.users import add_personnel_to_project, remove_personnel_from_project
 from web.views.log_entry import LogEntryListView
@@ -132,6 +132,16 @@ web_urls = [
     path("api/rems", api.rems_endpoint, name="api_rems_endpoint"),
     path("api/termsearch/<slug:category>", api.termsearch, name="api_termsearch"),
     path("api/users", api.users, name="api_users"),
+    path(
+        "api/keycloak/users/<int:pk>/candidates",
+        keycloak.keycloak_candidates,
+        name="keycloak_candidates",
+    ),
+    path(
+        "api/keycloak/users/<int:pk>/bind",
+        keycloak.bind_keycloak_identity,
+        name="keycloak_bind_identity",
+    ),
     path(
         "api/keycloak/force",
         api.force_keycloak_synchronization,

@@ -4,7 +4,6 @@ from django.test.client import Client
 
 from core.constants import Permissions
 from test.factories import (
-    VIPGroup,
     DataStewardGroup,
     LegalGroup,
     AuditorGroup,
@@ -43,9 +42,7 @@ def check_contact_view_permissions(url, user, action, contact):
         )
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "url_name, perm",
     [
@@ -72,9 +69,7 @@ def test_contacts_views_permissions(permissions, group, url_name, perm):
     check_contact_view_permissions(url, user, perm, contact)
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 def test_contacts_exports(permissions, group):
     url = reverse("contacts_export")
     user = UserFactory(groups=[group()])

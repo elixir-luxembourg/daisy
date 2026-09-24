@@ -30,6 +30,43 @@ black .
 ./manage.py import_users
 ```
 
+It creates active users without an `oidc_id`. Match them with Keycloak next, before
+`import_keycloak_users` creates a second user for each of them.
+
+## Match the users with Keycloak, once after the migration
+
+Preview the match first:
+
+```bash
+./manage.py match_keycloak_users --dry-run
+```
+
+Apply it after reviewing the report:
+
+```bash
+./manage.py match_keycloak_users
+```
+
+It writes the `oidc_id` of a user, and only when one verified Keycloak account and one DAISY user
+share the email. It reports every other case for a data steward, who binds the identity in the
+`oidc id` column of `/definitions/users`. It changes nothing else: no name, no email, no
+`is_active`.
+
+## Import the new users from Keycloak
+
+The nightly task (`core.tasks.import_keycloak_users`, 2:00), also available as
+`POST /api/keycloak/force`:
+
+```bash
+./manage.py import_keycloak_users --dry-run
+./manage.py import_keycloak_users
+```
+
+It creates a DAISY user for every verified and enabled Keycloak account that DAISY does not know
+yet, with the Keycloak username as it is (`john.doe|ul`) and an unusable password. It never
+updates a user that exists. An account whose email belongs to an active user without an `oidc_id`,
+or to a contact, is reported instead: those need a decision.
+
 ## Import projects, datasets or partners from external system
 
 Single file mode:

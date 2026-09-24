@@ -198,12 +198,39 @@ Defaults work for development; **production requires explicit configuration**.
 | `OIDC_CLIENT_ID`      | OIDC client ID (required if enabled)          | str             | Required when enabled   |
 | `OIDC_CLIENT_SECRET`  | OIDC client secret (required if enabled)      | str             | Required when enabled   |
 | `OIDC_METADATA_URL`   | OIDC metadata URL (required if enabled)       | str             | Required when enabled   |
+| `OIDC_REQUIRED_ROLE`  | Client role a login requires, empty allows every account | str  | `""` (no check)         |
+
+The role check reads the `resource_access` claim of the OIDC client, so the Keycloak client has
+to add its client roles to the ID token. A person without the role gets "Access not granted" and
+no DAISY user is created for them.
+
+`KEYCLOAK_INTEGRATION` gates the identity binder of `/definitions/users`: without it the `OIDC ID`
+column shows a `-` instead of the `Find in Keycloak` button, and the two `api/keycloak/users/<pk>/`
+endpoints answer `503`.
+
+The same page has a read-only `Contacts with an OIDC ID` tab: the contacts that still hold a
+Keycloak subject, with the user of that subject and the number of their access records. Nothing
+creates such a contact any more, so the list only shrinks. It calls Keycloak for nothing and works
+without the integration. An administrator moves the access records to the user in the Django admin,
+which every row links to.
+
+A login and a REMS entitlement activate the DAISY user of the Keycloak account again when it is
+inactive, so that its access records, custodianships and permissions stay with the person.
+`is_active` is therefore not a way to block somebody: disable their Keycloak account, or take the
+`OIDC_REQUIRED_ROLE` role away from them. The user form does not offer the field for that reason.
+The Django admin still does, and a login undoes it there too.
 
 ##### LDAP
 
+LDAP is the `import_users` command only. It never authenticates anybody: Keycloak does, see OIDC
+above. The accounts that the import creates are active and hold no `oidc_id`: the first login
+binds the account of that email, or an administrator binds it in the `OIDC ID` column of
+`/definitions/users`. Run `match_keycloak_users` before `import_keycloak_users`, otherwise the
+Keycloak import does not recognise the imported rows and creates a second user for each person.
+
 | Key                      | Description                                   | Expected values | Default value           |
 | ------------------------ | --------------------------------------------- | --------------- | ----------------------- |
-| `LDAP_ENABLED`           | Enable LDAP authentication                    | bool            | `False`                 |
+| `LDAP_ENABLED`           | Enable the LDAP user import                   | bool            | `False`                 |
 | `AUTH_LDAP_SERVER_URI`   | LDAP server URI (required if enabled)         | str             | Required when enabled   |
 | `AUTH_LDAP_BIND_DN`      | LDAP bind DN                                  | str             | `None`                  |
 | `AUTH_LDAP_BIND_PASSWORD`| LDAP bind password (required if enabled)      | str             | Required when enabled   |

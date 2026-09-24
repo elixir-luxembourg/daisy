@@ -29,6 +29,13 @@ def is_data_steward(user):
         raise PermissionDenied
 
 
+def is_superuser(user):
+    if user.is_superuser:
+        return True
+    else:
+        raise PermissionDenied
+
+
 def can_publish(user):
     if user.can_publish():
         return True

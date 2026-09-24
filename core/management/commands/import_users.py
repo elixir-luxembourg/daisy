@@ -4,31 +4,20 @@ from django.core.management import BaseCommand
 from ...importer.ldap_users_importer import LDAPUsersImporter
 
 
-# TODO: really update rights of users. Disable users that are not in LDAP anymore, ...
 class Command(BaseCommand):
-    help = "Import users from external system and update their rights."
+    """
+    Bulk import of the user definitions of an LDAP directory. Keycloak is the source of the
+    accounts, and this command stays for the instances that still import from LDAP.
+    It creates active and unbound accounts: an administrator binds the Keycloak identity in
+    the `oidc id` column of /definitions/users, a first login binds the account of that email.
+    """
 
-    def add_arguments(self, parser):
-        parser.add_argument(
-            "--skip",
-            action="store_true",
-            dest="skip",
-            help="Skip creation of users, only update their rights.",
-        )
+    help = "Import the users of an LDAP directory."
 
     def handle(self, *args, **options):
-        class_filter = settings.LDAP_USERS_IMPORT_CLASS
-        username_attribute = settings.LDAP_USERS_IMPORT_USERNAME_ATTR
-        search_dn = settings.LDAP_USERS_IMPORT_SEARCH_DN
         ldap_users_importer = LDAPUsersImporter(
-            class_filter, username_attribute, search_dn
+            settings.LDAP_USERS_IMPORT_CLASS,
+            settings.LDAP_USERS_IMPORT_USERNAME_ATTR,
+            settings.LDAP_USERS_IMPORT_SEARCH_DN,
         )
-        skip = options.get("skip")
-        if not skip:
-            ldap_users_importer.import_all_users()
-            pis = settings.PREDEFINED_PIS_LIST
-            for pi in pis:
-                try:
-                    ldap_users_importer.import_from_username(pi, set_pi=True)
-                except AttributeError:
-                    pass
+        ldap_users_importer.import_all_users()

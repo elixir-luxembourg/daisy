@@ -62,7 +62,9 @@ REMS webhook endpoint (IP whitelisting required). **POST only.**
 - IP must be in `REMS_ALLOWED_IP_ADDRESSES`
 
 #### POST `/api/keycloak/force`
-Force Keycloak user synchronization. **POST only.** Requires the global API key.
+Run the Keycloak user import now, the same as the nightly task: it creates a user for every new
+Keycloak account and updates no user that exists. **POST only.** Requires the global API key.
+The response body is the report of the import.
 
 ## Error Responses
 

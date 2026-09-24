@@ -80,10 +80,6 @@ def check_response_context_data(url, user, perm, obj, context_key):
         assert response.context[context_key]
     else:
         assert not response.context[context_key]
-        if user.is_part_of(Group.objects.get(name=Groups.VIP.value)):
-            obj.local_custodians.set([user])
-            response = client.get(url)
-            assert response.context[context_key]
 
     client.logout()
 

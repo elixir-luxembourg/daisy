@@ -3,7 +3,6 @@ from typing import Optional, Union
 from django.shortcuts import reverse
 
 from test.factories import (
-    VIPGroup,
     DataStewardGroup,
     LegalGroup,
     AuditorGroup,
@@ -38,18 +37,12 @@ def check_share_views_permissions(
             assert not user.has_permission_on_object(permission, obj)
 
         check_response_status(url, user, [permission], obj, method)
-        if user.is_part_of(VIPGroup()) and obj is not None:
-            parent_dataset.local_custodians.set([user])
-            assert user.has_permission_on_object(permission, obj)
-            check_response_status(url, user, [permission], obj, method)
 
     else:
         check_response_status(url, user, [], obj, method)
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "url_name, action",
     [

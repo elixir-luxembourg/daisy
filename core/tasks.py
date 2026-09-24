@@ -1,9 +1,10 @@
 from datetime import date
 
 from celery import shared_task
+from django.core.management import call_command
 
 from core.models.access import Access
-from core.lcsb.rems import synchronizer, bulk_update_rems_external_ids
+from core.lcsb.rems import bulk_update_rems_external_ids
 
 
 @shared_task
@@ -16,11 +17,12 @@ def check_accesses_expiration():
 
 
 @shared_task
-def run_synchronizer():
+def import_keycloak_users():
     """
-    Task to synchronize users and contacts with the external system
+    Create a DAISY user for every new Keycloak account, and update no stored row.
+    match_keycloak_users runs once by hand, it is deliberately not scheduled.
     """
-    synchronizer.synchronize_all()
+    call_command("import_keycloak_users")
 
 
 @shared_task

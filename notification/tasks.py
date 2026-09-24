@@ -10,7 +10,6 @@ from notification import NotifyMixin
 from notification.email_sender import send_the_email
 from notification.models import Notification
 
-
 logger = get_task_logger(__name__)
 
 
@@ -111,7 +110,7 @@ def send_notifications_for_user_upcoming_events(
     else:
         exec_date = datetime.strptime(execution_date, "%Y-%m-%d").date()
 
-    users = get_user_model().objects.all()
+    users = get_user_model().objects.filter(is_active=True)
 
     for user in users:
         if only_one_day:

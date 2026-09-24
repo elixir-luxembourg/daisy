@@ -1,18 +1,9 @@
 import ldap
-from django.contrib.auth.models import Group
 from django_auth_ldap.backend import LDAPBackend, _LDAPUser
 from django_auth_ldap.config import LDAPSearch
 
-from core.constants import Groups as GroupConstants
 from core.importer.users_importer import UsersImporter
 from core.models.user import UserSource
-
-
-class ImportLDAPBackend(LDAPBackend):
-    def __init__(self):
-        super().__init__()
-        self.settings.NO_NEW_USERS = False
-        self.settings.USER_QUERY_FIELD = None
 
 
 class LDAPUsersImporter(UsersImporter):
@@ -26,7 +17,7 @@ class LDAPUsersImporter(UsersImporter):
     # self.username_attribute = settings.LDAP_USERS_IMPORT_USERNAME_ATTR
 
     def import_all_users(self):
-        ldap_backend = ImportLDAPBackend()
+        ldap_backend = LDAPBackend()
         ldap_user = _LDAPUser(ldap_backend, username="")
         ldap_search = LDAPSearch(
             self.search_dn,
@@ -41,14 +32,17 @@ class LDAPUsersImporter(UsersImporter):
             else:
                 search_term = result[0].split(",")[0].split("=")[1]
             user = ldap_backend.populate_user(search_term)
+            if user is None:
+                continue
             user.source = UserSource.ACTIVE_DIRECTORY
             user.save()
 
-    def import_from_username(self, username, set_pi=False):
-        ldap_backend = ImportLDAPBackend()
+    def import_from_username(self, username):
+        ldap_backend = LDAPBackend()
         user = ldap_backend.populate_user(username)
+        if user is None:
+            return None
 
-        if set_pi:
-            g = Group.objects.get(name=GroupConstants.VIP.value)
-            user.groups.add(g)
-            # user.save()
+        user.source = UserSource.ACTIVE_DIRECTORY
+        user.save()
+        return user

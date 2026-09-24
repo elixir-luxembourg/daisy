@@ -13,7 +13,6 @@ from django.utils.safestring import mark_safe
 from django.utils.module_loading import import_string
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
-from core import constants
 from core.permissions.mapping import PERMISSION_MAPPING
 from notification import NotifyMixin
 from notification.models import NotificationVerb, Notification
@@ -248,11 +247,7 @@ class Project(CoreTrackedModel, NotifyMixin):
                     "first_name": lc.first_name,
                     "last_name": lc.last_name,
                     "email": lc.email,
-                    "role": (
-                        "Principal_Investigator"
-                        if lc.is_part_of(constants.Groups.VIP.value)
-                        else "Researcher"
-                    ),
+                    "role": "Researcher",
                     "affiliations": [HomeOrganisation().name],
                 }
             )
