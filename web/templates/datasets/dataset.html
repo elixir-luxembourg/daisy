@@ -381,7 +381,9 @@
                                            data-ajax-url="{% url 'dataset_access_edit' pk=access.id dataset_pk=dataset.id %}"
                                            data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}#panel-accesses"></i>
                                         <i class="{{ delc }}" data-lucide="trash-2" data-method="delete"
-                                           title="Delete access"
+                                           title="Revoke access"
+                                           data-confirmation="access revocation"
+                                           data-ajax-redirect-uri="{% url 'dataset' pk=dataset.id %}#panel-accesses"
                                            data-url="{% url 'dataset_access_remove' dataset_pk=dataset.id access_pk=access.id %}"></i>
                                     </span>
                                 </td>
