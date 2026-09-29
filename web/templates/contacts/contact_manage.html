@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% block title %}Manage contacts | DAISY{% endblock %}
+
+{% block content %}
+{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-middle font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top" link="text-primary-700 hover:underline" %}
+    <header class="mt-4 mb-8 flex flex-wrap items-center justify-between gap-4">
+        <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">Manage contacts</h1>
+    </header>
+
+    <p class="mb-4 max-w-prose text-sm text-gray-500">Contacts that still hold a Keycloak subject. Their access records stay on the contact until an administrator moves them to the user in the django admin.</p>
+
+    {% if contacts %}
+        <div class="overflow-x-auto">
+            <table id="contacts_table" class="w-full border-collapse text-sm lg:text-base">
+                <thead>
+                    <tr>
+                        <th scope="col" class="{{ th }}">Name</th>
+                        <th scope="col" class="{{ th }}">Email</th>
+                        <th scope="col" class="{{ th }}">OIDC ID</th>
+                        <th scope="col" class="{{ th }}">Access records</th>
+                        <th scope="col" class="{{ th }}">User with the same OIDC ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contact in contacts %}
+                        <tr class="transition-colors hover:bg-gray-50">
+                            <td class="{{ td }}"><a class="{{ link }}" href="{% url 'admin:core_contact_change' contact.id %}">{{ contact.full_name }}</a></td>
+                            <td class="{{ td }} text-gray-600">{{ contact.email }}</td>
+                            <td class="{{ td }} text-gray-600"><span class="font-mono text-xs">{{ contact.oidc_id }}</span></td>
+                            <td class="{{ td }} text-gray-600">
+                                {% if contact.access_count %}
+                                    <a class="{{ link }}" href="{% url 'admin:core_access_changelist' %}?contact__id__exact={{ contact.id }}">{{ contact.access_count }}</a>
+                                {% else %}
+                                    0
+                                {% endif %}
+                            </td>
+                            <td class="{{ td }} text-gray-600">
+                                {% if contact.user_of_subject %}
+                                    <a class="{{ link }}" href="{% url 'admin:core_user_change' contact.user_of_subject.id %}">{{ contact.user_of_subject.get_full_name|default:contact.user_of_subject.username }}</a>
+                                {% else %}
+                                    none
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="rounded-sm border border-dashed border-gray-300 px-6 py-8 text-center">
+            <p class="text-sm text-gray-500">No contact holds a Keycloak subject.</p>
+        </div>
+    {% endif %}
+{% endwith %}
+{% endblock %}

@@ -29,6 +29,7 @@ from web.views.cohorts import (
 )
 from web.views.contact import (
     ContactCreateView,
+    ContactsManageView,
     ContactDetailView,
     ContactEditView,
     ContactDelete,
@@ -347,6 +348,11 @@ web_urls = [
         name="contact_delete",
     ),
     path("definitions/contacts/export", contacts_export, name="contacts_export"),
+    path(
+        "definitions/contacts/manage",
+        ContactsManageView.as_view(),
+        name="contacts_manage",
+    ),
     # Partners
     path("definitions/partners/", partner_search_view, name="partners"),
     path("definitions/partners/add/", PartnerCreateView.as_view(), name="partner_add"),

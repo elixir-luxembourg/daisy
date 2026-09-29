@@ -5,7 +5,6 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import LoginView
 from django.db import IntegrityError, transaction
-from django.db.models import Count
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import (
@@ -20,7 +19,7 @@ from authlib.integrations.django_client import OAuth
 
 from core.constants import Permissions
 from core.forms.user import UserForm
-from core.models import Contact, User
+from core.models import User
 from core.models.project import ProjectUserObjectPermission
 from core.models.dataset import DatasetUserObjectPermission
 from core.models.user import UserSource
@@ -59,29 +58,7 @@ class UsersListView(ListView):
         context["keycloak_integration"] = getattr(
             settings, "KEYCLOAK_INTEGRATION", False
         )
-        context["contacts"] = self.contacts_holding_a_subject()
         return context
-
-    @staticmethod
-    def contacts_holding_a_subject():
-        """
-        The contacts that still carry a Keycloak subject: a closed set that only a migration
-        empties, and the worklist of the one an administrator does in the django admin.
-        """
-        contacts = list(
-            Contact.objects.filter(oidc_id__isnull=False)
-            .annotate(access_count=Count("access"))
-            .order_by("last_name", "first_name")
-        )
-        user_of_subject = {
-            user.oidc_id: user
-            for user in User.objects.filter(
-                oidc_id__in=[contact.oidc_id for contact in contacts]
-            )
-        }
-        for contact in contacts:
-            contact.user_of_subject = user_of_subject.get(contact.oidc_id)
-        return contacts
 
 
 @superuser_required()

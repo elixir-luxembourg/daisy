@@ -5,12 +5,20 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.http import require_http_methods
-from django.views.generic import CreateView, DetailView, UpdateView, DeleteView
+from django.db.models import Count
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    ListView,
+    UpdateView,
+    DeleteView,
+)
 
 from core.forms import ContactForm, PickContactForm
-from core.models import Contact, Project, DAC
+from core.models import Contact, Project, DAC, User
 from core.permissions import permission_required, CheckerMixin
 from web.views.utils import AjaxViewMixin
+from web.views.user import superuser_required
 from core.constants import Permissions
 from . import facet_view_utils
 
@@ -78,6 +86,32 @@ def add_contact_to_project(request, pk):
         "modal_form.html",
         {"form": form, "submit_url": request.get_full_path()},
     )
+
+
+@superuser_required()
+class ContactsManageView(ListView):
+    """The contacts that still carry a Keycloak subject: the worklist of the migration an
+    administrator does in the django admin. Only a migration empties it."""
+
+    model = Contact
+    template_name = "contacts/contact_manage.html"
+    context_object_name = "contacts"
+
+    def get_queryset(self):
+        contacts = list(
+            Contact.objects.filter(oidc_id__isnull=False)
+            .annotate(access_count=Count("access"))
+            .order_by("last_name", "first_name")
+        )
+        user_of_subject = {
+            user.oidc_id: user
+            for user in User.objects.filter(
+                oidc_id__in=[contact.oidc_id for contact in contacts]
+            )
+        }
+        for contact in contacts:
+            contact.user_of_subject = user_of_subject.get(contact.oidc_id)
+        return contacts
 
 
 class ContactCreateView(CreateView, AjaxViewMixin):
