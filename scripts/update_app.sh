@@ -34,10 +34,8 @@ docker compose exec web python manage.py rebuild_index --noinput
 docker compose exec web python manage.py import_users \
     || echo "Warning: import_users failed (LDAP/AD may be unavailable)." >&2
 
-# rm the images the update replaced: untagged leftovers, then older daisy tags
-docker image prune -f
-docker images --format '{{.Repository}}:{{.Tag}}' ghcr.io/elixir-luxembourg/daisy \
-    | grep -vx "${APP_IMAGE}" \
-    | xargs -r docker rmi >/dev/null 2>&1 || true
+# rm the daisy images no container uses any more, tagged old versions included.
+# The label scopes the prune, leaving anything else on this Docker host alone.
+docker image prune -af --filter "label=org.opencontainers.image.source=https://github.com/elixir-luxembourg/daisy"
 
 echo "Done!"
