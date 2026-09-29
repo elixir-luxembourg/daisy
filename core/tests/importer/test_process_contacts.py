@@ -163,6 +163,22 @@ def test_a_person_without_a_keycloak_account_becomes_a_contact(importer):
 
 
 @pytest.mark.django_db
+def test_keycloak_that_does_not_answer_gives_a_contact(importer):
+    """The import does not stop, and it invents no user."""
+    PartnerFactory(name="Example Partner")
+
+    with patch(
+        "core.importer.base_importer.KeycloakBackend"
+    ) as backend, override_settings(KEYCLOAK_INTEGRATION=True):
+        backend.return_value.get_users_by_email.side_effect = Exception("no answer")
+        custodians, personnel, contacts = importer.process_contacts([contact_dict()])
+
+    assert (custodians, personnel) == ([], [])
+    assert [contact.email for contact in contacts] == ["person@example.org"]
+    assert not User.objects.filter(email="person@example.org").exists()
+
+
+@pytest.mark.django_db
 def test_an_existing_contact_is_reused(importer):
     partner = PartnerFactory(name="Example Partner")
     contact = ContactFactory(
