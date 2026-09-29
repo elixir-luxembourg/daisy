@@ -56,9 +56,10 @@
                                 {% endif %}
                                 {% if request.user.is_superuser %}
                                 <li><a href="{% url 'users' %}" class="{{ item }}">manage users</a></li>
+                                <li><a href="{% url 'contacts_manage' %}" class="{{ item }}">manage contacts</a></li>
                                 <li><a href="{% url 'admin:index' %}" class="{{ item }}">django-admin</a></li>
                                 {% endif %}
-                                {% if request.user.source.name == 'MANUAL' %}<li><a href="{% url 'users_change_password' %}" class="{{ item }}">change password</a></li>{% endif %}
+                                {% if request.user.has_usable_password %}<li><a href="{% url 'users_change_password' %}" class="{{ item }}">change password</a></li>{% endif %}
                                 <li><a href="{% url 'logout' %}" class="{{ item }}">logout</a></li>
                             </ul>
                         </details>

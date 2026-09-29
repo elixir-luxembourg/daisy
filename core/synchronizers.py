@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List, Tuple, Optional, Union, Type
-from core.models import User, Contact, ContactType, Partner
-from core.utils import DaisyLogger
+from dataclasses import dataclass
+from typing import Dict, List, Optional
+
+from core.constants import IdentityProvider
+from core.models import Contact, User, UserSource
+from core.utils import DaisyLogger, normalized_email, records_with_email
 
 logger = DaisyLogger(__name__)
 
@@ -10,16 +13,20 @@ class AccountSynchronizationException(Exception):
     pass
 
 
-class InconsistentSynchronizerStateException(AccountSynchronizationException):
-    pass
-
-
 class ExternalUserNotFoundException(AccountSynchronizationException):
     pass
 
 
-class NoUserOrContactFoundInDaisyException(AccountSynchronizationException):
-    pass
+@dataclass
+class OIDCUser:
+    id: str
+    email: str
+    first_name: str
+    last_name: str
+    username: str
+    identity_provider: Optional[IdentityProvider] = None
+    # a disabled account must not become an active DAISY user
+    enabled: Optional[bool] = None
 
 
 class AccountSynchronizationBackend(ABC):
@@ -29,10 +36,9 @@ class AccountSynchronizationBackend(ABC):
     """
 
     @abstractmethod
-    def get_list_of_users(self) -> List[Dict]:
+    def get_list_of_users(self) -> List[OIDCUser]:
         """
-        Should return a list of dictionaries with user information,
-        like: {'id': '', 'email': '', 'first_name': '', etc. }
+        Should return a list of OIDCUser objects with user information.
         """
         pass
 
@@ -45,264 +51,98 @@ class AccountSynchronizationBackend(ABC):
         pass
 
     @abstractmethod
-    def get_external_user_info(self, oidc_id: str) -> Dict[str, str]:
+    def get_external_user_info(self, oidc_id: str) -> OIDCUser:
         """
-        Should return a dictionary with the user information
+        Should return the external account as an OIDCUser
         """
         pass
 
 
-def find_and_update_user_or_contact(
-    user_or_contact_model: Union[Type[User], Type[Contact]],
-    info: Dict[str, str],
-    oidc_id: Optional[str] = None,
-    email: Optional[str] = None,
-) -> Optional[Union[User, Contact]]:
+def create_user(account: OIDCUser) -> User:
     """
-    Update the user or contact record based on the information provided.
-    User or contact are found based on the oidc_id or email.
-    If the oidc_id is provided, the email is ignored.
-    If the oidc_id is not provided, the email is used to find the user or contact but only select
-     users without oidc_id
-    If not match is found, function return None
-    If a match is found and updated, the function return the updated entity
+    Create a DAISY user for a Keycloak account, with the username that Keycloak gives, and an
+    unusable password: the password lives in Keycloak.
+    The username and the subject are unique in the realm, so a duplicate is an older DAISY row
+    and it raises IntegrityError. The caller decides that the account needs a user.
     """
-    if not oidc_id and not email:
-        return None
-    if not oidc_id:
-        try:
-            entity = user_or_contact_model.objects.get(email=email)
-        except user_or_contact_model.DoesNotExist:
-            return None
-        except user_or_contact_model.MultipleObjectsReturned as e:
-            raise InconsistentSynchronizerStateException(
-                f"Multiple {user_or_contact_model.__name__} found for this email {email}",
-            ) from e
-        # we only update users based on email if their oidc_id is not set
-        if entity.oidc_id:
-            raise InconsistentSynchronizerStateException(
-                f"OIDC don't match for {user_or_contact_model.__name__} with email {email}, {oidc_id} expected while {entity.oidc_id} found in daisy"
-            )
-    else:
-        try:
-            entity = user_or_contact_model.objects.get(oidc_id=oidc_id)
-        except user_or_contact_model.DoesNotExist:
-            return None
-    update_user_or_contact_from_dict(entity, info)
-    entity.save()
-    return entity
-
-
-def find_and_update_user(
-    user_info: Dict[str, str],
-    oidc_id: Optional[str] = None,
-    email: Optional[str] = None,
-) -> Optional[User]:
-    """
-    Find and update the user record based on the information provided
-    Returns True if a user for this oidc_id or email was found and updated, False otherwise
-    """
-    return find_and_update_user_or_contact(User, user_info, oidc_id, email)
-
-
-def find_and_update_contact(
-    contact_info: Dict[str, str],
-    oidc_id: Optional[str] = None,
-    email: Optional[str] = None,
-) -> Optional[Contact]:
-    """
-    Find and update the contact record based on the information provided
-    Returns True if a contact for this oidc_id was found and updated, False otherwise
-    """
-    return find_and_update_user_or_contact(Contact, contact_info, oidc_id, email)
-
-
-def create_contact(contact_dict):
-    """
-    Create a new contact based on the information provided in contact_dict
-    """
-    contact = Contact()
-    update_user_or_contact_from_dict(contact, contact_dict)
-    contact_type, _ = ContactType.objects.get_or_create(name="Other")
-    partner, _ = Partner.objects.get_or_create(
-        acronym="Imported from Keycloak", name="Imported from Keycloak"
+    user = User(
+        username=account.username,
+        email=normalized_email(account.email),
+        first_name=account.first_name or "",
+        last_name=account.last_name or "",
+        oidc_id=account.id,
+        source=UserSource.ACTIVE_DIRECTORY,
     )
-    contact.type = contact_type
-    contact.save()
-    contact.partners.add(partner)
-    contact.save()
-    return contact
+    user.set_unusable_password()
+    user.save()
+    return user
 
 
-def update_user_or_contact_from_dict(entity, info):
+def activated(user: User) -> User:
     """
-    Update some basic fields of user or contact entity based on the information provided in info
+    The row of a Keycloak subject is the person: a login and an entitlement activate it again
+    instead of creating a second one. A person is blocked in Keycloak now, not with is_active.
     """
-    entity.last_name = info.get("last_name", entity.last_name)
-    entity.first_name = info.get("first_name", entity.first_name)
-    entity.email = info.get("email", entity.email)
-    entity.oidc_id = info.get("id")
+    if not user.is_active:
+        user.is_active = True
+        user.save(update_fields=["is_active"])
+    return user
 
 
-def check_inconsistent_state(oidc_id, email):
+def get_contact(oidc_id: str, email: Optional[str] = None) -> Optional[Contact]:
     """
-    Check if there is an inconsistent state in the database,
-    i.e. multiple users or contacts with the same oidc_id or email
+    The contact of this Keycloak subject, or of this email. A subject always becomes a user, so
+    such a contact is a record to migrate: its access rows stay on the contact until then.
     """
-    users_by_oidc_count = User.objects.filter(oidc_id=oidc_id).count()
-    contacts_by_oidc_count = Contact.objects.filter(oidc_id=oidc_id).count()
-    if (users_by_oidc_count + contacts_by_oidc_count) > 1:
-        raise InconsistentSynchronizerStateException(
-            f"Multiple users or contacts found for this oidc_id {oidc_id}"
-        )
-    users_by_email_count = User.objects.filter(email=email).count()
-    contacts_by_email_count = Contact.objects.filter(email=email).count()
-    if (users_by_email_count + contacts_by_email_count) > 1:
-        raise InconsistentSynchronizerStateException(
-            f"Multiple users or contacts found for this email {email}"
-        )
+    contact = Contact.objects.filter(oidc_id=oidc_id).first()
+    if contact or not email:
+        return contact
+    contacts = records_with_email(Contact.objects.all(), email)
+    return contacts[0] if contacts else None
 
 
-class AccountSynchronizer(ABC):
+def user_for_oidc_id(
+    backend: AccountSynchronizationBackend, oidc_id: str, email: Optional[str] = None
+) -> User:
     """
-    Class that does the synchronization of the account information
-    based on the information provided by the synchronizer class
+    The DAISY user of a Keycloak subject, for REMS, which names the subject and nothing else:
+    the stored user of that subject, else the Keycloak account, which becomes a user.
+    A contact is never the answer, it is only reported. An unknown subject raises
+    ExternalUserNotFoundException. `email` is what REMS sent, for an account without one.
     """
+    user = User.objects.filter(oidc_id=oidc_id).first()
+    if user:
+        return activated(user)
 
-    @abstractmethod
-    def test_connection(self) -> bool:
-        """
-        Should test the connection of the synchronizer and raise an exception
-        if there is something wrong.
-        """
-        pass
-
-    @abstractmethod
-    def synchronize_all(self) -> bool:
-        """
-        Should perform the synchronization itself
-        """
-        pass
-
-    @abstractmethod
-    def build_user_dict(
-        self, external_user_information: Dict[str, str]
-    ) -> Dict[str, str]:
-        """
-        Should build a dictionary with the user information based on Daisy User model
-        """
-        pass
-
-    @abstractmethod
-    def build_contact_dict(
-        self, external_user_information: Dict[str, str]
-    ) -> Dict[str, str]:
-        """
-        Should build a dictionary with the user information based on Daisy Contact model
-        """
-        pass
-
-    def retrieve_and_update_user_or_contact(
-        self,
-        oidc_id: str,
-        email: Optional[str] = None,
-        create_contact_if_not_found: bool = False,
-    ) -> Optional[Union[User, Contact]]:
-        """
-        Retrieve the user or contact information from the external source and update the corresponding daisy user
-         or contact
-        """
-        logger.info(
-            f"Retrieve and update or create contact operation started for oidc_id {oidc_id}, email {email}"
+    contact = get_contact(oidc_id, email)
+    if contact:
+        logger.warning(
+            f"Contact {contact.pk} holds the Keycloak subject {oidc_id} or its email: the "
+            f"entitlement goes to a user, the access records of the contact need a migration"
         )
-        logger.info(
-            "Checking for inconsistent state (multiple users or contacts with same oidc_id or email)"
-        )
+    account = backend.get_external_user_info(oidc_id)
+    return bind_or_create_user(account, normalized_email(account.email or email))
 
-        logger.info("Retrieving user information from external source")
-        external_user_information = self.synchronizer_backend.get_external_user_info(
-            oidc_id
-        )
-        logger.info("User details retrieved")
-        return self.update_user_or_contact(
-            external_user_information, oidc_id, email, create_contact_if_not_found
-        )
 
-    def update_user_or_contact(
-        self,
-        external_user_information: Dict[str, str],
-        oidc_id: str,
-        email: Optional[str] = None,
-        create_contact_if_not_found: bool = False,
-    ):
-        """
-        Update the user or contact record based on the information provided.
-        Implements the logic and fallbacks for finding a matching user or contact, in that order:
-        1) Search user matching the oidc_id
-        2) If not found, search contact matching the oidc_id
-        3) If not found, search user matching the email
-        4) If not found, search contact matching the email
-        5) If not found, create a new contact (if create_contact_if_not_found is True)
-        Return the matching user or contact if found or created, None otherwise
-        """
-        check_inconsistent_state(oidc_id, email)
-        logger.info("No inconsistency found")
-        user_dict = self.build_user_dict(external_user_information)
-        logger.info(
-            f"Trying to find and update corresponding daisy user based on oidc_id {oidc_id}"
-        )
-        user = find_and_update_user(user_info=user_dict, oidc_id=oidc_id)
-        if user:
-            logger.info(f"Matching user found and updated for daisy user id: {user.id}")
-            return user
-        logger.info("No matching user found based on oidc_id")
-        logger.info(
-            f"Trying to find and update corresponding daisy contact based on oidc_id {oidc_id}"
-        )
-        contact_dict = self.build_contact_dict(external_user_information)
-        contact = find_and_update_contact(contact_info=contact_dict, oidc_id=oidc_id)
-        if contact:
-            logger.info(
-                f"Matching contact found and updated for daisy contact id: {contact.id}",
-            )
-            return contact
-        logger.info("No matching contact found based on oidc_id")
-        if email:
-            logger.info(
-                f"Trying to find and update corresponding daisy user based on email {email}"
-            )
-            user = find_and_update_user(user_info=user_dict, email=email)
-            if user:
-                logger.info(
-                    f"Matching user found and updated for daisy user id: {user.id}"
-                )
-                return user
-            logger.info("No matching user found based on email")
-            logger.info(
-                f"Trying to find and update corresponding daisy contact based on email {email}"
-            )
-            contact = find_and_update_contact(contact_info=contact_dict, email=email)
-            if contact:
-                logger.info(
-                    f"Matching contact found and updated for daisy contact id: {contact.id}",
-                )
-                return contact
-        logger.info("No matching contact found based on email")
-        if create_contact_if_not_found:
-            contact = create_contact(contact_dict)
-            logger.info("New contact created")
-            return contact
-        else:
-            logger.info("No matching user or contact found, no contact created neither")
-            raise NoUserOrContactFoundInDaisyException(
-                "no user or contact found for this oidc_id"
-            )
+def bind_or_create_user(account: OIDCUser, email: Optional[str] = None) -> User:
+    """
+    Bind the account to the DAISY user of its email when exactly one active user waits unbound,
+    and create a user otherwise. An inactive user is never adopted: a login cannot activate a
+    stored row, so the identity needs a user of its own.
+    """
+    candidates = records_with_email(
+        User.objects.filter(oidc_id__isnull=True, is_active=True), email
+    )
+    if len(candidates) == 1:
+        user = candidates[0]
+        user.oidc_id = account.id
+        user.save(update_fields=["oidc_id"])
+        return user
+    return create_user(account)
 
 
 class DummySynchronizationBackend(AccountSynchronizationBackend):
-    """
-    This synchronizer will never report that there is something to change in the accounts
-    """
+    """The backend of an instance without the Keycloak integration: it knows no account."""
 
     def __init__(self, config: Dict = None, connect=False) -> None:
         pass
@@ -310,55 +150,10 @@ class DummySynchronizationBackend(AccountSynchronizationBackend):
     def test_connection(self) -> bool:
         return True
 
-    def get_list_of_users(self) -> List[Dict]:
+    def get_list_of_users(self) -> List[OIDCUser]:
         return []
 
-    def get_external_user_info(self, oidc_id: str) -> Dict[str, str]:
-        raise NotImplementedError
-
-
-class DummyAccountSynchronizer(AccountSynchronizer):
-    """
-    This synchronizer will never change the accounts
-    (moreover it will allow to skip passing the synchronizer in the constructor)
-    """
-
-    def __init__(self, synchronizer_backend):
-        self.synchronizer_backend = synchronizer_backend
-
-    def build_user_dict(
-        self, external_user_information: Dict[str, str]
-    ) -> Dict[str, str]:
-        return {
-            "first_name": external_user_information.get(
-                "first_name", "FIRST_NAME_MISSING"
-            ),
-            "last_name": external_user_information.get(
-                "last_name", "LAST_NAME_MISSING"
-            ),
-            "email": external_user_information.get("email"),
-            "id": external_user_information.get("id"),
-        }
-
-    def build_contact_dict(
-        self, external_user_information: Dict[str, str]
-    ) -> Dict[str, str]:
-        return {
-            "first_name": external_user_information.get(
-                "first_name", "FIRST_NAME_MISSING"
-            ),
-            "last_name": external_user_information.get(
-                "last_name", "LAST_NAME_MISSING"
-            ),
-            "email": external_user_information.get("email"),
-            "id": external_user_information.get("id"),
-        }
-
-    def test_connection(self):
-        return True
-
-    def compare(self) -> Tuple[List, List, List]:
-        return [], [], []
-
-    def synchronize_all(self) -> bool:
-        return True
+    def get_external_user_info(self, oidc_id: str) -> OIDCUser:
+        raise ExternalUserNotFoundException(
+            f"The Keycloak integration is off, DAISY cannot resolve the subject {oidc_id}"
+        )

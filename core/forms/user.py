@@ -6,39 +6,23 @@ from core.models import User
 
 
 class UserForm(forms.ModelForm):
+    """
+    Create and edit a user, whatever its source. Keycloak is the only source of the accounts now,
+    and the email has to stay editable: it is the key of the identity binding of a stored user.
+    `is_active` is not here: a login activates the row again, so the field would promise a block
+    it cannot hold. Disable the Keycloak account, or take the OIDC_REQUIRED_ROLE role away.
+    """
+
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "password", "is_active", "groups"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        fields = ["first_name", "last_name", "email", "groups"]
 
     field_order = [
         "first_name",
         "last_name",
         "email",
-        "password",
-        "is_active",
         "groups",
     ]
-
-
-class UserEditFormActiveDirectory(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = ["is_active", "groups"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-
-class UserEditFormManual(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = ["first_name", "last_name", "email", "is_active", "groups"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
 
 class PickUserForm(forms.Form):
@@ -71,19 +55,3 @@ class UserAuthForm(AuthenticationForm):
             }
         )
     )
-
-    def clean(self):
-        username = self.cleaned_data.get("username")
-        suffix = getattr(settings, "LOGIN_USERNAME_SUFFIX", "")
-        if username and suffix:
-            if not username.endswith(suffix):
-                alternative_suffix = getattr(
-                    settings, "LOGIN_USERNAME_ALTERNATIVE_SUFFIX", ""
-                )
-                if alternative_suffix and username.endswith(alternative_suffix):
-                    self.cleaned_data["username"] = (
-                        username[0 : -len(alternative_suffix)] + suffix
-                    )
-                else:
-                    self.cleaned_data["username"] = username + suffix
-        return super().clean()

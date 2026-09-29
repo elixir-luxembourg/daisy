@@ -9,7 +9,6 @@ from core.models import (
 )
 from test.factories import (
     UserFactory,
-    VIPGroup,
     StorageResourceFactory,
     DatasetFactory,
     ExposureFactory,
@@ -63,9 +62,7 @@ def test_dataset_wizard_form(
     - The relationships between the created dataset and other objects (like data declarations,
       data locations, etc.) are correctly established.
     """
-    vip_user = UserFactory.create(
-        groups=[VIPGroup()], first_name="Rebecca", last_name="Kafe"
-    )
+    custodian = UserFactory.create(first_name="Rebecca", last_name="Kafe")
     storage_backend = StorageResourceFactory.create(
         name="test_backend", managed_by="test"
     )
@@ -75,7 +72,7 @@ def test_dataset_wizard_form(
     wizard_test_data = {
         "dataset": [
             {
-                "dataset-local_custodians": [vip_user.id],
+                "dataset-local_custodians": [custodian.id],
                 "dataset-title": ["Hello Dataset"],
                 "dataset-project": [],
                 "dataset-comments": ["A comment"],
@@ -119,7 +116,7 @@ def test_dataset_wizard_form(
         "access": [
             {
                 "access-contact": [],
-                "access-user": [vip_user.id],
+                "access-user": [custodian.id],
                 "access-project": [""],
                 "access-granted_on": [""],
                 "access-grant_expires_on": [""],

@@ -104,11 +104,11 @@ class DatasetForm(forms.ModelForm):
                 errors.append("Unable to update project information.")
 
         local_custodians = cleaned_data.get("local_custodians", [])
-        if not local_custodians or not local_custodians.vips().exists():
-            errors.append("Local custodian information is missing or incomplete.")
+        if not local_custodians:
+            errors.append("Local custodian information is missing.")
             self.add_error(
                 "local_custodians",
-                "At least one PI must be in the responsible persons.",
+                "At least one local custodian is required.",
             )
 
         if errors:

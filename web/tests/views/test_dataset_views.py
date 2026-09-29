@@ -5,7 +5,6 @@ from django.shortcuts import reverse
 from django.test.client import Client
 
 from test.factories import (
-    VIPGroup,
     DataStewardGroup,
     LegalGroup,
     AuditorGroup,
@@ -53,9 +52,7 @@ def check_dataset_views_permissions(
         check_response_status(url, user, [], dataset)
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "url_name, action",
     [
@@ -84,9 +81,7 @@ def test_dataset_views_permissions(permissions, group, url_name, action):
 
 
 @pytest.mark.skip("Dataset templates do not display documents")
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 def test_dataset_view_protected_documents(permissions, group):
     dataset = DatasetFactory()
     user = UserFactory(groups=[group()])
@@ -110,20 +105,9 @@ def test_dataset_view_protected_documents(permissions, group):
             not in response.content
         )
 
-    if user.is_part_of(VIPGroup()):
-        dataset.local_custodians.set([user])
-        response = client.get(url, follow=True)
-        assert b'<div class="row mt-4" id="documents-card">' in response.content
-        assert (
-            b'<h2 class="card-title"><span><i class="material-icons">description</i></span> Documents</h2>'
-            in response.content
-        )
-
 
 @pytest.mark.skip("Dataset templates do not display documents")
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 def test_dataset_edit_protected_documents(permissions, group):
     document = DatasetDocumentFactory(with_file=True)
     dataset = document.content_object
@@ -158,25 +142,10 @@ def test_dataset_edit_protected_documents(permissions, group):
         )
         assert b'<td id="document-action">' not in response.content
 
-    if user.is_part_of(VIPGroup()):
-        dataset.local_custodians.set([user])
-        response = client.get(url, follow=True)
-        assert (
-            b'<div class="ml-1 float-right btn-group" id="add-dataset-document">'
-            in response.content
-        )
-        assert (
-            b'<th id="document-action-head" style="width:7em">Actions</th>'
-            in response.content
-        )
-        assert b'<td id="document-action">' in response.content
-
     os.remove(document.content.name)
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize("url_name", ["datasets_export"])
 def test_dataset_publications(permissions, group, url_name):
     kwargs = {}
@@ -197,9 +166,7 @@ def test_dataset_publications(permissions, group, url_name):
         ("is_admin", f"core.{Permissions.ADMIN.value}_dataset"),
     ],
 )
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 def test_dataset_views_context(permissions, context_key, permission_key, group):
     user = UserFactory(groups=[group()])
     dataset = DatasetFactory()
@@ -212,7 +179,6 @@ def test_dataset_views_context(permissions, context_key, permission_key, group):
 @pytest.mark.parametrize(
     "group, expected_result",
     [
-        (VIPGroup, False),
         (DataStewardGroup, True),
         (LegalGroup, False),
         (AuditorGroup, False),

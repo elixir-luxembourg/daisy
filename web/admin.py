@@ -223,6 +223,13 @@ class UserAdmin(BaseUserAdmin):
     form = UserChangeForm  # Form to change user
     add_form = UserCreationForm  # Form to add new user
 
+    def get_readonly_fields(self, request, obj=None):
+        readonly = tuple(super().get_readonly_fields(request, obj))
+        # a stored oidc_id is immutable, see User.save()
+        if obj and obj.oidc_id:
+            return readonly + ("oidc_id",)
+        return readonly
+
     # The fields to be used in displaying the User model in `/admin/core/user/`
     list_display = (
         "id",

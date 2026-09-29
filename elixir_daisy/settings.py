@@ -392,6 +392,10 @@ if OIDC_ENABLED := env.bool("OIDC_ENABLED", default=False):
         }
     }
 
+# The client role that a login requires, empty allows every account of the realm. It comes from
+# the `resource_access` claim, so Keycloak has to add the client roles to the ID token
+OIDC_REQUIRED_ROLE = env("OIDC_REQUIRED_ROLE", default="")
+
 if DEBUG:
     DEBUG_TOOLBAR_PANELS = [
         "debug_toolbar.panels.versions.VersionsPanel",
@@ -410,14 +414,12 @@ if DEBUG:
 
 GLOBAL_API_KEY = env("GLOBAL_API_KEY")
 
-# if LDAP authentication will be used and user definitions will be bulk imported from LDAP
+# if user definitions will be bulk imported from LDAP. Users authenticate with Keycloak,
+# LDAPBackend is deliberately not in AUTHENTICATION_BACKENDS, the importer calls populate_user()
 if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
     import ldap
     from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 
-    AUTHENTICATION_BACKENDS = [
-        "django_auth_ldap.backend.LDAPBackend",
-    ] + AUTHENTICATION_BACKENDS
     AUTH_LDAP_SERVER_URI = env("AUTH_LDAP_SERVER_URI", default=None)
 
     if env.bool("AUTH_LDAP_IGNORE_CERT_ERRORS", default=False):
@@ -466,17 +468,11 @@ if LDAP_ENABLED := env.bool("LDAP_ENABLED", default=False):
         "last_name": "sn",
         "email": "mail",
     }
-    AUTH_LDAP_USER_QUERY_FIELD = "email"
-    AUTH_LDAP_NO_NEW_USERS = True
     LDAP_USERS_IMPORT_CLASS = env("LDAP_USERS_IMPORT_CLASS", default="")
     LDAP_USERS_IMPORT_USERNAME_ATTR = env(
         "LDAP_USERS_IMPORT_USERNAME_ATTR", default="userprincipalname"
     )
     AUTH_LDAP_USER_DN_TEMPLATE = env("AUTH_LDAP_USER_DN_TEMPLATE", default=None)
-
-# list of usernames of users that will imported and set as pi when
-# import_users is used to bulk create users from an LDAP server
-PREDEFINED_PIS_LIST = env.list("PREDEFINED_PIS_LIST", default=[])
 
 from celery.schedules import crontab
 
@@ -493,15 +489,18 @@ CELERY_BEAT_SCHEDULE = {
         "task": "notification.tasks.send_notifications_for_user_upcoming_events",
         "schedule": crontab(minute=0, hour=7),  # Execute task in the morning
     },
-    "synchronizer-every-day": {
-        "task": "core.tasks.run_synchronizer",
-        "schedule": crontab(minute=0, hour=2),  # Execute task at 2am
-    },
     "update-rems-application-external-id": {
         "task": "core.tasks.update_rems_access_external_id",
         "schedule": crontab(minute=0, hour=3),  # Execute task at 3am
     },
 }
+
+# match_keycloak_users is the one-time match of the migration, it is not scheduled
+if KEYCLOAK_INTEGRATION:
+    CELERY_BEAT_SCHEDULE["import-keycloak-users-every-day"] = {
+        "task": "core.tasks.import_keycloak_users",
+        "schedule": crontab(minute=0, hour=2),  # Execute task at 2am
+    }
 
 
 if ENVIRONMENT == "test":

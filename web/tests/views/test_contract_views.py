@@ -5,7 +5,6 @@ from django.shortcuts import reverse
 from django.test.client import Client
 
 from test.factories import (
-    VIPGroup,
     DataStewardGroup,
     LegalGroup,
     AuditorGroup,
@@ -53,9 +52,7 @@ def check_contract_view_permissions(
         check_response_status(url, user, [], contract)
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "url_name, perm",
     [
@@ -84,9 +81,7 @@ def test_contract_views_permissions(permissions, group, url_name, perm):
     check_contract_view_permissions(url, user, perm, contract)
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 def test_contract_view_protected_documents(permissions, group):
     contract = ContractFactory()
     user = UserFactory(groups=[group()])
@@ -97,23 +92,11 @@ def test_contract_view_protected_documents(permissions, group):
     url = reverse("contract", kwargs={"pk": contract.pk})
     response = client.get(url, follow=True)
 
-    if user.is_part_of(VIPGroup()):
-        assert b'id="documents-card"' not in response.content
-        assert b'data-lucide="file-text"' not in response.content
-
-        contract.local_custodians.set([user])
-        response = client.get(url, follow=True)
-        assert b'id="documents-card"' in response.content
-        assert b'data-lucide="file-text"' in response.content
-
-    else:
-        assert b'id="documents-card"' in response.content
-        assert b'data-lucide="file-text"' in response.content
+    assert b'id="documents-card"' in response.content
+    assert b'data-lucide="file-text"' in response.content
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 def test_contract_edit_protected_documents(permissions, group):
     document = ContractDocumentFactory(with_file=True)
     contract = document.content_object
@@ -141,31 +124,17 @@ def test_contract_edit_protected_documents(permissions, group):
         assert b'id="document-action-head"' not in response.content
         assert b'id="document-action"' not in response.content
 
-    if user.is_part_of(VIPGroup()):
-        contract.local_custodians.set([user])
-        response = client.get(url, follow=True)
-        assert (
-            b'<div class="flex justify-end" id="add-contract-document">'
-            in response.content
-        )
-        assert b'id="document-action-head"' in response.content
-        assert b'id="document-action"' in response.content
-
     os.remove(document.content.name)
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, AuditorGroup, LegalGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, AuditorGroup, LegalGroup])
 def test_contract_export(permissions, group):
     url = reverse("contracts_export")
     user = UserFactory(groups=[group()])
     check_datasteward_restricted_url(url, user)
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 def test_contract_views_context(permissions, group):
     user = UserFactory(groups=[group()])
     contract = ContractFactory()

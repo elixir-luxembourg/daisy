@@ -6,12 +6,11 @@ from datetime import datetime
 from typing import Dict, List
 
 from django.conf import settings
-from django.contrib.auth.models import Group
 
-from core.constants import Groups as GroupConstants
+from core.lcsb.oidc import KeycloakBackend, get_keycloak_config_from_settings
 from core.models import Partner, Contact, ContactType, User
-from core.utils import DaisyLogger
-
+from core.synchronizers import get_contact, create_user
+from core.utils import DaisyLogger, normalized_email, records_with_email
 
 PRINCIPAL_INVESTIGATOR = "Principal_Investigator"
 
@@ -43,6 +42,8 @@ class BaseImporter:
         self.exit_on_error = exit_on_error
         self.validate = validate
         self.skip_on_exist = skip_on_exist
+        # one connection per import, process_contacts asks Keycloak per contact
+        self._keycloak_backend = None
 
     @property
     def json_schema_validator(self):
@@ -178,6 +179,12 @@ class BaseImporter:
         return result
 
     def process_contacts(self, contacts_list: List[Dict]):
+        """
+        Resolve every contact of an import file: a DAISY user, else a Keycloak account, which
+        becomes a user, else a contact.
+        Keycloak decides who is a user, because an account means the person can log in. The
+        affiliation of the file does not decide it.
+        """
         if not isinstance(contacts_list, list):
             self.logger.warning(
                 "Contact list is not a list... Please check the imported file."
@@ -190,18 +197,19 @@ class BaseImporter:
         for contact_dict in contacts_list:
             first_name = contact_dict.get("first_name").strip()
             last_name = contact_dict.get("last_name").strip()
-            email = contact_dict.get("email", "").strip()
+            email = normalized_email(contact_dict.get("email", ""))
             role_name = self.validate_contact_type(contact_dict.get("role"))
-            affiliations = contact_dict.get("affiliations", [])
-            if self.is_local_contact(contact_dict):
-                user = self.process_local_contact(
-                    first_name, last_name, email, role_name, affiliations
-                )
+            # the key can be present and null
+            affiliations = contact_dict.get("affiliations") or []
+
+            user = self.find_user(email, first_name, last_name)
+            if user is None:
+                user = self.user_from_keycloak(email)
+            if user is not None:
                 if role_name == PRINCIPAL_INVESTIGATOR:
                     local_custodians.append(user)
                 else:
                     local_personnel.append(user)
-
             else:
                 contact = self.process_external_contact(
                     first_name, last_name, email, role_name, affiliations
@@ -209,6 +217,83 @@ class BaseImporter:
                 external_contacts.append(contact)
 
         return local_custodians, local_personnel, external_contacts
+
+    def find_user(self, email, first_name, last_name):
+        """
+        The DAISY user of a contact: by email when the email names exactly one user, by name
+        otherwise, because an import file can give one email to several contacts.
+        An inactive user is never reused: it is a leaver, or a placeholder of an older import,
+        and a login cannot activate a stored row.
+        """
+        users = User.objects.filter(is_active=True)
+        by_email = records_with_email(users, email)
+        if len(by_email) == 1:
+            return by_email[0]
+
+        # TODO: a name is not an identity, Keycloak is the only reliable check of a local person.
+        # Dropping this branch sends the case to user_from_keycloak(), and it changes
+        # test_an_active_user_is_reused and every import on an instance without Keycloak.
+        by_name = list(
+            users.filter(
+                first_name__icontains=first_name, last_name__icontains=last_name
+            )
+        )
+        if len(by_name) == 1:
+            return by_name[0]
+        if len(by_name) > 1:
+            by_name_and_email = [
+                user for user in by_name if normalized_email(user.email) == email
+            ]
+            if len(by_name_and_email) == 1:
+                return by_name_and_email[0]
+            self.logger.warning(
+                f"Several users are named '{first_name} {last_name}' and the email does not "
+                f"tell them apart, the import asks Keycloak"
+            )
+        return None
+
+    def user_from_keycloak(self, email):
+        """
+        The user of the Keycloak account of that email, created when DAISY does not hold it yet.
+        Every account of the email becomes a user, as the nightly import does, and the first one
+        is the user of this contact. No account means the person is a contact.
+        """
+        users = []
+        for account in self.keycloak_accounts(email):
+            contact = get_contact(account.id)
+            if contact:
+                # a contact never stops a user, but its access rows need a migration
+                self.logger.warning(
+                    f"Contact {contact.pk} holds the Keycloak subject {account.id}"
+                )
+            user = User.objects.filter(oidc_id=account.id).first()
+            users.append(user or create_user(account))
+
+        if len(users) > 1:
+            self.logger.warning(
+                f"Several Keycloak accounts for {email}, the import uses {users[0].username}"
+            )
+        return users[0] if users else None
+
+    def keycloak_accounts(self, email):
+        """
+        The verified Keycloak accounts of an email. Without the integration, and when Keycloak
+        does not answer, it gives nothing: the person becomes a contact and the import goes on.
+        """
+        if not email or not getattr(settings, "KEYCLOAK_INTEGRATION", False):
+            return []
+        try:
+            if self._keycloak_backend is None:
+                self._keycloak_backend = KeycloakBackend(
+                    get_keycloak_config_from_settings()
+                )
+            return self._keycloak_backend.get_users_by_email(email)
+        except Exception as exception:
+            self.logger.error(
+                f"Keycloak does not answer for {email} ({exception}), "
+                f"the import treats this person as a contact"
+            )
+            return []
 
     @staticmethod
     def process_partner(partner_name):
@@ -235,14 +320,6 @@ class BaseImporter:
                 f"Couldn't parse the following date: {str(date_string)}"
             )
 
-    @staticmethod
-    def is_local_contact(contact_dict):
-        home_organisation = Partner.objects.get(acronym=settings.COMPANY)
-        _is_local_contact = home_organisation.name in contact_dict.get(
-            "affiliations"
-        ) or home_organisation.acronym in contact_dict.get("affiliations")
-        return _is_local_contact
-
     def validate_contact_type(self, contact_type):
         try:
             contact_type_obj = ContactType.objects.get(name=contact_type)
@@ -252,51 +329,6 @@ class BaseImporter:
             )
             contact_type = "Other"
         return contact_type
-
-    def process_local_contact(
-        self, first_name, last_name, email, role_name, affiliations
-    ):
-        user = User.objects.filter(
-            first_name__icontains=first_name, last_name__icontains=last_name
-        )
-        if len(user) > 1:
-            users = User.objects.filter(
-                first_name__icontains=first_name,
-                last_name__icontains=last_name,
-                email=email,
-            )
-            if len(users) != 1:
-                msg = (
-                    "Something went wrong - there are two contacts with the same first and last name, and it"
-                    "s impossible to differentiate them"
-                )
-                self.logger.warning(msg)
-            user = users.first()
-        elif len(user) == 1:
-            user = user.first()
-        else:
-            user = None
-        if user is None:
-            self.logger.warning(
-                f"No user found for '{first_name} {last_name}' - hence an inactive user will be created"
-            )
-
-            usr_name = first_name.lower() + "." + last_name.lower()
-            user = User.objects.create(
-                username=usr_name,
-                password="",
-                first_name=first_name,
-                last_name=last_name,
-                is_active=False,
-                email=email,
-            )
-            user.staff = True
-
-            if role_name == PRINCIPAL_INVESTIGATOR:
-                g = Group.objects.get(name=GroupConstants.VIP.value)
-                user.groups.add(g)
-            user.save()
-        return user
 
     def process_external_contact(
         self, first_name, last_name, email, role_name, affiliations

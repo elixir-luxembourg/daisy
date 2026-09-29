@@ -2,7 +2,6 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.urls import reverse
 
-from core import constants
 from core.permissions.mapping import PERMISSION_MAPPING
 from .contact import Contact
 from .partner import Partner, HomeOrganisation
@@ -195,11 +194,7 @@ class Contract(CoreModel):
                     "first_name": lc.first_name,
                     "last_name": lc.last_name,
                     "email": lc.email,
-                    "role": (
-                        "Principal_Investigator"
-                        if lc.is_part_of(constants.Groups.VIP.name)
-                        else "Researcher"
-                    ),
+                    "role": "Researcher",
                     "affiliations": [HomeOrganisation().name],
                 }
             )

@@ -3,7 +3,6 @@ from typing import Union
 from django.shortcuts import reverse
 
 from test.factories import (
-    VIPGroup,
     DataStewardGroup,
     LegalGroup,
     AuditorGroup,
@@ -38,15 +37,8 @@ def check_storage_location_views_permissions(
 
     check_response_status(url, user, [permission], obj, method)
 
-    if user.is_part_of(VIPGroup()):
-        parent_dataset.local_custodians.set([user])
-        assert user.has_permission_on_object(permission, obj)
-        check_response_status(url, user, [permission], obj, method)
 
-
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "url_name, action",
     [

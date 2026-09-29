@@ -1,7 +1,6 @@
 from datetime import timedelta
 
 from django.conf import settings
-from django.db.models import Q
 from django.shortcuts import render
 from django.utils import timezone
 
@@ -31,16 +30,14 @@ def dashboard(request, template_name="dashboard.html"):
     )[:5]
 
     is_steward = the_user.is_superuser or the_user.is_part_of(Groups.DATA_STEWARD.value)
-    can_manage_accesses = is_steward or the_user.is_part_of(Groups.VIP.value)
+    can_manage_accesses = is_steward
 
     accesses_expiring = None
     accesses_expiring_count = 0
     retention_reached = None
     retention_reached_count = 0
     if can_manage_accesses:
-        custodied = Q(dataset__local_custodians=the_user) | Q(
-            dataset__project__local_custodians=the_user
-        )
+        # a steward manages the accesses of the whole instance
         accesses = Access.objects.filter(
             status=StatusChoices.active,
             grant_expires_on__isnull=False,
@@ -49,9 +46,6 @@ def dashboard(request, template_name="dashboard.html"):
         declarations = DataDeclaration.objects.filter(
             end_of_storage_duration__lte=today
         )
-        if not is_steward:
-            accesses = accesses.filter(custodied)
-            declarations = declarations.filter(custodied)
         accesses = (
             accesses.select_related("dataset", "user", "contact")
             .distinct()

@@ -12,7 +12,6 @@ from test.factories import (
     DatasetFactory,
     DataStewardGroup,
     UserFactory,
-    VIPGroup,
 )
 
 
@@ -48,8 +47,8 @@ def test_dashboard_as_normal_user(client):
 
 
 @pytest.mark.django_db
-def test_dashboard_vip_scoped_attention(client):
-    user = UserFactory(groups=[VIPGroup()])
+def test_dashboard_counts_what_needs_attention(client):
+    user = UserFactory(groups=[DataStewardGroup()])
     client.force_login(user)
     today = timezone.localdate()
 
@@ -66,7 +65,6 @@ def test_dashboard_vip_scoped_attention(client):
     response = client.get(reverse("dashboard"))
 
     assert response.status_code == 200
-    # VIP manages accesses on custodied data, but is not a steward.
     assert response.context["can_manage_accesses"] is True
     assert response.context["accesses_expiring_count"] == 1
     assert response.context["retention_reached_count"] == 1

@@ -5,7 +5,6 @@ from django.shortcuts import reverse
 from django.test.client import Client
 
 from test.factories import (
-    VIPGroup,
     DataStewardGroup,
     LegalGroup,
     AuditorGroup,
@@ -48,9 +47,7 @@ def check_cohort_view_permissions(
         )
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "url_name, perm",
     [
@@ -78,9 +75,7 @@ def test_cohorts_views_permissions(permissions, group, url_name, perm):
     check_cohort_view_permissions(url, user, perm, cohort)
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "url_name", ["cohort_publish", "cohort_unpublish", "cohorts_export"]
 )

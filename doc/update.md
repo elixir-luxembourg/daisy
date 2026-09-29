@@ -103,6 +103,39 @@ docker compose exec backup sh /code/scripts/db.sh backup
     docker compose exec web python manage.py import_users
     ```
 
+8. **Optional - Match the stored users with their Keycloak account:**
+
+    Once, after the migration to Keycloak. It writes an `oidc_id` when one Keycloak account and
+    one DAISY user share an email, and reports every other case for a data steward, who binds the
+    identity in the `OIDC ID` column of `/definitions/users`. Run it before step 9, otherwise the
+    Keycloak import creates a second user for each person.
+
+    ```bash
+    docker compose exec web python manage.py match_keycloak_users --dry-run
+    docker compose exec web python manage.py match_keycloak_users
+    ```
+
+9. **Optional - Create a user for every new Keycloak account:**
+
+    Needs `KEYCLOAK_INTEGRATION`, and a scheduled task runs it every night. Run it by hand to
+    create the users of the accounts that Keycloak holds already.
+
+    ```bash
+    docker compose exec web python manage.py import_keycloak_users --dry-run
+    docker compose exec web python manage.py import_keycloak_users
+    ```
+
+10. **Optional - Drop the local passwords of the Keycloak users:**
+
+    After step 8, so that a person bound to Keycloak cannot log in with an old DAISY password.
+    A user without an `oidc_id` keeps it, and so does a superuser: that is the way into the admin
+    when Keycloak is unavailable.
+
+    ```bash
+    docker compose exec web python manage.py set_unusable_passwords --dry-run
+    docker compose exec web python manage.py set_unusable_passwords
+    ```
+
 
 # Breaking migrations
 

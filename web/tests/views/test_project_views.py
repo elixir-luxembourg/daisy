@@ -5,7 +5,6 @@ from django.shortcuts import reverse
 from django.test.client import Client
 
 from test.factories import (
-    VIPGroup,
     DataStewardGroup,
     LegalGroup,
     AuditorGroup,
@@ -45,18 +44,11 @@ def check_project_views_permissions(
             assert not user.has_permission_on_object(permission, project)
         check_response_status(url, user, [permission], project, method)
 
-        if user.is_part_of(VIPGroup()) and project is not None:
-            project.local_custodians.set([user])
-            assert user.has_permission_on_object(permission, project)
-            check_response_status(url, user, [permission], project, method)
-
     else:
         check_response_status(url, user, [], project, method)
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "url_name, action",
     [
@@ -124,9 +116,7 @@ def test_project_views_permissions(permissions, group, url_name, action):
     check_project_views_permissions(url, user, action, project, method)
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 def test_project_view_protected_documents(permissions, group):
     project = ProjectFactory()
     user = UserFactory(groups=[group()])
@@ -144,16 +134,8 @@ def test_project_view_protected_documents(permissions, group):
         assert b'id="documents-card"' not in response.content
         assert b'data-lucide="file-text"' not in response.content
 
-    if user.is_part_of(VIPGroup()):
-        project.local_custodians.set([user])
-        response = client.get(url, follow=True)
-        assert b'id="documents-card"' in response.content
-        assert b'data-lucide="file-text"' in response.content
 
-
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 def test_project_edit_protected_documents(permissions, group):
     document = ProjectDocumentFactory.create(with_file=True)
     project = document.content_object
@@ -181,22 +163,10 @@ def test_project_edit_protected_documents(permissions, group):
         assert b'id="document-action-head"' not in response.content
         assert b'id="document-action"' not in response.content
 
-    if user.is_part_of(VIPGroup()):
-        project.local_custodians.set([user])
-        response = client.get(url, follow=True)
-        assert (
-            b'<div class="flex justify-end" id="add-project-document">'
-            in response.content
-        )
-        assert b'id="document-action-head"' in response.content
-        assert b'id="document-action"' in response.content
-
     os.remove(document.content.name)
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize("url_name", ["projects_export"])
 def test_projects_publications_and_export(permissions, group, url_name):
     user = UserFactory(groups=[group()])
@@ -215,9 +185,7 @@ def test_projects_publications_and_export(permissions, group, url_name):
         ("is_admin", f"core.{Permissions.ADMIN.value}_project"),
     ],
 )
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 def test_project_views_context(permissions, context_key, permission_key, group):
     user = UserFactory(groups=[group()])
     project = ProjectFactory()
@@ -230,7 +198,6 @@ def test_project_views_context(permissions, context_key, permission_key, group):
 @pytest.mark.parametrize(
     "group, expected_result",
     [
-        (VIPGroup, False),
         (DataStewardGroup, True),
         (LegalGroup, False),
         (AuditorGroup, False),

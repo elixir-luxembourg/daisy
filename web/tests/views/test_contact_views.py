@@ -4,7 +4,7 @@ from django.test.client import Client
 
 from core.constants import Permissions
 from test.factories import (
-    VIPGroup,
+    AccessFactory,
     DataStewardGroup,
     LegalGroup,
     AuditorGroup,
@@ -43,9 +43,7 @@ def check_contact_view_permissions(url, user, action, contact):
         )
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "url_name, perm",
     [
@@ -72,11 +70,53 @@ def test_contacts_views_permissions(permissions, group, url_name, perm):
     check_contact_view_permissions(url, user, perm, contact)
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 def test_contacts_exports(permissions, group):
     url = reverse("contacts_export")
     user = UserFactory(groups=[group()])
 
     check_datasteward_restricted_url(url, user)
+
+
+@pytest.mark.django_db
+def test_manage_contacts_is_superuser_only(client):
+    client.force_login(UserFactory())
+
+    assert client.get(reverse("contacts_manage")).status_code == 403
+
+
+@pytest.mark.django_db
+def test_manage_contacts_shows_only_the_contacts_that_hold_a_subject(client):
+    bound = ContactFactory(email="bound@example.org", oidc_id="subject-1")
+    ContactFactory(email="plain@example.org", oidc_id=None)
+    client.force_login(UserFactory(is_superuser=True))
+
+    contacts = client.get(reverse("contacts_manage")).context["contacts"]
+
+    assert [contact.pk for contact in contacts] == [bound.pk]
+
+
+@pytest.mark.django_db
+def test_manage_contacts_resolves_the_user_and_the_access_rows_of_a_contact(client):
+    contact = ContactFactory(email="grantee@example.org", oidc_id="subject-1")
+    user = UserFactory(oidc_id="subject-1")
+    AccessFactory(contact=contact, user=None)
+    client.force_login(UserFactory(is_superuser=True))
+
+    response = client.get(reverse("contacts_manage"))
+    row = response.context["contacts"][0]
+
+    assert row.user_of_subject == user
+    assert row.access_count == 1
+    assert f"?contact__id__exact={contact.id}" in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_manage_contacts_reports_a_contact_that_no_user_holds(client):
+    ContactFactory(email="orphan@example.org", oidc_id="subject-1")
+    client.force_login(UserFactory(is_superuser=True))
+
+    row = client.get(reverse("contacts_manage")).context["contacts"][0]
+
+    assert row.user_of_subject is None
+    assert row.access_count == 0

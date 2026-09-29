@@ -5,7 +5,13 @@ from django.conf import settings
 import pytest
 import requests_mock
 
-from core.lcsb.oidc import KeycloakSynchronizationBackend
+from core.constants import IdentityProvider
+from core.lcsb.oidc import (
+    ExternalUserNotVerifiedException,
+    KeycloakBackend,
+    KeycloakUserResponse,
+    identity_provider_of,
+)
 from core.lcsb.rems import (
     create_rems_entitlement,
     extract_rems_data,
@@ -27,65 +33,153 @@ from test.factories import (
 from web.views.utils import get_user_or_contact_by_oidc_id
 
 
+def keycloak_user_response(drop=(), **overrides) -> KeycloakUserResponse:
+    """
+    One user of the Keycloak Admin API, with every field of KeycloakUserResponse.
+    `drop` leaves keys out, as Keycloak does for an account that has no email.
+    """
+    user = {
+        "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+        "createdTimestamp": 1634231689999,
+        "username": "0000-0001-2222-3333",
+        "enabled": True,
+        "totp": False,
+        "emailVerified": True,
+        "firstName": "TESTY",
+        "lastName": "MCTesty",
+        "email": "testy.mctesty@uni.lu",
+        "disableableCredentialTypes": [],
+        "requiredActions": [],
+        "notBefore": 0,
+        "access": {
+            "manageGroupMembership": False,
+            "view": True,
+            "mapRoles": False,
+            "impersonate": False,
+            "manage": False,
+        },
+        **overrides,
+    }
+    return {key: value for key, value in user.items() if key not in drop}
+
+
 class KeycloakAdminConnectionMock:
     def well_know(self) -> bool:
         return True
 
-    def get_users(self, query) -> List[Dict]:
+    def get_users(self, query) -> List[KeycloakUserResponse]:
+        self.last_query = query
         return [
-            {
-                "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
-                "createdTimestamp": 1634231689999,
-                "username": "0000-0001-2222-3333",
-                "enabled": True,
-                "totp": False,
-                "emailVerified": True,
-                "firstName": "TESTY",
-                "lastName": "MCTesty",
-                "email": "testy.mctesty@uni.lu",
-                "disableableCredentialTypes": [],
-                "requiredActions": [],
-                "notBefore": 0,
-                "access": {
-                    "manageGroupMembership": False,
-                    "view": True,
-                    "mapRoles": False,
-                    "impersonate": False,
-                    "manage": False,
-                },
-            },
-            {
-                "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeef",
-                "createdTimestamp": 1634231689998,
-                "username": "0000-0001-2222-3334",
-                "enabled": True,
-                "totp": False,
-                "emailVerified": True,
-                "firstName": "BOBBY",
-                "lastName": "FISCHER",
-                "email": "bobby.fischer@gmail.com",
-                "disableableCredentialTypes": [],
-                "requiredActions": [],
-                "notBefore": 0,
-                "access": {
-                    "manageGroupMembership": False,
-                    "view": True,
-                    "mapRoles": False,
-                    "impersonate": False,
-                    "manage": False,
-                },
-            },
-            {
-                "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeeg",
-                "createdTimestamp": 1634231689997,
-                "username": "0000-0001-2222-3335",
-                "firstName": "Ann",
-                "lastName": "Bann",
-            },
+            keycloak_user_response(),
+            keycloak_user_response(
+                id="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeef",
+                createdTimestamp=1634231689998,
+                username="0000-0001-2222-3334",
+                firstName="BOBBY",
+                lastName="FISCHER",
+                email="bobby.fischer@gmail.com",
+            ),
+            # a system account: no email, so Keycloak sends neither key
+            keycloak_user_response(
+                drop=("email", "emailVerified"),
+                id="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeeg",
+                createdTimestamp=1634231689997,
+                username="0000-0001-2222-3335",
+                firstName="Ann",
+                lastName="Bann",
+            ),
         ]
 
 
-class KeycloakSynchronizationMethodMock(KeycloakSynchronizationBackend):
+def test_get_users_by_email_uses_exact_verified_match():
+    class EmailLookupMock:
+        def get_users(self, query):
+            assert query == {
+                "email": "testy.mctesty@uni.lu",
+                "exact": True,
+            }
+            return [
+                keycloak_user_response(drop=("username",), id="verified-id"),
+                keycloak_user_response(id="unverified-id", emailVerified=False),
+            ]
+
+    backend = KeycloakBackend({}, connect=False)
+    backend.keycloak_admin_connection = EmailLookupMock()
+
+    users = backend.get_users_by_email("testy.mctesty@uni.lu")
+
+    assert [(user.id, user.email) for user in users] == [
+        ("verified-id", "testy.mctesty@uni.lu")
+    ]
+    assert users[0].username is None
+
+
+def test_get_list_of_users_keeps_the_verified_accounts_only():
+    """The match and the import bind identities on this list."""
+    backend = KeycloakBackend({}, connect=False)
+    backend.keycloak_admin_connection = KeycloakAdminConnectionMock()
+
+    users = backend.get_list_of_users()
+
+    assert [user.email for user in users] == [
+        "testy.mctesty@uni.lu",
+        "bobby.fischer@gmail.com",
+    ]
+    assert backend.keycloak_admin_connection.last_query == {"emailVerified": True}
+
+
+def test_get_external_user_info_returns_the_verified_account_as_oidc_user():
+    class SingleUserMock:
+        def get_user(self, oidc_id):
+            return keycloak_user_response(id=oidc_id, username="testy.mctesty|ul")
+
+    backend = KeycloakBackend({}, connect=False)
+    backend.keycloak_admin_connection = SingleUserMock()
+
+    account = backend.get_external_user_info("verified-id")
+
+    assert account.id == "verified-id"
+    assert account.email == "testy.mctesty@uni.lu"
+    # the username keeps the suffix, the provider is a label next to it
+    assert account.username == "testy.mctesty|ul"
+    assert account.identity_provider is IdentityProvider.UL
+
+
+def test_get_external_user_info_rejects_an_unverified_account():
+    class UnverifiedUserMock:
+        def get_user(self, oidc_id):
+            return keycloak_user_response(drop=("emailVerified",), id=oidc_id)
+
+    backend = KeycloakBackend({}, connect=False)
+    backend.keycloak_admin_connection = UnverifiedUserMock()
+
+    with pytest.raises(ExternalUserNotVerifiedException):
+        backend.get_external_user_info("unverified-id")
+
+
+@pytest.mark.parametrize(
+    ("suffix", "display_name"),
+    [
+        ("ul", "University of Luxembourg"),
+        ("lih", "Luxembourg Institute of Health"),
+        ("lums", "LCSB User Management System"),
+        ("ls", "LifeScience Login (academic federation)"),
+        ("orcid", "ORCID"),
+    ],
+)
+def test_identity_provider_of_identifies_a_known_suffix(suffix, display_name):
+    provider = identity_provider_of(f"john.doe|{suffix}")
+
+    assert provider.username_suffix == suffix
+    assert provider.display_name == display_name
+
+
+@pytest.mark.parametrize("username", ["john.doe", "john.doe|unknown", "|ul", "", None])
+def test_identity_provider_of_returns_nothing_without_a_known_suffix(username):
+    assert identity_provider_of(username) is None
+
+
+class KeycloakSynchronizationMethodMock(KeycloakBackend):
     def test_connection(self) -> bool:
         return True
 
@@ -106,10 +200,10 @@ class KeycloakSynchronizationMethodMock(KeycloakSynchronizationBackend):
 
 def test_keycloak_synchronization_config_validation():
     with pytest.raises(KeyError):
-        kc = KeycloakSynchronizationBackend({})
+        kc = KeycloakBackend({})
 
     with pytest.raises(KeyError):
-        kc = KeycloakSynchronizationBackend({}, False)
+        kc = KeycloakBackend({}, False)
         kc._create_connection({})
 
 

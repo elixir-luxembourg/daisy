@@ -33,9 +33,6 @@ class UserSource(ChoiceEnum):
 
 
 class UserQuerySet(models.QuerySet):
-    def vips(self):
-        return self.filter(groups__name=constants.Groups.VIP.value)
-
     def data_stewards(self):
         return self.filter(groups__name=constants.Groups.DATA_STEWARD.value)
 
@@ -49,9 +46,6 @@ class UserQuerySet(models.QuerySet):
 class UserManager(BaseUserManager):
     def get_queryset(self):
         return UserQuerySet(self.model, using=self._db)
-
-    def vips(self):
-        return self.get_queryset().vips()
 
     def data_stewards(self):
         return self.get_queryset().data_stewards()
@@ -147,6 +141,20 @@ class User(AbstractUser):
         return base_dict
 
     def save(self, *args, **kw):
+        # the oidc_id is the only stable link to the Keycloak account, it must not change
+        if self.pk:
+            stored_oidc_id = (
+                User.objects.filter(pk=self.pk)
+                .values_list("oidc_id", flat=True)
+                .first()
+            )
+            if stored_oidc_id and stored_oidc_id != self.oidc_id:
+                raise ValueError(
+                    f"The oidc_id of user {self.pk} is immutable: "
+                    f"'{stored_oidc_id}' cannot become '{self.oidc_id}'"
+                )
+        if self.email:
+            self.email = self.email.lower()
         self.full_name = f"{self.first_name} {self.last_name}"
         super(User, self).save(*args, **kw)
 
@@ -342,16 +350,3 @@ class User(AbstractUser):
         Finds Accesses of the user, and returns a list of their dataset IDs
         """
         return Access.find_for_user(self)
-
-    @classmethod
-    def find_user_by_email_or_oidc_id(cls, email: str, oidc_id: str):
-        if cls.objects.filter(oidc_id=oidc_id).count() == 1:
-            return cls.objects.get(oidc_id=oidc_id)
-        elif cls.objects.filter(oidc_id=oidc_id).count() > 1:
-            # TODO: E2E: Send a notification to the Data stewards
-            pass
-        if cls.objects.filter(email=email).count() == 1:
-            return cls.objects.get(email=email)
-        else:
-            message = f"There are either zero, or 2 and more users with such `email` and `oidc_id`!"
-            raise cls.DoesNotExist(message)
