@@ -346,20 +346,11 @@ $(document).ready(function () {
         }
         const parentElementClassToRemove = $(this).data("parent-to-remove");
         const parentElementToRemove = $(this).closest(parentElementClassToRemove);
+        // Endpoints that keep the row (e.g. an access is terminated, not
+        // deleted) give a redirect URI instead, to show the new state.
+        const redirectURI = $(this).data("ajax-redirect-uri");
         const confirmation = $(this).data("confirmation");
-        if (confirmation) {
-            confirmDialog(confirmation).done(function() {
-                $.ajax({
-                    url: urlClick,
-                    type: method,
-                    success: function () {
-                        if (parentElementClassToRemove) {
-                            parentElementToRemove.remove();
-                        }
-                    }
-                });
-            });
-        } else{
+        const send = function () {
             $.ajax({
                 url: urlClick,
                 type: method,
@@ -367,8 +358,17 @@ $(document).ready(function () {
                     if (parentElementClassToRemove) {
                         parentElementToRemove.remove();
                     }
+                    if (redirectURI !== undefined) {
+                        window.location.replace(redirectURI);
+                        window.location.reload();
+                    }
                 }
             });
+        };
+        if (confirmation) {
+            confirmDialog(confirmation).done(send);
+        } else {
+            send();
         }
     });
 
