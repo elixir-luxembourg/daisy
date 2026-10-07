@@ -206,8 +206,11 @@ EMAIL_BACKEND = (
 EMAIL_DONOTREPLY = env("EMAIL_DONOTREPLY", default="do-not-reply@daisy.lcsb.uni.lu")
 
 # server settings
-SERVER_SCHEME = "https"
-SERVER_URL = "example.com"
+# Used in exported JSON ("source" field), email notification links and public
+# dataset/DAC URLs, so a production instance must be able to point these at its
+# own host. Defaults preserve the previous hardcoded values for existing setups.
+SERVER_SCHEME = env("SERVER_SCHEME", default="https")
+SERVER_URL = env("SERVER_URL", default="example.com")
 
 HELPDESK_EMAIL = env("HELPDESK_EMAIL", default="support@example.com")
 
