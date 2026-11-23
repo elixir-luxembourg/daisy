@@ -48,6 +48,7 @@ class PartnersImporter(BaseImporter):
             partner = Partner.objects.create(name=partner_dict["name"])
 
         partner.elu_accession = partner_dict["external_id"]
+        partner.acronym = partner_dict.get("acronym", "")
         partner.is_clinical = partner_dict["is_clinical"]
         partner.geo_category = partner_dict["geo_category"]
         partner.scientific_metadata = partner_dict.get("metadata", "{}") or "{}"

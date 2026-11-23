@@ -3,6 +3,12 @@ from django import forms
 from core.models import Partner
 
 
+def partner_label_from_instance(partner):
+    if partner.acronym:
+        return f"{partner.name} ({partner.acronym})"
+    return partner.name
+
+
 class PartnerForm(ModelForm):
     class Meta:
         model = Partner

@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import ModelForm, DateInput, Textarea
 
+from core.forms.partner import partner_label_from_instance
 from core.models import Share, Partner, Contract, PartnerRole
 
 
@@ -23,6 +24,7 @@ class ShareForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["partner"].label_from_instance = partner_label_from_instance
         # we don't allow editing dataset in this case shares have to be deleted and recreated
         self.fields.pop("dataset")
 
@@ -89,6 +91,7 @@ def shareFormFactory(*args, **kwargs):
         def __init__(self, *args, **kwargs):
             self.dataset = kwargs.pop("dataset", None)
             super().__init__(*args, **kwargs)
+            self.fields["partner"].label_from_instance = partner_label_from_instance
             self.fields.pop("dataset")
             contracts = []
             if self.dataset.project and partner:

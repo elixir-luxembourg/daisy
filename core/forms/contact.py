@@ -1,5 +1,6 @@
 from django.forms import ModelForm, CharField, ChoiceField, Form, ValidationError
 
+from core.forms.partner import partner_label_from_instance
 from core.models import Contact
 
 
@@ -11,6 +12,7 @@ class ContactForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["partners"].label_from_instance = partner_label_from_instance
 
     field_order = [
         "first_name",

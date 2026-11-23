@@ -1,6 +1,7 @@
 from django.forms import ModelForm, Textarea
 
 from core.forms.input import SelectWithModal
+from core.forms.partner import partner_label_from_instance
 from core.models import Cohort
 
 
@@ -16,6 +17,7 @@ class CohortForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["elu_accession"].disabled = True
+        self.fields["institutes"].label_from_instance = partner_label_from_instance
         self.fields["owners"].widget = SelectWithModal(
             url_name="contact_add",
             entity_name="contact",

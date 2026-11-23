@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 
 from core.forms import UseConditionForm, SkipFieldValidationMixin
+from core.forms.partner import partner_label_from_instance
 from core.models import DataDeclaration, Partner, Contract, GDPRRole
 from core.models.contract import PartnerRole
 
@@ -39,6 +40,7 @@ class DataDeclarationEditForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         instance = kwargs.get("instance", None)
 
+        self.fields["partner"].label_from_instance = partner_label_from_instance
         self.fields["data_declarations_parents"].choices = [
             (p.id, p.get_long_name()) for p in instance.data_declarations_parents.all()
         ]
@@ -126,7 +128,7 @@ class DataDeclarationSubFormNew(BaseDataDeclarationSubForm):
         partner = kwargs.pop("partner", None)
         super().__init__(*args, **kwargs)
         partners = list(Partner.objects.all())
-        partners_choices = [(p.id, str(p)) for p in partners]
+        partners_choices = [(p.id, partner_label_from_instance(p)) for p in partners]
         if partners:
             if not partner:
                 partner = partners[0]
