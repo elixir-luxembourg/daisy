@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 
 from core.forms import UseConditionForm, SkipFieldValidationMixin
-from core.forms.partner import partner_label_from_instance
+from core.forms.partner import PartnerChoiceField, partner_label_from_instance
 from core.models import DataDeclaration, Partner, Contract, GDPRRole
 from core.models.contract import PartnerRole
 
@@ -35,12 +35,12 @@ class DataDeclarationEditForm(forms.ModelForm):
             "end_of_storage_duration": forms.DateInput(attrs={"class": "datepicker"}),
             "embargo_date": forms.DateInput(attrs={"class": "datepicker"}),
         }
+        field_classes = {"partner": PartnerChoiceField}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         instance = kwargs.get("instance", None)
 
-        self.fields["partner"].label_from_instance = partner_label_from_instance
         self.fields["data_declarations_parents"].choices = [
             (p.id, p.get_long_name()) for p in instance.data_declarations_parents.all()
         ]

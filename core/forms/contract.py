@@ -3,7 +3,7 @@ from django.forms import ModelForm, ModelChoiceField, Textarea
 from django.utils.text import slugify
 
 from core.forms.input import SelectWithModal
-from core.forms.partner import partner_label_from_instance
+from core.forms.partner import PartnerChoiceField
 from core.models import Contract, Project, Dataset, PartnerRole
 
 
@@ -52,11 +52,11 @@ class PartnerRoleForm(ModelForm):
     class Meta:
         model = PartnerRole
         fields = "__all__"
+        field_classes = {"partner": PartnerChoiceField}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["contract"].disabled = True
-        self.fields["partner"].label_from_instance = partner_label_from_instance
         self.fields["partner"].widget = SelectWithModal(
             url_name="partner_add",
             entity_name="partner",

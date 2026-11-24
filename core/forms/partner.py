@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from django.forms import ModelChoiceField, ModelForm, ModelMultipleChoiceField
 from django import forms
 from core.models import Partner
 
@@ -7,6 +7,16 @@ def partner_label_from_instance(partner):
     if partner.acronym:
         return f"{partner.name} ({partner.acronym})"
     return partner.name
+
+
+class PartnerChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return partner_label_from_instance(obj)
+
+
+class PartnerMultipleChoiceField(ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return partner_label_from_instance(obj)
 
 
 class PartnerForm(ModelForm):
