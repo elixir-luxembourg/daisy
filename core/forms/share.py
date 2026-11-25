@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import ModelForm, DateInput, Textarea
 
+from core.forms.partner import PartnerChoiceField
 from core.models import Share, Partner, Contract, PartnerRole
 
 
@@ -16,7 +17,7 @@ class ShareForm(ModelForm):
         }
         help_texts = {"contract": ""}
 
-    partner = forms.ModelChoiceField(
+    partner = PartnerChoiceField(
         queryset=Partner.objects.all(),
         widget=forms.Select(attrs={"id": "partner-select"}),
     )
@@ -73,7 +74,7 @@ def shareFormFactory(*args, **kwargs):
                 "grant_expires_on": DateInput(attrs={"class": "datepicker"}),
             }
 
-        partner = forms.ModelChoiceField(
+        partner = PartnerChoiceField(
             queryset=Partner.objects.all(),
             widget=forms.Select(attrs={"id": "partner-select"}),
         )
