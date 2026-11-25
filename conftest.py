@@ -132,21 +132,20 @@ def user_normal(django_user_model):
     u = django_user_model.objects.create(
         username="normal.user",
         email="normal.user@uni.lu",
-        password="password",
     )
+    u.set_password("password")
     u.save()
     return u
 
 
 @pytest.fixture
-def user_vip(django_user_model):
+def user_custodian(django_user_model):
     u = django_user_model.objects.create(
         username="pi.number1",
         email="pi.number1@uni.lu",
-        password="password",
     )
-    g, _ = Group.objects.get_or_create(name=GroupConstants.VIP.value)
-    u.groups.add(g)
+    u.set_password("password")
+    u.save()
     return u
 
 
@@ -155,8 +154,9 @@ def user_data_steward(django_user_model):
     u = django_user_model.objects.create(
         username="data.steward",
         email="data.steward@uni.lu",
-        password="password",
     )
+    u.set_password("password")
+    u.save()
     g, _ = Group.objects.get_or_create(name=GroupConstants.DATA_STEWARD.value)
     u.groups.add(g)
     return u
@@ -191,18 +191,18 @@ def user_admin(django_user_model):
 
 
 @pytest.fixture
-def users(django_user_model, user_normal, user_vip, user_data_steward):
+def users(django_user_model, user_normal, user_custodian, user_data_steward):
     """
     Fixture that create users based on the ldap directory created.
     """
     password = "password"
 
-    u = django_user_model.objects.create(username="pi.number2", password=password)
-    g, _ = Group.objects.get_or_create(name=GroupConstants.VIP.value)
-    u.groups.add(g)
+    u = django_user_model.objects.create(username="pi.number2")
+    u.set_password(password)
     u.save()
 
-    u = django_user_model.objects.create(username="external.user", password=password)
+    u = django_user_model.objects.create(username="external.user")
+    u.set_password(password)
     u.save()
 
 

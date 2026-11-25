@@ -49,7 +49,7 @@ def upload_test_file(client, model_type, user, file_name=None):
         ("user_normal", 403),
         ("user_legal", 403),
         ("user_auditor", 403),
-        ("user_vip", 403),
+        ("user_custodian", 403),
     ],
 )
 @pytest.mark.django_db

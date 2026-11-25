@@ -3,7 +3,6 @@ from django.shortcuts import reverse
 from django.test.client import Client
 
 from test.factories import (
-    VIPGroup,
     DataStewardGroup,
     LegalGroup,
     AuditorGroup,
@@ -26,9 +25,7 @@ def check_user_views_permissions(url: str, user: User):
         assert response.status_code == 403
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "url_name, needs_superuser",
     [
@@ -53,3 +50,16 @@ def test_user_views_permissions(
     user = UserFactory(groups=[group()])
     check_user_views_permissions(url, user)
     check_user_views_permissions(url, user_admin)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("integration", [True, False])
+def test_the_keycloak_button_follows_the_integration(settings, client, integration):
+    settings.KEYCLOAK_INTEGRATION = integration
+    UserFactory(oidc_id=None)
+    client.force_login(UserFactory(is_superuser=True))
+
+    page = client.get(reverse("users")).content.decode()
+
+    assert ("keycloak-bind" in page) is integration
+    assert ("keycloak-identity-binder.js" in page) is integration

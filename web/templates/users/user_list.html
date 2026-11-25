@@ -1,8 +1,10 @@
 {% extends "layout.html" %}
+{% load static %}
 
 {% block title %}Users | DAISY{% endblock %}
 
 {% block content %}
+{% with th="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-middle font-semibold text-primary-900" td="border border-gray-200 px-4 py-2 align-top" link="text-primary-700 hover:underline" %}
     <header class="mt-4 mb-8 flex flex-wrap items-center justify-between gap-4">
         <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">Users</h1>
         <a class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" href="{% url 'users_add' %}"><i data-lucide="plus" class="h-4 w-4" aria-hidden="true"></i><span>Add user</span></a>
@@ -23,27 +25,44 @@
         <table id="users_table" class="w-full border-collapse text-sm lg:text-base">
             <thead>
                 <tr>
-                    <th scope="col" class="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-middle font-semibold text-primary-900">Name</th>
-                    <th scope="col" class="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-middle font-semibold text-primary-900">Email</th>
-                    <th scope="col" class="border border-gray-200 bg-gray-50 px-4 py-2 text-left align-middle font-semibold text-primary-900">Source</th>
+                    <th scope="col" class="{{ th }}">Name</th>
+                    <th scope="col" class="{{ th }}">Email</th>
+                    <th scope="col" class="{{ th }}">Source</th>
+                    <th scope="col" class="{{ th }}">OIDC ID</th>
                 </tr>
             </thead>
             <tbody>
                 {% for user in user_list %}
-                    {% if user.first_name and user.last_name %}
                     <tr class="transition-colors hover:bg-gray-50" data-filterable>
-                        <td class="border border-gray-200 px-4 py-2 align-top"><a class="text-primary-700 hover:underline" href="{% url 'user' user.id %}">{{ user.first_name }} {{ user.last_name }}</a></td>
-                        <td class="border border-gray-200 px-4 py-2 align-top text-gray-600">{{ user.email }}</td>
-                        <td class="border border-gray-200 px-4 py-2 align-top text-gray-600">{{ user.source|default:"" }}</td>
+                        <td class="{{ td }}"><a class="{{ link }}" href="{% url 'user' user.id %}">{{ user.get_full_name|default:user.username }}</a></td>
+                        <td class="{{ td }} text-gray-600">{{ user.email }}</td>
+                        <td class="{{ td }} text-gray-600">{{ user.source|default:"" }}</td>
+                        <td class="{{ td }} text-gray-600">
+                            {% if user.oidc_id %}
+                                <span class="font-mono text-xs">{{ user.oidc_id }}</span>
+                            {% elif keycloak_integration %}
+                                <button type="button" class="keycloak-bind inline-flex items-center justify-center gap-1.5 rounded-xs border border-primary-200 bg-white px-2 py-1.5 text-sm text-primary-900 hover:border-primary-900 hover:bg-primary-900 hover:text-on-primary"
+                                        data-candidates-url="{% url 'keycloak_candidates' user.id %}"
+                                        data-bind-url="{% url 'keycloak_bind_identity' user.id %}"
+                                        data-email="{{ user.email }}"><i data-lucide="link" class="h-4 w-4" aria-hidden="true"></i><span>Find in Keycloak</span></button>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
                     </tr>
-                    {% endif %}
                 {% endfor %}
                 <tr data-filter-empty hidden>
-                    <td colspan="3" class="border border-gray-200 px-4 py-6 text-center text-sm text-gray-500">No users match your filter.</td>
+                    <td colspan="4" class="border border-gray-200 px-4 py-6 text-center text-sm text-gray-500">No users match your filter.</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
+{% endwith %}
 {% endblock %}
 
+{% block js %}
+    {% if keycloak_integration %}
+        <script src="{% static 'js/keycloak-identity-binder.js' %}"></script>
+    {% endif %}
+{% endblock js %}

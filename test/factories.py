@@ -26,10 +26,6 @@ class GroupFactory(factory.django.DjangoModelFactory):
     name = factory.Iterator([g.value for g in GroupConstants])
 
 
-class VIPGroup(GroupFactory):
-    name = GroupConstants.VIP.value
-
-
 class DataStewardGroup(GroupFactory):
     name = GroupConstants.DATA_STEWARD.value
 

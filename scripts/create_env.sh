@@ -104,7 +104,6 @@ EOF
 
 AUTH_LDAP_SERVER_URI=$(ask "LDAP Server URI" "ldap://localhost/")
 AUTH_LDAP_BIND_PASSWORD=$(ask_secret "LDAP Password")
-PREDEFINED_PIS_LIST=$(ask "Predefined PIs (comma-separated emails)" "")
 EOF
 
 [[ "$KC_ENABLED" == "True" ]] && cat >> "$ENV_FILE" << EOF

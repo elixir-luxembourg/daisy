@@ -30,6 +30,26 @@ class DaisyLogger:
         return wrap
 
 
+def normalized_email(email):
+    """The comparable form of an email. User.save() lower-cases it, Keycloak does not."""
+    return (email or "").strip().lower()
+
+
+def records_with_email(queryset, email):
+    """
+    The records of `queryset` that hold this email. `iexact` is a prefilter only: PostgreSQL
+    compares with UPPER(), which folds `ı` to `I`, so a look-alike would match.
+    """
+    email = normalized_email(email)
+    if not email:
+        return []
+    return [
+        record
+        for record in queryset.filter(email__iexact=email)
+        if normalized_email(record.email) == email
+    ]
+
+
 class BootstrapChecker:
     """
     This is a small helper class to find any problems with missing values

@@ -15,13 +15,10 @@ TEST_DATA_PATH = os.path.join(settings.BASE_DIR, "core", "tests", "data")
 def test_import_submission(
     celery_session_worker, partners, gdpr_roles, can_defer_constraint_checks
 ):
-    VIP = factories.VIPGroup()
-    reinhard = factories.UserFactory.create(
-        first_name="Rene", last_name="Sahoo", groups=[VIP]
-    )
+    reinhard = factories.UserFactory.create(first_name="Rene", last_name="Sahoo")
 
-    factories.UserFactory.create(first_name="Elgin", last_name="Gray", groups=[VIP])
-    factories.UserFactory.create(first_name="Rob", last_name="Blue", groups=[VIP])
+    factories.UserFactory.create(first_name="Elgin", last_name="Gray")
+    factories.UserFactory.create(first_name="Rob", last_name="Blue")
     elixir_project = factories.ProjectFactory.create(
         acronym="ELIXIR", title="ELIXIR", local_custodians=[reinhard]
     )

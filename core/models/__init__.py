@@ -29,7 +29,7 @@ from .endpoint import Endpoint
 from .exposure import Exposure
 
 # They need to be after User because of the inner references
-from .user import User
+from .user import User, UserSource
 
 __all__ = [
     "GDPRRole",
@@ -65,6 +65,7 @@ __all__ = [
     "Endpoint",
     "Exposure",
     "User",
+    "UserSource",
     "DAC",
     "DacMembership",
 ]

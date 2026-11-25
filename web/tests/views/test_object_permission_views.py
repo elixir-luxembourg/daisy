@@ -6,7 +6,6 @@ from test.factories import (
     DatasetFactory,
     ProjectFactory,
     UserFactory,
-    VIPGroup,
     DataStewardGroup,
     LegalGroup,
     AuditorGroup,
@@ -24,9 +23,7 @@ def check_object_permissions_views(url, user, entity, entity_name):
     check_response_status(url, user, [perm], entity)
 
 
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "factory, url_name",
     [(DatasetFactory, "permission_dataset"), (ProjectFactory, "permission_project")],

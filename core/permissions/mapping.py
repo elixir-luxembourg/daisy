@@ -91,5 +91,4 @@ GROUP_PERMISSIONS = {
             f"core.{Permissions.PROTECTED.value}_contract",
         )
     },
-    Groups.VIP: {},
 }

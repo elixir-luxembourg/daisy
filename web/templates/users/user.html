@@ -4,24 +4,26 @@
 {% block content_title %}{{ user }}{% endblock %}
 
 {% block content %}
-{% with fabblue="cursor-pointer inline-flex size-10 items-center justify-center rounded-lg bg-primary-900 text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" %}
+{% with fabblue="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-primary-900 px-4 text-sm font-medium text-on-primary transition-[scale,background-color] duration-150 ease-out hover:bg-primary-800 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-900 motion-reduce:transition-none" %}
     <div class="relative mt-4">
-        {% if user.source %}
-            <span class="absolute top-4 left-4 inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-gray-500 rounded-full">{{ user.source }}</span>
-        {% endif %}
-        <span class="text-gray-500">User</span>
+        <div class="flex items-center gap-2">
+            <span class="text-gray-500">User</span>
+        </div>
         <div class="mb-8 flex flex-wrap items-start justify-between gap-4">
             <div class="min-w-0">
-                <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ user }}</h1>
+                <div class="flex flex-wrap items-center gap-3">
+                    <h1 class="font-display text-3xl font-medium tracking-tight text-primary-900 lg:text-5xl">{{ user }}</h1>
+                    {% if user.source %}
+                        <span class="inline-flex items-center rounded-full bg-gray-500 px-3 py-1 text-xs font-medium text-white">{{ user.source }}</span>
+                    {% endif %}
+                </div>
             </div>
             <div class="mt-1 flex flex-wrap shrink-0 gap-2">
             {% if can_edit %}
-                {% if user.source == manual_source %}
-                    <a id="deleteuser" class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-danger-200 bg-white px-4 text-sm font-medium text-danger-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-danger-900 hover:bg-danger-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
-                       title="Delete"
-                       data-toggle="modal" data-target="#modal"
-                       data-ajax-url="{% url 'user_delete' user.id %}"><i data-lucide="trash-2" class="h-4 w-4" aria-hidden="true"></i><span>Delete</span></a>
-                {% endif %}
+                <a id="deleteuser" class="cursor-pointer inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-danger-200 bg-white px-4 text-sm font-medium text-danger-900 shadow-xs transition-[scale,box-shadow,background-color,border-color] duration-150 ease-out hover:border-danger-900 hover:bg-danger-900 hover:text-on-primary hover:shadow-sm active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-900 motion-reduce:transition-none"
+                   title="Delete"
+                   data-toggle="modal" data-target="#modal"
+                   data-ajax-url="{% url 'user_delete' user.id %}"><i data-lucide="trash-2" class="h-4 w-4" aria-hidden="true"></i><span>Delete</span></a>
                 <a class="{{ fabblue }}" href="{% url 'user_edit' pk=user.id %}" title="Edit user"><i data-lucide="pencil" class="h-4 w-4" aria-hidden="true"></i><span>Edit</span></a>
             {% endif %}
             <a class="{{ fabblue }}" href="{% url 'history' %}?user={{ user.pk }}" title="See user actions"><i data-lucide="history" class="h-4 w-4" aria-hidden="true"></i><span>History</span></a>
@@ -44,11 +46,15 @@
 
     <div class="mt-4">
         <h2 class="font-display text-2xl font-medium tracking-tight text-primary-900">User Permissions</h2>
-        {% if dataset_perms %}
-            {% include '_includes/permission_table.html' with obj_name='Dataset' obj_perms_const=ds_perms_const obj_perms=dataset_perms %}
-        {% endif %}
-        {% if project_perms %}
-            {% include '_includes/permission_table.html' with obj_name='Project' obj_perms_const=pj_perms_const obj_perms=project_perms %}
+        {% if dataset_perms or project_perms %}
+            {% if dataset_perms %}
+                {% include '_includes/permission_table.html' with obj_name='Dataset' obj_perms_const=ds_perms_const obj_perms=dataset_perms %}
+            {% endif %}
+            {% if project_perms %}
+                {% include '_includes/permission_table.html' with obj_name='Project' obj_perms_const=pj_perms_const obj_perms=project_perms %}
+            {% endif %}
+        {% else %}
+            <p class="mt-2 text-sm text-gray-500">There are no permissions for this user.</p>
         {% endif %}
     </div>
 {% endwith %}

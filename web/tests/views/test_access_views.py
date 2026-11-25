@@ -9,7 +9,6 @@ from core.models.dataset import Dataset
 from test.factories import (
     AccessFactory,
     DatasetFactory,
-    VIPGroup,
     DataStewardGroup,
     LegalGroup,
     AuditorGroup,
@@ -42,24 +41,8 @@ def check_access_view_permissions(
         url, user, [f"core.{Permissions.EDIT.value}_dataset"], method=method, obj=obj
     )
 
-    if user.is_part_of(VIPGroup()):
-        user.save()
-        assign_perm(f"core.{Permissions.EDIT.value}_dataset", user, parent_dataset)
-        assert user.has_permission_on_object(
-            f"core.{Permissions.EDIT.value}_dataset", obj
-        )
-        check_response_status(
-            url,
-            user,
-            [f"core.{Permissions.EDIT.value}_dataset"],
-            method=method,
-            obj=obj,
-        )
 
-
-@pytest.mark.parametrize(
-    "group", [VIPGroup, DataStewardGroup, LegalGroup, AuditorGroup]
-)
+@pytest.mark.parametrize("group", [DataStewardGroup, LegalGroup, AuditorGroup])
 @pytest.mark.parametrize(
     "url_name", ["dataset_access_add", "dataset_access_edit", "dataset_access_remove"]
 )
